@@ -37,10 +37,23 @@ export function SeniorPasswordReset({
       </CardHeader>
       <CardContent className="space-y-4">
         {newPassword ? (
-          <div className="space-y-3">
-            <p className="text-sm text-[var(--color-text-muted)]">
-              Toto heslo uvidíte jen teď. Zapište si ho nebo ho vytiskněte spolu s uživatelským jménem.
-            </p>
+          <div className="space-y-4">
+            {/* Warm-toned "shown once" alert — gold rule + small caps eyebrow */}
+            <div className="rounded-[var(--radius-md)] border border-[var(--color-gold-300)] bg-[var(--color-gold-50)] p-4">
+              <div className="flex items-center gap-2">
+                <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
+                  <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-500)" strokeWidth="1" />
+                </svg>
+                <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-gold-600)]">
+                  Zobrazí se jen jednou
+                </span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text)]">
+                Zapište si nebo vytiskněte tento lísteček teď. Po zavření už heslo
+                neuvidíte - příště jen vygenerujete nové.
+              </p>
+            </div>
+
             <div className="rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--color-border-strong)] bg-[var(--color-paper-50)] p-5">
               <div className="text-xs uppercase tracking-wider text-[var(--color-text-subtle)]">
                 Uživatelské jméno

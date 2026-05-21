@@ -126,6 +126,22 @@ function Handoff({ creds }: { creds: { username: string; password: string; displ
         </CardContent>
       </Card>
 
+      {/* "Show once" gold alert — emphasises the one-time reveal */}
+      <div className="rounded-[var(--radius-md)] border border-[var(--color-gold-300)] bg-[var(--color-gold-50)] p-4 print:hidden">
+        <div className="flex items-center gap-2">
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
+            <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-500)" strokeWidth="1" />
+          </svg>
+          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-gold-600)]">
+            Heslo se zobrazí jen jednou
+          </span>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-text)]">
+          Vytiskněte si lísteček nebo si přihlašovací údaje opište teď. Po pokračování
+          už heslo neuvidíte - v Nastavení rodiny ho lze vygenerovat znovu.
+        </p>
+      </div>
+
       <Card className="border-[var(--color-paper-300)] bg-[var(--color-surface)] print:shadow-none">
         <CardContent className="space-y-4 p-7">
           <h3 className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-[var(--color-navy-900)]">
