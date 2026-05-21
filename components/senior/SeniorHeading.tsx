@@ -3,35 +3,28 @@ import { cn } from "@/lib/utils";
 
 type Level = 1 | 2 | 3;
 
-const sizeForLevel: Record<Level, string> = {
-  1: "text-[var(--text-senior-h1)] leading-[var(--leading-tight)]",
-  2: "text-[var(--text-senior-h2)] leading-[var(--leading-snug)]",
-  3: "text-[var(--text-senior-h3)] leading-[var(--leading-snug)]",
-};
-
-const shadowForLevel: Record<Level, string> = {
-  1: "",
-  2: "",
-  3: "",
-};
-
+/**
+ * SeniorHeading — editorial direction.
+ *
+ * Inherits the heading sizes from the `.editorial-senior` scope, so callers
+ * don't have to repeat the clamp() formula. Pass `italic` to opt into the
+ * PP Pangaia italic voice used for the weekly question and similar callouts.
+ */
 export interface SeniorHeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   level?: Level;
+  italic?: boolean;
 }
 
-export function SeniorHeading({ level = 2, className, children, ...props }: SeniorHeadingProps) {
+export function SeniorHeading({
+  level = 2,
+  className,
+  italic = false,
+  children,
+  ...props
+}: SeniorHeadingProps) {
   const Tag = (`h${level}` as unknown) as "h1" | "h2" | "h3";
   return (
-    <Tag
-      className={cn(
-        "font-[family-name:var(--font-display)] font-normal tracking-tight",
-        "text-[var(--color-ink-900)]",
-        sizeForLevel[level],
-        shadowForLevel[level],
-        className,
-      )}
-      {...props}
-    >
+    <Tag className={cn(italic ? "es-question" : "", className)} {...props}>
       {children}
     </Tag>
   );

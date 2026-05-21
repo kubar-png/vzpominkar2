@@ -4,8 +4,6 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Plus, Trash2 } from "lucide-react";
 import { savePhotoMemory } from "@/lib/memories/actions";
-import { SeniorButton } from "@/components/senior/SeniorButton";
-import { SeniorInput, SeniorLabel } from "@/components/senior/SeniorInput";
 
 const MAX_LONG_EDGE = 2560;
 const JPEG_QUALITY = 0.85;
@@ -16,6 +14,13 @@ interface PickedPhoto {
   previewUrl: string;
 }
 
+/**
+ * Photo memory form — editorial reskin.
+ *
+ * Client-side compression and the Server Action upload are untouched.
+ * Only the surface changed: editorial card, gold pill, sepia-frame
+ * previews.
+ */
 export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [photos, setPhotos] = useState<PickedPhoto[]>([]);
@@ -85,8 +90,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
   const hasPhotos = photos.length > 0;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0">
-      {/* Hidden native input - driven by the visible buttons below */}
+    <form onSubmit={onSubmit} className="es-card space-y-7">
       <input
         ref={fileRef}
         id="photo"
@@ -98,98 +102,130 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
         className="sr-only"
       />
 
-      {/* Scrollable content zone */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-        {!hasPhotos ? (
-          <div className="space-y-3">
-            <SeniorLabel htmlFor="photo">Vaše fotky</SeniorLabel>
-            <SeniorButton
-              type="button"
-              variant="primary"
-              size="md"
-              className="w-full"
-              onClick={() => fileRef.current?.click()}
-              disabled={processing}
-            >
-              <Camera size={20} className="-ml-1" aria-hidden />
-              {processing ? "Připravuji…" : "Vyfotit nebo vybrat fotku"}
-            </SeniorButton>
-            <p className="text-sm text-paper-500">
-              Můžete fotku vyfotit hned teď nebo vybrat ze své galerie.
-              Pak můžete přidat další.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <SeniorLabel>Vaše fotky ({photos.length})</SeniorLabel>
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {photos.map((p) => (
-                <li key={p.id} className="relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.previewUrl}
-                    alt="Náhled fotky"
-                    className="aspect-square w-full rounded-[var(--radius-senior-input)] object-cover bg-paper-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(p.id)}
-                    aria-label="Odebrat fotku"
-                    className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white text-red-600 shadow-md hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <SeniorButton
-              type="button"
-              variant="secondary"
-              size="md"
-              className="w-full"
-              onClick={() => fileRef.current?.click()}
-              disabled={processing}
-            >
-              <Plus size={20} className="-ml-1" aria-hidden />
-              {processing ? "Připravuji…" : "Přidat další fotku"}
-            </SeniorButton>
-          </div>
-        )}
+      {!hasPhotos ? (
+        <div className="space-y-4">
+          <label className="es-label" htmlFor="photo">
+            Vaše fotky
+          </label>
 
-        {/* Caption */}
-        <div>
-          <SeniorLabel htmlFor="caption">Krátký popis (volitelný)</SeniorLabel>
-          <SeniorInput
-            id="caption"
-            name="caption"
-            placeholder='Např. "Rok 1962, my u babičky"'
-            maxLength={120}
-          />
-        </div>
-
-        {error && (
-          <p
-            role="alert"
-            className="rounded-[var(--radius-senior-input)] border-2 border-red-200 bg-red-50 p-4 text-[length:var(--text-senior)] text-red-700"
+          {/* Large drop / upload zone */}
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={processing}
+            className="w-full text-center rounded-xl border-2 border-dashed transition-colors hover:bg-white"
+            style={{
+              borderColor: "var(--ink-soft)",
+              background: "rgba(247, 233, 192, 0.35)",
+              padding: "36px 24px",
+              minHeight: 200,
+              cursor: processing ? "not-allowed" : "pointer",
+              opacity: processing ? 0.6 : 1,
+            }}
           >
-            {error}
-          </p>
-        )}
+            <Camera
+              size={40}
+              aria-hidden
+              className="mx-auto mb-3"
+              style={{ color: "var(--ink)" }}
+            />
+            <div
+              className="text-[22px] font-medium mb-1"
+              style={{ color: "var(--ink)", fontFamily: "var(--font-display-editorial)" }}
+            >
+              {processing ? "Připravuji…" : "Vyfotit nebo vybrat fotku"}
+            </div>
+            <p className="text-[16px]" style={{ color: "var(--ink-soft)" }}>
+              Z mobilu, tabletu nebo počítače
+            </p>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-5">
+          <label className="es-label">Vaše fotky ({photos.length})</label>
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {photos.map((p) => (
+              <li key={p.id} className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={p.previewUrl}
+                  alt="Náhled fotky"
+                  className="aspect-square w-full rounded-lg object-cover"
+                  style={{
+                    background: "#fff",
+                    border: "1px solid var(--line)",
+                    boxShadow: "0 4px 12px -4px rgba(14, 59, 100, 0.18)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => removePhoto(p.id)}
+                  aria-label="Odebrat fotku"
+                  className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{
+                    background: "#fff",
+                    color: "var(--oxblood)",
+                    boxShadow: "0 4px 12px rgba(14, 59, 100, 0.2)",
+                  }}
+                >
+                  <Trash2 size={18} />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={processing}
+            className="es-btn es-btn-outline w-full sm:w-auto"
+          >
+            <Plus size={20} aria-hidden />
+            {processing ? "Připravuji…" : "Přidat další fotku"}
+          </button>
+        </div>
+      )}
+
+      {/* Optional caption */}
+      <div>
+        <label className="es-label" htmlFor="caption">
+          Krátký popis (volitelný)
+        </label>
+        <input
+          id="caption"
+          name="caption"
+          type="text"
+          placeholder='Např. „Rok 1962, my u babičky"'
+          maxLength={120}
+          className="es-input"
+        />
       </div>
 
-      {/* Bottom bar - submit always visible */}
-      <div className="shrink-0 flex items-center justify-end px-6 py-2 border-t border-paper-200 bg-paper-50">
-        <SeniorButton type="submit" variant="primary" size="md" disabled={pending || !hasPhotos}>
-          {pending ? "Nahráváme…" : photos.length > 1 ? `Uložit ${photos.length} fotek` : "Uložit fotku"}
-        </SeniorButton>
+      {error && (
+        <div role="alert" className="es-banner es-banner-error">
+          {error}
+        </div>
+      )}
+
+      <div className="flex justify-end pt-2">
+        <button
+          type="submit"
+          disabled={pending || !hasPhotos}
+          className="es-btn es-btn-gold"
+        >
+          {pending
+            ? "Nahráváme…"
+            : photos.length > 1
+              ? `Uložit ${photos.length} fotek`
+              : "Uložit fotku"}
+          {!pending && <span className="arrow" aria-hidden>↗</span>}
+        </button>
       </div>
     </form>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Client-side downscale: phones produce 12+MB photos that take forever to    */
-/* upload on rural Czech LTE. Resize to 2560px on the long edge as JPEG.      */
+/* Client-side downscale — unchanged from the previous version.               */
 /* -------------------------------------------------------------------------- */
 
 async function compressImage(file: File): Promise<File> {

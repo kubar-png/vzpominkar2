@@ -4,13 +4,20 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Play, Pause } from "lucide-react";
 import { saveAudioMemory } from "@/lib/memories/actions";
-import { SeniorButton } from "@/components/senior/SeniorButton";
 
 type Phase = "idle" | "recording" | "review" | "uploading";
 
 const MAX_SECONDS = 600; // 10 min cap
 const COUNTDOWN_FROM = 480; // start showing remaining at 8 min
 
+/**
+ * Audio memory form — editorial reskin.
+ *
+ * The MediaRecorder pipeline, the live-level analyser, codec detection,
+ * upload + Server Action call all stay 1:1 with the previous version.
+ * Only the visual shell changed: oxblood pulsing ring instead of red, big
+ * gold/outline pills instead of the SeniorButton chip set.
+ */
 export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [seconds, setSeconds] = useState(0);
@@ -29,8 +36,6 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
-  // Detect codec support up-front so the user gets a clear message before
-  // they start (instead of a generic mic-permission error mid-flow).
   useEffect(() => {
     setSupported(typeof MediaRecorder !== "undefined" && pickMime() !== null);
   }, []);
@@ -75,7 +80,6 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
         stream.getTracks().forEach((t) => t.stop());
         teardownAnalyser();
       };
-      // Wire a level analyser so the visual indicator reflects real input.
       setupAnalyser(stream);
       recorder.start();
       setPhase("recording");
@@ -101,7 +105,6 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
       let smoothed = 0;
       const tick = () => {
         analyser.getByteTimeDomainData(buf);
-        // RMS over the time-domain samples → 0..1 level
         let sum = 0;
         for (let i = 0; i < buf.length; i++) {
           const v = ((buf[i] ?? 128) - 128) / 128;
@@ -109,7 +112,6 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
         }
         const rms = Math.sqrt(sum / buf.length);
         smoothed = smoothed * 0.85 + rms * 0.15;
-        // Boost so quiet speech still moves the indicator.
         setLevel(Math.min(1, smoothed * 4));
         rafRef.current = requestAnimationFrame(tick);
       };
@@ -163,22 +165,18 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
   const remaining = MAX_SECONDS - seconds;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-
-      {/* Center - context only: instructions, timer, audio preview */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 py-6 text-center">
+    <div className="es-card">
+      <div className="es-rec-stage">
         {phase === "idle" && (
           <>
-            <p className="text-[length:var(--text-senior)] text-paper-600 max-w-xs">
-              Stiskněte tlačítko, mluvte přirozeně, pak stiskněte Hotovo.
+            <p className="text-[19px] text-[var(--ink)] max-w-md">
+              Stiskněte tlačítko níže, vyprávějte přirozeně svým tempem,
+              a až budete hotoví, stiskněte <strong>Hotovo</strong>.
             </p>
             {supported === false && (
-              <p
-                role="alert"
-                className="w-full max-w-sm rounded-[var(--radius-senior-input)] border-2 border-red-200 bg-red-50 p-4 text-[length:var(--text-senior)] text-red-700"
-              >
+              <div role="alert" className="es-banner es-banner-error max-w-md">
                 Váš prohlížeč nepodporuje nahrávání. Otevřete prosím Chrome nebo Safari.
-              </p>
+              </div>
             )}
           </>
         )}
@@ -186,13 +184,13 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
         {phase === "recording" && (
           <>
             <LiveLevelIndicator level={level} />
-            <p className="text-[length:var(--text-senior-h2)] font-mono font-semibold tabular-nums text-navy-900">
+            <div className="es-timer" aria-live="polite">
               {formatTime(seconds)}
-            </p>
-            <p className="text-[length:var(--text-senior-sm)] text-paper-500">
+            </div>
+            <p className="text-[18px] text-[var(--ink-soft)]">
               {seconds >= COUNTDOWN_FROM
-                ? `Zbývá ${formatTime(remaining)} - pak nahrávání samo skončí`
-                : "Nahrávám - mluvte klidně dál"}
+                ? `Zbývá ${formatTime(remaining)} — pak nahrávání samo skončí`
+                : "Nahrávám — mluvte klidně dál"}
             </p>
           </>
         )}
@@ -202,84 +200,94 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
         )}
 
         {phase === "uploading" && (
-          <p className="text-[length:var(--text-senior)] text-paper-600">Nahráváme do bezpečí…</p>
+          <p className="text-[19px] text-[var(--ink-soft)]">
+            Nahráváme do bezpečí…
+          </p>
         )}
 
         {error && (
-          <p
-            role="alert"
-            className="w-full max-w-sm rounded-[var(--radius-senior-input)] border-2 border-red-200 bg-red-50 p-4 text-[length:var(--text-senior)] text-red-700"
-          >
+          <div role="alert" className="es-banner es-banner-error max-w-md">
             {error}
-          </p>
+          </div>
         )}
       </div>
 
-      {/* Fixed bottom bar - always visible, button reflects current phase */}
-      <div className="shrink-0 flex items-center justify-center gap-3 px-6 py-2 border-t border-paper-200 bg-paper-50">
+      {/* Action bar */}
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
         {phase === "idle" && (
-          <SeniorButton
-            variant="accent"
-            size="md"
+          <button
+            type="button"
             onClick={startRecording}
             disabled={supported === false}
+            className="es-btn es-btn-red"
+            aria-label="Začít nahrávat"
           >
-            Začít nahrávat
-          </SeniorButton>
+            Začít nahrávat <span className="arrow" aria-hidden>●</span>
+          </button>
         )}
         {phase === "recording" && (
-          <SeniorButton variant="primary" size="md" onClick={stopRecording}>
-            Hotovo
-          </SeniorButton>
+          <button
+            type="button"
+            onClick={stopRecording}
+            className="es-btn es-btn-gold"
+            aria-label="Ukončit nahrávání"
+          >
+            Hotovo <span className="arrow" aria-hidden>↗</span>
+          </button>
         )}
         {phase === "review" && (
           <>
-            <SeniorButton variant="secondary" size="md" onClick={reset} disabled={pending}>
+            <button
+              type="button"
+              onClick={reset}
+              disabled={pending}
+              className="es-btn es-btn-outline"
+            >
               Začít znovu
-            </SeniorButton>
-            <SeniorButton variant="primary" size="md" onClick={save} disabled={pending}>
-              {pending ? "Ukládáme…" : "Uložit vzpomínku"}
-            </SeniorButton>
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              disabled={pending}
+              className="es-btn es-btn-gold"
+            >
+              {pending ? "Ukládám…" : "Uložit vzpomínku"}
+              <span className="arrow" aria-hidden>↗</span>
+            </button>
           </>
         )}
         {phase === "uploading" && (
-          <SeniorButton variant="primary" size="md" disabled>
+          <button type="button" disabled className="es-btn es-btn-gold">
             Nahráváme…
-          </SeniorButton>
+          </button>
         )}
       </div>
-
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Live mic-level indicator: pulses match real input, not just elapsed time   */
+/* Live mic-level indicator: oxblood ring that grows with the speaker's voice.*/
 /* -------------------------------------------------------------------------- */
 
 function LiveLevelIndicator({ level }: { level: number }) {
-  // Outer ring scales with level (1.0 → 1.6×); inner pulse always animates.
-  const scale = 1 + level * 0.6;
-  const ringOpacity = 0.15 + level * 0.45;
+  const scale = 1 + level * 0.5;
+  const haloOpacity = 0.15 + level * 0.35;
   return (
-    <div className="relative flex h-32 w-32 items-center justify-center">
+    <div className="es-rec-ring" role="img" aria-label="Nahrávám">
       <span
+        className="es-rec-ring-halo"
+        style={{ transform: `scale(${scale})`, opacity: haloOpacity }}
         aria-hidden
-        className="absolute inset-0 rounded-full bg-red-500 transition-transform duration-100 ease-out"
-        style={{ transform: `scale(${scale})`, opacity: ringOpacity }}
       />
-      <span className="absolute inset-4 animate-ping rounded-full bg-red-500/30 [animation-delay:300ms]" />
-      <span
-        className="relative h-16 w-16 rounded-full bg-red-600 shadow-[var(--shadow-xl)]"
-        aria-label="Nahrávám"
-        role="img"
-      />
+      <span className="es-rec-ring-pulse" aria-hidden />
+      <span className="es-rec-dot" aria-hidden />
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Custom large audio player - bigger play/pause + scrub than native controls */
+/* Custom large audio player for the review phase.                            */
 /* -------------------------------------------------------------------------- */
 
 function BigAudioPlayer({ src, duration }: { src: string; duration: number }) {
@@ -325,31 +333,42 @@ function BigAudioPlayer({ src, duration }: { src: string; duration: number }) {
   const pct = Math.min(100, (pos / total) * 100);
 
   return (
-    <div className="w-full max-w-sm space-y-4">
-      <p className="text-[length:var(--text-senior)] text-paper-600">
+    <div className="w-full max-w-md">
+      <p className="text-[18px] text-[var(--ink-soft)] mb-4 text-center">
         Poslechněte si nahrávku:
       </p>
 
-      <div className="flex items-center gap-4 rounded-[var(--radius-senior-input)] border-2 border-paper-300 bg-white p-4">
+      <div
+        className="flex items-center gap-4 rounded-xl border-2 p-4"
+        style={{ borderColor: "var(--line-2)", background: "#fff" }}
+      >
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? "Pozastavit" : "Přehrát"}
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-navy-900 text-white transition-colors hover:bg-navy-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
+          style={{ background: "var(--ink)", color: "var(--gold)" }}
         >
           {playing ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
         </button>
         <div className="flex-1 space-y-2">
           <div
-            className="h-2 w-full overflow-hidden rounded-full bg-paper-200"
+            className="h-2 w-full overflow-hidden rounded-full"
+            style={{ background: "var(--bg-soft)" }}
             role="progressbar"
             aria-valuenow={Math.round(pct)}
             aria-valuemin={0}
             aria-valuemax={100}
           >
-            <div className="h-full bg-navy-700 transition-[width] duration-100" style={{ width: `${pct}%` }} />
+            <div
+              className="h-full transition-[width] duration-100"
+              style={{ width: `${pct}%`, background: "var(--ink)" }}
+            />
           </div>
-          <p className="text-sm font-mono tabular-nums text-paper-500">
+          <p
+            className="font-mono tabular-nums text-[15px]"
+            style={{ color: "var(--ink-mute)" }}
+          >
             {formatTime(Math.round(pos))} / {formatTime(actualDuration)}
           </p>
         </div>

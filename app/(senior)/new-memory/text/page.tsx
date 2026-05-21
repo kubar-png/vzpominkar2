@@ -3,11 +3,16 @@ import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAssignmentContext } from "@/lib/memories/server";
-import { SeniorHeading } from "@/components/senior/SeniorHeading";
 import { TextMemoryForm } from "./text-form";
 
 export const metadata: Metadata = { title: "Napsat odpověď" };
 
+/**
+ * Text answer page — editorial direction.
+ *
+ * Back link + eyebrow + PP Pangaia italic question on top, then the large
+ * cream textarea inside an editorial card. Autosave logic is unchanged.
+ */
 export default async function NewTextMemoryPage({
   searchParams,
 }: {
@@ -32,31 +37,25 @@ export default async function NewTextMemoryPage({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Top strip - question + back link */}
-      <div className="shrink-0 px-6 pt-4 pb-3 border-b border-paper-200 bg-paper-50">
-        <Link
-          href="/home"
-          className="inline-flex items-center gap-1.5 text-sm text-paper-500 hover:text-navy-900 mb-2 transition-colors"
-        >
-          ← Zpět na hlavní stránku
+    <div className="pt-10 sm:pt-14 pb-10">
+      <div className="mb-8">
+        <Link href="/home" className="es-back-link">
+          <span aria-hidden>←</span> Zpět
         </Link>
-        {ctx ? (
-          <>
-            <p className="text-xs font-semibold uppercase tracking-widest text-paper-500 mb-1">
-              Vaše otázka
-            </p>
-            <SeniorHeading level={3}>
-              {ctx.question}
-            </SeniorHeading>
-          </>
-        ) : (
-          <SeniorHeading level={3}>Napsat vzpomínku</SeniorHeading>
-        )}
-        <div className="mt-2 h-px bg-gradient-to-r from-gold-400 via-gold-300 to-transparent opacity-60" />
       </div>
 
-      {/* Form fills the remaining height - button pinned at bottom inside */}
+      <header className="mb-8">
+        {ctx ? (
+          <>
+            <span className="es-eyebrow">Vaše otázka</span>
+            <h2 className="es-question">{ctx.question}</h2>
+          </>
+        ) : (
+          <h2 className="es-question">Napsat vzpomínku.</h2>
+        )}
+        <div className="es-rule-gold" />
+      </header>
+
       <TextMemoryForm
         assignmentId={ctx?.assignmentId ?? null}
         draft={draft}

@@ -1,6 +1,11 @@
 import Link from "next/link";
-import { SeniorHeading } from "./SeniorHeading";
 
+/**
+ * PromptHeader — editorial direction.
+ *
+ * Back link + eyebrow + PP Pangaia italic question. Used by any senior
+ * subpage that wants the homepage-style question banner.
+ */
 export function PromptHeader({
   question,
   hint,
@@ -9,16 +14,20 @@ export function PromptHeader({
   hint?: string;
 }) {
   return (
-    <div className="space-y-3">
-      <Link
-        href="/home"
-        className="inline-flex items-center gap-2 text-[var(--text-senior-sm)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-      >
-        ← Zpět
-      </Link>
-      <p className="text-[var(--text-senior)] text-[var(--color-text-muted)]">Otázka:</p>
-      <SeniorHeading level={2}>{question}</SeniorHeading>
-      {hint ? <p className="text-[var(--text-senior)]">{hint}</p> : null}
-    </div>
+    <header className="mb-8">
+      <div className="mb-6">
+        <Link href="/home" className="es-back-link">
+          <span aria-hidden>←</span> Zpět
+        </Link>
+      </div>
+      <span className="es-eyebrow">Vaše otázka</span>
+      <h2 className="es-question">{question}</h2>
+      {hint ? (
+        <p className="mt-4 text-[19px] text-[var(--ink-soft)] leading-relaxed">
+          {hint}
+        </p>
+      ) : null}
+      <div className="es-rule-gold" />
+    </header>
   );
 }

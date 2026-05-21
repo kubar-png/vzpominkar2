@@ -1567,6 +1567,544 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .gallery-grid { grid-template-columns: 1fr; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Senior surface — editorial language, AAA contrast, huge hit targets
+ *
+ * Wraps the (senior) route group via <div class="editorial-senior"> applied
+ * on /app/(senior)/layout.tsx. Uses the same cream/navy/gold/oxblood palette
+ * as the marketing homepage, the same PP Pangaia + Instrument Sans pairing,
+ * but with bigger body type (20–22px min), bigger headings (28–44px), and
+ * generous tap targets (≥ 64px). No animation distractions, no decorative
+ * background flourishes — the focus is the question and the action.
+ * ─────────────────────────────────────────────────────────────────────── */
+.editorial-senior {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body-editorial);
+  font-size: 20px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+.editorial-senior a { color: inherit; text-decoration: none; }
+.editorial-senior img, .editorial-senior svg { display: block; max-width: 100%; }
+.editorial-senior p {
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.editorial-senior h1,
+.editorial-senior h2,
+.editorial-senior h3,
+.editorial-senior h4 {
+  font-family: var(--font-display-editorial);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.editorial-senior h1 { font-size: clamp(34px, 5.2vw, 48px); line-height: 1.08; }
+/* The weekly question — bigger, italic, slightly tighter leading. */
+.editorial-senior h2 { font-size: clamp(30px, 4.4vw, 44px); line-height: 1.1; }
+.editorial-senior h3 { font-size: clamp(24px, 3vw, 30px); line-height: 1.15; }
+.editorial-senior h4 { font-size: clamp(20px, 2.2vw, 24px); line-height: 1.2; }
+
+/* Eyebrow — same small-caps used on the homepage, slightly larger so
+ * senior eyes can read it. 13px (vs 11px on marketing) is the smallest
+ * type we allow on this surface. */
+.editorial-senior .es-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+/* PP Pangaia italic for the question itself — the editorial signature move. */
+.editorial-senior .es-question {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.012em;
+  line-height: 1.12;
+}
+
+/* Container — narrower than marketing so reading isn't a chore. */
+.editorial-senior .es-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ─── Buttons (large hit targets, AAA contrast) ─────────────────────────── */
+.editorial-senior .es-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 68px;
+  padding: 18px 28px 18px 32px;
+  border-radius: 999px;
+  font-family: var(--font-body-editorial);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+  text-align: center;
+}
+.editorial-senior .es-btn:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+.editorial-senior .es-btn .arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  background: var(--ink);
+  color: var(--gold);
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Gold pill — primary CTA. Navy ink on gold = ~9:1 contrast (AAA). */
+.editorial-senior .es-btn-gold {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+.editorial-senior .es-btn-gold:hover {
+  background: var(--gold-soft);
+  border-color: var(--gold-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(14, 59, 100, 0.14);
+}
+
+/* Outline — secondary. Navy on cream = ~10:1 (AAA). */
+.editorial-senior .es-btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.editorial-senior .es-btn-outline:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+.editorial-senior .es-btn-outline .arrow { background: var(--ink); color: var(--bg); }
+.editorial-senior .es-btn-outline:hover .arrow { background: var(--bg); color: var(--ink); }
+
+/* Dark — used inside paper cards for low-emphasis confirmations. */
+.editorial-senior .es-btn-dark {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.editorial-senior .es-btn-dark:hover { background: #082443; }
+.editorial-senior .es-btn-dark .arrow { background: var(--gold); color: var(--ink); }
+
+/* Oxblood — only for "start recording" / urgent actions. White on oxblood =
+ * 8.6:1 (AAA). */
+.editorial-senior .es-btn-red {
+  background: var(--oxblood);
+  color: #fff;
+  border-color: var(--oxblood);
+}
+.editorial-senior .es-btn-red:hover {
+  background: #8a1c19;
+  border-color: #8a1c19;
+}
+.editorial-senior .es-btn-red .arrow { background: #fff; color: var(--oxblood); }
+
+.editorial-senior .es-btn[disabled],
+.editorial-senior .es-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Arrow-link — for back navigation, "see all" links. Underlined navy with
+ * ↗ for forward, ← for back. */
+.editorial-senior .es-arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display-editorial);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-2);
+  transition: gap 0.2s, border-color 0.2s;
+  min-height: 44px;
+}
+.editorial-senior .es-arrow-link:hover { gap: 16px; border-color: var(--ink); }
+
+.editorial-senior .es-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body-editorial);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  padding: 8px 4px;
+  min-height: 44px;
+  transition: color 0.2s;
+}
+.editorial-senior .es-back-link:hover { color: var(--ink); }
+
+/* ─── Header ─── */
+.editorial-senior .es-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(244, 235, 214, 0.92);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.editorial-senior .es-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 18px 24px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+/* Wordmark with gold underline — mirrors the marketing logo treatment. */
+.editorial-senior .es-logo {
+  font-family: var(--font-display-editorial);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.018em;
+  position: relative;
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+.editorial-senior .es-logo::before {
+  content: '';
+  position: absolute;
+  inset: auto 6px 8px 6px;
+  height: 38%;
+  background: var(--gold-soft);
+  z-index: -1;
+  border-radius: 1px;
+}
+
+/* ─── Cards ─── */
+.editorial-senior .es-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px 28px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 12px 28px -16px rgba(14, 59, 100, 0.18),
+    0 2px 6px -2px rgba(14, 59, 100, 0.08);
+}
+@media (min-width: 640px) {
+  .editorial-senior .es-card { padding: 40px 36px; }
+}
+
+/* Soft gold rule used inside cards for separation. */
+.editorial-senior .es-rule-gold {
+  height: 1px;
+  background: linear-gradient(to right, var(--gold) 0%, var(--gold-soft) 40%, transparent 100%);
+  opacity: 0.6;
+  margin: 20px 0;
+}
+.editorial-senior .es-rule {
+  height: 1px;
+  background: var(--line);
+  margin: 24px 0;
+}
+
+/* Big action card — used on /home for the three answer methods. */
+.editorial-senior .es-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  min-height: 88px;
+  padding: 20px 28px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 1.5px solid var(--line-2);
+  color: var(--ink);
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  cursor: pointer;
+  font-family: var(--font-body-editorial);
+}
+.editorial-senior .es-action:hover {
+  border-color: var(--ink);
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -16px rgba(14, 59, 100, 0.22);
+}
+.editorial-senior .es-action:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+.editorial-senior .es-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 26px;
+  font-weight: 500;
+}
+.editorial-senior .es-action-icon.tone-gold  { background: var(--gold);    color: var(--ink); }
+.editorial-senior .es-action-icon.tone-navy  { background: var(--ink);     color: var(--gold); }
+.editorial-senior .es-action-icon.tone-paper { background: #fff;           color: var(--ink); border: 1.5px solid var(--ink); }
+.editorial-senior .es-action-body { flex: 1; min-width: 0; }
+.editorial-senior .es-action-title {
+  font-family: var(--font-display-editorial);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+}
+.editorial-senior .es-action-meta {
+  font-size: 16px;
+  color: var(--ink-mute);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+.editorial-senior .es-action-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.editorial-senior .es-action:hover .es-action-arrow {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* ─── Inputs / Textarea ─── */
+.editorial-senior .es-input,
+.editorial-senior .es-textarea {
+  width: 100%;
+  min-height: 64px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid var(--line-2);
+  color: var(--ink);
+  font-family: var(--font-body-editorial);
+  font-size: 20px;
+  line-height: 1.5;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.editorial-senior .es-textarea {
+  min-height: 240px;
+  resize: vertical;
+  line-height: 1.6;
+}
+.editorial-senior .es-input::placeholder,
+.editorial-senior .es-textarea::placeholder {
+  color: var(--ink-mute);
+  opacity: 0.6;
+}
+.editorial-senior .es-input:focus,
+.editorial-senior .es-textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(14, 59, 100, 0.12);
+}
+.editorial-senior .es-input.invalid,
+.editorial-senior .es-textarea.invalid {
+  border-color: var(--oxblood);
+}
+.editorial-senior .es-label {
+  display: block;
+  font-family: var(--font-body-editorial);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+/* Status pills (autosave indicator, success/error). */
+.editorial-senior .es-status {
+  font-size: 17px;
+  color: var(--ink-mute);
+}
+.editorial-senior .es-status-error {
+  color: var(--oxblood);
+  font-weight: 500;
+}
+.editorial-senior .es-banner {
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+.editorial-senior .es-banner-error {
+  background: rgba(168, 35, 31, 0.06);
+  border: 1.5px solid rgba(168, 35, 31, 0.4);
+  color: var(--oxblood);
+}
+.editorial-senior .es-banner-success {
+  background: rgba(212, 160, 23, 0.10);
+  border: 1.5px solid rgba(212, 160, 23, 0.45);
+  color: var(--ink);
+}
+
+/* ─── Audio recording UI ─── */
+.editorial-senior .es-rec-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+}
+.editorial-senior .es-rec-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 168px;
+  height: 168px;
+}
+.editorial-senior .es-rec-ring-pulse,
+.editorial-senior .es-rec-ring-halo {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--oxblood);
+}
+.editorial-senior .es-rec-ring-halo {
+  inset: 0;
+  opacity: 0.18;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+.editorial-senior .es-rec-ring-pulse {
+  inset: 32px;
+  opacity: 0.32;
+  animation: es-pulse 1.6s ease-in-out infinite;
+}
+.editorial-senior .es-rec-dot {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--oxblood);
+  box-shadow: 0 14px 32px -8px rgba(168, 35, 31, 0.5);
+}
+@keyframes es-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.32; }
+  50%      { transform: scale(1.18); opacity: 0.10; }
+}
+.editorial-senior .es-timer {
+  font-family: var(--font-display-editorial);
+  font-size: clamp(44px, 8vw, 64px);
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+/* Memory list — date eyebrow + question quote + content. */
+.editorial-senior .es-memory {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 28px 26px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 10px 28px -18px rgba(14, 59, 100, 0.20),
+    0 2px 4px -2px rgba(14, 59, 100, 0.06);
+}
+.editorial-senior .es-memory-date {
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-700, #54441e);
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.editorial-senior .es-memory-q {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+.editorial-senior .es-memory-title {
+  font-family: var(--font-display-editorial);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.012em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+.editorial-senior .es-memory-text {
+  font-family: var(--font-body-editorial);
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-line;
+}
+.editorial-senior .es-memory-photo {
+  width: 100%;
+  margin-top: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+/* Reduced-motion respect: kill the recording pulse for motion-sensitive users. */
+@media (prefers-reduced-motion: reduce) {
+  .editorial-senior .es-rec-ring-pulse { animation: none; opacity: 0.22; }
+}
+
+@media (max-width: 540px) {
+  .editorial-senior { font-size: 19px; }
+  .editorial-senior p { font-size: 19px; }
+  .editorial-senior .es-action { padding: 18px 20px; min-height: 80px; }
+  .editorial-senior .es-action-title { font-size: 22px; }
+  .editorial-senior .es-action-icon { width: 48px; height: 48px; font-size: 22px; }
+  .editorial-senior .es-card { padding: 26px 22px; }
+  .editorial-senior .es-memory { padding: 22px 20px; }
+  .editorial-senior .es-rec-ring { width: 144px; height: 144px; }
+  .editorial-senior .es-rec-ring-pulse { inset: 26px; }
+  .editorial-senior .es-rec-dot { width: 72px; height: 72px; }
+  .editorial-senior .es-header-inner { padding: 14px 18px 12px; }
+  .editorial-senior .es-logo { font-size: 22px; }
+}
+
 /* ─── Auth pages (login, signup, check-email) ──────────────────────────────
  * Centered editorial card on cream background. Owner auth surface.
  * Senior login has its own split layout below.
