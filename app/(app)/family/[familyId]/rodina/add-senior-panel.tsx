@@ -89,6 +89,22 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
           </CardContent>
         </Card>
 
+        {/* "Show once" gold alert */}
+        <div className="rounded-[var(--radius-md)] border border-[var(--color-gold-300)] bg-[var(--color-gold-50)] p-4 print:hidden">
+          <div className="flex items-center gap-2">
+            <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
+              <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-500)" strokeWidth="1" />
+            </svg>
+            <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-gold-600)]">
+              Heslo se zobrazí jen jednou
+            </span>
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text)]">
+            Opište si přihlašovací údaje nebo lísteček vytiskněte. Po zavření už heslo
+            neuvidíte - lze ho však kdykoliv vygenerovat znovu.
+          </p>
+        </div>
+
         <Card className="border-[var(--color-paper-300)] bg-[var(--color-surface)]">
           <CardContent className="space-y-4 p-6">
             <h4 className="font-[family-name:var(--font-display)] text-xl tracking-tight text-[var(--color-navy-900)]">
