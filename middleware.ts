@@ -56,6 +56,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  // Run middleware on the Node.js runtime — @supabase/ssr uses Node built-ins
+  // (cookie parser, etc.) that aren't fully polyfilled in Edge. On Next 15.x
+  // the default Edge runtime fails with `__dirname is not defined` for this
+  // dep tree, so we opt into Node explicitly.
+  runtime: "nodejs",
   matcher: [
     /*
      * Run on every path except:
