@@ -2,8 +2,6 @@
 
 import { useActionState } from "react";
 import { signInSenior, type ActionResult } from "@/lib/auth/actions";
-import { SeniorButton } from "@/components/senior/SeniorButton";
-import { SeniorInput, SeniorLabel } from "@/components/senior/SeniorInput";
 
 export function SeniorLoginForm() {
   const [state, formAction, pending] = useActionState<ActionResult | null, FormData>(
@@ -12,10 +10,10 @@ export function SeniorLoginForm() {
   );
 
   return (
-    <form action={formAction} className="space-y-6">
-      <div>
-        <SeniorLabel htmlFor="username">Uživatelské jméno</SeniorLabel>
-        <SeniorInput
+    <form action={formAction} className="auth-form">
+      <div className="auth-field">
+        <label htmlFor="username">Uživatelské jméno</label>
+        <input
           id="username"
           name="username"
           autoComplete="username"
@@ -26,9 +24,9 @@ export function SeniorLoginForm() {
         />
       </div>
 
-      <div>
-        <SeniorLabel htmlFor="password">Heslo</SeniorLabel>
-        <SeniorInput
+      <div className="auth-field">
+        <label htmlFor="password">Heslo</label>
+        <input
           id="password"
           name="password"
           type="password"
@@ -38,25 +36,17 @@ export function SeniorLoginForm() {
       </div>
 
       {state?.ok === false ? (
-        <p
-          role="alert"
-          className="rounded-[var(--radius-senior-input)] border-2 border-[var(--color-red-200)] bg-[var(--color-red-50)] p-4 text-[var(--text-senior)] text-[var(--color-red-700)]"
-        >
+        <p role="alert" className="auth-alert">
           {state.error}
         </p>
       ) : null}
 
-      <div className="pt-2">
-        <SeniorButton
-          type="submit"
-          size="xl"
-          block
-          disabled={pending}
-          className="btn-ribbon pr-10 bg-[var(--color-navy-800)] text-[var(--color-paper-50)] hover:bg-[var(--color-gold-400)] hover:text-[var(--color-navy-900)] hover:shadow-none"
-        >
-          {pending ? "Přihlašujeme…" : "Přihlásit se"}
-        </SeniorButton>
-      </div>
+      <button type="submit" className="auth-submit" disabled={pending}>
+        {pending ? "Přihlašujeme…" : "Přihlásit se"}
+        <span className="arrow" aria-hidden>
+          ↗
+        </span>
+      </button>
     </form>
   );
 }

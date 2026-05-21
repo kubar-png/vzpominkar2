@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { SeniorButton } from "@/components/senior/SeniorButton";
-import { SeniorHeading } from "@/components/senior/SeniorHeading";
 
 export default function SeniorError({
   error,
@@ -17,13 +15,14 @@ export default function SeniorError({
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-6 text-center">
-      <SeniorHeading level={2}>Něco se nepovedlo.</SeniorHeading>
-      <p className="text-[length:var(--text-senior)] text-paper-600 max-w-md">
+      <span className="es-eyebrow">Chyba</span>
+      <h2 className="es-question">Něco se nepovedlo.</h2>
+      <p className="text-[19px] text-[var(--ink-soft)] max-w-md">
         Zkuste to prosím ještě jednou. Pokud chyba zůstane, zavolejte rodině.
       </p>
-      <SeniorButton variant="primary" size="md" onClick={reset}>
-        Zkusit znovu
-      </SeniorButton>
+      <button type="button" onClick={reset} className="es-btn es-btn-gold">
+        Zkusit znovu <span className="arrow" aria-hidden>↗</span>
+      </button>
     </div>
   );
 }

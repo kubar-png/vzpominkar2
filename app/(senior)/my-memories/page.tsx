@@ -2,13 +2,18 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SeniorCard } from "@/components/senior/SeniorCard";
-import { SeniorHeading } from "@/components/senior/SeniorHeading";
-import { seniorButtonVariants } from "@/components/senior/SeniorButton";
 import { MemoryItem } from "./memory-item";
 
 export const metadata: Metadata = { title: "Moje vzpomínky" };
 
+/**
+ * Senior archive — editorial direction.
+ *
+ * Chronological list of published memories. Each entry shows the date in
+ * small-caps eyebrow, the original question in PP Pangaia italic, then the
+ * memory body (audio player, text, photos). Audio uses the same signed-URL
+ * batch the legacy version did.
+ */
 export default async function MyMemoriesPage({
   searchParams,
 }: {
@@ -40,7 +45,6 @@ export default async function MyMemoriesPage({
 
   const list = memories ?? [];
 
-  // Resolve attachments + signed URLs in one bulk roundtrip.
   const ids = list.map((m) => m.id);
   const { data: attachments } = ids.length
     ? await supabase
@@ -68,7 +72,6 @@ export default async function MyMemoriesPage({
     attachmentByMemory.set(a.memory_id, list);
   }
 
-  // Sign URLs for audio + attachments (15 min)
   const audioPaths = list.flatMap((m) => (m.audio_path ? [m.audio_path] : []));
   const signedAudioUrls = await batchSign(supabase, "memory-audio", audioPaths);
 
@@ -81,32 +84,33 @@ export default async function MyMemoriesPage({
   }
 
   return (
-    <div className="space-y-8">
-      {params.saved ? (
-        <p
-          role="status"
-          className="rounded-[var(--radius-senior-input)] bg-[var(--color-navy-50)] border-2 border-[var(--color-navy-200)] p-4 text-[var(--text-senior)]"
-        >
-          Hotovo. Vaše vzpomínka je uložena.
-        </p>
-      ) : null}
-
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <SeniorHeading level={1}>Moje vzpomínky</SeniorHeading>
-        <Link
-          href="/home"
-          className={seniorButtonVariants({ variant: "secondary", size: "md" })}
-        >
-          ← Domů
+    <div className="pb-10">
+      {/* Header strip */}
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="es-eyebrow">Archiv</span>
+          <h1>Moje vzpomínky</h1>
+        </div>
+        <Link href="/home" className="es-btn es-btn-outline">
+          <span aria-hidden>←</span> Domů
         </Link>
       </div>
 
+      {params.saved ? (
+        <div role="status" className="es-banner es-banner-success mb-8">
+          Hotovo. Vaše vzpomínka je uložena.
+        </div>
+      ) : null}
+
       {list.length === 0 ? (
-        <SeniorCard>
-          <p className="text-[var(--text-senior)]">
-            Zatím nemáte žádnou uloženou vzpomínku. Až odpovíte na první otázku, najdete ji tady.
+        <div className="es-card">
+          <span className="es-eyebrow">Zatím prázdno</span>
+          <h2 className="es-question mb-4">Tady se objeví, co vyprávíte.</h2>
+          <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
+            Až odpovíte na první otázku, najdete ji tady — i nahrávku, i text,
+            i fotky. Všechno na jednom místě, chronologicky.
           </p>
-        </SeniorCard>
+        </div>
       ) : (
         <div className="space-y-6">
           {list.map((m) => (

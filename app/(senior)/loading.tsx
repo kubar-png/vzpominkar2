@@ -6,9 +6,13 @@ export default function SeniorLoading() {
     >
       <div
         aria-hidden
-        className="h-14 w-14 animate-spin rounded-full border-4 border-[var(--color-paper-300)] border-t-[var(--color-navy-800)]"
+        className="h-14 w-14 animate-spin rounded-full"
+        style={{
+          border: "4px solid rgba(14, 59, 100, 0.15)",
+          borderTopColor: "var(--ink)",
+        }}
       />
-      <p className="text-[length:var(--text-senior)] text-paper-600">
+      <p className="text-[19px]" style={{ color: "var(--ink-soft)" }}>
         Otevírám Vzpomínkář…
       </p>
     </div>

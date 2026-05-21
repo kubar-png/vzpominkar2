@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveTextMemory } from "@/lib/memories/actions";
-import { SeniorButton } from "@/components/senior/SeniorButton";
 
 const AUTOSAVE_INTERVAL_MS = 5_000;
 
@@ -13,6 +12,13 @@ type SaveStatus =
   | { kind: "saved"; at: Date }
   | { kind: "error"; message: string };
 
+/**
+ * Text memory form — editorial reskin.
+ *
+ * Behaviour is unchanged: every 5s, if the draft has at least 5 trimmed
+ * chars, we POST to saveTextMemory with finalize=0. "Hotovo, uložit"
+ * triggers finalize=1 and redirects to /my-memories?saved=1.
+ */
 export function TextMemoryForm({
   assignmentId,
   draft,
@@ -73,54 +79,45 @@ export function TextMemoryForm({
   }
 
   return (
-    /* flex-1 so this fills the remaining height left by the question strip */
-    <div className="flex flex-col flex-1 min-h-0">
-      {/* Textarea stretches to fill all available space */}
-      <div className="flex-1 min-h-0 px-6 pt-5">
-        <textarea
-          autoFocus
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            if (validationError && e.target.value.trim().length >= 5) {
-              setValidationError(false);
-            }
-          }}
-          placeholder="Začněte psát…"
-          className={[
-            "h-full w-full resize-none",
-            "px-5 py-4",
-            "rounded-[var(--radius-senior-input)]",
-            "bg-white border-2",
-            validationError ? "border-red-400" : "border-paper-300",
-            "text-[length:var(--text-senior-lg)] leading-relaxed text-ink-900",
-            "placeholder:text-paper-400",
-            "focus-visible:border-navy-500 focus-visible:outline-none",
-            "transition-colors duration-[var(--duration-senior)]",
-          ].join(" ")}
-          aria-invalid={validationError}
-        />
-      </div>
+    <div className="es-card">
+      <label className="es-label" htmlFor="memory-text">
+        Vaše odpověď
+      </label>
+      <textarea
+        id="memory-text"
+        autoFocus
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (validationError && e.target.value.trim().length >= 5) {
+            setValidationError(false);
+          }
+        }}
+        placeholder="Začněte psát svou vzpomínku — nemusíte spěchat, ukládá se průběžně…"
+        aria-invalid={validationError}
+        className={["es-textarea", validationError ? "invalid" : ""].join(" ")}
+      />
 
-      {/* Bottom bar - status hint + save button, always visible */}
-      <div className="shrink-0 flex items-center justify-between gap-4 px-6 py-2 border-t border-paper-200 bg-paper-50">
+      <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <p
           aria-live="polite"
-          className={[
-            "text-sm truncate",
-            status.kind === "error" ? "text-red-700 font-medium" : "text-paper-500",
-          ].join(" ")}
+          className={
+            status.kind === "error"
+              ? "es-status es-status-error"
+              : "es-status"
+          }
         >
           {renderStatus(status)}
         </p>
-        <SeniorButton
-          variant="primary"
-          size="md"
+        <button
+          type="button"
           disabled={pending}
           onClick={onFinalize}
+          className="es-btn es-btn-gold"
         >
           {pending ? "Ukládám…" : "Hotovo, uložit"}
-        </SeniorButton>
+          {!pending && <span className="arrow" aria-hidden>↗</span>}
+        </button>
       </div>
     </div>
   );
@@ -133,7 +130,7 @@ function renderStatus(s: SaveStatus): string {
     case "saving":
       return "Ukládám…";
     case "saved":
-      return `Uloženo ${formatTime(s.at)}`;
+      return `Uloženo v ${formatTime(s.at)}`;
     case "error":
       return s.message;
   }

@@ -3,55 +3,40 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * SeniorButton - homepage colour rhythm (navy↔gold↔red) in a large, rounded,
- * touch-friendly shell. No chevron - just generous padding and clear contrast.
+ * SeniorButton — editorial direction.
  *
- *   accent   = heritage-red  → gold on hover → navy on active  (audio CTA)
- *   primary  = navy-900      → gold on hover → red on active   (text CTA)
- *   secondary = paper-200    → gold on hover → red on active   (photo / ghost CTA)
+ * Wraps the `.es-btn` family from globals.css `.editorial-senior` scope so
+ * any caller inside the (senior) tree gets the editorial gold/outline/dark
+ * pills with consistent 64–80px hit targets and AAA contrast.
+ *
+ * Variant mapping:
+ *   primary   = gold pill (navy ink on antique gold, ~9:1 contrast — AAA)
+ *   accent    = oxblood pill (white on deep red, ~8.6:1 contrast — AAA)
+ *   secondary = outline (navy on cream, ~10:1 — AAA)
+ *   ghost     = transparent / subtle (for "Odhlásit" inside the header)
  */
-const seniorButtonVariants = cva(
-  cn(
-    "inline-flex items-center justify-center gap-3",
-    "font-[family-name:var(--font-display)] font-semibold leading-none",
-    "rounded-[var(--radius-senior-button)]",
-    "transition-[background-color,color,box-shadow] duration-[var(--duration-senior)] ease-[var(--ease-out-quart)]",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-navy-500)]",
-    "disabled:opacity-60 disabled:cursor-not-allowed",
-    "select-none",
-  ),
-  {
-    variants: {
-      variant: {
-        primary:
-          "bg-navy-900 !text-white shadow-[var(--shadow-md)] " +
-          "hover:bg-gold-400 hover:!text-navy-900 hover:shadow-[var(--shadow-lg)] " +
-          "active:bg-red-700 active:!text-white active:translate-y-px active:shadow-[var(--shadow-sm)]",
-        accent:
-          "bg-red-700 !text-white shadow-[var(--shadow-md)] " +
-          "hover:bg-gold-400 hover:!text-navy-900 hover:shadow-[var(--shadow-lg)] " +
-          "active:bg-navy-900 active:!text-white active:translate-y-px active:shadow-[var(--shadow-sm)]",
-        secondary:
-          "bg-paper-200 !text-navy-900 border-2 border-navy-700 " +
-          "hover:bg-gold-400 hover:!text-navy-900 hover:border-gold-400 " +
-          "active:bg-red-700 active:!text-white active:border-red-700 active:translate-y-px",
-        ghost:
-          "bg-transparent !text-paper-300 border-2 border-paper-600 " +
-          "hover:bg-navy-800 hover:!text-paper-100 hover:border-paper-400",
-      },
-      size: {
-        md: "min-h-[60px] px-7 text-[var(--text-senior)]",
-        lg: "min-h-[72px] px-9 text-[var(--text-senior-lg)]",
-        xl: "min-h-[88px] px-12 text-[var(--text-senior-h3)]",
-      },
-      block: {
-        true: "w-full",
-        false: "",
-      },
+const seniorButtonVariants = cva("es-btn", {
+  variants: {
+    variant: {
+      primary: "es-btn-gold",
+      accent: "es-btn-red",
+      secondary: "es-btn-outline",
+      ghost: "es-btn-outline",
     },
-    defaultVariants: { variant: "primary", size: "lg", block: false },
+    size: {
+      // The editorial pill is already 68px tall by default; modifiers below
+      // tweak padding/text size for context.
+      md: "",
+      lg: "text-[22px] min-h-[76px] px-9",
+      xl: "text-[24px] min-h-[88px] px-12",
+    },
+    block: {
+      true: "w-full",
+      false: "",
+    },
   },
-);
+  defaultVariants: { variant: "primary", size: "md", block: false },
+});
 
 export interface SeniorButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

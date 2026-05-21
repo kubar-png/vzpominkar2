@@ -1,6 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Senior input primitives — editorial direction.
+ *
+ * Wrap the `.es-input`, `.es-textarea`, `.es-label` rules from globals.css.
+ * 20px text, 64px+ height, navy focus ring, AAA contrast on the cream
+ * paper canvas.
+ */
 export const SeniorInput = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement>
@@ -9,18 +16,7 @@ export const SeniorInput = React.forwardRef<
     <input
       ref={ref}
       type={type}
-      className={cn(
-        "block w-full",
-        "min-h-[60px] px-5 py-3",
-        "rounded-[var(--radius-senior-input)]",
-        "bg-white border-2 border-[var(--color-border-strong)]",
-        "text-[var(--text-senior)] leading-relaxed",
-        "placeholder:text-[var(--color-text-subtle)]",
-        "transition-colors duration-[var(--duration-senior)]",
-        "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none",
-        "disabled:opacity-60",
-        className,
-      )}
+      className={cn("es-input", className)}
       {...props}
     />
   );
@@ -33,18 +29,7 @@ export const SeniorTextarea = React.forwardRef<
   return (
     <textarea
       ref={ref}
-      className={cn(
-        "block w-full",
-        "min-h-[180px] px-5 py-4",
-        "rounded-[var(--radius-senior-input)]",
-        "bg-white border-2 border-[var(--color-border-strong)]",
-        "text-[var(--text-senior-lg)] leading-relaxed",
-        "placeholder:text-[var(--color-text-subtle)]",
-        "transition-colors duration-[var(--duration-senior)]",
-        "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none",
-        "resize-y",
-        className,
-      )}
+      className={cn("es-textarea", className)}
       {...props}
     />
   );
@@ -54,15 +39,5 @@ export const SeniorLabel = React.forwardRef<
   HTMLLabelElement,
   React.LabelHTMLAttributes<HTMLLabelElement>
 >(function SeniorLabel({ className, ...props }, ref) {
-  return (
-    <label
-      ref={ref}
-      className={cn(
-        "block mb-2 text-[var(--text-senior)] font-medium",
-        "text-[var(--color-text)]",
-        className,
-      )}
-      {...props}
-    />
-  );
+  return <label ref={ref} className={cn("es-label", className)} {...props} />;
 });

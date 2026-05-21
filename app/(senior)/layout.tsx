@@ -1,40 +1,46 @@
+import Link from "next/link";
 import { requireSenior } from "@/lib/auth/permissions";
 import { signOut } from "@/lib/auth/actions";
-import { Logo } from "@/components/shared/Logo";
-import { SeniorButton } from "@/components/senior/SeniorButton";
 
+/**
+ * Senior shell — editorial direction.
+ *
+ * Cream paper canvas (same `--bg` as the marketing homepage), wordmark logo
+ * with the editorial gold underline, big "Odhlásit" outline button. The
+ * `.editorial-senior` scope class in globals.css carries every design token:
+ * typography, buttons, cards, recording UI. No sidebar, no modals.
+ *
+ * AAA contrast is enforced by the scope: navy ink (#0e3b64) on cream
+ * (#f4ebd6) clears WCAG AAA (~10.6:1), and the gold pill uses navy text
+ * (~9:1).
+ */
 export default async function SeniorLayout({ children }: { children: React.ReactNode }) {
   const user = await requireSenior();
 
   return (
-    <div data-surface="senior" className="min-h-screen bg-paper-100">
-      {/* Navy header - strong visual anchor matching the homepage tone */}
-      <header className="bg-navy-900">
-        <div className="mx-auto flex max-w-[var(--container-default)] items-center justify-between gap-4 px-6 py-5">
-          <Logo variant="wordmark" invert size={30} href="/home" />
+    <div className="editorial-senior" data-surface="senior">
+      <header className="es-header">
+        <div className="es-header-inner">
+          <Link href="/home" className="es-logo" aria-label="Vzpomínkář — domů">
+            Vzpomínkář.
+          </Link>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 sm:gap-4">
             {user.displayName ? (
-              <span className="text-[var(--text-senior-sm)] text-paper-400 hidden sm:inline tracking-wide">
+              <span className="hidden sm:inline text-[17px] text-[var(--ink-soft)]">
                 {user.displayName}
               </span>
             ) : null}
             <form action={signOut}>
-              <SeniorButton type="submit" variant="ghost" size="md">
-                Odhlásit se
-              </SeniorButton>
+              <button type="submit" className="es-btn es-btn-outline">
+                Odhlásit
+              </button>
             </form>
           </div>
         </div>
-
-        {/* Gold accent line - mirrors the homepage's editorial gold accents */}
-        <div
-          aria-hidden
-          className="h-[2px] bg-gradient-to-r from-transparent via-[var(--color-gold-400)] to-transparent opacity-70"
-        />
       </header>
 
-      <main className="mx-auto max-w-[var(--container-default)] px-6 py-10 sm:py-16">
+      <main className="es-container py-10 sm:py-14">
         {children}
       </main>
     </div>

@@ -1,4 +1,3 @@
-import { SeniorCard } from "@/components/senior/SeniorCard";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 
 interface Memory {
@@ -11,48 +10,68 @@ interface Memory {
   attachments: { storage_path: string; mime_type: string; caption: string | null; signedUrl: string | null }[];
 }
 
+/**
+ * Single memory card — editorial direction.
+ *
+ * Date small-caps eyebrow → italic PP Pangaia question quote → optional
+ * PP Pangaia title → audio player / text body / photo grid. The card uses
+ * the paper surface like the marketing site's testimonial cards.
+ */
 export function MemoryItem({ memory }: { memory: Memory }) {
   const date = new Date(memory.createdAt).toLocaleDateString("cs-CZ", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
+
+  const photoAttachments = memory.attachments.filter(
+    (a) => a.signedUrl && a.mime_type.startsWith("image/"),
+  );
+
   return (
-    <SeniorCard className="space-y-4">
-      <p className="text-[var(--text-senior-sm)] uppercase tracking-wider text-[var(--color-text-subtle)]">
-        {date}
-      </p>
+    <article className="es-memory">
+      <div className="es-memory-date">{date}</div>
+
       {memory.question ? (
-        <p className="text-[var(--text-senior)] text-[var(--color-text-muted)]">
-          „{memory.question}“
-        </p>
+        <p className="es-memory-q">&bdquo;{memory.question}&ldquo;</p>
       ) : null}
 
       {memory.title ? (
-        <h3 className="font-[family-name:var(--font-display)] text-[var(--text-senior-h3)] text-[var(--color-navy-900)]">
-          {memory.title}
-        </h3>
+        <h3 className="es-memory-title">{memory.title}</h3>
       ) : null}
 
       {memory.audioUrl ? (
-        <InlineAudioPlayer src={memory.audioUrl} tone="senior" />
+        <div className="mb-4">
+          <InlineAudioPlayer src={memory.audioUrl} tone="senior" />
+        </div>
       ) : null}
 
-      {memory.text ? (
-        <p className="whitespace-pre-line text-[var(--text-senior)] leading-relaxed">{memory.text}</p>
-      ) : null}
+      {memory.text ? <p className="es-memory-text">{memory.text}</p> : null}
 
-      {memory.attachments
-        .filter((a) => a.signedUrl && a.mime_type.startsWith("image/"))
-        .map((a) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={a.storage_path}
-            src={a.signedUrl ?? ""}
-            alt={a.caption ?? "Fotka ke vzpomínce"}
-            className="max-h-[28rem] w-full rounded-[var(--radius-lg)] object-contain"
-          />
-        ))}
-    </SeniorCard>
+      {photoAttachments.length > 0 && (
+        <div
+          className={
+            photoAttachments.length === 1
+              ? "mt-4"
+              : "mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"
+          }
+        >
+          {photoAttachments.map((a) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={a.storage_path}
+              src={a.signedUrl ?? ""}
+              alt={a.caption ?? "Fotka ke vzpomínce"}
+              className="es-memory-photo"
+              style={
+                photoAttachments.length === 1
+                  ? { maxHeight: "28rem", objectFit: "contain" }
+                  : { aspectRatio: "1 / 1", objectFit: "cover" }
+              }
+            />
+          ))}
+        </div>
+      )}
+    </article>
   );
 }

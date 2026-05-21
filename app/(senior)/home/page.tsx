@@ -2,11 +2,23 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SeniorHeading } from "@/components/senior/SeniorHeading";
-import { seniorButtonVariants } from "@/components/senior/SeniorButton";
 
 export const metadata: Metadata = { title: "Domů" };
 
+/**
+ * Senior /home — editorial direction.
+ *
+ * Layout:
+ *   • Greeting (h1 with PP Pangaia)
+ *   • Eyebrow "Otázka týdne"
+ *   • Italic PP Pangaia question (the prompt)
+ *   • Three large action cards stacked: Vyprávět nahlas / Napsat / Přidat fotku
+ *   • Optional draft pill
+ *   • "Moje vzpomínky" arrow-link at the bottom
+ *
+ * All interactive elements are ≥ 64px (cards are 88px), navy ink on cream,
+ * AAA contrast throughout.
+ */
 export default async function SeniorHomePage() {
   const user = await requireSenior();
   const supabase = createAdminClient();
@@ -62,98 +74,117 @@ export default async function SeniorHomePage() {
   const firstName = user.displayName?.split(" ")[0] ?? null;
 
   return (
-    <div className="flex flex-col h-full px-6">
+    <div className="pt-10 sm:pt-14 pb-6">
+      {/* Greeting */}
+      <h1 className="mb-3">
+        Dobrý den{firstName ? `, ${firstName}` : ""}.
+      </h1>
+      <div
+        aria-hidden
+        className="h-[2px] w-16 rounded-full"
+        style={{ background: "var(--gold)" }}
+      />
 
-      {/* Greeting - compact top strip */}
-      <div className="shrink-0 pt-6 pb-4">
-        <SeniorHeading level={1}>
-          Dobrý den{firstName ? `, ${firstName}` : ""}.
-        </SeniorHeading>
-        <div aria-hidden className="mt-2 h-[2px] w-12 rounded-full bg-gold-400" />
-      </div>
-
-      {/* Card - fills remaining space, scrollable within on very small screens */}
-      <div className="flex-1 min-h-0 overflow-y-auto py-2">
+      {/* Question card */}
+      <section className="es-card mt-10">
         {active?.prompts ? (
-          <div className="bg-paper-50 border border-paper-300 rounded-[var(--radius-senior-card)] shadow-[0_4px_24px_rgba(10,44,77,0.10),0_1px_3px_rgba(10,44,77,0.06)] px-6 py-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-paper-500 mb-3">
-              Vaše otázka
+          <>
+            <span className="es-eyebrow">Otázka týdne</span>
+            <h2 className="es-question">{active.prompts.question}</h2>
+            <div className="es-rule-gold" />
+            <p className="text-[18px] sm:text-[19px] text-[var(--ink-soft)] mb-7 leading-relaxed">
+              Vyberte si, jak chcete odpovědět. Vyprávění nahlas je nejjednodušší —
+              prostě mluvte tak, jak vám to půjde.
             </p>
-
-            <SeniorHeading level={2} className="mb-5">
-              {active.prompts.question}
-            </SeniorHeading>
-
-            <div
-              aria-hidden
-              className="h-px mb-5 bg-gradient-to-r from-gold-400 via-gold-300 to-transparent opacity-60"
-            />
 
             <div className="space-y-3">
-              {/* Primary path - speaking is the easiest, most natural mode */}
               <Link
                 href={{ pathname: "/new-memory/audio", query: { assignment: active.id } }}
-                className={`${seniorButtonVariants({ variant: "accent", size: "xl" })} text-center w-full`}
+                className="es-action"
+                aria-label="Vyprávět nahlas"
               >
-                Nahrát hlasem
+                <span className="es-action-icon tone-gold" aria-hidden>
+                  ●
+                </span>
+                <div className="es-action-body">
+                  <div className="es-action-title">Vyprávět nahlas</div>
+                  <div className="es-action-meta">Nahrávání hlasem — doporučeno</div>
+                </div>
+                <span className="es-action-arrow" aria-hidden>↗</span>
               </Link>
-              {/* Alternatives - same row, smaller, equal weight */}
-              <div className="grid grid-cols-2 gap-3">
-                <Link
-                  href={{ pathname: "/new-memory/text", query: { assignment: active.id } }}
-                  className={`${seniorButtonVariants({ variant: "primary", size: "md" })} text-center w-full`}
-                >
-                  Napsat
-                </Link>
-                <Link
-                  href={{ pathname: "/new-memory/photo", query: { assignment: active.id } }}
-                  className={`${seniorButtonVariants({ variant: "secondary", size: "md" })} text-center w-full`}
-                >
-                  Přidat fotku
-                </Link>
-              </div>
+
+              <Link
+                href={{ pathname: "/new-memory/text", query: { assignment: active.id } }}
+                className="es-action"
+                aria-label="Napsat odpověď"
+              >
+                <span className="es-action-icon tone-navy" aria-hidden>
+                  ✎
+                </span>
+                <div className="es-action-body">
+                  <div className="es-action-title">Napsat</div>
+                  <div className="es-action-meta">Krátká odpověď textem</div>
+                </div>
+                <span className="es-action-arrow" aria-hidden>↗</span>
+              </Link>
+
+              <Link
+                href={{ pathname: "/new-memory/photo", query: { assignment: active.id } }}
+                className="es-action"
+                aria-label="Přidat fotku"
+              >
+                <span className="es-action-icon tone-paper" aria-hidden>
+                  ◷
+                </span>
+                <div className="es-action-body">
+                  <div className="es-action-title">Přidat fotku</div>
+                  <div className="es-action-meta">Vyfotit nebo vybrat ze galerie</div>
+                </div>
+                <span className="es-action-arrow" aria-hidden>↗</span>
+              </Link>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="bg-paper-50 border border-paper-300 rounded-[var(--radius-senior-card)] shadow-[0_4px_24px_rgba(10,44,77,0.10),0_1px_3px_rgba(10,44,77,0.06)] px-6 py-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-paper-500 mb-4">
-              Otázka týdne
+          <>
+            <span className="es-eyebrow">Otázka týdne</span>
+            <h2 className="es-question">Otázka brzy přijde.</h2>
+            <div className="es-rule-gold" />
+            <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
+              Rodina vám vybírá otázku, na kterou si vzpomenete. Jakmile bude
+              připravena, najdete ji tady. Můžete zatím procházet už uložené
+              vzpomínky.
             </p>
-            <SeniorHeading level={2} className="mb-4">
-              Otázka brzy přijde
-            </SeniorHeading>
-            <p className="text-[length:var(--text-senior)] text-paper-600 leading-relaxed">
-              Rodina vám vybere otázku, na kterou si vzpomenete.
-              Až bude připravena, ukáže se vám tady.
-            </p>
-          </div>
+          </>
         )}
-      </div>
+      </section>
 
-      {/* Footer - draft pill (if any) + link to my memories */}
-      <div className="shrink-0 py-4 border-t border-paper-200 space-y-3">
-        {draft ? (
-          <Link
-            href={{ pathname: "/new-memory/text", query: { memory: draft.id } }}
-            className="block rounded-[var(--radius-md)] border-2 border-gold-300 bg-gold-50 px-4 py-3 text-[length:var(--text-senior-sm)] text-navy-900 hover:border-gold-400 hover:bg-gold-100 transition-colors"
-          >
-            <span className="font-semibold">Pokračovat v rozepsané vzpomínce</span>
-            <span className="block text-paper-600 line-clamp-1 mt-0.5">
-              &bdquo;{draft.text_content?.slice(0, 80) ?? ""}{(draft.text_content?.length ?? 0) > 80 ? "…" : ""}&ldquo;
-            </span>
-          </Link>
-        ) : null}
-        <div className="flex items-center gap-3">
-          <div aria-hidden className="h-px w-6 bg-paper-300" />
-          <Link
-            href="/my-memories"
-            className="text-[length:var(--text-senior)] font-medium text-navy-700 underline-offset-4 hover:text-navy-900 hover:underline transition-colors"
-          >
-            Moje vzpomínky →
-          </Link>
-        </div>
-      </div>
+      {/* Draft pill */}
+      {draft ? (
+        <Link
+          href={{ pathname: "/new-memory/text", query: { memory: draft.id } }}
+          className="mt-6 block rounded-xl border-2 border-dashed px-5 py-4 transition-colors hover:bg-white"
+          style={{
+            borderColor: "var(--gold)",
+            background: "rgba(247, 233, 192, 0.55)",
+          }}
+        >
+          <p className="text-[14px] uppercase tracking-[0.18em] font-semibold text-[var(--ink-soft)] mb-1">
+            Pokračovat v rozepsané vzpomínce
+          </p>
+          <p className="text-[18px] text-[var(--ink)] line-clamp-2 italic">
+            &bdquo;{draft.text_content?.slice(0, 120) ?? ""}
+            {(draft.text_content?.length ?? 0) > 120 ? "…" : ""}&ldquo;
+          </p>
+        </Link>
+      ) : null}
 
+      {/* Footer link to memory archive */}
+      <div className="mt-10 flex items-center gap-4">
+        <div aria-hidden className="h-px w-8" style={{ background: "var(--line-2)" }} />
+        <Link href="/my-memories" className="es-arrow-link">
+          Moje vzpomínky <span aria-hidden>↗</span>
+        </Link>
+      </div>
     </div>
   );
 }
