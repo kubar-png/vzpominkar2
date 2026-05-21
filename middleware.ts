@@ -56,17 +56,22 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run middleware on the Node.js runtime — @supabase/ssr uses Node built-ins
-  // (cookie parser, etc.) that aren't fully polyfilled in Edge. On Next 15.x
-  // the default Edge runtime fails with `__dirname is not defined` for this
-  // dep tree, so we opt into Node explicitly.
-  runtime: "nodejs",
   matcher: [
     /*
-     * Run on every path except:
-     *  - /_next, /api (handle their own auth)
-     *  - static assets and image optimisation
+     * Only run middleware where session refresh / auth-page redirects are
+     * needed. The homepage and other static marketing routes are excluded
+     * so a bad Supabase env can never 500 the front door. Add more paths
+     * here as the app grows.
      */
-    "/((?!_next/static|_next/image|favicon.ico|brand|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|css|js)$).*)",
+    "/login/:path*",
+    "/signup/:path*",
+    "/senior-login/:path*",
+    "/dashboard/:path*",
+    "/settings/:path*",
+    "/onboarding/:path*",
+    "/family/:path*",
+    "/home/:path*",
+    "/my-memories/:path*",
+    "/new-memory/:path*",
   ],
 };
