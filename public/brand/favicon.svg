@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Navy square background -->
+  <rect width="100" height="100" fill="#0a2c4d"/>
+  <!-- Gold diamond outline, centered and slightly inset -->
+  <polygon
+    points="50,8 92,50 50,92 8,50"
+    fill="none"
+    stroke="#c9a949"
+    stroke-width="5"
+  />
+  <!-- Gold diamond inner (smaller, filled) -->
+  <polygon
+    points="50,26 74,50 50,74 26,50"
+    fill="#c9a949"
+    opacity="0.25"
+  />
+</svg>

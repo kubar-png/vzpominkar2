@@ -1,0 +1,64 @@
+/*
+ * Vzpomínkář — mobile spacing rules
+ *
+ * Purpose: standardise section padding and internal gaps across mobile (<640px)
+ * and desktop (≥640px). Apply these custom utilities instead of raw py-XX/mt-XX
+ * classes so the scale can be adjusted in one place.
+ *
+ * Token               Mobile              Desktop (sm:)
+ * ─────────────────────────────────────────────────────
+ * section-py          py-12  (3rem/48px)  py-28  (7rem/112px)  — standard section
+ * section-py-sm       py-10  (2.5rem/40px) py-24 (6rem/96px)   — compact/accent section
+ * section-py-xl       py-14  (3.5rem/56px) py-40 (10rem/160px) — large featured (navy)
+ * section-h2-mt       mt-6   (1.5rem/24px) mt-10 (2.5rem/40px) — gap after SectionMarker
+ * section-block-mt    mt-8   (2rem/32px)   mt-14 (3.5rem/56px) — gap before content blocks
+ * section-grid-gap    gap-6  (1.5rem/24px) gap-12 (3rem/48px)  — two-column section grids
+ */
+
+@utility section-py {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  @media (min-width: 640px) {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+}
+
+@utility section-py-sm {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  @media (min-width: 640px) {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+@utility section-py-xl {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+  @media (min-width: 640px) {
+    padding-top: 10rem;
+    padding-bottom: 10rem;
+  }
+}
+
+@utility section-h2-mt {
+  margin-top: 1.5rem;
+  @media (min-width: 640px) {
+    margin-top: 2.5rem;
+  }
+}
+
+@utility section-block-mt {
+  margin-top: 2rem;
+  @media (min-width: 640px) {
+    margin-top: 3.5rem;
+  }
+}
+
+@utility section-grid-gap {
+  gap: 1.5rem;
+  @media (min-width: 640px) {
+    gap: 3rem;
+  }
+}

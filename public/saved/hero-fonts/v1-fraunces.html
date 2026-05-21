@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hero · V1 — Fraunces</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap&subset=latin-ext" rel="stylesheet" />
+  <style>
+    :root {
+      --papir-50:#FEFAF2; --papir-100:#F8F3E8; --papir-200:#F4ECDD; --papir-300:#E8E0D1;
+      --papir-400:#D5CDBD; --papir-500:#BFB6A5; --papir-700:#81796C;
+      --inkoust-300:#978D81; --inkoust-500:#5F5344; --inkoust-800:#1E170D;
+      --zlato-300:#D5B17C; --zlato-500:#B18743; --zlato-700:#815B16;
+      --burgund-300:#CF8E8B; --burgund-600:#823D3D; --burgund-700:#642627;
+      --salvej-100:#E4EBDE; --salvej-200:#CAD5C2; --salvej-400:#9DAA93; --salvej-500:#7E8B73; --salvej-700:#46513D;
+
+      --bg:var(--papir-200); --surface:var(--papir-100); --surface-2:var(--papir-50);
+      --ink:var(--inkoust-800); --ink-soft:var(--inkoust-500); --ink-tert:var(--inkoust-300);
+      --sage:var(--salvej-500); --sage-soft:var(--salvej-100); --sage-text:var(--salvej-700);
+      --gold:var(--zlato-500); --gold-text:var(--zlato-700);
+      --cta:var(--burgund-600); --cta-hover:var(--burgund-700); --cta-text:var(--papir-100);
+      --rule:var(--papir-400); --rule-strong:var(--papir-500);
+
+      --font-body:"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+      --font-display:"Fraunces", "Times New Roman", serif;
+    }
+    *,*::before,*::after { box-sizing:border-box; }
+    html,body { margin:0; padding:0; }
+    body { background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+    a { color:inherit; text-decoration:none; }
+    blockquote,p,h1,h2,h3,h4 { margin:0; }
+    img { display:block; max-width:100%; }
+
+    .promo { background:var(--inkoust-800); color:var(--papir-100); }
+    .promo .row { display:flex; justify-content:center; align-items:center; gap:16px; padding:10px 24px; font-size:14px; }
+    .promo .sep { color:var(--papir-400); }
+    .promo .code { margin-left:8px; font-size:10px; letter-spacing:0.32em; color:var(--zlato-300); }
+
+    .header { position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:0.5px solid var(--rule); }
+    .header .row { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; max-width:1180px; margin:0 auto; }
+    .header .brand { display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:19px; }
+    .header .brand svg { color:var(--cta); }
+    .header nav { display:none; gap:32px; font-size:14px; }
+    .header nav a { color:var(--ink-soft); }
+    .header nav a:hover { color:var(--ink); }
+    @media (min-width:768px) { .header nav { display:flex; } }
+    .header .actions { display:flex; gap:8px; align-items:center; }
+
+    .btn { font-family:var(--font-body); font-size:14px; font-weight:500; padding:10px 18px; border-radius:10px; border:0.5px solid transparent; cursor:pointer; transition:background-color 120ms; }
+    .btn-sm { padding:8px 14px; font-size:13px; }
+    .btn-lg { padding:14px 24px; font-size:15px; }
+    .btn-primary { background:var(--cta); color:var(--cta-text); }
+    .btn-primary:hover { background:var(--cta-hover); }
+    .btn-ghost { background:transparent; color:var(--ink); }
+    .btn-ghost:hover { background:var(--surface); }
+
+    .alink { display:inline-flex; align-items:baseline; gap:8px; color:var(--gold-text); font-weight:500; }
+    .alink:hover { color:var(--ink); }
+    .alink .arr { transition:transform 200ms ease; }
+    .alink:hover .arr { transform:translateX(4px); }
+
+    .ph { position:relative; isolation:isolate; width:100%; overflow:hidden; border-radius:12px; background:linear-gradient(135deg, var(--sage-soft) 0%, var(--salvej-200) 50%, var(--salvej-400) 100%); }
+    .ph::after { content:''; position:absolute; right:12px; top:12px; width:10px; height:10px; border-radius:2px; background:var(--cta); }
+    .ph .lbl { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink); opacity:0.7; padding:16px; text-align:center; }
+
+    .hero { position:relative; }
+    .hero .ribbon { position:absolute; inset-block:0; left:32px; width:6px; display:none; }
+    .hero .ribbon::before { content:''; display:block; width:6px; height:8px; background:var(--cta); clip-path:polygon(50% 0,100% 100%,0 100%); }
+    .hero .ribbon::after { content:''; display:block; width:6px; flex:1; background:var(--cta); height:calc(100% - 8px); }
+    @media (min-width:1024px) { .hero .ribbon { display:flex; flex-direction:column; } }
+    .hero .container { max-width:1180px; margin:0 auto; padding:32px 24px 80px; }
+    @media (min-width:1024px) { .hero .container { padding-left:96px; } }
+    .hero .grid { display:grid; gap:40px; align-items:center; }
+    @media (min-width:1024px) { .hero .grid { grid-template-columns:1.25fr 1fr; gap:56px; } }
+    .hero .eyebrow { display:inline-flex; align-items:center; gap:12px; font-size:11px; letter-spacing:0.32em; color:var(--ink-soft); margin-bottom:24px; }
+    .hero .eyebrow::before { content:''; display:inline-block; width:32px; height:1px; background:var(--ink-soft); }
+
+    /* ── Heading: Fraunces 600, optical-size large, true italic emphasis ── */
+    .hero h1 {
+      font-family:var(--font-display);
+      font-size:clamp(42px, 5.4vw, 76px);
+      font-weight:600;
+      line-height:1.02;
+      letter-spacing:-0.015em;
+      max-width:18ch;
+      font-variation-settings:"opsz" 144;
+    }
+    .hero h1 em { color:var(--sage-text); font-style:italic; font-weight:600; }
+
+    .hero p.lead { margin-top:28px; font-size:18px; line-height:1.65; color:var(--ink-soft); max-width:46ch; }
+    .hero .actions { margin-top:28px; display:flex; flex-wrap:wrap; gap:20px; align-items:center; }
+    .hero .micro { margin-top:16px; font-size:13px; color:var(--ink-tert); }
+    .hero .stats { margin-top:28px; padding-top:20px; border-top:0.5px solid var(--rule); display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:560px; }
+    .hero .stats .k { font-family:var(--font-display); font-size:28px; font-weight:600; color:var(--gold); font-variation-settings:"opsz" 144; }
+    .hero .stats .v { margin-top:4px; font-size:10px; letter-spacing:0.2em; color:var(--ink-tert); }
+
+    .hero .media { position:relative; width:100%; max-width:420px; margin:0 auto; }
+    .hero .media .ph { aspect-ratio:640/780; }
+    .hero .media .qcard { position:absolute; bottom:-24px; left:-24px; max-width:260px; background:var(--surface-2); border:0.5px solid var(--rule); border-radius:12px; padding:16px; }
+    .hero .media .qcard p { font-size:14px; line-height:1.45; }
+    .hero .media .qcard .who { margin-top:8px; font-size:10px; letter-spacing:0.28em; color:var(--ink-tert); }
+
+    /* ── Variant nav (only on these explore pages) ── */
+    .vnav { position:fixed; right:18px; bottom:18px; z-index:60; display:flex; gap:6px; padding:8px; background:var(--surface-2); border:0.5px solid var(--rule); border-radius:999px; box-shadow:0 6px 20px rgba(30,23,13,0.08); font-size:12px; }
+    .vnav a { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:999px; color:var(--ink-soft); }
+    .vnav a:hover { background:var(--surface); color:var(--ink); }
+    .vnav a.active { background:var(--cta); color:var(--cta-text); }
+    .vnav .home { width:auto; padding:0 10px; font-size:11px; letter-spacing:0.18em; }
+    .vlabel { position:fixed; left:18px; bottom:18px; z-index:60; padding:8px 14px; background:var(--inkoust-800); color:var(--papir-100); border-radius:999px; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; }
+  </style>
+</head>
+<body>
+
+  <div class="promo"><div class="row">
+    <span style="font-style:italic">Den matek — do 11. května</span>
+    <span class="sep">·</span>
+    <span style="font-style:italic">sleva 200 Kč s kódem <span class="code">MAMA200</span></span>
+  </div></div>
+
+  <header class="header"><div class="row">
+    <a href="#" class="brand">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor"><path d="M2 2h13v18l-4-3-4 3-3-2-2 1V2z"/></svg>
+      Vzpomínkář
+    </a>
+    <nav>
+      <a href="#jak">Jak to funguje</a>
+      <a href="#priklady">Příklady</a>
+      <a href="#">Ceník</a>
+      <a href="#darek">Jako dárek</a>
+      <a href="#">FAQ</a>
+    </nav>
+    <div class="actions">
+      <a class="btn btn-ghost btn-sm" href="#">Přihlášení</a>
+      <a class="btn btn-primary btn-sm" href="#">Začít zdarma</a>
+    </div>
+  </div></header>
+
+  <section class="hero">
+    <div class="ribbon" aria-hidden></div>
+    <div class="container"><div class="grid">
+      <div>
+        <p class="eyebrow">Kronika rodinných vzpomínek · od roku 2024</p>
+        <h1>Vzpomínky, které <em>v rodině zůstanou</em>.</h1>
+        <p class="lead">Každý týden jedna otázka pro maminku, tátu nebo prarodiče. Oni odpoví hlasem či textem — vy z toho na konci roku držíte v ruce knihu.</p>
+        <div class="actions">
+          <a class="btn btn-primary btn-lg" href="#">Začít zdarma</a>
+          <a class="alink" href="#jak">Podívat se, jak to funguje <span class="arr">→</span></a>
+        </div>
+        <p class="micro">Zdarma na rok. Knihu zaplatíte, až ji budete chtít vytisknout.</p>
+        <div class="stats">
+          <div><div class="k">1×</div><div class="v">TÝDNĚ OTÁZKA</div></div>
+          <div><div class="k">0</div><div class="v">NUTNOST PSÁT</div></div>
+          <div><div class="k">∞</div><div class="v">LET V KNIHOVNĚ</div></div>
+        </div>
+      </div>
+      <div class="media">
+        <div class="ph" style="aspect-ratio:640/780"><div class="lbl">Hero · kniha v rukou</div></div>
+        <div class="qcard">
+          <p>„Babička přečetla první otázku a hned se rozpovídala. Půlhodinu jsme se smáli i plakali."</p>
+          <p class="who">— TEREZA · VNUČKA</p>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <div class="vlabel">V1 · Fraunces</div>
+  <nav class="vnav" aria-label="Variants">
+    <a class="home" href="./index.html">VŠECHNY</a>
+    <a class="active" href="./v1-fraunces.html" title="Fraunces">1</a>
+    <a href="./v2-dm-serif-display.html" title="DM Serif Display">2</a>
+    <a href="./v3-newsreader.html" title="Newsreader">3</a>
+    <a href="./v4-playfair-display.html" title="Playfair Display">4</a>
+    <a href="./v5-marcellus.html" title="Marcellus">5</a>
+  </nav>
+
+</body>
+</html>

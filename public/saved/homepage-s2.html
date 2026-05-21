@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vzpomínkář — Šalvěj + Zlato (S2)</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap&subset=latin-ext"
+    rel="stylesheet"
+  />
+  <style>
+    /* Live homepage of Vzpomínkář, recolored to Dědictví tokens, S2 palette:
+       - šalvěj (cool) primary accent
+       - zlato (gold) warm accent / numerals
+       - burgund (wine) CTA
+       - papír cream surfaces, inkoust text. Bricolage Grotesque throughout. */
+    :root {
+      --papir-50:#FEFAF2; --papir-100:#F8F3E8; --papir-200:#F4ECDD; --papir-300:#E8E0D1;
+      --papir-400:#D5CDBD; --papir-500:#BFB6A5; --papir-700:#81796C; --papir-900:#312D27;
+      --inkoust-50:#F4F1ED; --inkoust-100:#E2DDD6; --inkoust-300:#978D81; --inkoust-500:#5F5344;
+      --inkoust-700:#2D251B; --inkoust-800:#1E170D; --inkoust-900:#0B0703;
+      --zlato-50:#FDF4E7; --zlato-100:#F7E5CB; --zlato-200:#E8CDA5; --zlato-300:#D5B17C;
+      --zlato-500:#B18743; --zlato-700:#815B16; --zlato-900:#412800;
+      --burgund-50:#FFF2F1; --burgund-100:#F7DEDC; --burgund-200:#E8BBB8; --burgund-300:#CF8E8B;
+      --burgund-500:#A25A58; --burgund-600:#823D3D; --burgund-700:#642627; --burgund-900:#2E0508;
+      --salvej-50:#F2F7EF; --salvej-100:#E4EBDE; --salvej-200:#CAD5C2; --salvej-400:#9DAA93;
+      --salvej-500:#7E8B73; --salvej-700:#46513D; --salvej-900:#1D2516;
+
+      --bg: var(--papir-200);
+      --surface: var(--papir-100);
+      --surface-2: var(--papir-50);
+      --sunken: var(--papir-300);
+      --ink: var(--inkoust-800);
+      --ink-soft: var(--inkoust-500);
+      --ink-tert: var(--inkoust-300);
+      --sage: var(--salvej-500);
+      --sage-soft: var(--salvej-100);
+      --sage-text: var(--salvej-700);
+      --gold: var(--zlato-500);
+      --gold-soft: var(--zlato-100);
+      --gold-text: var(--zlato-700);
+      --cta: var(--burgund-600);
+      --cta-hover: var(--burgund-700);
+      --cta-text: var(--papir-100);
+      --rule: var(--papir-400);
+      --rule-strong: var(--papir-500);
+      --rule-dec: var(--zlato-300);
+    }
+    *,*::before,*::after { box-sizing: border-box; }
+    html,body { margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+      font-size: 15px; line-height: 1.55;
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    blockquote, p, h1,h2,h3,h4 { margin: 0; }
+    img { display: block; max-width: 100%; }
+
+    .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+    /* ─── Promo strip ───────────────────────── */
+    .promo { background: var(--inkoust-800); color: var(--papir-100); }
+    .promo .row { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 10px 24px; font-size: 14px; }
+    .promo .a { color: var(--papir-100); }
+    .promo .sep { color: var(--papir-400); }
+    .promo .code { margin-left: 8px; font-size: 10px; letter-spacing: 0.32em; color: var(--zlato-300); }
+
+    /* ─── Header ───────────────────────── */
+    .header { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 0.5px solid var(--rule); }
+    .header .row { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; max-width: 1180px; margin: 0 auto; }
+    .header .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 19px; }
+    .header .brand svg { color: var(--cta); }
+    .header nav { display: none; gap: 32px; font-size: 14px; }
+    .header nav a { color: var(--ink-soft); }
+    .header nav a:hover { color: var(--ink); }
+    @media (min-width: 768px) { .header nav { display: flex; } }
+    .header .actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ─── Buttons ─────────────────────── */
+    .btn { font-family: "Bricolage Grotesque"; font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 10px; border: 0.5px solid transparent; cursor: pointer; transition: background-color 120ms; }
+    .btn-sm { padding: 8px 14px; font-size: 13px; }
+    .btn-lg { padding: 14px 24px; font-size: 15px; }
+    .btn-primary { background: var(--cta); color: var(--cta-text); }
+    .btn-primary:hover { background: var(--cta-hover); }
+    .btn-ghost { background: transparent; color: var(--ink); }
+    .btn-ghost:hover { background: var(--surface); }
+    .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--rule-strong); }
+    .btn-secondary:hover { background: var(--papir-200); }
+
+    /* ─── Arrow link ───────────────────── */
+    .alink { display: inline-flex; align-items: baseline; gap: 8px; color: var(--gold-text); font-weight: 500; }
+    .alink:hover { color: var(--ink); }
+    .alink .arr { transition: transform 200ms ease; }
+    .alink:hover .arr { transform: translateX(4px); }
+
+    /* ─── SectionMarker ─────────────────── */
+    .smk { display: flex; align-items: center; gap: 16px; color: var(--ink-soft); }
+    .smk .num { font-size: 22px; font-weight: 600; color: var(--gold); letter-spacing: 0.06em; }
+    .smk .lbl { font-size: 12px; letter-spacing: 0.32em; color: var(--ink-soft); }
+    .smk .line { flex: 1; height: 1px; background: var(--rule-strong); }
+    .smk.dark { color: var(--papir-300); }
+    .smk.dark .num { color: var(--zlato-300); }
+    .smk.dark .lbl { color: var(--papir-300); }
+    .smk.dark .line { background: rgba(248,243,232,0.18); }
+
+    /* ─── Placeholders (cream gradient with gold detail) ─── */
+    .ph { position: relative; isolation: isolate; width: 100%; overflow: hidden; border-radius: 12px; background: linear-gradient(135deg, var(--sage-soft) 0%, var(--salvej-200) 50%, var(--salvej-400) 100%); }
+    .ph::after { content: ''; position: absolute; right: 12px; top: 12px; width: 10px; height: 10px; border-radius: 2px; background: var(--cta); }
+    .ph .lbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink); opacity: 0.7; padding: 16px; text-align: center; }
+    .ph.video::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; border-radius: 50%; background: var(--cta); z-index: 1; }
+    .ph.video::after { display: none; }
+    .ph.video .lbl { z-index: 2; color: var(--papir-100); top: 60%; }
+
+    /* ═════ HERO ═════ */
+    .hero { position: relative; }
+    .hero .ribbon { position: absolute; inset-block: 0; left: 32px; width: 6px; display: none; }
+    .hero .ribbon::before { content: ''; display: block; width: 6px; height: 8px; background: var(--cta); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+    .hero .ribbon::after { content: ''; display: block; width: 6px; flex: 1; background: var(--cta); height: calc(100% - 8px); }
+    @media (min-width: 1024px) { .hero .ribbon { display: flex; flex-direction: column; } }
+    .hero .container { max-width: 1180px; margin: 0 auto; padding: 32px 24px 48px; }
+    @media (min-width: 1024px) { .hero .container { padding-left: 96px; } }
+    .hero .grid { display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 1024px) { .hero .grid { grid-template-columns: 1.25fr 1fr; gap: 56px; } }
+    .hero .eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.32em; color: var(--ink-soft); margin-bottom: 24px; }
+    .hero .eyebrow::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--ink-soft); }
+    .hero h1 { font-size: clamp(40px, 5vw, 72px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 18ch; }
+    .hero h1 em { color: var(--sage-text); font-weight: 600; font-style: normal; }
+    .hero p.lead { margin-top: 24px; font-size: 18px; line-height: 1.65; color: var(--ink-soft); max-width: 46ch; }
+    .hero .actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+    .hero .micro { margin-top: 16px; font-size: 13px; color: var(--ink-tert); }
+    .hero .stats { margin-top: 28px; padding-top: 20px; border-top: 0.5px solid var(--rule); display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 560px; }
+    .hero .stats .k { font-size: 24px; font-weight: 600; color: var(--gold); }
+    .hero .stats .v { margin-top: 4px; font-size: 10px; letter-spacing: 0.2em; color: var(--ink-tert); }
+
+    .hero .media { position: relative; width: 100%; max-width: 420px; margin: 0 auto; }
+    .hero .media .ph { aspect-ratio: 640/780; }
+    .hero .media .qcard { position: absolute; bottom: -24px; left: -24px; max-width: 260px; background: var(--surface-2); border: 0.5px solid var(--rule); border-radius: 12px; padding: 16px; }
+    .hero .media .qcard p { font-size: 14px; line-height: 1.45; }
+    .hero .media .qcard .who { margin-top: 8px; font-size: 10px; letter-spacing: 0.28em; color: var(--ink-tert); }
+
+    /* ═════ Press strip ═════ */
+    .press { background: var(--surface); }
+    .press .row { max-width: 1180px; margin: 0 auto; padding: 40px 24px; }
+    .press .cap { text-align: center; font-size: 11px; letter-spacing: 0.36em; color: var(--ink-tert); }
+    .press .cap::before, .press .cap::after { content: ''; display: inline-block; width: 40px; height: 1px; background: var(--gold); vertical-align: middle; margin: 0 12px; }
+    .press .logos { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 24px; }
+    @media (min-width: 768px) { .press .logos { grid-template-columns: repeat(6, 1fr); } }
+    .press .logos div { text-align: center; font-size: 11px; letter-spacing: 0.18em; color: var(--ink-soft); }
+
+    /* ═════ Section padding ═════ */
+    .section { padding: 80px 0; }
+    .section-sm { padding: 56px 0; }
+    .section-xl { padding: 96px 0; }
+
+    /* ═════ Video testimonial ═════ */
+    .vt { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .vt .grid { margin-top: 40px; display: grid; gap: 40px; }
+    @media (min-width: 1024px) { .vt .grid { grid-template-columns: 1.4fr 1fr; gap: 48px; } }
+    .vt h2 { font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 24ch; }
+    .vt .ph { aspect-ratio: 16/9; }
+    @media (min-width: 1024px) {
+      .vt .grid { grid-template-areas: "h h" "video quotes"; grid-template-columns: 1.4fr 1fr; }
+      .vt .grid h2 { grid-area: h; }
+      .vt .grid .video { grid-area: video; }
+      .vt .grid .qlist { grid-area: quotes; margin-top: 0; }
+    }
+    .vt .qlist { margin-top: 40px; display: flex; flex-direction: column; gap: 32px; }
+    .vt .q { border-left: 2px solid var(--cta); padding-left: 24px; }
+    .vt .q p { font-size: 19px; line-height: 1.4; color: var(--ink); }
+    .vt .q .who { margin-top: 10px; font-size: 11px; letter-spacing: 0.28em; color: var(--ink-tert); }
+
+    /* ═════ Trust metrics ═════ */
+    .tm { background: var(--surface); }
+    .tm .row { max-width: 1180px; margin: 0 auto; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+    .tm .stars { display: flex; gap: 4px; }
+    .tm .stars svg { color: var(--gold); }
+    .tm .score { font-size: 30px; font-weight: 600; }
+    .tm .score span { color: var(--ink-tert); }
+    .tm .meta { font-size: 12px; letter-spacing: 0.28em; color: var(--ink-tert); }
+
+    /* ═════ Steps (horizontal) ═════ */
+    .stepwrap { padding: 80px 0; }
+    .stepwrap .head { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .stepwrap h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 18ch; }
+    .stepwrap .rail { margin-top: 40px; padding: 0 24px; display: grid; gap: 16px; max-width: 1180px; margin-left: auto; margin-right: auto; }
+    @media (min-width: 768px) { .stepwrap .rail { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1100px) { .stepwrap .rail { grid-template-columns: repeat(4, 1fr); } }
+    .step { background: var(--surface); border: 0.5px solid var(--rule); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .step .ph { aspect-ratio: 4/3; }
+    .step .roman { font-size: 24px; font-style: italic; color: var(--gold); font-weight: 500; }
+    .step h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+    .step p { font-size: 14px; line-height: 1.55; color: var(--ink-soft); }
+
+    /* ═════ Collage ═════ */
+    .col-wrap { background: var(--surface); padding: 80px 0; }
+    .col-wrap .head { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .col-wrap h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 18ch; }
+    .col-wrap p.intro { margin-top: 24px; max-width: 56ch; font-size: 18px; line-height: 1.6; color: var(--ink-soft); }
+    .col-wrap .grid { margin-top: 40px; padding: 0 24px; max-width: 1180px; margin-left: auto; margin-right: auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .col-wrap .ph-a { grid-column: span 12; aspect-ratio: 4/5; }
+    .col-wrap .ph-b, .col-wrap .ph-c { grid-column: span 6; aspect-ratio: 4/3; }
+    .col-wrap .ph-d, .col-wrap .ph-e { grid-column: span 12; aspect-ratio: 3/2; }
+    @media (min-width: 768px) {
+      .col-wrap .ph-a { grid-column: span 7; grid-row: span 2; }
+      .col-wrap .ph-b, .col-wrap .ph-c { grid-column: span 5; }
+      .col-wrap .ph-d, .col-wrap .ph-e { grid-column: span 6; }
+    }
+
+    /* ═════ Pricing (inverse chapter) ═════ */
+    .pricing { background: var(--inkoust-800); color: var(--papir-100); padding: 96px 0; }
+    .pricing .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .pricing .grid { margin-top: 40px; display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 1024px) { .pricing .grid { grid-template-columns: 1fr 1.1fr; gap: 48px; } }
+    .pricing h2 { font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; color: var(--papir-50); }
+    .pricing p.lead { margin-top: 32px; max-width: 46ch; font-size: 18px; line-height: 1.6; color: var(--papir-300); }
+    .pricing ul.feat { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; font-size: 15px; }
+    .pricing ul.feat li { display: flex; gap: 12px; align-items: flex-start; color: var(--papir-100); }
+    .pricing ul.feat li::before { content: ''; flex-shrink: 0; margin-top: 8px; width: 6px; height: 6px; background: var(--zlato-500); border-radius: 1px; }
+    .pricecard { position: relative; background: var(--surface-2); color: var(--ink); border-radius: 20px; padding: 32px; }
+    @media (min-width: 640px) { .pricecard { padding: 40px; } }
+    .pricecard .ribbon { position: absolute; top: -1px; right: 40px; width: 28px; height: 56px; background: var(--cta); clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%); }
+    .pricecard .promo-pill { position: absolute; top: -12px; left: 40px; background: var(--cta); color: white; font-size: 10px; letter-spacing: 0.28em; padding: 4px 12px; border-radius: 4px; }
+    .pricecard .label { font-size: 12px; letter-spacing: 0.28em; color: var(--ink-tert); }
+    .pricecard .price-row { margin-top: 16px; display: flex; align-items: baseline; gap: 12px; }
+    .pricecard .price { font-size: 64px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; }
+    .pricecard .ccy { font-size: 22px; color: var(--ink-soft); }
+    .pricecard .old { font-size: 14px; font-style: italic; color: var(--ink-tert); text-decoration: line-through; }
+    .pricecard p.fineprint { margin-top: 8px; font-size: 13px; color: var(--ink-soft); }
+    .pricecard .ctabtn { margin-top: 32px; width: 100%; text-align: center; }
+    .pricecard .returns { margin-top: 14px; text-align: center; font-size: 11px; letter-spacing: 0.04em; color: var(--ink-tert); }
+
+    /* ═════ Voice USP (inverse) ═════ */
+    .voice { background: var(--inkoust-800); color: var(--papir-100); padding: 96px 0 96px; border-top: 0.5px solid rgba(248,243,232,0.12); }
+    .voice .grid { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 1024px) { .voice .grid { grid-template-columns: 1fr 1.2fr; gap: 64px; } }
+    .voice .ph { background: linear-gradient(135deg, var(--inkoust-700) 0%, var(--inkoust-800) 100%); aspect-ratio: 1/1; border: 0.5px solid rgba(248,243,232,0.12); }
+    .voice .ph::after { display: none; }
+    .voice .ph.video::before { background: var(--cta); }
+    .voice .eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: 0.32em; color: var(--burgund-300); }
+    .voice .eyebrow::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--burgund-300); }
+    .voice h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; color: var(--papir-50); }
+    .voice p.lead { margin-top: 32px; max-width: 52ch; font-size: 19px; line-height: 1.6; color: var(--papir-200); }
+
+    /* ═════ Testimonial slider ═════ */
+    .ts { max-width: 1180px; margin: 0 auto; padding: 80px 24px; }
+    .ts h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 22ch; }
+    .ts .grid { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .tcard { background: var(--surface); border: 0.5px solid var(--rule); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .tcard blockquote { font-size: 16px; line-height: 1.55; }
+    .tcard figcaption { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+    .tcard .ava { width: 36px; height: 36px; border-radius: 50%; background: var(--sage-soft); color: var(--sage-text); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+    .tcard .who { font-size: 13px; font-weight: 600; }
+    .tcard .role { font-size: 12px; color: var(--ink-tert); }
+
+    /* ═════ Fleuron ═════ */
+    .fleuron { max-width: 1180px; margin: 0 auto; padding: 32px 24px; display: flex; align-items: center; gap: 24px; color: var(--papir-400); }
+    .fleuron .l, .fleuron .r { flex: 1; height: 1px; background: var(--rule-strong); }
+
+    /* ═════ Ease of use ═════ */
+    .ease { background: var(--surface); padding: 56px 0; }
+    .ease .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; text-align: center; }
+    .ease .cap { font-size: 11px; letter-spacing: 0.32em; color: var(--ink-soft); }
+    .ease h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; max-width: 22ch; margin-left: auto; margin-right: auto; }
+    .ease .chips { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .ease .chip { background: var(--sage-soft); color: var(--sage-text); border: 0.5px solid var(--sage); padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 500; }
+    .ease p.foot { margin-top: 32px; max-width: 60ch; margin-left: auto; margin-right: auto; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+
+    /* ═════ Speech-to-story ═════ */
+    .sts { max-width: 1180px; margin: 0 auto; padding: 80px 24px; }
+    .sts .grid { margin-top: 40px; display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 1024px) { .sts .grid { grid-template-columns: 1.1fr 1fr; gap: 48px; } }
+    .sts h2 { font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; }
+    .sts p.lead { margin-top: 24px; max-width: 52ch; font-size: 18px; line-height: 1.6; color: var(--ink-soft); }
+    .sts p.quote { margin-top: 20px; max-width: 52ch; font-size: 18px; line-height: 1.55; color: var(--sage-text); font-style: italic; }
+    .sts .ph { aspect-ratio: 3/2; }
+
+    /* ═════ Explainer ═════ */
+    .ex { max-width: 1180px; margin: 0 auto; padding: 56px 24px; text-align: center; }
+    .ex .cap { font-size: 11px; letter-spacing: 0.32em; color: var(--ink-tert); }
+    .ex .cap::before, .ex .cap::after { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--ink-tert); vertical-align: middle; margin: 0 12px; }
+    .ex h2 { margin-top: 24px; line-height: 1.15; }
+    .ex h2 .s1 { display: block; font-size: clamp(20px, 2.5vw, 28px); font-weight: 400; color: color-mix(in srgb, var(--ink) 35%, var(--bg)); }
+    .ex h2 .s2 { display: block; font-size: clamp(24px, 3vw, 36px); color: color-mix(in srgb, var(--ink) 65%, var(--bg)); }
+    .ex h2 .s3 { display: block; font-size: clamp(30px, 4vw, 48px); color: var(--ink); }
+    .ex dl { margin-top: 56px; display: grid; gap: 32px; text-align: left; }
+    @media (min-width: 768px) { .ex dl { grid-template-columns: repeat(3, 1fr); gap: 56px; } }
+    .ex .item { position: relative; }
+    .ex .item + .item::before { display: none; }
+    @media (min-width: 768px) {
+      .ex .item + .item::before { content: ''; position: absolute; left: -28px; top: 8px; bottom: 8px; width: 1px; background: var(--rule-strong); display: block; }
+    }
+    .ex .item .n { font-size: 10px; letter-spacing: 0.32em; color: var(--cta); }
+    .ex .item .term { margin-top: 12px; font-size: 28px; }
+    .ex .item .etym { margin-top: 4px; font-size: 13px; font-style: italic; color: var(--ink-tert); }
+    .ex .item .def { margin-top: 16px; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+    .ex .summary { margin-top: 56px; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 19px; line-height: 1.4; }
+
+    /* ═════ Founder ═════ */
+    .founder { background: var(--surface); padding: 80px 0; }
+    .founder .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .founder .grid { margin-top: 40px; display: grid; gap: 40px; }
+    @media (min-width: 1024px) { .founder .grid { grid-template-columns: 1fr 1.6fr; gap: 56px; } }
+    .founder .ph { aspect-ratio: 4/5; max-width: 420px; }
+    .founder .lead { font-size: 22px; line-height: 1.4; color: var(--ink); }
+    .founder p { margin-top: 24px; font-size: 17px; line-height: 1.65; color: var(--ink-soft); }
+    .founder p.attrib { font-size: 17px; color: var(--ink); }
+
+    /* ═════ Comparison CTA ═════ */
+    .cmpcta { max-width: 1180px; margin: 0 auto; padding: 56px 24px; text-align: center; }
+    .cmpcta .cap { font-size: 11px; letter-spacing: 0.32em; color: var(--ink-tert); }
+    .cmpcta h2 { margin: 16px auto 0; max-width: 22ch; font-size: clamp(24px, 3.5vw, 36px); font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; }
+    .cmpcta .alink { margin-top: 24px; }
+
+    /* ═════ Gifting / Babybook (inverse) ═════ */
+    .gift { background: var(--inkoust-800); color: var(--papir-100); padding: 80px 0; }
+    .gift .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .gift h2 { margin-top: 24px; font-size: clamp(28px, 4vw, 48px); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; color: var(--papir-50); max-width: 18ch; }
+    .gift .grid { margin-top: 40px; display: grid; gap: 24px; }
+    @media (min-width: 768px) { .gift .grid { grid-template-columns: 1fr 1fr; } }
+    .gift .card { background: var(--surface-2); color: var(--ink); border-radius: 20px; padding: 32px; display: flex; flex-direction: column; gap: 16px; }
+    .gift .card .ph { aspect-ratio: 4/3; }
+    .gift .card h3 { font-size: 24px; font-weight: 500; }
+    .gift .card p { font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+    .gift .baby { margin-top: 24px; background: var(--surface-2); color: var(--ink); border-radius: 20px; padding: 32px; display: grid; gap: 40px; align-items: center; }
+    @media (min-width: 1024px) { .gift .baby { grid-template-columns: 1fr 1.4fr; padding: 40px; } }
+    .gift .baby .ph { aspect-ratio: 4/3; }
+    .gift .baby .cap { font-size: 11px; letter-spacing: 0.32em; color: var(--cta); }
+    .gift .baby h3 { margin-top: 16px; font-size: clamp(24px, 3vw, 36px); font-weight: 500; line-height: 1.1; }
+    .gift .baby p { margin-top: 20px; max-width: 52ch; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+
+    /* ═════ FAQ ═════ */
+    .faq { background: var(--surface); padding: 80px 0; }
+    .faq .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .faq .grid { display: grid; gap: 40px; }
+    @media (min-width: 1024px) { .faq .grid { grid-template-columns: 1fr 2fr; gap: 64px; } }
+    .faq h2 { margin-top: 32px; font-size: clamp(24px, 3vw, 36px); font-weight: 500; line-height: 1.1; }
+    .faq ul { list-style: none; padding: 0; margin: 0; border-top: 0.5px solid var(--rule-strong); }
+    .faq li { border-bottom: 0.5px solid var(--rule-strong); }
+    .faq details { padding: 0; }
+    .faq summary { list-style: none; cursor: pointer; padding: 24px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 24px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary .qtext { font-size: 19px; font-weight: 500; }
+    .faq summary .num { display: inline-block; width: 32px; margin-right: 16px; font-size: 13px; font-style: italic; color: var(--ink-tert); }
+    .faq summary .plus { font-size: 22px; color: var(--ink-soft); transition: transform 200ms; }
+    .faq details[open] summary .plus { transform: rotate(45deg); }
+    .faq .ans { padding: 0 0 24px 48px; max-width: 60ch; font-size: 15px; line-height: 1.65; color: var(--ink-soft); }
+
+    /* ═════ Email capture ═════ */
+    .cap-sec { max-width: 1180px; margin: 0 auto; padding: 80px 24px; text-align: center; }
+    .cap-sec .small { font-size: 11px; letter-spacing: 0.32em; color: var(--cta); }
+    .cap-sec h2 { margin: 20px auto 0; max-width: 22ch; font-size: clamp(24px, 3.5vw, 36px); font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; }
+    .cap-sec p.lead { margin: 24px auto 0; max-width: 56ch; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+    .cap-sec form { margin: 40px auto 0; display: flex; gap: 12px; max-width: 440px; flex-direction: column; }
+    @media (min-width: 640px) { .cap-sec form { flex-direction: row; } }
+    .cap-sec input { flex: 1; height: 48px; padding: 0 16px; border-radius: 10px; border: 0.5px solid var(--rule-strong); background: var(--surface); font-family: "Bricolage Grotesque"; font-size: 15px; color: var(--ink); }
+    .cap-sec input::placeholder { color: var(--ink-tert); }
+    .cap-sec input:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .cap-sec p.fine { margin-top: 16px; font-size: 12px; color: var(--ink-tert); }
+
+    /* ═════ Footer ═════ */
+    footer.site { background: var(--inkoust-800); color: var(--papir-200); padding: 64px 0; }
+    footer.site .wide { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    footer.site .grid { display: grid; gap: 48px; }
+    @media (min-width: 768px) { footer.site .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { footer.site .grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+    footer.site .brand { font-size: 19px; font-weight: 600; color: var(--papir-100); }
+    footer.site .tag { margin-top: 24px; max-width: 320px; font-size: 16px; font-style: italic; line-height: 1.4; color: var(--papir-300); }
+    footer.site h4 { margin-bottom: 20px; font-size: 11px; letter-spacing: 0.32em; color: var(--papir-400); font-weight: 500; }
+    footer.site ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    footer.site a { color: var(--papir-100); font-size: 14px; }
+    footer.site a:hover { color: white; }
+    footer.site hr { margin-top: 56px; border: 0; height: 1px; background: rgba(248,243,232,0.14); }
+    footer.site .colophon { margin-top: 40px; text-align: center; }
+    footer.site .colophon .fl { color: var(--papir-400); display: flex; justify-content: center; }
+    footer.site .colophon .italic { margin-top: 12px; font-size: 14px; font-style: italic; color: var(--papir-300); max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    footer.site .colophon .legal { margin-top: 12px; font-size: 10px; letter-spacing: 0.32em; color: var(--papir-400); }
+    footer.site .colophon .links { margin-top: 16px; display: flex; justify-content: center; gap: 24px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <!-- Promo banner -->
+  <div class="promo"><div class="row">
+    <span class="a" style="font-style:italic">Den matek — do 11. května</span>
+    <span class="sep">·</span>
+    <span style="font-style:italic">sleva 200 Kč s kódem <span class="code">MAMA200</span></span>
+  </div></div>
+
+  <!-- Header -->
+  <header class="header"><div class="row">
+    <a href="#" class="brand">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor"><path d="M2 2h13v18l-4-3-4 3-3-2-2 1V2z"/></svg>
+      Vzpomínkář
+    </a>
+    <nav>
+      <a href="#jak">Jak to funguje</a>
+      <a href="#priklady">Příklady</a>
+      <a href="#">Ceník</a>
+      <a href="#darek">Jako dárek</a>
+      <a href="#">FAQ</a>
+    </nav>
+    <div class="actions">
+      <a class="btn btn-ghost btn-sm" href="#">Přihlášení</a>
+      <a class="btn btn-primary btn-sm" href="#">Začít zdarma</a>
+    </div>
+  </div></header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="ribbon" aria-hidden></div>
+    <div class="container"><div class="grid">
+      <div>
+        <p class="eyebrow">Kronika rodinných vzpomínek · od roku 2024</p>
+        <h1>Vzpomínky, které <em>v rodině zůstanou</em>.</h1>
+        <p class="lead">Každý týden jedna otázka pro maminku, tátu nebo prarodiče. Oni odpoví hlasem či textem — vy z toho na konci roku držíte v ruce knihu.</p>
+        <div class="actions">
+          <a class="btn btn-primary btn-lg" href="#">Začít zdarma</a>
+          <a class="alink" href="#jak">Podívat se, jak to funguje <span class="arr">→</span></a>
+        </div>
+        <p class="micro">Zdarma na rok. Knihu zaplatíte, až ji budete chtít vytisknout.</p>
+        <div class="stats">
+          <div><div class="k">1×</div><div class="v">TÝDNĚ OTÁZKA</div></div>
+          <div><div class="k">0</div><div class="v">NUTNOST PSÁT</div></div>
+          <div><div class="k">∞</div><div class="v">LET V KNIHOVNĚ</div></div>
+        </div>
+      </div>
+      <div class="media">
+        <div class="ph"><div class="lbl">Hero · kniha v rukou</div></div>
+        <div class="qcard">
+          <p>„Babička přečetla první otázku a hned se rozpovídala. Půlhodinu jsme se smáli i plakali."</p>
+          <p class="who">— TEREZA · VNUČKA</p>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- Press strip -->
+  <section class="press"><div class="row">
+    <p class="cap">PÍŠÍ O NÁS</p>
+    <div class="logos">
+      <div>HOSPODÁŘSKÉ NOVINY</div><div>FORBES CZ</div><div>ČESKÝ ROZHLAS</div>
+      <div>HEROINE</div><div>REFLEX</div><div>REFRESHER</div>
+    </div>
+  </div></section>
+
+  <!-- Video testimonial -->
+  <section class="vt section">
+    <div class="smk"><span class="num">I</span><span class="lbl">PŘÍBĚHY UŽIVATELŮ</span><span class="line"></span></div>
+    <div class="grid">
+      <h2>Slyšet maminku znovu vyprávět — i&nbsp;za&nbsp;deset let.</h2>
+      <div class="video ph video"><div class="lbl">Video · ukázka odpovědi</div></div>
+      <ul class="qlist" style="list-style:none; padding:0; margin:0;">
+        <li class="q"><p>„Maminka mi po letech řekla věci, které jsem netušila — a teď je má napsané."</p><p class="who">— KATEŘINA · 41</p></li>
+        <li class="q"><p>„Tátu jsme vždycky znali jako mlčouna. Při hlasovém záznamu se rozmluvil."</p><p class="who">— PAVEL · 36</p></li>
+        <li class="q"><p>„Nejhezčí dárek pro děti od babičky. A ona si ho také užila."</p><p class="who">— IVA · 52</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Trust metrics -->
+  <section class="tm"><div class="row">
+    <div class="stars">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.2l2.45 4.96 5.47.79-3.96 3.86.94 5.45L9 13.7l-4.9 2.57.94-5.45L1.08 6.95l5.47-.79L9 1.2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.2l2.45 4.96 5.47.79-3.96 3.86.94 5.45L9 13.7l-4.9 2.57.94-5.45L1.08 6.95l5.47-.79L9 1.2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.2l2.45 4.96 5.47.79-3.96 3.86.94 5.45L9 13.7l-4.9 2.57.94-5.45L1.08 6.95l5.47-.79L9 1.2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.2l2.45 4.96 5.47.79-3.96 3.86.94 5.45L9 13.7l-4.9 2.57.94-5.45L1.08 6.95l5.47-.79L9 1.2z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.2l2.45 4.96 5.47.79-3.96 3.86.94 5.45L9 13.7l-4.9 2.57.94-5.45L1.08 6.95l5.47-.79L9 1.2z"/></svg>
+    </div>
+    <p class="score">4,9 <span>/ 5</span></p>
+    <p class="meta">ZE 312 HODNOCENÍ RODIN V ČESKU</p>
+  </div></section>
+
+  <!-- Steps -->
+  <section class="stepwrap" id="jak">
+    <div class="head">
+      <div class="smk"><span class="num">II</span><span class="lbl">JAK TO FUNGUJE</span><span class="line"></span></div>
+      <h2>Čtyři kroky a kniha vzniká sama.</h2>
+    </div>
+    <div class="rail">
+      <article class="step">
+        <div class="ph"><div class="lbl">Knihovna otázek</div></div>
+        <p class="roman">I.</p>
+        <h3>Vyberete otázky</h3>
+        <p>Z naší knihovny více než 300 otázek vyberete ty, které vás baví. Můžete přidat i vlastní. My je rozvrhneme po týdnech, abyste rodiče nezahltili.</p>
+      </article>
+      <article class="step">
+        <div class="ph video"><div class="lbl">Hlasová odpověď</div></div>
+        <p class="roman">II.</p>
+        <h3>Blízký odpovídá</h3>
+        <p>V pondělí ráno přijde otázka SMS nebo e‑mailem. Stačí jediné kliknutí, jedno tlačítko, jedna nahraná odpověď. Žádné účty. Žádné aplikace. Žádné kódy.</p>
+      </article>
+      <article class="step">
+        <div class="ph"><div class="lbl">Online náhled knihy</div></div>
+        <p class="roman">III.</p>
+        <h3>Příběh sám roste</h3>
+        <p>Nahrávky převádíme do textu, čistíme přepisy a řadíme je do kapitol. Vy průběžně sledujete, jak se kniha tvoří — nebo počkáte, až bude celá hotová.</p>
+      </article>
+      <article class="step">
+        <div class="ph"><div class="lbl">Kniha v knihovně</div></div>
+        <p class="roman">IV.</p>
+        <h3>Vytisknete knihu</h3>
+        <p>Když je vzpomínek dost, objednáte ručně vázaný výtisk. Tvrdé desky, šitá vazba, papír v krémové barvě. U každé kapitoly QR kód s původním hlasem.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Product visualization -->
+  <section class="col-wrap" id="priklady">
+    <div class="head">
+      <div class="smk"><span class="num">III</span><span class="lbl">PAMĚTNICE</span><span class="line"></span></div>
+      <h2>Tvrdé desky. Šitá vazba. Hlas v každé kapitole.</h2>
+      <p class="intro">U každého příběhu najdete malý QR kód. Naskenujete telefonem a uslyšíte původní vyprávění — tak, jak ho rodič zachytil.</p>
+    </div>
+    <div class="grid">
+      <div class="ph ph-a"><div class="lbl">Kniha · obálka</div></div>
+      <div class="ph ph-b"><div class="lbl">Vnitřní strana</div></div>
+      <div class="ph ph-c"><div class="lbl">QR · skenování</div></div>
+      <div class="ph ph-d"><div class="lbl">Kapitola s fotem</div></div>
+      <div class="ph ph-e"><div class="lbl">Hřbet · ražba</div></div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing">
+    <div class="wide">
+      <div class="smk dark"><span class="num">IV</span><span class="lbl">CENA</span><span class="line"></span></div>
+      <div class="grid">
+        <div>
+          <h2>Jedna platba. Žádné předplatné.</h2>
+          <p class="lead">Rok otázek a online knihovny máte v ceně. Tištěnou knihu si objednáváte až tehdy, kdy víte, že je hotová. Vrátíme peníze do 30 dnů, pokud se rodič nerozpovídá.</p>
+          <ul class="feat">
+            <li>Týdenní otázky e‑mailem nebo SMS po dobu 12 měsíců</li>
+            <li>Neomezené hlasové i textové odpovědi</li>
+            <li>Automatický přepis a redakční úpravy</li>
+            <li>Online knihovna pro celou rodinu</li>
+            <li>Tisk knihy v ručně šité vazbě (volitelně)</li>
+          </ul>
+        </div>
+        <div class="pricecard">
+          <span class="ribbon" aria-hidden></span>
+          <span class="promo-pill">DEN MATEK · −200 KČ</span>
+          <p class="label">ROČNÍ PLÁN</p>
+          <div class="price-row">
+            <span class="price">1&nbsp;790</span>
+            <span class="ccy">Kč</span>
+            <span class="old">1&nbsp;990</span>
+          </div>
+          <p class="fineprint">jednorázově · cena tisku se připočítává jen pokud se rozhodnete knihu vyrobit</p>
+          <a class="btn btn-primary btn-lg ctabtn" href="#">Začít s dárkovou cenou</a>
+          <p class="returns">VRÁCENÍ PENĚZ DO 30 DNŮ · BEZ ZÁVAZKU</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Voice USP -->
+  <section class="voice">
+    <div class="grid">
+      <div class="ph video" style="aspect-ratio:1/1;"><div class="lbl" style="color:var(--papir-200)">Zvuková vlna · hlas mámy</div></div>
+      <div>
+        <p class="eyebrow">HLAS, KTERÝ NEZMIZÍ</p>
+        <h2>Slova jsou jedna věc.<br>Tón hlasu je všechno.</h2>
+        <p class="lead">Přepis je hezký. Smích, zaváhání, oblíbené úsloví — ty se ale do textu nevejdou. Proto ke každé kapitole přidáváme QR kód s původním zvukem.</p>
+        <p style="margin-top:32px"><a class="alink" style="color:var(--papir-100)" href="#jak"><span>Jak fungují zvukové QR kódy</span> <span class="arr">→</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial gallery -->
+  <section class="ts">
+    <div class="smk"><span class="num">V</span><span class="lbl">CO ŘÍKAJÍ RODINY</span><span class="line"></span></div>
+    <h2>Tři generace, jedna knihovna.</h2>
+    <div class="grid">
+      <figure class="tcard"><blockquote>„Ze začátku jsem se styděla mluvit do telefonu. Po druhé otázce už jsem se těšila."</blockquote><figcaption><span class="ava">M</span><span><span class="who">Marie K.</span><br><span class="role">Vyprávěla · 72</span></span></figcaption></figure>
+      <figure class="tcard"><blockquote>„Tátu zaskočilo, že to celé zvládá sám. Mě zaskočilo, kolik o něm pořád nevím."</blockquote><figcaption><span class="ava">T</span><span><span class="who">Tomáš H.</span><br><span class="role">Syn · 44</span></span></figcaption></figure>
+      <figure class="tcard"><blockquote>„Babičce se rozsvítila tvář. Děkovala, že se po ní ještě někdo ptá."</blockquote><figcaption><span class="ava">L</span><span><span class="who">Lenka P.</span><br><span class="role">Vnučka · 28</span></span></figcaption></figure>
+      <figure class="tcard"><blockquote>„Po válce jsem o tom dlouho mlčel. Tady to konečně někdo zaznamenal pořádně."</blockquote><figcaption><span class="ava">J</span><span><span class="who">Jaroslav D.</span><br><span class="role">Vyprávěl · 81</span></span></figcaption></figure>
+      <figure class="tcard"><blockquote>„Maminka už není mezi námi. Knížka teď čte vnoučatům každý večer."</blockquote><figcaption><span class="ava">A</span><span><span class="who">Adéla S.</span><br><span class="role">Dcera · 35</span></span></figcaption></figure>
+      <figure class="tcard"><blockquote>„Vánoční dárek, na který si vzpomeneme i za třicet let."</blockquote><figcaption><span class="ava">P</span><span><span class="who">Petr V.</span><br><span class="role">Syn · 51</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <div class="fleuron"><span class="l"></span><svg width="44" height="20" viewBox="0 0 44 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M22 4c-2 0-3 1.5-3 3 0-2-2-4-5-4S9 4.5 9 7c0 3 4 5 8 5h5"/><path d="M22 16c2 0 3-1.5 3-3 0 2 2 4 5 4s5-1.5 5-4c0-3-4-5-8-5h-5"/><circle cx="22" cy="10" r="1.6" fill="currentColor"/></svg><span class="r"></span></div>
+
+  <!-- Ease of use -->
+  <section class="ease">
+    <div class="wrap">
+      <p class="cap">STAVĚNO PRO 80+</p>
+      <h2>Bez aplikace. Bez učení. Bez frustrace.</h2>
+      <div class="chips">
+        <span class="chip">Žádné psaní</span>
+        <span class="chip">Žádné účty</span>
+        <span class="chip">Žádné stahování</span>
+        <span class="chip">Žádné hesla</span>
+        <span class="chip">Žádné kódy</span>
+      </div>
+      <p class="foot">Jeden e‑mail nebo SMS. Jedno tlačítko. Funguje i ze starého iPadu, i z tlačítkového telefonu — odpoví prozvoněním a my hovor přepíšeme.</p>
+    </div>
+  </section>
+
+  <!-- Speech to story -->
+  <section class="sts">
+    <div class="smk"><span class="num">VI</span><span class="lbl">Z HLASU DO KNIHY</span><span class="line"></span></div>
+    <div class="grid">
+      <div>
+        <h2>Mluvená věta —<br>tištěná kapitola.</h2>
+        <p class="lead">Hlasovou nahrávku přepíšeme. Český korektor vyhladí věty, ale ponechá způsob, jakým to rodič řekl. Vy schvalujete každou kapitolu — nebo si ji upravíte sami v jednoduchém editoru.</p>
+        <p class="quote">„Maminka mluví o babičce — a její vnučka to čte s mojí intonací. To je to kouzlo."</p>
+      </div>
+      <div class="ph"><div class="lbl">Editor přepisu</div></div>
+    </div>
+  </section>
+
+  <!-- Explainer -->
+  <section class="ex">
+    <p class="cap">TŘI SLOVA, JEDEN ZÁMĚR</p>
+    <h2><span class="s1">Kronika,</span><span class="s2">Pamětnice,</span><span class="s3">Vzpomínkář.</span></h2>
+    <dl>
+      <div class="item">
+        <p class="n">01</p>
+        <p class="term">Kronika</p>
+        <p class="etym">z řec. khronikós — „letopisný"</p>
+        <p class="def">Rodinná kronika je v Česku stará tradice — zápisky, které se v rodu předávají z generace na generaci. Dříve psané rukou. Dnes je píšeme společně.</p>
+      </div>
+      <div class="item">
+        <p class="n">02</p>
+        <p class="term">Pamětnice</p>
+        <p class="etym">ze stč. pamět — „to, co se má udržet"</p>
+        <p class="def">Pamětnice je kniha vzpomínek jednoho člověka — co prožil, čím procházel, čemu se naučil. Pro děti a vnoučata to bývá nejvzácnější dar, který v knihovně mají.</p>
+      </div>
+      <div class="item">
+        <p class="n">03</p>
+        <p class="term">Vzpomínkář</p>
+        <p class="etym">neologismus, doslova „ten, kdo vzpomíná"</p>
+        <p class="def">My jsme vzpomínkář — průvodce. Posíláme otázky, které otevírají paměť. Vy a vaši rodiče už jen vyprávíte. Z toho vzniká pamětnice, která se zařadí do vaší rodinné kroniky.</p>
+      </div>
+    </dl>
+    <p class="summary">— Není to aplikace. Je to&nbsp;rodinná kronika, na&nbsp;které pracujete spolu&nbsp;s&nbsp;námi.</p>
+  </section>
+
+  <!-- Founder -->
+  <section class="founder">
+    <div class="wide">
+      <div class="smk"><span class="num">VII</span><span class="lbl">PROČ JSME TO ZALOŽILI</span><span class="line"></span></div>
+      <div class="grid">
+        <div class="ph"><div class="lbl">Zakladatel · portrét</div></div>
+        <div>
+          <p class="lead">Když mi babička v devadesáti zemřela, zůstaly nám tři fotky a krabice s pohlednicemi. Jenže to nejdůležitější — jak mluvila — jsme nikdy nezachytili.</p>
+          <p>Vzpomínkář jsme stvořili, abychom neopakovali stejnou chybu u svých rodičů. Začali jsme s pár otázkami pro tátu, pak nás o to samé poprosili kamarádi. Dnes pomáháme stovkám rodin v Česku zachytit to, co je v každé domácnosti nejvzácnější — rodinný hlas.</p>
+          <p class="attrib">— Jakub Š., zakladatel</p>
+          <p style="margin-top:24px"><a class="alink" href="#"><span>Náš příběh celý</span> <span class="arr">→</span></a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="fleuron"><span class="l"></span><svg width="44" height="20" viewBox="0 0 44 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M22 4c-2 0-3 1.5-3 3 0-2-2-4-5-4S9 4.5 9 7c0 3 4 5 8 5h5"/><path d="M22 16c2 0 3-1.5 3-3 0 2 2 4 5 4s5-1.5 5-4c0-3-4-5-8-5h-5"/><circle cx="22" cy="10" r="1.6" fill="currentColor"/></svg><span class="r"></span></div>
+
+  <!-- Comparison CTA -->
+  <section class="cmpcta">
+    <p class="cap">ROZHODUJETE SE MEZI VÍCE SLUŽBAMI?</p>
+    <h2>Srovnali jsme Vzpomínkář s alternativami — upřímně.</h2>
+    <p><a class="alink" href="#"><span>Otevřít srovnávací tabulku</span> <span class="arr">→</span></a></p>
+  </section>
+
+  <!-- Gifting + Babybook -->
+  <section class="gift" id="darek">
+    <div class="wide">
+      <div class="smk dark"><span class="num">VIII</span><span class="lbl">JAKO DÁREK</span><span class="line"></span></div>
+      <h2>Vybalit dárek i&nbsp;za&nbsp;týden.</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="ph"><div class="lbl">Dárkový certifikát</div></div>
+          <h3>Dárkový certifikát</h3>
+          <p>Hned po platbě dostanete e-mailem nebo k vytištění krásný certifikát s obálkou. Ideál na poslední chvíli.</p>
+          <p><a class="alink" href="#"><span>Koupit certifikát</span> <span class="arr">→</span></a></p>
+        </article>
+        <article class="card">
+          <div class="ph"><div class="lbl">Plánované doručení</div></div>
+          <h3>Naplánované doručení</h3>
+          <p>Zvolíte den — třeba narozeniny — a my v ten den pošleme první otázku přímo obdarovanému.</p>
+          <p><a class="alink" href="#"><span>Naplánovat doručení</span> <span class="arr">→</span></a></p>
+        </article>
+      </div>
+      <article class="baby">
+        <div class="ph"><div class="lbl">Babybook · připravujeme</div></div>
+        <div>
+          <p class="cap">PŘIPRAVUJEME</p>
+          <h3>Babybook — první roky do téže knihovny.</h3>
+          <p>Stejný formát, jen pro nejmladší generaci. Otázky pro rodiče novorozence, fotky, první slova. Společný styl s knihou prarodičů.</p>
+          <p style="margin-top:24px"><a class="alink" href="#"><span>Přihlásit se k waitlistu</span> <span class="arr">→</span></a></p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="wide">
+      <div class="grid">
+        <div>
+          <div class="smk"><span class="num">IX</span><span class="lbl">ČASTÉ DOTAZY</span><span class="line"></span></div>
+          <h2>Rychlé odpovědi.<br>Bez zbytečností.</h2>
+          <p style="margin-top:32px"><a class="alink" href="#"><span>Všechny otázky a odpovědi</span> <span class="arr">→</span></a></p>
+        </div>
+        <ul>
+          <li><details open><summary><span><span class="num">01</span>Co když rodič není zvyklý na techniku?</span><span class="plus">+</span></summary><p class="ans">Nemusí být. Otázku dostane SMSkou nebo e-mailem, jedno kliknutí spustí nahrávání. Pokud má jen tlačítkový telefon, prozvoní nás a my hovor přepíšeme.</p></details></li>
+          <li><details><summary><span><span class="num">02</span>Můžu odpovědi upravovat?</span><span class="plus">+</span></summary><p class="ans">Ano. V rodinném editoru zkontrolujete přepis, doplníte fotku nebo poznámku. Nic ale není povinné — kniha funguje i bez vašeho zásahu.</p></details></li>
+          <li><details><summary><span><span class="num">03</span>Co se stane po roce, když knihu nevytisknu?</span><span class="plus">+</span></summary><p class="ans">Online knihovna zůstává navždy zdarma. Tisk si můžete objednat kdykoli později — třeba až za pět let.</p></details></li>
+          <li><details><summary><span><span class="num">04</span>Můžu dát Vzpomínkář jako dárek?</span><span class="plus">+</span></summary><p class="ans">Můžete koupit dárkový certifikát nebo naplánovat doručení na konkrétní datum (narozeniny, Vánoce, výročí).</p></details></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Email capture -->
+  <section class="cap-sec">
+    <p class="small">SLEVA 200 KČ</p>
+    <h2>Pošleme vám ukázku knihy i&nbsp;slevový kód.</h2>
+    <p class="lead">Žádný spam. Tři e-maily, ve kterých uvidíte, jak se vzpomínky z hlasu mění v knihu.</p>
+    <form>
+      <input type="email" name="email" required placeholder="vase@email.cz" />
+      <button type="submit" class="btn btn-primary btn-lg" style="height:48px;">Poslat ukázku</button>
+    </form>
+    <p class="fine">Odesláním souhlasíte se <a href="#" style="text-decoration:underline">zpracováním e-mailu</a>. Odhlásit se můžete jedním klikem.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site"><div class="wide">
+    <div class="grid">
+      <div>
+        <p class="brand">Vzpomínkář</p>
+        <p class="tag">Psáno i vyprávěno — pro každou rodinu vlastní knihovna.</p>
+      </div>
+      <div>
+        <h4>PROCHÁZET</h4>
+        <ul>
+          <li><a href="#jak">Jak to funguje</a></li>
+          <li><a href="#priklady">Příklady knih</a></li>
+          <li><a href="#">Ceník</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>SPOLEČNOST</h4>
+        <ul>
+          <li><a href="#">O nás</a></li>
+          <li><a href="#">Kontakt</a></li>
+          <li><a href="#">Pro firmy</a></li>
+          <li><a href="#">Práce u nás</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>SROVNÁNÍ</h4>
+        <ul>
+          <li><a href="#">Vzpomínkář vs StoryWorth</a></li>
+          <li><a href="#">Vzpomínkář vs vlastní pamětnice</a></li>
+          <li><a href="#">Vzpomínkář vs zvukový deník</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr>
+    <div class="colophon">
+      <div class="fl"><svg width="44" height="20" viewBox="0 0 44 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M22 4c-2 0-3 1.5-3 3 0-2-2-4-5-4S9 4.5 9 7c0 3 4 5 8 5h5"/><path d="M22 16c2 0 3-1.5 3-3 0 2 2 4 5 4s5-1.5 5-4c0-3-4-5-8-5h-5"/><circle cx="22" cy="10" r="1.6" fill="currentColor"/></svg></div>
+      <p class="italic">Vázáno v Praze · 2026 · Sazba: Bricolage Grotesque<br>Vzpomínkář, vydavatel rodinných kronik.</p>
+      <p class="legal">© 2026 VZPOMÍNKÁŘ, S. R. O.</p>
+      <div class="links"><a href="#">Podmínky</a><span style="opacity:.4">·</span><a href="#">Soukromí</a><span style="opacity:.4">·</span><a href="#">Cookies</a></div>
+    </div>
+  </div></footer>
+
+</body>
+</html>

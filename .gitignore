@@ -1,3 +1,49 @@
-.DS_Store
-.vercel
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Licensed fonts (PP Pangaia, etc.) — do not commit
+Font/
+docs/mockups/**/fonts/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+.playwright/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.log
+
+# Vercel
+.vercel/
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated types (regenerate via supabase gen)
+# (kept tracked: types/database.ts)
+.vercel
+vzpominkar-project.code-workspace
+.claude/scheduled_tasks.lock

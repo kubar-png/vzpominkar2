@@ -1,0 +1,150 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Users, MessageSquare, BookOpen, Settings, LogOut } from "lucide-react";
+import { Logo } from "@/components/shared/Logo";
+import { signOut } from "@/lib/auth/actions";
+import { cn } from "@/lib/utils";
+
+interface AppSidebarProps {
+  familyId: string | null;
+  displayName: string | null;
+  email: string | null;
+}
+
+interface NavItem {
+  numeral: string;
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  requiresFamily?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { numeral: "I",   href: "/dashboard",     label: "Domů",    icon: Home },
+  { numeral: "II",  href: "FAMILY/rodina",  label: "Rodina",  icon: Users,         requiresFamily: true },
+  { numeral: "III", href: "FAMILY/prompts", label: "Otázky",  icon: MessageSquare, requiresFamily: true },
+  { numeral: "IV",  href: "FAMILY/book",    label: "Kniha",   icon: BookOpen,      requiresFamily: true },
+];
+
+const SETTINGS_ITEM: NavItem = { numeral: "V", href: "/settings", label: "Nastavení", icon: Settings };
+
+export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
+  const pathname = usePathname();
+
+  function resolveHref(item: NavItem): string {
+    if (!item.requiresFamily) return item.href;
+    return `/family/${familyId}/${item.href.replace("FAMILY/", "")}`;
+  }
+
+  function isActive(item: NavItem): boolean {
+    const href = resolveHref(item);
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(href);
+  }
+
+  function NavLink({ item }: { item: NavItem }) {
+    const href = resolveHref(item);
+    const disabled = item.requiresFamily && !familyId;
+    const active = isActive(item);
+    const Icon = item.icon;
+
+    const classes = cn(
+      "group relative mx-3 flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 transition-colors",
+      active
+        ? "bg-[var(--color-navy-800)] text-[var(--color-paper-50)]"
+        : disabled
+          ? "cursor-default text-[var(--color-navy-700)] opacity-40"
+          : "text-[var(--color-paper-500)] hover:bg-[var(--color-navy-800)] hover:text-[var(--color-paper-100)]",
+    );
+
+    const content = (
+      <>
+        {active && (
+          <span
+            aria-hidden
+            className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-[var(--color-gold-400)]"
+          />
+        )}
+        {/* Roman numeral */}
+        <span
+          className={cn(
+            "w-7 shrink-0 font-[family-name:var(--font-display)] text-[10px]",
+            active
+              ? "text-[var(--color-gold-300)]"
+              : disabled
+                ? "text-[var(--color-navy-700)]"
+                : "text-[var(--color-navy-600)] group-hover:text-[var(--color-gold-400)]",
+          )}
+        >
+          {item.numeral}.
+        </span>
+        <Icon
+          size={14}
+          aria-hidden
+          className={active ? "text-[var(--color-paper-200)]" : ""}
+        />
+        <span className="text-sm font-medium">{item.label}</span>
+      </>
+    );
+
+    if (disabled) {
+      return (
+        <span
+          className={classes}
+          title="Nejprve dokončete nastavení rodiny"
+          aria-disabled="true"
+        >
+          {content}
+        </span>
+      );
+    }
+    return <Link href={href} className={classes}>{content}</Link>;
+  }
+
+  return (
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[260px] flex-col bg-[var(--color-navy-950)] md:flex">
+      {/* Logo area */}
+      <div className="px-6 pb-5 pt-7">
+        <Logo variant="wordmark" href="/dashboard" size={20} invert />
+      </div>
+
+      {/* Decorative rule with diamond */}
+      <div className="mx-5 mb-4 flex items-center gap-3 opacity-50">
+        <span className="h-px flex-1 bg-[var(--color-navy-700)]" />
+        <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
+          <path d="M4 0.5 L7.5 4 L4 7.5 L0.5 4 Z" stroke="var(--color-gold-400)" strokeWidth="1" />
+        </svg>
+        <span className="h-px flex-1 bg-[var(--color-navy-700)]" />
+      </div>
+
+      {/* Main nav */}
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto py-1">
+        {NAV_ITEMS.map((item) => (
+          <NavLink key={item.numeral} item={item} />
+        ))}
+
+        <div className="mx-5 my-3 h-px bg-[var(--color-navy-800)]" />
+
+        <NavLink item={SETTINGS_ITEM} />
+      </nav>
+
+      {/* User strip */}
+      <div className="border-t border-[var(--color-navy-800)] px-5 py-5">
+        <p className="font-[family-name:var(--font-display)] text-sm text-[var(--color-paper-400)]">
+          {displayName ?? email ?? ""}
+        </p>
+        <form action={signOut} className="mt-2">
+          <button
+            type="submit"
+            className="flex items-center gap-1.5 text-xs text-[var(--color-navy-600)] transition-colors hover:text-[var(--color-paper-400)]"
+          >
+            <LogOut size={10} aria-hidden />
+            Odhlásit se
+          </button>
+        </form>
+      </div>
+    </aside>
+  );
+}
