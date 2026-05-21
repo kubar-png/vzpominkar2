@@ -1566,3 +1566,85 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .steps { grid-template-columns: 1fr; }
   .editorial .gallery-grid { grid-template-columns: 1fr; }
 }
+/* Legal body — long-form prose tuned for terms / privacy / cookies pages.
+ * Wider than .prose-vzp (lawyer text needs slightly more line length) and
+ * with serif h2/h3 + gold hairline rule above each h2 to give the page a
+ * chapter rhythm. Inherits the page's cream body bg from <Shell>. */
+.legal-body {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+}
+.legal-body :where(h2) {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-3xl);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-navy-900);
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border-strong);
+  text-wrap: balance;
+}
+.legal-body :where(h2:first-child) {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.legal-body :where(h3) {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  color: var(--color-navy-900);
+  margin-top: 2rem;
+}
+.legal-body :where(p, ul, ol) {
+  margin-top: 1rem;
+  color: var(--color-text-muted);
+}
+.legal-body :where(p:first-child, h2 + p) {
+  margin-top: 1.25rem;
+}
+.legal-body :where(ul, ol) {
+  padding-left: 1.25rem;
+}
+.legal-body :where(ul) { list-style: disc; }
+.legal-body :where(ol) { list-style: decimal; }
+.legal-body :where(li) {
+  margin-top: 0.5rem;
+}
+.legal-body :where(strong) {
+  color: var(--color-text);
+  font-weight: 600;
+}
+.legal-body :where(a) {
+  color: var(--color-navy-800);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.legal-body :where(a:hover) {
+  color: var(--color-navy-900);
+}
+.legal-body :where(dl) {
+  margin-top: 1.25rem;
+}
+.legal-body :where(dt) {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--color-navy-900);
+  margin-top: 1.25rem;
+}
+.legal-body :where(dd) {
+  color: var(--color-text-muted);
+  margin-top: 0.35rem;
+}
+.legal-body :where(hr) {
+  margin: 3rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-border-strong);
+}
+
