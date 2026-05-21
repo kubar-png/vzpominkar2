@@ -16,8 +16,6 @@ import {
   Abril_Fatface,
   Yeseva_One,
   Marcellus,
-  Cardo,
-  Spectral,
   Della_Respira,
   IM_Fell_DW_Pica,
   Petrona,
@@ -120,20 +118,6 @@ const marcellus = Marcellus({
   subsets: ["latin", "latin-ext"],
   display: "swap",
   weight: ["400"],
-});
-
-const cardo = Cardo({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-});
-
-const spectral = Spectral({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
 });
 
 /* Della Respira: no latin-ext subset either. */

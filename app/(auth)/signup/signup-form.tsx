@@ -3,7 +3,13 @@
 import { useActionState } from "react";
 import { signUpOwner, type ActionResult } from "@/lib/auth/actions";
 
-export function SignupForm() {
+export function SignupForm({
+  product,
+  gift,
+}: {
+  product?: string;
+  gift?: boolean;
+} = {}) {
   const [state, formAction, pending] = useActionState<ActionResult | null, FormData>(
     signUpOwner,
     null,
@@ -14,6 +20,8 @@ export function SignupForm() {
 
   return (
     <form action={formAction} className="auth-form">
+      {product ? <input type="hidden" name="product" value={product} /> : null}
+      {gift ? <input type="hidden" name="gift" value="1" /> : null}
       <Field
         label="Vaše jméno"
         name="displayName"

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { SeniorLoginForm } from "./senior-login-form";
 
-export const metadata: Metadata = { title: "Přihlášení - Vzpomínkář" };
+export const metadata: Metadata = {
+  title: "Přihlášení vyprávějícího",
+  description:
+    "Přihlášení vyprávějícího. Otevřete týdenní otázku a začněte vyprávět.",
+};
 
 export default function SeniorLoginPage() {
   return (

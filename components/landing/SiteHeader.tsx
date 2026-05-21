@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
 import { buttonVariants } from "@/components/ui/button";
+import { MarketingMobileMenu } from "@/components/landing/MarketingMobileMenu";
 
 interface SiteHeaderProps {
   /**
@@ -64,7 +65,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
             FAQ
           </Link>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 md:flex">
           <Link
             href="/login"
             className={buttonVariants({ variant: "ghost", size: "sm" })}
@@ -78,6 +79,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
             Začít zdarma
           </Link>
         </div>
+        <MarketingMobileMenu />
       </div>
     </header>
   );

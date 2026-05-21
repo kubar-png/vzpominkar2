@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
-import { cn } from "@/lib/utils";
 
 const NAV: ReadonlyArray<{ label: string; href: string }> = [
   { label: "Jak to funguje", href: "/jak-to-funguje" },

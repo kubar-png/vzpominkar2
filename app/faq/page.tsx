@@ -159,9 +159,32 @@ const CATEGORIES: Category[] = [
   },
 ];
 
+function stripHtml(s: string): string {
+  return s.replace(/&nbsp;/g, " ").replace(/&[a-z]+;/gi, "").replace(/<[^>]+>/g, "").trim();
+}
+
+const FAQ_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: CATEGORIES.flatMap((cat) =>
+    cat.items.map((item) => ({
+      "@type": "Question",
+      name: stripHtml(item.q),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: stripHtml(item.a),
+      },
+    })),
+  ),
+};
+
 export default function FaqPage() {
   return (
     <Shell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
       {/* Hero */}
       <section className="mx-auto max-w-[var(--container-wide)] px-6 pt-16 pb-12 text-center sm:pt-24">
         <SectionEyebrow className="mx-auto">Časté dotazy</SectionEyebrow>

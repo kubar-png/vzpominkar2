@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Zkontrolujte e-mail" };
+export const metadata: Metadata = {
+  title: "Zkontrolujte e-mail",
+  description: "Potvrzovací e-mail je na cestě. Zkontrolujte schránku.",
+};
 
 export default function CheckEmailPage() {
   return (

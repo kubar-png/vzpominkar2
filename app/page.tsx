@@ -13,9 +13,32 @@ import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
  * this page; everything else stays a Server Component.
  * ─────────────────────────────────────────────────────────────────────── */
 
+const ORG_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Vzpomínkář",
+  url: "https://vzpominkar2.vercel.app",
+  logo: "https://vzpominkar2.vercel.app/logo.png",
+  description:
+    "Vzpomínkář — kniha rodinné paměti. Rok týdenních otázek pro rodiče a prarodiče; z jejich hlasů uděláme tištěnou knihu pro vnoučata.",
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: "ahoj@vzpominkar.cz",
+      areaServed: "CZ",
+      availableLanguage: ["Czech"],
+    },
+  ],
+} as const;
+
 export default function HomePage() {
   return (
     <div className="editorial">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
+      />
       <HeroScrollDriver />
 
       {/* ═══════════ HEADER ═══════════ */}
@@ -32,7 +55,7 @@ export default function HomePage() {
               <a href="#faq">Otázky</a>
               <a href="/o-nas">Náš příběh</a>
             </div>
-            <a href="#signup" className="btn btn-gold">
+            <a href="/signup" className="btn btn-gold">
               Začít zdarma <span className="arrow">↗</span>
             </a>
           </nav>
@@ -54,7 +77,7 @@ export default function HomePage() {
               koho milovali, jak chutnaly Vánoce. Z jejich hlasů uděláme knihu,
               kterou vnoučata otevřou za třicet let.
             </p>
-            <a href="#signup" className="btn btn-gold hero-cta">
+            <a href="/signup" className="btn btn-gold hero-cta">
               Začít sbírat vzpomínky <span className="arrow">↗</span>
             </a>
           </div>
@@ -190,7 +213,7 @@ export default function HomePage() {
                   <li>Vlastní kopie nahrávek navždy</li>
                   <li>Sourozenci a vnoučata se mohou připojit</li>
                 </ul>
-                <a href="#signup" className="btn btn-gold">
+                <a href="/signup" className="btn btn-gold">
                   Začít zdarma <span className="arrow">↗</span>
                 </a>
                 <div className="product-meta">
@@ -217,17 +240,6 @@ export default function HomePage() {
               „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&rdquo;
             </blockquote>
             <div className="feature-attr">— Forbes CZ, podzim 2026</div>
-            <div className="video-poster">
-              <a href="#" className="play-pill">
-                Přehrát video — 3:12
-              </a>
-            </div>
-            <div style={{ marginTop: "28px" }}>
-              <a href="#" className="btn btn-dark">
-                Přečíst článek na Forbes CZ <span className="arrow">↗</span>
-              </a>
-            </div>
-
             <div className="testimonial-grid">
               <article className="testimonial">
                 <div className="stars">★★★★★</div>
@@ -315,7 +327,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="qr-cta">
-              <a href="#" className="btn btn-outline">
+              <a href="/jak-to-funguje" className="btn btn-outline">
                 Podívat se dovnitř knihy <span className="arrow">↗</span>
               </a>
             </div>
@@ -417,7 +429,7 @@ export default function HomePage() {
                     <div className="label">Bez aplikací</div>
                   </div>
                 </div>
-                <a href="#" className="btn-record">
+                <a href="/jak-to-funguje" className="btn-record">
                   Zkusit, jak to zní
                 </a>
               </div>
@@ -443,30 +455,8 @@ export default function HomePage() {
               </p>
             </div>
             <div className="tech-img" />
-            <a href="#" className="arrow-link">
+            <a href="/jak-to-funguje" className="arrow-link">
               Ukázka přepisu
-            </a>
-          </div>
-        </section>
-
-        {/* ═══════════ 10. COMPARISON ═══════════ */}
-        <section className="compare">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">Srovnání</span>
-              <h2>
-                Není to jediná cesta.
-                <br />
-                Tady je naše.
-              </h2>
-              <p className="lede">
-                Vzpomínkář není jediný způsob, jak udělat knihu vzpomínek. Ale
-                dělá to jinak — pomaleji, ručně, s hlasem. Bez šablon, bez
-                automatizace, bez umělé inteligence místo babičky.
-              </p>
-            </div>
-            <a href="#" className="arrow-link">
-              Srovnání s ostatními
             </a>
           </div>
         </section>
@@ -684,7 +674,7 @@ export default function HomePage() {
                 <br />
                 <span className="brand-gold">Vzpomínkář.</span>
               </h2>
-              <a href="#signup" className="btn btn-gold">
+              <a href="/signup" className="btn btn-gold">
                 Začít zdarma <span className="arrow">↗</span>
               </a>
             </div>
@@ -709,11 +699,6 @@ export default function HomePage() {
                 <li>
                   <a href="/faq">
                     Časté otázky <span className="ext">↗</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    Srovnání <span className="ext">↗</span>
                   </a>
                 </li>
               </ul>
@@ -747,11 +732,6 @@ export default function HomePage() {
                 <li>
                   <a href="/kontakt">
                     Kontakt <span className="ext">↗</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#">
-                    Instagram <span className="ext">↗</span>
                   </a>
                 </li>
               </ul>

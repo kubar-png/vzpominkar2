@@ -19,11 +19,6 @@ function easeInOutSine(t: number): number {
   return -(Math.cos(Math.PI * t) - 1) / 2;
 }
 
-const ROMAN_NUMERALS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-function toRoman(n: number): string {
-  return ROMAN_NUMERALS[n] ?? String(n);
-}
-
 export function StepCarousel({ steps }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);

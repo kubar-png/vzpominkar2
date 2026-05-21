@@ -65,7 +65,7 @@ function Colophon({ className }: { className?: string }) {
       <p className="mt-3 max-w-md font-[family-name:var(--font-display)] text-sm italic leading-relaxed text-[var(--color-paper-300)]">
         Vázáno v Praze · {new Date().getFullYear()}
         <span className="mx-2 opacity-60">·</span>
-        Sazba: EB Garamond &amp; Inter
+        Sazba: PP Pangaia &amp; Instrument Sans
         <br />
         Vzpomínkář, vydavatel rodinných kronik.
       </p>

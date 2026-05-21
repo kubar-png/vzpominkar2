@@ -18,28 +18,31 @@ const CHANNELS = [
       "Odpovídáme do jednoho pracovního dne, většinou do hodiny. Hodí se, když máte konkrétní dotaz k účtu nebo objednávce.",
   },
   {
+    /* TODO: doplnit reálné telefonní číslo */
     eyebrow: "Po telefonu",
     label: "Telefon",
-    value: "+420 777 123 456",
-    href: "tel:+420777123456",
+    value: "Telefonní podpora — připravujeme",
+    href: null as string | null,
     body:
-      "Pondělí–pátek, 9:00–17:00. Bere vám člověk z týmu, ne hlasový automat. Nejlepší volba, když je rodič v nesnázích a čeká pomoc.",
+      "Telefonní linku spouštíme krátce po pilotu. Mezitím napište e-mailem — odpovídáme do hodiny v pracovní době.",
   },
   {
+    /* TODO: doplnit reálnou adresu sídla před spuštěním */
     eyebrow: "Osobně",
     label: "Adresa",
-    value: "Plzeňská 12, Praha 5 — Smíchov",
+    value: "Sídlo — doplníme před spuštěním",
     href: null as string | null,
     body:
-      "Když nás chcete navštívit, napište den předem. Ve druhém patře nad knihovnou — dveře s mosaznou cedulkou.",
+      "Adresu redakce zveřejníme s ostrým spuštěním. Pokud nás potřebujete potkat dřív, napište a domluvíme se.",
   },
   {
+    /* TODO: doplnit IČO, DIČ a fakturační adresu po založení s.r.o. */
     eyebrow: "Poštou",
     label: "Fakturační údaje",
-    value: "Vzpomínkář, s. r. o., Plzeňská 12, 150 00 Praha 5",
+    value: "Firemní údaje — připravujeme",
     href: null as string | null,
     body:
-      "Pro fakturaci nebo pokud nám chcete poslat rukopis, fotky či pohlednice po babičce — všechno čteme, všechno vracíme.",
+      "Po dokončení zápisu do obchodního rejstříku tu najdete IČO, DIČ i fakturační adresu pro zaslání rukopisů a poštovních zásilek.",
   },
 ];
 

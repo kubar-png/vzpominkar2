@@ -12,7 +12,6 @@ import {
   Fleuron,
   SectionEyebrow,
   editorialHeadingClass,
-  editorialHeadingClassSm,
 } from "@/components/landing/Editorial";
 import { cn } from "@/lib/utils";
 
