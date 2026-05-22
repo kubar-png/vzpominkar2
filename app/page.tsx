@@ -1,6 +1,18 @@
 import Link from "next/link";
 import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
+import { QuestionDeck } from "@/components/landing/QuestionDeck";
+
+/* Six representative questions shown in the deck slider, sampled across
+ * the 8 categories in supabase/seed.sql so the visitor sees the range. */
+const DECK_QUESTIONS = [
+  { category: "Dětství",   question: "Jaká je vaše nejranější vzpomínka? Kolik vám tehdy mohlo být let?" },
+  { category: "Škola",     question: "Který učitel na vás zanechal největší vliv — a proč?" },
+  { category: "Rodina",    question: "Co jste mívali doma na nedělní oběd? A kdo ho vařil?" },
+  { category: "Vánoce",    question: "Jak vypadaly Vánoce ve vaší rodině, když jste byli malí?" },
+  { category: "Mládí",     question: "Co byl váš první větší sen, když vám bylo kolem dvaceti?" },
+  { category: "Láska",     question: "Vzpomínáte si na svoji první lásku? Jak jste se poznali?" },
+] as const;
 
 /* ─────────────────────────────────────────────────────────────────────────
  * Marketing homepage — editorial direction (M3 reskin, vzpominkar2)
@@ -180,6 +192,29 @@ export default function HomePage() {
                 Celý proces <span className="arrow">↗</span>
               </a>
             </div>
+          </div>
+        </section>
+
+        {/* ═══════════ 3b. QUESTION DECK ═══════════ */}
+        <section className="section question-deck-section">
+          <div className="container">
+            <div className="section-head">
+              <span className="eyebrow">Otázky z knihovny</span>
+              <h2 className="q-deck-title">
+                Co všechno <em>nevíte</em>
+                <br />
+                o svých blízkých?
+              </h2>
+              <p className="lede">
+                Vyberte si jednu z otázek a zkuste si představit, co byste
+                slyšeli zpátky. V knihovně jich je přes dvě stě — a každá
+                otevírá kapitolu, na kterou by jinak nikdy nepřišla řeč.
+              </p>
+            </div>
+            <QuestionDeck
+              questions={DECK_QUESTIONS}
+              totalCount={300}
+            />
           </div>
         </section>
 
