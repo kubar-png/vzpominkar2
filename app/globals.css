@@ -592,13 +592,21 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .nav { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .editorial .logo {
-  font-family: var(--font-display-editorial); font-size: 30px; font-weight: 500;
-  color: var(--ink); letter-spacing: -0.02em;
-  position: relative; padding: 2px 6px;
+  display: inline-flex; align-items: center;
+  padding: 2px 0;
+  line-height: 0;
 }
-.editorial .logo::before {
-  content: ''; position: absolute; inset: auto 4px 6px 4px;
-  height: 38%; background: var(--gold-soft); z-index: -1; border-radius: 1px;
+.editorial .logo-mark {
+  display: block;
+  width: clamp(150px, 16vw, 200px);
+  aspect-ratio: 1892 / 390;
+  background-color: var(--gold);
+  -webkit-mask: url('/brand/logo-mask.png') no-repeat left center / contain;
+  mask: url('/brand/logo-mask.png') no-repeat left center / contain;
+}
+/* Slightly smaller logo in the dark mobile menu drawer */
+.editorial .mobile-menu-head .logo-mark {
+  width: clamp(140px, 38vw, 180px);
 }
 .editorial .nav-links { display: flex; gap: 32px; font-size: 14px; color: var(--ink); }
 .editorial .nav-links a { transition: color 0.2s; }
@@ -704,22 +712,10 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-bottom: 1px solid rgba(237, 228, 207, 0.16);
 }
 .editorial .mobile-menu-head .logo {
-  font-family: var(--font-display-editorial);
-  font-size: 26px;
-  font-weight: 500;
-  color: var(--footer-ink);
-  letter-spacing: -0.02em;
-  position: relative;
-  padding: 2px 6px;
-}
-.editorial .mobile-menu-head .logo::before {
-  content: '';
-  position: absolute;
-  inset: auto 4px 5px 4px;
-  height: 38%;
-  background: var(--gold);
-  z-index: -1;
-  border-radius: 1px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  padding: 0;
 }
 .editorial .mobile-menu-close {
   background: transparent;

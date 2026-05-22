@@ -46,8 +46,8 @@ export default function HomePage() {
       <header className="editorial-header">
         <div className="container">
           <nav className="nav">
-            <Link href="/" className="logo">
-              Vzpomínkář.
+            <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
+              <span className="logo-mark" aria-hidden="true" />
             </Link>
             <div className="nav-links">
               <a href="#jak">Jak to funguje</a>

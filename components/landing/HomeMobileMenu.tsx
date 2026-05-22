@@ -63,9 +63,10 @@ export function HomeMobileMenu() {
             <Link
               href="/"
               className="logo"
+              aria-label="Vzpomínkář — domů"
               onClick={() => setOpen(false)}
             >
-              Vzpomínkář.
+              <span className="logo-mark" aria-hidden="true" />
             </Link>
             <button
               type="button"
