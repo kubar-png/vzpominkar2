@@ -3,15 +3,19 @@ import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 
-/* Six representative questions shown in the deck slider, sampled across
- * the 8 categories in supabase/seed.sql so the visitor sees the range. */
+/* Eight representative questions from the seed library, sampled across the
+ * 8 categories. Phrased in tykání as if the visitor is imagining asking the
+ * question to their own parent (alternating masculine + feminine address so
+ * it reads as a natural conversation with both mom and dad). */
 const DECK_QUESTIONS = [
-  { category: "Dětství",   question: "Jaká je vaše nejranější vzpomínka? Kolik vám tehdy mohlo být let?" },
-  { category: "Škola",     question: "Který učitel na vás zanechal největší vliv — a proč?" },
-  { category: "Rodina",    question: "Co jste mívali doma na nedělní oběd? A kdo ho vařil?" },
-  { category: "Vánoce",    question: "Jak vypadaly Vánoce ve vaší rodině, když jste byli malí?" },
-  { category: "Mládí",     question: "Co byl váš první větší sen, když vám bylo kolem dvaceti?" },
-  { category: "Láska",     question: "Vzpomínáte si na svoji první lásku? Jak jste se poznali?" },
+  { category: "Dětství",  question: "Kde jsi vyrůstal? Popiš mi dům, ve kterém jsi bydlel." },
+  { category: "Škola",    question: "Který učitel na tebe v životě nejvíc zapůsobil — a proč?" },
+  { category: "Vánoce",   question: "Jak vypadaly Vánoce u vás doma, když jsi byla malá?" },
+  { category: "Mládí",    question: "Jakou hudbu jsi poslouchal, když ti bylo kolem dvaceti?" },
+  { category: "Láska",    question: "Jak jste se s mámou seznámili? Vzpomínáš si na první setkání?" },
+  { category: "Rodina",   question: "Pamatuješ si na den, kdy se ti narodilo první dítě?" },
+  { category: "Práce",    question: "Jaké bylo tvoje první zaměstnání? Jak jsi se k němu dostala?" },
+  { category: "Moudro",   question: "Co bys poradila svému dvacetiletému já, kdybys mohla?" },
 ] as const;
 
 /* ─────────────────────────────────────────────────────────────────────────
