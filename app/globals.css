@@ -1781,16 +1781,35 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .steps .step:last-child { scroll-snap-align: end; }
 
   .editorial .testimonial-grid { grid-template-columns: 1fr; }
-  .editorial .gallery-grid { grid-template-columns: 1fr 1fr; }
+
+  /* ─── Co píší rodiny: horizontal-scroll carousel on mobile ─── */
+  .editorial .gallery-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter-editorial);
+    margin-inline: calc(-1 * var(--gutter-editorial));
+    padding: 4px var(--gutter-editorial) 24px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .editorial .gallery-grid::-webkit-scrollbar { display: none; }
+  .editorial .gallery-grid .story-card {
+    flex: 0 0 78vw;
+    max-width: 320px;
+    scroll-snap-align: start;
+  }
+  .editorial .gallery-grid .story-card:last-child { scroll-snap-align: end; }
+
   .editorial .companion-grid { grid-template-columns: 1fr; }
   .editorial .feature-tiles { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .editorial .signup-form { flex-direction: column; }
   .editorial .signup-form input { width: 100%; }
   .editorial .phone-overlay { right: 0; bottom: -20%; width: 32%; }
   .editorial .footer-grid { grid-template-columns: 1fr; text-align: center; }
-}
-@media (max-width: 560px) {
-  .editorial .gallery-grid { grid-template-columns: 1fr; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
