@@ -5,6 +5,8 @@ import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { ScheduledList } from "./scheduled-list";
 import { PromptPickers } from "./prompt-pickers";
@@ -114,9 +116,9 @@ export default async function PromptsPage({
         action={
           <Link
             href="/settings/otazky"
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-subtle)] transition-colors hover:text-[var(--color-text-muted)]"
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
-            <Settings2 size={12} />
+            <Settings2 size={14} aria-hidden />
             Nastavení doručování
           </Link>
         }

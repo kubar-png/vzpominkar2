@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, AlertTriangle, X, Check } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { updateSeniorProfile, deleteSeniorAccount } from "@/lib/auth/senior-actions";
 
@@ -73,6 +74,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
       });
       if (result.ok) {
         setPhase("view");
+        toast.success("Uloženo");
         router.refresh();
       } else {
         setError(result.error ?? "Nepodařilo se uložit.");
@@ -84,7 +86,9 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
     setError(null);
     start(async () => {
       const result = await deleteSeniorAccount(familyId, senior.id);
-      if (!result.ok) {
+      if (result.ok) {
+        toast.success(`Účet ${senior.display_name ?? "blízkého"} smazán`);
+      } else {
         setError(result.error ?? "Smazání selhalo.");
       }
       // On success the page refreshes via revalidatePath - no need to router.refresh()
@@ -113,17 +117,16 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
 
           <div className="space-y-1.5">
             <Label htmlFor={`role-${senior.id}`}>Role v rodině</Label>
-            <select
+            <Select
               id={`role-${senior.id}`}
               value={editRole}
               onChange={(e) => setEditRole(e.target.value)}
-              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
             >
               <option value="">- nevybráno -</option>
               {SENIOR_ROLE_OPTIONS.map((r) => (
                 <option key={r.value} value={r.value}>{r.label}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="border-t border-[var(--color-border)] pt-4">
@@ -133,16 +136,15 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor={`channel-${senior.id}`}>Způsob doručení</Label>
-                <select
+                <Select
                   id={`channel-${senior.id}`}
                   value={editChannel}
                   onChange={(e) => setEditChannel(e.target.value)}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
                 >
                   <option value="">- nevybráno -</option>
                   <option value="email">E-mail</option>
                   <option value="whatsapp">WhatsApp</option>
-                </select>
+                </Select>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor={`address-${senior.id}`}>E-mail nebo telefon (WhatsApp)</Label>
@@ -156,15 +158,14 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor={`freq-${senior.id}`}>Frekvence</Label>
-                <select
+                <Select
                   id={`freq-${senior.id}`}
                   value={editFrequency}
                   onChange={(e) => setEditFrequency(Number(e.target.value) as 1 | 2)}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
                 >
                   <option value={1}>Jednou týdně</option>
                   <option value={2}>Dvakrát týdně</option>
-                </select>
+                </Select>
               </div>
             </div>
           </div>

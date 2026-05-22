@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 import { updateDeliverySettings } from "@/lib/auth/senior-actions";
 
 interface DeliveryFormProps {
@@ -23,14 +23,10 @@ export function DeliveryForm({ familyId, senior }: DeliveryFormProps) {
   const [channel, setChannel] = useState(senior.contact_channel ?? "");
   const [address, setAddress] = useState(senior.contact_address ?? "");
   const [frequency, setFrequency] = useState(senior.prompt_frequency ?? 1);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const router = useRouter();
 
   function handleSave() {
-    setError(null);
-    setSaved(false);
     start(async () => {
       const result = await updateDeliverySettings(familyId, senior.id, {
         contactChannel: channel || null,
@@ -38,32 +34,28 @@ export function DeliveryForm({ familyId, senior }: DeliveryFormProps) {
         promptFrequency: frequency as 1 | 2,
       });
       if (result.ok) {
-        setSaved(true);
+        toast.success("Uloženo");
         router.refresh();
       } else {
-        setError(result.error ?? "Uložení se nepodařilo.");
+        toast.error(result.error ?? "Uložení se nepodařilo.");
       }
     });
   }
-
-  const selectClass =
-    "w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]";
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor={`ch-${senior.id}`}>Způsob doručení</Label>
-          <select
+          <Select
             id={`ch-${senior.id}`}
             value={channel}
-            onChange={(e) => { setChannel(e.target.value); setSaved(false); }}
-            className={selectClass}
+            onChange={(e) => setChannel(e.target.value)}
           >
             <option value="">- nevybráno -</option>
             <option value="email">E-mail</option>
             <option value="whatsapp">WhatsApp</option>
-          </select>
+          </Select>
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">
@@ -73,7 +65,7 @@ export function DeliveryForm({ familyId, senior }: DeliveryFormProps) {
           <Input
             id={`addr-${senior.id}`}
             value={address}
-            onChange={(e) => { setAddress(e.target.value); setSaved(false); }}
+            onChange={(e) => setAddress(e.target.value)}
             maxLength={200}
             placeholder={channel === "whatsapp" ? "+420 777 123 456" : "jana@email.cz"}
           />
@@ -83,30 +75,20 @@ export function DeliveryForm({ familyId, senior }: DeliveryFormProps) {
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-1.5">
           <Label htmlFor={`freq-${senior.id}`}>Frekvence odesílání</Label>
-          <select
+          <Select
             id={`freq-${senior.id}`}
             value={frequency}
-            onChange={(e) => { setFrequency(Number(e.target.value) as 1 | 2); setSaved(false); }}
-            className={selectClass + " w-auto min-w-[180px]"}
+            onChange={(e) => setFrequency(Number(e.target.value) as 1 | 2)}
+            className="w-auto min-w-[180px]"
           >
             <option value={1}>Jednou týdně (pondělí)</option>
             <option value={2}>Dvakrát týdně (po + čt)</option>
-          </select>
+          </Select>
         </div>
 
-        <div className="flex items-center gap-3">
-          {saved && (
-            <span className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)]">
-              <Check size={14} className="text-green-600" /> Uloženo
-            </span>
-          )}
-          {error && (
-            <span className="text-sm text-[var(--color-danger)]">{error}</span>
-          )}
-          <Button size="sm" onClick={handleSave} disabled={pending}>
-            {pending ? "Ukládám…" : "Uložit"}
-          </Button>
-        </div>
+        <Button size="sm" onClick={handleSave} disabled={pending}>
+          {pending ? "Ukládám…" : "Uložit"}
+        </Button>
       </div>
     </div>
   );

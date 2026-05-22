@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { scheduleNextMonday, scheduleToday } from "@/lib/prompts/actions";
 import { cn } from "@/lib/utils";
@@ -24,11 +25,9 @@ export function LibraryPicker({
   const [pending, start] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [busyType, setBusyType] = useState<"queue" | "now" | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [added, setAdded] = useState<Set<string>>(new Set());
 
   function add(promptId: string, type: "queue" | "now") {
-    setError(null);
     setBusyId(promptId);
     setBusyType(type);
     start(async () => {
@@ -36,9 +35,10 @@ export function LibraryPicker({
         ? await scheduleToday(familyId, promptId, seniorIds)
         : await scheduleNextMonday(familyId, promptId, seniorIds);
       if (!result.ok) {
-        setError(result.error);
+        toast.error(result.error);
       } else {
         setAdded((prev) => new Set([...prev, promptId]));
+        toast.success(type === "now" ? "Otázka odeslána" : "Naplánováno na příští pondělí");
       }
       setBusyId(null);
       setBusyType(null);
@@ -73,15 +73,6 @@ export function LibraryPicker({
           </button>
         ))}
       </div>
-
-      {error ? (
-        <p
-          role="alert"
-          className="rounded-[var(--radius-md)] border border-[var(--color-red-200)] bg-[var(--color-red-50)] px-4 py-2.5 text-sm text-[var(--color-red-700)]"
-        >
-          {error}
-        </p>
-      ) : null}
 
       {activeGroup ? (
         <ul className="space-y-2">

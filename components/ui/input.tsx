@@ -1,14 +1,26 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  function Input({ className, type = "text", ...props }, ref) {
+type FieldSize = "sm" | "md";
+
+const fieldHeight: Record<FieldSize, string> = {
+  sm: "h-9",
+  md: "h-10",
+};
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  inputSize?: FieldSize;
+}
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  function Input({ className, type = "text", inputSize = "md", ...props }, ref) {
     return (
       <input
         ref={ref}
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-[var(--radius-md)]",
+          "flex w-full rounded-[var(--radius-md)]",
+          fieldHeight[inputSize],
           "border border-[var(--color-border-strong)]",
           "bg-[var(--color-surface)] px-3 py-2 text-base",
           "shadow-[var(--shadow-inset)]",
@@ -20,6 +32,42 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
         )}
         {...props}
       />
+    );
+  },
+);
+
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  selectSize?: FieldSize;
+}
+
+/**
+ * Editorial select — visual twin of <Input>. Same border, focus, height tokens.
+ * Custom caret rendered via background SVG so we can keep the cream/navy
+ * design language consistent across the owner app.
+ */
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  function Select({ className, selectSize = "md", children, ...props }, ref) {
+    return (
+      <select
+        ref={ref}
+        className={cn(
+          "flex w-full appearance-none rounded-[var(--radius-md)]",
+          fieldHeight[selectSize],
+          "border border-[var(--color-border-strong)]",
+          "bg-[var(--color-surface)] pl-3 pr-9 text-sm text-[var(--color-text)]",
+          "shadow-[var(--shadow-inset)]",
+          "transition-colors duration-[var(--duration-fast)]",
+          "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          // Custom caret (gold diamond echo) — keeps OS combobox semantics
+          "bg-[length:14px_14px] bg-[right_0.75rem_center] bg-no-repeat",
+          "bg-[url(\"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%20fill='none'%20stroke='%23a3957f'%20stroke-width='1.5'%3E%3Cpolyline%20points='5%208%2010%2013%2015%208'/%3E%3C/svg%3E\")]",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </select>
     );
   },
 );

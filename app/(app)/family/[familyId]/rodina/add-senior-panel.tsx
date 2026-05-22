@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
 import { createSeniorAccount } from "@/lib/auth/actions";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
@@ -178,29 +178,21 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
 
           <div className="space-y-1.5">
             <Label htmlFor="new-seniorRole">Role v rodině</Label>
-            <select
-              id="new-seniorRole"
-              name="seniorRole"
-              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-            >
+            <Select id="new-seniorRole" name="seniorRole">
               <option value="">- nevybráno -</option>
               {SENIOR_ROLE_OPTIONS.map((r) => (
                 <option key={r.value} value={r.value}>{r.label}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="new-contactChannel">Kam posílat otázky</Label>
-            <select
-              id="new-contactChannel"
-              name="contactChannel"
-              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-            >
+            <Select id="new-contactChannel" name="contactChannel">
               <option value="">- nevybráno -</option>
               <option value="email">E-mail</option>
               <option value="whatsapp">WhatsApp</option>
-            </select>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
@@ -217,15 +209,10 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
 
           <div className="space-y-1.5">
             <Label htmlFor="new-promptFrequency">Jak často posílat otázky</Label>
-            <select
-              id="new-promptFrequency"
-              name="promptFrequency"
-              defaultValue="1"
-              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-            >
+            <Select id="new-promptFrequency" name="promptFrequency" defaultValue="1">
               <option value="1">Jednou týdně</option>
               <option value="2">Dvakrát týdně</option>
-            </select>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
