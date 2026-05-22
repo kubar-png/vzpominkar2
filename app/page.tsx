@@ -670,7 +670,6 @@ export default function HomePage() {
               <a href="/signup" className="btn btn-gold">
                 Začít zdarma <span className="arrow">↗</span>
               </a>
-              <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
             </div>
             <div className="footer-col">
               <h4>Procházet</h4>
@@ -731,6 +730,7 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
+          <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
           <div className="footer-bottom">
             <span>© 2026 Vzpomínkář</span>
             <span>

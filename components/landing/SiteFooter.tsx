@@ -50,7 +50,6 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
             <Link href="/signup" className="btn btn-gold">
               Začít zdarma <span className="arrow">↗</span>
             </Link>
-            <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
           </div>
 
           <div className="footer-col">
@@ -108,6 +107,8 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
             </ul>
           </div>
         </div>
+
+        <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
 
         <div className="footer-bottom">
           <span>© 2026 Vzpomínkář</span>
