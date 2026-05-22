@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 
 const NAV: ReadonlyArray<{ label: string; href: string }> = [
@@ -13,6 +14,11 @@ const NAV: ReadonlyArray<{ label: string; href: string }> = [
 
 export function HomeMobileMenu() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -45,8 +51,8 @@ export function HomeMobileMenu() {
         <span>Menu</span>
       </button>
 
-      {open && (
-        <>
+      {open && mounted && createPortal(
+        <div className="editorial">
           <div
             className="mobile-menu-backdrop"
             aria-hidden
@@ -102,7 +108,8 @@ export function HomeMobileMenu() {
             </Link>
           </div>
           </div>
-        </>
+        </div>,
+        document.body
       )}
     </>
   );
