@@ -49,19 +49,12 @@ export function Shell({
       {/* Sticky mobile CTA - catches long-scroll readers on small viewports.
        * Desktop has the header CTA always in view, so this hides on md+. */}
       {stickyMobileCta ? (
-        <div
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--color-border-strong)] bg-white/95 px-4 py-3 backdrop-blur md:hidden"
-          role="region"
-          aria-label="Začít zdarma"
-        >
-          <Link
-            href="/signup"
-            className="flex h-12 w-full items-center justify-center rounded-full bg-[var(--color-navy-900)] text-base font-medium text-white transition-colors hover:bg-[var(--color-navy-800)]"
-          >
-            Začít zdarma
+        <div className="sticky-mobile-cta" role="region" aria-label="Začít zdarma">
+          <Link href="/signup" className="btn btn-gold">
+            Začít zdarma <span className="arrow">↗</span>
           </Link>
-          <p className="mt-1.5 text-center text-[10px] uppercase tracking-[0.22em] text-[var(--color-text-subtle)]">
-            Pilotní verze - zdarma · vrácení do 30 dnů
+          <p className="sticky-mobile-cta-note">
+            Pilotní verze — zdarma, s vrácením do 30 dnů.
           </p>
         </div>
       ) : null}
