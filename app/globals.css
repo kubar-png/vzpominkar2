@@ -1823,10 +1823,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
     padding-bottom: clamp(60px, 12vw, 120px);
     /* Split --hero-scroll into two phases on mobile:
        0 → 0.5  shrink-progress 0→1 (book + pages scale 1→0.55)
-       0.5 → 1  fan-progress    0→1 (pages fan out from the smaller book) */
+       0.5 → 1  fan-progress    0→1 (pages fan out + stage glides down
+                                     to stay vertically centered) */
     --shrink-progress: min(1, max(0, calc(var(--hero-scroll, 0) * 2)));
     --fan-progress:    min(1, max(0, calc((var(--hero-scroll, 0) - 0.5) * 2)));
-    transform: scale(calc(1 - var(--shrink-progress) * 0.45));
+    transform:
+      translateY(calc(var(--fan-progress, 0) * 42vh))
+      scale(calc(1 - var(--shrink-progress) * 0.45));
     transform-origin: top center;
     will-change: transform;
   }
