@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
+import { QuestionDeck } from "@/components/landing/QuestionDeck";
 
 export const metadata: Metadata = {
   title: "Jak to funguje",
@@ -8,44 +9,60 @@ export const metadata: Metadata = {
     "Čtyři kroky od přihlášení k tištěné knize. Týdenní otázka, jednoduchá odpověď hlasem nebo textem, automatický přepis a rodinná knihovna.",
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * /jak-to-funguje — full editorial rebuild
+ *
+ * Mirrors the homepage editorial scope: cream paper canvas, navy ink,
+ * oxblood + gold accents. Section rhythm follows the homepage exactly:
+ * .hero on top, .divider fleurons between major sections, .section padding
+ * everywhere, .feature-quote.dark for the warm-brown quote belt, and the
+ * shared .btn / .arrow-link button language. No legacy --color-* tokens.
+ * ─────────────────────────────────────────────────────────────────────── */
+
 const STEPS = [
   {
     n: "I",
     eyebrow: "Týden 1",
     title: "Vyberete otázky",
-    body:
-      "Z knihovny 200+ otázek vyberete ty, na které by rodič rád odpověděl. Můžete přidat i vlastní — třeba na konkrétní příhodu, kterou si pamatujete z dětství.",
-    aside:
-      "Otázky jsou rozdělené do osmi témat (dětství, rodiče, mládí, láska, práce, výchova, místa, životní moudro). Vy zvolíte tempo.",
+    body: "Z knihovny 200+ otázek vyberete ty, na které by rodič rád odpověděl. Můžete přidat i vlastní — třeba na konkrétní příhodu, kterou si pamatujete z dětství.",
+    aside: "Otázky jsou rozdělené do osmi témat (dětství, rodiče, mládí, láska, práce, výchova, místa, životní moudro). Vy zvolíte tempo.",
   },
   {
     n: "II",
     eyebrow: "Každé pondělí",
     title: "Rodič dostane jednu otázku",
-    body:
-      "Otázka přijde SMSkou nebo e-mailem. Jedno kliknutí spustí nahrávání. Pokud rodič raději píše, odpoví textem. Funguje i z tlačítkového telefonu — stačí prozvonit naše číslo.",
-    aside:
-      "Žádné účty, žádné aplikace, žádné stahování. Cílem je, aby maminka u sedmdesátky neřešila techniku — jen vyprávěla.",
+    body: "Otázka přijde SMSkou nebo e-mailem. Jedno kliknutí spustí nahrávání. Pokud rodič raději píše, odpoví textem. Funguje i z tlačítkového telefonu — stačí prozvonit naše číslo.",
+    aside: "Žádné účty, žádné aplikace, žádné stahování. Cílem je, aby maminka u sedmdesátky neřešila techniku — jen vyprávěla.",
   },
   {
     n: "III",
     eyebrow: "Do 48 hodin",
     title: "Přepíšeme a vyhladíme",
-    body:
-      "Hlasovou nahrávku převedeme do textu. Korektor přečte, vyhladí věty, ale ponechá způsob, jakým to rodič řekl. Slang, dialekt, oblíbená spojení zůstanou — to je přece to, kvůli čemu si knihu jednou otevřete.",
-    aside:
-      "Pod každou kapitolou v knize bude QR kód, který spustí původní hlas. Aby zůstal i ten zvuk, ne jen slova.",
+    body: "Hlasovou nahrávku převedeme do textu. Korektor přečte, vyhladí věty, ale ponechá způsob, jakým to rodič řekl. Slang, dialekt, oblíbená spojení zůstanou — to je přece to, kvůli čemu si knihu jednou otevřete.",
+    aside: "Pod každou kapitolou v knize bude QR kód, který spustí původní hlas. Aby zůstal i ten zvuk, ne jen slova.",
   },
   {
     n: "IV",
     eyebrow: "Když je vzpomínek dost",
     title: "Vytisknete knihu",
-    body:
-      "Online náhled vám ukáže přesné rozložení stránek, sazbu i fotky. Když je vše tak, jak chcete, kliknete na „Objednat tisk“. Kniha přijde za 2–3 týdny — tvrdé desky, šitá vazba, krémový papír.",
-    aside:
-      "Tisk se účtuje až ve chvíli objednávky. Online přístup do knihovny vám zůstává navždy, i kdyby k tisku nikdy nedošlo.",
+    body: "Online náhled vám ukáže přesné rozložení stránek, sazbu i fotky. Když je vše tak, jak chcete, kliknete na „Objednat tisk“. Kniha přijde za 2–3 týdny — tvrdé desky, šitá vazba, krémový papír.",
+    aside: "Tisk se účtuje až ve chvíli objednávky. Online přístup do knihovny vám zůstává navždy, i kdyby k tisku nikdy nedošlo.",
   },
-];
+] as const;
+
+/* Eight representative questions sampled across categories — same shape
+ * as the homepage deck so the visitor sees an actual taste of the
+ * library, not a placeholder. */
+const DECK_QUESTIONS = [
+  { category: "Dětství",  question: "Kde jsi vyrůstal? Popiš mi dům, ve kterém jsi bydlel." },
+  { category: "Škola",    question: "Který učitel na tebe v životě nejvíc zapůsobil — a proč?" },
+  { category: "Vánoce",   question: "Jak vypadaly Vánoce u vás doma, když jsi byla malá?" },
+  { category: "Mládí",    question: "Jakou hudbu jsi poslouchal, když ti bylo kolem dvaceti?" },
+  { category: "Láska",    question: "Jak jste se s mámou seznámili? Vzpomínáš si na první setkání?" },
+  { category: "Rodina",   question: "Pamatuješ si na den, kdy se ti narodilo první dítě?" },
+  { category: "Práce",    question: "Jaké bylo tvoje první zaměstnání? Jak jsi se k němu dostala?" },
+  { category: "Moudro",   question: "Co bys poradila svému dvacetiletému já, kdybys mohla?" },
+] as const;
 
 const FAQ = [
   {
@@ -65,28 +82,36 @@ const FAQ = [
 export default function JakToFungujePage() {
   return (
     <Shell>
-      {/* Hero */}
-      <section className="section" style={{ textAlign: "center" }}>
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="hero">
         <div className="container">
           <span className="eyebrow">Jak to funguje</span>
-          <h1 style={{ margin: "0 auto", maxWidth: "20ch" }}>
+          <h1 style={{ maxWidth: "20ch", margin: "0 auto 24px" }}>
             Čtyři kroky od otázky ke knize.
           </h1>
-          <p
-            className="lede"
-            style={{ margin: "28px auto 0", maxWidth: "54ch" }}
-          >
+          <p className="lede">
             Vy vyberete otázky. Rodič odpoví hlasem nebo textem. My všechno
             vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
           </p>
+          <Link href="/signup" className="btn btn-gold hero-cta">
+            Začít zdarma <span className="arrow">↗</span>
+          </Link>
         </div>
       </section>
 
+      {/* ═══════════ FOUR STEPS — alternating sides with Roman watermarks ═══════════ */}
       <div className="divider" aria-hidden />
-
-      {/* Steps */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Čtyři kroky</span>
+            <h2>Od první otázky po hotovou knihu.</h2>
+            <p className="lede">
+              Vy řešíte jen výběr otázek a předání certifikátu. Posílání,
+              přepis, sazba i tisk jsou na nás.
+            </p>
+          </div>
+
           <ol
             className="jtf-steps"
             style={{ listStyle: "none", padding: 0, margin: 0 }}
@@ -121,21 +146,40 @@ export default function JakToFungujePage() {
         </div>
       </section>
 
-      {/* Quote belt — dark editorial */}
+      {/* ═══════════ QUOTE BELT — warm dark ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
           <span className="eyebrow">Z dopisů, které nám chodí</span>
           <blockquote>
-            &bdquo;Maminka první pondělí odpověděla z čistého pocitu povinnosti.
+            „Maminka první pondělí odpověděla z čistého pocitu povinnosti.
             Třetí pondělí už čekala telefonem v ruce, kdy otázka přijde.&ldquo;
           </blockquote>
           <div className="feature-attr">— Lucie, 47 let, Plzeň</div>
         </div>
       </section>
 
+      {/* ═══════════ QUESTION DECK — actual library taste ═══════════ */}
       <div className="divider" aria-hidden />
+      <section className="section question-deck-section">
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Otázky z knihovny</span>
+            <h2 className="q-deck-title">
+              Osm z dvou set otázek,
+              <br />
+              které pondělky otevírají.
+            </h2>
+            <p className="lede">
+              Listujte. Pokaždé jedna otázka, jedna kapitola příběhu, kterou
+              jste možná nikdy neslyšeli.
+            </p>
+          </div>
+          <QuestionDeck questions={DECK_QUESTIONS} totalCount={300} />
+        </div>
+      </section>
 
-      {/* What we do / what you do */}
+      {/* ═══════════ ROLES — co dělá rodina vs my ═══════════ */}
+      <div className="divider" aria-hidden />
       <section className="section">
         <div className="container">
           <div className="jtf-roles">
@@ -146,7 +190,7 @@ export default function JakToFungujePage() {
                 <li>Vyberete otázky, na které stojí za to odpovědět.</li>
                 <li>Rodič každý týden odpoví — hlasem nebo textem.</li>
                 <li>Doplníte fotky, jestli chcete. (Není povinné.)</li>
-                <li>Když je vzpomínek dost, kliknete na &bdquo;Objednat tisk&ldquo;.</li>
+                <li>Když je vzpomínek dost, kliknete na „Objednat tisk“.</li>
               </ul>
             </div>
 
@@ -164,9 +208,8 @@ export default function JakToFungujePage() {
         </div>
       </section>
 
+      {/* ═══════════ MINI-FAQ — uses homepage .faq-item ═══════════ */}
       <div className="divider" aria-hidden />
-
-      {/* Mini-FAQ */}
       <section className="faq">
         <div className="container">
           <div className="section-head">
@@ -197,28 +240,42 @@ export default function JakToFungujePage() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="section" style={{ textAlign: "center" }}>
+      {/* ═══════════ FINAL SIGNUP CARD — navy + gold ═══════════ */}
+      <section className="signup">
         <div className="container">
-          <h2 style={{ margin: "0 auto", maxWidth: "22ch" }}>
-            Začněte dnes. Pošleme první otázku v pondělí.
-          </h2>
-          <div
-            style={{
-              marginTop: 36,
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "16px 24px",
-            }}
-          >
-            <Link href="/signup" className="btn btn-gold">
-              Začít zdarma <span className="arrow">↗</span>
-            </Link>
-            <Link href="/cenik" className="arrow-link">
-              Podívat se na ceník
-            </Link>
+          <div className="signup-card">
+            <span className="eyebrow">Začněte dnes</span>
+            <h2>První otázka odejde v pondělí.</h2>
+            <p className="lede">
+              Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
+            </p>
+            <div
+              style={{
+                display: "inline-flex",
+                position: "relative",
+              }}
+            >
+              <Link href="/signup" className="btn btn-gold">
+                Začít zdarma <span className="arrow">↗</span>
+              </Link>
+            </div>
+            <p
+              className="signup-disclaimer"
+              style={{ marginTop: 18 }}
+            >
+              Nebo se podívejte na{" "}
+              <Link
+                href="/cenik"
+                style={{
+                  color: "var(--gold-soft)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 4,
+                }}
+              >
+                ceník
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>
