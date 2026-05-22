@@ -70,14 +70,15 @@ export default function HomePage() {
           <div className="container">
             <span className="eyebrow">Vzpomínkář — kniha rodinné paměti</span>
             <h1>
-              Staré příběhy,
+              Kolik příběhů vašeho blízkého
               <br />
-              nová generace.
+              zatím nikdo nezapsal?
             </h1>
             <p className="lede">
-              Rok otázek. Týden po týdnu maminka nebo táta vypráví — co zažili,
-              koho milovali, jak chutnaly Vánoce. Z jejich hlasů uděláme knihu,
-              kterou vnoučata otevřou za třicet let.
+              Životní příběhy mizí dřív, než si jich všimneme. Týden po týdnu
+              položíme vašemu blízkému jednu otázku — odpoví, jak mu je
+              nejpřirozenější. Za rok mu vyrobíme vázanou knihu pro budoucí
+              generace.
             </p>
             <a href="/signup" className="btn btn-gold hero-cta">
               Začít sbírat vzpomínky <span className="arrow">↗</span>
@@ -129,47 +130,47 @@ export default function HomePage() {
           <div className="container">
             <div className="section-head">
               <span className="eyebrow">Jak to funguje</span>
-              <h2>
-                Otázka v sobotu.
-                <br />
-                Kniha za rok.
-              </h2>
+              <h2>Jednoduchý týdenní rituál.</h2>
             </div>
             <div className="steps">
               <div className="step">
                 <div className="step-photo" />
-                <div className="step-label">I. Otázka</div>
-                <h3>Sobotní ráno, jedna otázka.</h3>
+                <div className="step-label">I.</div>
+                <h3>Vyberete otázky</h3>
                 <p>
-                  Padesát dva otázek, jedna za týden. V SMS nebo e-mailu, vždy
-                  v sobotu ráno u kávy.
+                  Z knihovny 200+ otázek vyberete ty, na které by váš blízký
+                  rád odpověděl. Můžete přidat i své vlastní — na konkrétní
+                  příhodu, kterou si pamatujete.
                 </p>
               </div>
               <div className="step">
                 <div className="step-photo tone-2" />
-                <div className="step-label">II. Hlas</div>
-                <h3>Stisk a vyprávění.</h3>
+                <div className="step-label">II.</div>
+                <h3>Blízký odpoví</h3>
                 <p>
-                  Velké červené tlačítko. Babička stiskne, vypráví, pustí.
-                  Jejím tempem, jejími slovy.
+                  Každou sobotu mu přijde SMS s jednou otázkou. Stiskne velké
+                  tlačítko a vypráví — svým tempem, svými slovy. Žádné aplikace,
+                  žádná hesla.
                 </p>
               </div>
               <div className="step">
                 <div className="step-photo tone-3" />
-                <div className="step-label">III. Kniha</div>
-                <h3>Po roce ručně vázaná kniha.</h3>
+                <div className="step-label">III.</div>
+                <h3>Vyhladíme přepis</h3>
                 <p>
-                  Pevný hřbet, kvalitní papír, sazba ve Fraunces. Doručená
-                  v plátěné krabičce.
+                  Hlas převedeme do textu, korektor jemně uhladí věty —
+                  zachová slang, dialekt, oblíbená spojení. Vy se na všechno
+                  podíváte před tiskem.
                 </p>
               </div>
               <div className="step">
                 <div className="step-photo tone-4" />
-                <div className="step-label">IV. Sken</div>
-                <h3>QR otevírá nahrávku.</h3>
+                <div className="step-label">IV.</div>
+                <h3>Vytiskneme knihu</h3>
                 <p>
-                  U každé kapitoly malý QR kód. Naskenujete telefonem — a
-                  slyšíte je, jako by seděli vedle vás.
+                  Pevný hřbet, šitá vazba, krémový papír. U každé kapitoly QR
+                  kód, který přehraje původní hlas. Kniha přijde v plátěné
+                  krabičce.
                 </p>
               </div>
             </div>
@@ -195,7 +196,7 @@ export default function HomePage() {
               </div>
               <div className="product-copy">
                 <span className="eyebrow">Produkt</span>
-                <h2>Kniha, která mluví.</h2>
+                <h2>Vázaná kniha s hlasem na každé stránce.</h2>
                 <p className="lede">
                   Z padesáti hodin vyprávění vznikne kniha, kterou udržíte
                   v rukou. A u každé kapitoly hlas, který ji vyprávěl.
@@ -267,6 +268,19 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ═══════════ 5b. PULL QUOTE — emotional breath between sections ═══════════ */}
+        <section className="pull-quote">
+          <div className="container">
+            <blockquote>
+              Mami, vyprávej.
+              <br />
+              Táto, vyprávej.
+              <br />
+              A my si vzpomeneme.
+            </blockquote>
+          </div>
+        </section>
+
         {/* ═══════════ 6. QR VOICE / OPEN BOOK ═══════════ */}
         <div className="divider" />
         <section className="qr-section">
@@ -335,9 +349,9 @@ export default function HomePage() {
             <div className="section-head">
               <span className="eyebrow">Co píší rodiny</span>
               <h2>
-                Otevřená zásuvka
+                Padesát let paměti,
                 <br />
-                po padesáti letech.
+                konečně pevně svázáno.
               </h2>
               <p className="lede">
                 Tohle nám píší rodiny, když knížka dorazí.
@@ -438,11 +452,7 @@ export default function HomePage() {
           <div className="container">
             <div className="section-head">
               <span className="eyebrow">Technologie</span>
-              <h2>
-                Z hlasu věta.
-                <br />
-                Z věty kapitola.
-              </h2>
+              <h2>Mluvené slovo, otištěné na papír.</h2>
               <p className="lede">
                 <em>Hlas do příběhu</em> převede nahrávku na plynulý text — a
                 zachová jejich rytmus, jejich slova, jejich vrstvu. Můžete
@@ -623,14 +633,11 @@ export default function HomePage() {
           <div className="container">
             <div className="signup-card">
               <span className="eyebrow">Ochutnávka — sleva 200 Kč</span>
-              <h2>
-                Pošleme vám pár stran
-                <br />
-                na zkoušku.
-              </h2>
+              <h2>Pošlete jim první otázku zdarma.</h2>
               <p className="lede">
-                Tři e-maily. V prvním ukázka skutečné knihy. V druhém příběh
-                jedné rodiny. V třetím slevový kód. Žádný spam, žádné triky.
+                Vyzkoušejte, jak Vzpomínkář funguje. Tři e-maily — v prvním
+                ukázka skutečné knihy, ve druhém příběh jedné rodiny, ve
+                třetím slevový kód. Žádný spam, žádné triky.
               </p>
               {/* The full sign-up flow lives in /app/(auth) routes. This is a
                * lead-magnet form — a Server Action will be wired in by the
