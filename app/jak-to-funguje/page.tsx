@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { Placeholder } from "@/components/shared/Placeholder";
 
 export const metadata: Metadata = {
   title: "Jak to funguje",
@@ -67,251 +66,158 @@ export default function JakToFungujePage() {
   return (
     <Shell>
       {/* Hero */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pt-20 pb-16 text-center sm:pt-28">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          <span className="mr-3 inline-block h-px w-10 align-middle bg-[var(--color-gold-500)]" />
-          Jak to funguje
-          <span className="ml-3 inline-block h-px w-10 align-middle bg-[var(--color-gold-500)]" />
-        </p>
-        <h1
-          className="heritage-press mx-auto mt-8 max-w-[20ch] font-[family-name:var(--font-display)] text-5xl font-medium leading-[1.05] tracking-tight text-[var(--color-navy-900)] sm:text-6xl"
-          style={{ textWrap: "balance" }}
-        >
-          Čtyři kroky <span>od otázky ke knize</span>.
-        </h1>
-        <p className="mx-auto mt-7 max-w-[54ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)] sm:text-xl">
-          Vy vyberete otázky. Rodič odpoví hlasem nebo textem. My všechno
-          vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
-        </p>
+      <section className="section" style={{ textAlign: "center" }}>
+        <div className="container">
+          <span className="eyebrow">Jak to funguje</span>
+          <h1 style={{ margin: "0 auto", maxWidth: "20ch" }}>
+            Čtyři kroky od otázky ke knize.
+          </h1>
+          <p
+            className="lede"
+            style={{ margin: "28px auto 0", maxWidth: "54ch" }}
+          >
+            Vy vyberete otázky. Rodič odpoví hlasem nebo textem. My všechno
+            vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
+          </p>
+        </div>
       </section>
+
+      <div className="divider" aria-hidden />
 
       {/* Steps */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pb-12">
-        <ol className="space-y-20 sm:space-y-28">
-          {STEPS.map((step, i) => {
-            const isEven = i % 2 === 1;
-            return (
-              <li
-                key={step.n}
-                data-reveal
-                className="relative grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16"
-              >
-                {/* Huge transparent Roman numeral behind the step */}
-                <span
-                  aria-hidden
-                  className={`pointer-events-none absolute select-none font-[family-name:var(--font-display)] font-medium leading-[0.8] text-[var(--color-navy-900)] ${
-                    isEven ? "right-[-2vw] lg:right-[-1vw]" : "left-[-2vw] lg:left-[-1vw]"
-                  } top-[-2vw]`}
-                  style={{
-                    fontSize: "clamp(180px, 28vw, 380px)",
-                    opacity: 0.06,
-                    letterSpacing: "-0.04em",
-                    zIndex: 0,
-                  }}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <ol
+            className="jtf-steps"
+            style={{ listStyle: "none", padding: 0, margin: 0 }}
+          >
+            {STEPS.map((step, i) => {
+              const isEven = i % 2 === 1;
+              return (
+                <li
+                  key={step.n}
+                  data-reveal
+                  className="jtf-step"
+                  data-side={isEven ? "right" : "left"}
                 >
-                  {step.n}
-                </span>
+                  <span className="jtf-step-watermark" aria-hidden>
+                    {step.n}
+                  </span>
 
-                <div className={`relative z-10 ${isEven ? "lg:order-2" : ""}`}>
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-red-700)]">
-                    {step.eyebrow}
-                  </p>
-                  <h2
-                    className="heritage-press mt-3 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-                    style={{ textWrap: "balance" }}
-                  >
-                    {step.title}
-                  </h2>
-                  <p className="mt-7 max-w-[52ch] text-lg leading-relaxed text-[var(--color-text-muted)]">
-                    {step.body}
-                  </p>
-                  <p className="mt-6 max-w-[52ch] border-l-2 border-[var(--color-gold-400)] pl-5 font-[family-name:var(--font-display)] text-base leading-relaxed text-[var(--color-text-subtle)]">
-                    {step.aside}
-                  </p>
-                </div>
+                  <div className="jtf-step-copy">
+                    <span className="step-label">{step.eyebrow}</span>
+                    <h2>{step.title}</h2>
+                    <p>{step.body}</p>
+                    <p className="jtf-step-aside">{step.aside}</p>
+                  </div>
 
-                <div className={`relative z-10 ${isEven ? "lg:order-1" : ""}`}>
-                  <Placeholder
-                    kind="image"
-                    w={720}
-                    h={540}
-                    aspect="4/3"
-                    label={`Ukázka kroku ${step.n}`}
-                    tone="navy"
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+                  <div className="jtf-step-photo-wrap">
+                    <div className={`jtf-step-photo tone-${(i % 4) + 1}`} />
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </section>
 
-      {/* In-between belt — quote */}
-      <section className="bg-[#1c1814] py-24 text-[#ede4cf] sm:py-32">
-        <div className="mx-auto max-w-3xl px-6 text-center" data-reveal>
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-400)]">
-            <span className="mr-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
-            Z dopisů, které nám chodí
-            <span className="ml-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
-          </p>
-          <p
-            className="mt-8 font-[family-name:var(--font-display)] text-3xl leading-snug text-[#ede4cf] sm:text-4xl"
-            style={{ textWrap: "balance" }}
-          >
+      {/* Quote belt — dark editorial */}
+      <section className="feature-quote dark">
+        <div className="container">
+          <span className="eyebrow">Z dopisů, které nám chodí</span>
+          <blockquote>
             &bdquo;Maminka první pondělí odpověděla z čistého pocitu povinnosti.
             Třetí pondělí už čekala telefonem v ruce, kdy otázka přijde.&ldquo;
-          </p>
-          <p className="mt-6 text-[11px] uppercase tracking-[0.28em] text-[#ede4cf]/55">
-            — Lucie, 47 let, Plzeň
-          </p>
+          </blockquote>
+          <div className="feature-attr">— Lucie, 47 let, Plzeň</div>
         </div>
       </section>
+
+      <div className="divider" aria-hidden />
 
       {/* What we do / what you do */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 py-24">
-        <div className="grid gap-14 lg:grid-cols-2">
-          <div data-reveal>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-500)]" />
-              Co dělá rodina
-            </p>
-            <h2
-              className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-              style={{ textWrap: "balance" }}
-            >
-              Vy <span>jen vyprávíte</span>.
-            </h2>
-            <ul className="mt-8 space-y-5 text-base leading-relaxed text-[var(--color-text-muted)]">
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Vyberete otázky, na které stojí za to odpovědět.</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Rodič každý týden odpoví — hlasem nebo textem.</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Doplníte fotky, jestli chcete. (Není povinné.)</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Když je vzpomínek dost, kliknete na „Objednat tisk“.</span>
-              </li>
-            </ul>
-          </div>
+      <section className="section">
+        <div className="container">
+          <div className="jtf-roles">
+            <div data-reveal>
+              <span className="eyebrow">Co dělá rodina</span>
+              <h2>Vy jen vyprávíte.</h2>
+              <ul className="feature-list">
+                <li>Vyberete otázky, na které stojí za to odpovědět.</li>
+                <li>Rodič každý týden odpoví — hlasem nebo textem.</li>
+                <li>Doplníte fotky, jestli chcete. (Není povinné.)</li>
+                <li>Když je vzpomínek dost, kliknete na &bdquo;Objednat tisk&ldquo;.</li>
+              </ul>
+            </div>
 
-          <div data-reveal>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-500)]" />
-              Co děláme my
-            </p>
-            <h2
-              className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-              style={{ textWrap: "balance" }}
-            >
-              My <span>všechno ostatní</span>.
-            </h2>
-            <ul className="mt-8 space-y-5 text-base leading-relaxed text-[var(--color-text-muted)]">
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Posíláme otázky každé pondělí ráno v 10:00.</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Přepisujeme nahrávky a vyhladíme věty.</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Sázíme stránky, vybíráme typografii, řadíme kapitoly.</span>
-              </li>
-              <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
-                <span>Tiskneme, vážeme, balíme a posíláme.</span>
-              </li>
-            </ul>
+            <div data-reveal>
+              <span className="eyebrow">Co děláme my</span>
+              <h2>My všechno ostatní.</h2>
+              <ul className="feature-list">
+                <li>Posíláme otázky každé pondělí ráno v 10:00.</li>
+                <li>Přepisujeme nahrávky a vyhladíme věty.</li>
+                <li>Sázíme stránky, vybíráme typografii, řadíme kapitoly.</li>
+                <li>Tiskneme, vážeme, balíme a posíláme.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Mini-FAQ */}
-      <section className="bg-[var(--color-paper-100)] py-24">
-        <div className="mx-auto max-w-[var(--container-wide)] px-6">
-          <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
-            <div data-reveal>
-              <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-                <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-500)]" />
-                Než začnete
-              </p>
-              <h2
-                className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-                style={{ textWrap: "balance" }}
-              >
-                Tři otázky, které <span>slyšíme nejčastěji</span>.
-              </h2>
-              <p className="mt-6 max-w-prose text-base leading-relaxed text-[var(--color-text-muted)]">
-                Celý seznam najdete v plném{" "}
-                <Link href="/faq" className="text-[var(--color-navy-800)] underline-offset-4 hover:underline">
-                  FAQ
-                </Link>
-                .
-              </p>
-            </div>
+      <div className="divider" aria-hidden />
 
-            <ul className="space-y-2 border-t border-[var(--color-border-strong)]">
-              {FAQ.map((f, i) => (
-                <li key={f.q} className="border-b border-[var(--color-border-strong)]">
-                  <details
-                    open={i === 0}
-                    className="group [&_summary::-webkit-details-marker]:hidden"
-                  >
-                    <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 py-6 text-left">
-                      <span className="font-[family-name:var(--font-display)] text-xl font-medium text-[var(--color-navy-900)] sm:text-2xl">
-                        <span className="mr-4 inline-block w-8 text-sm text-[var(--color-text-subtle)]">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        {f.q}
-                      </span>
-                      <span
-                        aria-hidden
-                        className="mt-1 shrink-0 text-2xl text-[var(--color-text-muted)] transition-transform duration-[var(--duration-normal)] group-open:rotate-45"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    <p className="max-w-prose pb-6 pl-12 text-base leading-relaxed text-[var(--color-text-muted)]">
-                      {f.a}
-                    </p>
-                  </details>
-                </li>
-              ))}
-            </ul>
+      {/* Mini-FAQ */}
+      <section className="faq">
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Než začnete</span>
+            <h2>Tři otázky, které slyšíme nejčastěji.</h2>
+            <p className="lede">
+              Celý seznam najdete v plném{" "}
+              <Link href="/faq" style={{ textDecoration: "underline", textUnderlineOffset: 4 }}>
+                FAQ
+              </Link>
+              .
+            </p>
+          </div>
+
+          <div className="faq-list">
+            {FAQ.map((f, i) => (
+              <details key={f.q} className="faq-item" open={i === 0}>
+                <summary>{f.q}</summary>
+                <div className="faq-body">{f.a}</div>
+              </details>
+            ))}
+          </div>
+          <div className="faq-cta">
+            <Link href="/faq" className="arrow-link">
+              Všechny otázky a odpovědi
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 py-28 text-center">
-        <div data-reveal>
-          <h2
-            className="heritage-press mx-auto max-w-[22ch] font-[family-name:var(--font-display)] text-4xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-5xl"
-            style={{ textWrap: "balance" }}
-          >
-            Začněte dnes. <span>Pošleme první otázku v pondělí.</span>
+      <section className="section" style={{ textAlign: "center" }}>
+        <div className="container">
+          <h2 style={{ margin: "0 auto", maxWidth: "22ch" }}>
+            Začněte dnes. Pošleme první otázku v pondělí.
           </h2>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-[var(--color-gold-500)] bg-[var(--color-gold-500)] py-3 pl-6 pr-3.5 text-[15px] font-medium text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)] hover:border-[var(--color-gold-400)]"
-            >
-              Začít zdarma
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-navy-900)] text-[13px] font-semibold text-[var(--color-gold-500)]">↗</span>
+          <div
+            style={{
+              marginTop: 36,
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px 24px",
+            }}
+          >
+            <Link href="/signup" className="btn btn-gold">
+              Začít zdarma <span className="arrow">↗</span>
             </Link>
-            <Link
-              href="/cenik"
-              className="font-[family-name:var(--font-display)] text-lg text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-            >
-              Podívat se na ceník →
+            <Link href="/cenik" className="arrow-link">
+              Podívat se na ceník
             </Link>
           </div>
         </div>
