@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Fleuron,
-  SectionEyebrow,
-  editorialHeadingClass,
-} from "@/components/landing/Editorial";
-import { cn } from "@/lib/utils";
 import { FaqList, type Category } from "./faq-list";
 
 export const metadata: Metadata = {
   title: "Časté otázky",
   description:
-    "Vše, co potřebujete vědět, než s Vzpomínkářem začnete - od přihlášení seniora po tisk knihy a soukromí dat.",
+    "Vše, co potřebujete vědět, než s Vzpomínkářem začnete — od přihlášení seniora po tisk knihy a soukromí dat.",
 };
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * /faq — full editorial rebuild
+ *
+ * Hero + grouped accordion via FaqList (client search). Uses homepage
+ * .faq-item gold-circle toggles for the accordion so reading from
+ * homepage → here feels seamless.
+ * ─────────────────────────────────────────────────────────────────────── */
 
 const CATEGORIES: Category[] = [
   {
@@ -25,11 +26,11 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Pro koho je Vzpomínkář?",
-        a: "Pro rodiny, které chtějí zaznamenat vzpomínky rodičů a prarodičů - hlasem, písmem nebo přes fotky - a vytvořit z nich tištěnou knihu. Aplikaci nastavujete vy; vyprávějícímu předáme jednoduchý přístup, který zvládne i bez technické zkušenosti.",
+        a: "Pro rodiny, které chtějí zaznamenat vzpomínky rodičů a prarodičů — hlasem, písmem nebo přes fotky — a vytvořit z nich tištěnou knihu. Aplikaci nastavujete vy; vyprávějícímu předáme jednoduchý přístup, který zvládne i bez technické zkušenosti.",
       },
       {
         q: "Kolik vzpomínek je potřeba na knihu?",
-        a: "Pro plnohodnotnou knihu doporučujeme alespoň 30 vzpomínek. Můžete jich mít víc - kniha pak bude bohatší. Méně se také nebojte: i 15 dobře vyprávěných příběhů dává krásnou tenkou edici.",
+        a: "Pro plnohodnotnou knihu doporučujeme alespoň 30 vzpomínek. Můžete jich mít víc — kniha pak bude bohatší. Méně se také nebojte: i 15 dobře vyprávěných příběhů dává krásnou tenkou edici.",
       },
       {
         q: "Jak rychle se rozjedete?",
@@ -44,7 +45,7 @@ const CATEGORIES: Category[] = [
   {
     id: "senior",
     numeral: "II",
-    title: "Senior",
+    title: "Vyprávějící",
     intro: "Jak fungují odpovědi pro toho, kdo vypráví.",
     items: [
       {
@@ -53,7 +54,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Co když senior nezvládne psát?",
-        a: "Odpovídá hlasem - jedním tlačítkem nahraje, co chce říct. My nahrávku převedeme do textu, korektor vyhladí věty, ale ponechá způsob, jakým to rodič řekl. V knize zůstane i původní zvuk, schovaný pod QR kódem.",
+        a: "Odpovídá hlasem — jedním tlačítkem nahraje, co chce říct. My nahrávku převedeme do textu, korektor vyhladí věty, ale ponechá způsob, jakým to rodič řekl. V knize zůstane i původní zvuk, schovaný pod QR kódem.",
       },
       {
         q: "A co když nemá ani smartphone?",
@@ -66,14 +67,14 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: "pribehy",
+    id: "soukromi",
     numeral: "III",
-    title: "Příběhy & soukromí",
+    title: "Soukromí a&nbsp;data",
     intro: "Komu vzpomínky patří a kdo je vidí.",
     items: [
       {
         q: "Komu patří nahrané vzpomínky?",
-        a: "Vám a vaší rodině. My data zpracováváme jen proto, abychom vám pomohli sebrat a vydat knihu. Můžete je kdykoliv stáhnout nebo smazat - bez výmluv, bez prodlev.",
+        a: "Vám a vaší rodině. My data zpracováváme jen proto, abychom vám pomohli sebrat a vydat knihu. Můžete je kdykoliv stáhnout nebo smazat — bez výmluv, bez prodlev.",
       },
       {
         q: "Je to bezpečné?",
@@ -81,11 +82,11 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Můžu odpovědi sám/sama upravit?",
-        a: "Ano. V rodinném editoru vidíte přepis, doplníte fotku, opravíte překlep. Nic ale není povinné - kniha funguje i bez vašeho zásahu, pokud chcete jen poslouchat a být u toho.",
+        a: "Ano. V rodinném editoru vidíte přepis, doplníte fotku, opravíte překlep. Nic ale není povinné — kniha funguje i bez vašeho zásahu, pokud chcete jen poslouchat a být u toho.",
       },
       {
         q: "Můžu zveřejnit knihu jen pro určité členy rodiny?",
-        a: "Online knihovnu nasdílíte jen těm, kdo by ji měli vidět. Tištěnou knihu si pak objednáváte vy - a kolik výtisků chcete (pro sourozence, vnoučata).",
+        a: "Online knihovnu nasdílíte jen těm, kdo by ji měli vidět. Tištěnou knihu si pak objednáváte vy — a kolik výtisků chcete (pro sourozence, vnoučata).",
       },
     ],
   },
@@ -97,7 +98,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Jak dlouho trvá, než kniha vznikne?",
-        a: "V průměru 9-12 měsíců. Záleží jen na tom, kolik otázek si vyberete a v jakém tempu rodič odpovídá. Knihu si můžete objednat kdykoliv - nebo počkat, až bude celá hotová.",
+        a: "V průměru 9–12 měsíců. Záleží jen na tom, kolik otázek si vyberete a v jakém tempu rodič odpovídá. Knihu si můžete objednat kdykoliv — nebo počkat, až bude celá hotová.",
       },
       {
         q: "Jak kniha vypadá fyzicky?",
@@ -109,43 +110,43 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Co když chci knihu předtím vidět?",
-        a: "Online náhled vám ukážeme zdarma - vidíte přesné rozložení stránek, sazbu, fotky. Knihu objednáváte až tehdy, když je vše tak, jak chcete.",
+        a: "Online náhled vám ukážeme zdarma — vidíte přesné rozložení stránek, sazbu, fotky. Knihu objednáváte až tehdy, když je vše tak, jak chcete.",
       },
     ],
   },
   {
-    id: "predplatne",
+    id: "cena",
     numeral: "V",
-    title: "Cena a&nbsp;předplatné",
+    title: "Cena a&nbsp;platba",
     intro: "Co platíte, kdy a co dostáváte.",
     items: [
       {
         q: "Kdy a kolik se platí?",
-        a: "Roční přístup je v pilotní verzi zdarma. Cenu za tisk knihy uvidíte v ceníku - platí se zvlášť, až ji budete chtít skutečně vytisknout. Žádné automatické předplatné.",
+        a: "Roční přístup je v pilotní verzi zdarma. Cenu za tisk knihy uvidíte v ceníku — platí se zvlášť, až ji budete chtít skutečně vytisknout. Žádné automatické předplatné.",
       },
       {
         q: "Co se stane po roce, pokud knihu nestihnu objednat?",
-        a: "Online knihovna zůstává navždy zdarma - všechny vzpomínky tam najdete, kdykoliv se vrátíte. Tisk si můžete objednat klidně za pět let. Vzpomínky nemizí.",
+        a: "Online knihovna zůstává navždy zdarma — všechny vzpomínky tam najdete, kdykoliv se vrátíte. Tisk si můžete objednat klidně za pět let. Vzpomínky nemizí.",
       },
       {
-        q: "Mohu mít víc seniorů - babičku i dědu?",
+        q: "Mohu mít víc seniorů — babičku i dědu?",
         a: "Zatím podporujeme jednoho seniora na rodinu. Pokud chcete dvě paralelní knihy, zaregistrujte se dvakrát. Společný profil pro dva vyprávějící chystáme.",
       },
       {
         q: "Mohu si peníze nechat vrátit?",
-        a: "Do 30 dnů od platby ano - bez výmluv, bez otázek. Stačí napsat. Jedno z nejmenších nebezpečí, které u nás máte.",
+        a: "Do 30 dnů od platby ano — bez výmluv, bez otázek. Stačí napsat.",
       },
     ],
   },
   {
     id: "pomoc",
     numeral: "VI",
-    title: "Pomoc",
+    title: "Po objednávce",
     intro: "Když se zasekne to, co se nemělo.",
     items: [
       {
         q: "Co když budu potřebovat pomoct?",
-        a: "Napište nám - odpovídáme rychle a osobně, ne přes chatbota. Většinu drobností vyřešíme do hodiny.",
+        a: "Napište nám — odpovídáme rychle a osobně, ne přes chatbota. Většinu drobností vyřešíme do hodiny.",
       },
       {
         q: "Co když rodič udělá v aplikaci chybu?",
@@ -185,48 +186,58 @@ export default function FaqPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
       />
-      {/* Hero */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pt-16 pb-12 text-center sm:pt-24">
-        <SectionEyebrow className="mx-auto">Časté dotazy</SectionEyebrow>
-        <h1
-          className="mx-auto mt-5 max-w-[22ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.08] tracking-tight text-[var(--color-ink-900)] sm:text-5xl"
-          style={{ textWrap: "balance" }}
-        >
-          Na co se ptáte nejčastěji.
-        </h1>
-        <p className="mx-auto mt-6 max-w-[52ch] text-base leading-relaxed text-[var(--color-text-muted)]">
-          Pokud něco z následujícího nezodpovíme, napište nám - odpovídáme
-          osobně, ne přes formulář.
-        </p>
+
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="hero">
+        <div className="container">
+          <span className="eyebrow">Časté otázky</span>
+          <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
+            Na co se ptáte nejčastěji.
+          </h1>
+          <p className="lede">
+            Pokud něco z následujícího nezodpovíme, napište nám — odpovídá
+            člověk, ne formulář.
+          </p>
+        </div>
       </section>
 
-      {/* TOC + Q&A - searchable */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pb-16">
-        <FaqList categories={CATEGORIES} />
+      {/* ═══════════ GROUPED Q&A ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <FaqList categories={CATEGORIES} />
+        </div>
       </section>
 
-      {/* Closing CTA */}
-      <section className="bg-white py-16 sm:py-24">
-        <Fleuron className="mb-10 sm:mb-14" />
-        <div className="mx-auto max-w-3xl px-6 text-center" data-reveal>
-          <SectionEyebrow className="mx-auto">Stále váháte?</SectionEyebrow>
-          <h2
-            className={cn(editorialHeadingClass, "mx-auto mt-5 max-w-[26ch]")}
-            style={{ textWrap: "balance" }}
-          >
-            Vyzkoušejte první týdny zdarma. Pokud to není pro vás,
-            do 30&nbsp;dnů vrátíme peníze.
-          </h2>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-            <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-              Začít zdarma
-            </Link>
-            <Link
-              href="/cenik"
-              className="font-[family-name:var(--font-display)] text-lg text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-            >
-              Zpět na ceník →
-            </Link>
+      {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
+      <section className="signup">
+        <div className="container">
+          <div className="signup-card">
+            <span className="eyebrow">Stále váháte?</span>
+            <h2>Vyzkoušejte první týdny zdarma.</h2>
+            <p className="lede">
+              Pilotní verze je zdarma. Pokud to není pro vás, do 30 dnů
+              vrátíme peníze.
+            </p>
+            <div style={{ display: "inline-flex", position: "relative" }}>
+              <Link href="/signup" className="btn btn-gold">
+                Začít zdarma <span className="arrow">↗</span>
+              </Link>
+            </div>
+            <p className="signup-disclaimer" style={{ marginTop: 18 }}>
+              Nenašli jste odpověď?{" "}
+              <Link
+                href="/kontakt"
+                style={{
+                  color: "var(--gold-soft)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 4,
+                }}
+              >
+                Napište nám
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>

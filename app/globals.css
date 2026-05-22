@@ -1890,6 +1890,146 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .jtf-roles { grid-template-columns: 1fr; }
 }
 
+/* ─── /faq — page grid: sticky TOC + grouped accordion ─── */
+.editorial .faq-page-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.editorial .faq-aside {
+  position: sticky;
+  top: 110px;
+  align-self: start;
+}
+.editorial .faq-search { margin-bottom: 28px; }
+.editorial .faq-search-label {
+  display: block;
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.editorial .faq-search-input {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-2);
+  background: var(--paper);
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+.editorial .faq-search-input:focus {
+  border-color: var(--ink);
+  background: #fff;
+}
+.editorial .faq-search-input::placeholder { color: var(--ink-mute); opacity: 0.7; }
+.editorial .faq-search-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
+.editorial .faq-toc-label {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.editorial .faq-toc {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+}
+.editorial .faq-toc li { margin-bottom: 10px; }
+.editorial .faq-toc a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display-editorial);
+  font-size: 17px;
+  color: var(--ink-soft);
+  transition: color 0.2s;
+}
+.editorial .faq-toc a:hover { color: var(--ink); }
+.editorial .faq-toc-numeral {
+  color: var(--oxblood);
+  font-style: italic;
+  font-size: 15px;
+}
+.editorial .faq-toc-foot {
+  font-size: 12px;
+  color: var(--ink-mute);
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.editorial .faq-toc-foot a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.editorial .faq-cats {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 6vw, 80px);
+}
+.editorial .faq-cat { scroll-margin-top: 110px; }
+.editorial .faq-cat-head {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.editorial .faq-cat-numeral {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--oxblood);
+  line-height: 1;
+}
+.editorial .faq-cat-title {
+  font-family: var(--font-display-editorial);
+  font-size: clamp(24px, 2.4vw, 32px);
+  color: var(--ink);
+  line-height: 1.05;
+}
+.editorial .faq-cat-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.editorial .faq-cat-intro {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+  max-width: 60ch;
+}
+.editorial .faq-cats .faq-list { margin-top: 0; }
+.editorial .faq-empty {
+  padding: 48px 24px;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-mute);
+  border: 1px dashed var(--line-2);
+  border-radius: 6px;
+}
+
+@media (max-width: 900px) {
+  .editorial .faq-page-grid { grid-template-columns: 1fr; }
+  .editorial .faq-aside { position: static; top: auto; }
+}
+
 /* ─── /cenik — single paper plan card + print/add-ons grid ─── */
 .editorial .cenik-card {
   max-width: 640px;
