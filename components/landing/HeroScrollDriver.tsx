@@ -5,22 +5,39 @@ import { useEffect } from "react";
 /**
  * HeroScrollDriver
  *
- * Drives the `--hero-scroll` custom property on <html> from window.scrollY,
- * mapped 0 → 1 over the first ~700px. The hero's six page-leaves consume
- * this value to fan out from behind the book cover.
+ * Two side-effects on window scroll:
  *
- * Side-effect only; renders nothing. Lives alongside the homepage so the
- * rest of the marketing tree can stay a Server Component.
+ * 1. Drives `--hero-scroll` (0 → 1 over first ~700px) on <html> — the hero's
+ *    six page-leaves consume this to fan out from behind the book cover.
+ * 2. Toggles `data-state="visible"|"hidden"` on `.editorial-header` — hide
+ *    on scroll down past 80px, show on scroll up. Always visible at top.
+ *
+ * Renders nothing. Lives alongside the homepage so the rest of the
+ * marketing tree stays a Server Component.
  */
 export function HeroScrollDriver() {
   useEffect(() => {
     const range = 700;
     const root = document.documentElement;
+    const header = document.querySelector<HTMLElement>(".editorial-header");
     let ticking = false;
+    let lastY = window.scrollY;
 
     const update = () => {
-      const p = Math.min(1, Math.max(0, window.scrollY / range));
+      const y = window.scrollY;
+      const p = Math.min(1, Math.max(0, y / range));
       root.style.setProperty("--hero-scroll", p.toFixed(4));
+
+      if (header) {
+        if (y < 80) {
+          header.dataset.state = "visible";
+        } else if (y > lastY + 4) {
+          header.dataset.state = "hidden";
+        } else if (y < lastY - 4) {
+          header.dataset.state = "visible";
+        }
+      }
+      lastY = y;
       ticking = false;
     };
 
