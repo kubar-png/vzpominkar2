@@ -94,18 +94,11 @@ export default function HomePage() {
             <div className="page-leaf leaf-photo leaf-L2" />
             <div className="page-leaf leaf-text leaf-L3" />
 
-            {/* The book cover itself */}
-            <div className="book-cover">
+            {/* The book cover itself — leather brown with gold-stamped title */}
+            <div className="book-cover book-leather">
               <div className="book-spine" aria-hidden="true" />
-              <div className="book-top">
-                <span className="book-eyebrow">Kniha rodinné paměti</span>
-                <div className="book-title">Vzpomínkář</div>
-              </div>
-              <div className="book-bottom">
-                <div className="book-fleuron">⁂</div>
-                <div className="book-personal">Maruška</div>
-                <div className="book-sub">1944 — </div>
-              </div>
+              <div className="book-title">Vzpomínkář</div>
+              <div className="book-year">2026</div>
             </div>
 
             {/* 3 leaves on the right */}
