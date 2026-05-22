@@ -662,7 +662,6 @@ export default function HomePage() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-left">
-              <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
               <h2>
                 Staré příběhy,
                 <br />
@@ -671,6 +670,7 @@ export default function HomePage() {
               <a href="/signup" className="btn btn-gold">
                 Začít zdarma <span className="arrow">↗</span>
               </a>
+              <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
             </div>
             <div className="footer-col">
               <h4>Procházet</h4>
