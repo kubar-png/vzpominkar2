@@ -1851,7 +1851,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .footer-logo {
   display: block;
-  margin: clamp(40px, 6vw, 64px) auto 0;
+  margin: clamp(40px, 6vw, 64px) 0 0 auto;
 }
 .editorial .footer-left h2 {
   color: var(--footer-ink);
