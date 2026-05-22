@@ -103,39 +103,41 @@ export function TranscriptEditor({
   }
 
   return (
-    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)]">
+    <div className="te-card">
+      {/* Expand toggle — small gold circle with rotating + icon */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[var(--color-text-muted)] hover:text-[var(--color-navy-700)]"
+        aria-expanded={open}
+        className="te-toggle"
       >
-        <span>
+        <span className="te-toggle-label">
           {open ? "Skrýt přepis" : "Zobrazit přepis nahrávky"}
-          {hasPolish ? " · upraveno" : ""}
+          {hasPolish ? <span className="te-edited">· upraveno</span> : null}
         </span>
-        <span aria-hidden className="text-base">
-          {open ? "–" : "+"}
+        <span className={`te-toggle-icon${open ? " is-open" : ""}`} aria-hidden>
+          +
         </span>
       </button>
       {open ? (
-        <div className="border-t border-[var(--color-border)] px-4 py-4">
+        <div className="te-body">
           {editing ? (
             <>
               <textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 rows={Math.max(6, Math.min(20, draft.split("\n").length + 2))}
-                className="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--color-border-strong)] bg-white p-3 text-sm leading-relaxed text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold-400)]"
+                className="te-textarea"
                 disabled={isPending}
               />
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="te-actions">
                 <button
                   type="button"
                   onClick={runSave}
                   disabled={isPending || draft.trim() === view.trim()}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-gold-500)] px-5 py-2 text-sm font-medium text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)] disabled:opacity-50"
+                  className="te-btn te-btn-gold"
                 >
-                  Uložit úpravy
+                  Uložit úpravy <span className="te-btn-circle" aria-hidden>↗</span>
                 </button>
                 <button
                   type="button"
@@ -144,7 +146,7 @@ export function TranscriptEditor({
                     setEditing(false);
                   }}
                   disabled={isPending}
-                  className="rounded-full border border-[var(--color-border-strong)] px-5 py-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-navy-700)] disabled:opacity-50"
+                  className="te-btn te-btn-outline"
                 >
                   Zrušit
                 </button>
@@ -152,15 +154,13 @@ export function TranscriptEditor({
             </>
           ) : (
             <>
-              <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--color-text)]">
-                {view}
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
+              <p className="te-text">{view}</p>
+              <div className="te-actions">
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
                   disabled={isPending}
-                  className="rounded-full border border-[var(--color-border-strong)] px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-700)] hover:text-[var(--color-navy-700)] disabled:opacity-50"
+                  className="te-btn te-btn-outline"
                 >
                   Upravit text
                 </button>
@@ -168,32 +168,32 @@ export function TranscriptEditor({
                   type="button"
                   onClick={() => runPolish("light")}
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-gold-500)] px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)] disabled:opacity-50"
+                  className="te-btn te-btn-gold"
                 >
-                  {isPending ? "AI pracuje…" : "AI · odstranit výplně"}
+                  {isPending ? "AI pracuje…" : "Odstranit výplně"}
+                  <span className="te-btn-circle" aria-hidden>✦</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => runPolish("full")}
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-gold-500)] px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)] disabled:opacity-50"
+                  className="te-btn te-btn-gold"
                 >
-                  {isPending ? "AI pracuje…" : "AI · vylepšit text"}
+                  {isPending ? "AI pracuje…" : "Vylepšit text"}
+                  <span className="te-btn-circle" aria-hidden>✦</span>
                 </button>
                 {hasPolish ? (
                   <button
                     type="button"
                     onClick={runRevert}
                     disabled={isPending}
-                    className="ml-auto text-xs text-[var(--color-text-subtle)] underline-offset-2 hover:text-[var(--color-navy-700)] hover:underline disabled:opacity-50"
+                    className="te-revert"
                   >
                     Vrátit původní přepis
                   </button>
                 ) : null}
               </div>
-              {lastError ? (
-                <p className="mt-3 text-xs text-[var(--color-red-700)]">{lastError}</p>
-              ) : null}
+              {lastError ? <p className="te-error">{lastError}</p> : null}
             </>
           )}
         </div>

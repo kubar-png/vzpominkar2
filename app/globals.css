@@ -3159,3 +3159,198 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial-senior[data-mode="klasik"] .es-memory-card {
   padding: 18px 20px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * TranscriptEditor — used on owner memory detail + senior /my-memories (klasik)
+ * ─────────────────────────────────────────────────────────────────────── */
+.te-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+/* Toggle row — small gold circle with + that rotates 45° → × on open */
+.te-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: background 0.15s ease;
+}
+.te-toggle:hover { background: rgba(14, 59, 100, 0.04); }
+.te-toggle-label { letter-spacing: 0.01em; }
+.te-edited {
+  margin-left: 8px;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--color-text-subtle);
+}
+.te-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--color-gold-500);
+  color: var(--color-navy-900);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s;
+}
+.te-toggle-icon.is-open {
+  transform: rotate(45deg);
+  background: var(--color-gold-400);
+}
+
+.te-body {
+  border-top: 1px solid var(--color-border);
+  padding: 18px;
+}
+
+.te-text {
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text);
+  letter-spacing: 0;
+}
+
+.te-textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  padding: 14px 16px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.te-textarea:focus {
+  border-color: var(--color-navy-700);
+  box-shadow: 0 0 0 3px rgba(212, 169, 73, 0.18);
+}
+.te-textarea:disabled { opacity: 0.5; }
+
+/* Action button row */
+.te-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Shared button — editorial pill, smaller than hero CTAs */
+.te-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 16px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.te-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.te-btn-gold {
+  background: var(--color-gold-500);
+  border-color: var(--color-gold-500);
+  color: var(--color-navy-900);
+}
+.te-btn-gold:not(:disabled):hover {
+  background: var(--color-gold-400);
+  border-color: var(--color-gold-400);
+  transform: translateY(-1px);
+}
+
+.te-btn-outline {
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-navy-900);
+  padding: 8px 16px;
+}
+.te-btn-outline:not(:disabled):hover {
+  background: var(--color-navy-900);
+  border-color: var(--color-navy-900);
+  color: #fff;
+}
+
+/* Arrow / sparkle circle inside button — matches homepage CTA arrow circles, smaller */
+.te-btn-circle {
+  display: inline-grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--color-navy-900);
+  color: var(--color-gold-500);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Revert link, low-emphasis */
+.te-revert {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  text-underline-offset: 2px;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.te-revert:hover { color: var(--color-navy-700); text-decoration-color: currentColor; }
+.te-revert:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.te-error {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-red-700);
+}
+
+/* When dropped inside the senior klasik surface, swap to editorial tokens
+ * so the card lives on cream instead of the owner-app surface tone. */
+.editorial-senior .te-card {
+  background: var(--paper);
+  border-color: var(--line);
+}
+.editorial-senior .te-body { border-top-color: var(--line); }
+.editorial-senior .te-toggle { color: var(--ink); }
+.editorial-senior .te-text { color: var(--ink); }
+.editorial-senior .te-edited { color: var(--ink-soft); }
+.editorial-senior .te-toggle-icon { background: var(--gold); color: var(--ink); }
+.editorial-senior .te-toggle-icon.is-open { background: var(--gold-soft); }
+.editorial-senior .te-btn-gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.editorial-senior .te-btn-gold:not(:disabled):hover { background: var(--gold-soft); border-color: var(--gold-soft); }
+.editorial-senior .te-btn-outline { color: var(--ink); border-color: var(--ink); }
+.editorial-senior .te-btn-outline:not(:disabled):hover { background: var(--ink); color: var(--bg); }
+.editorial-senior .te-btn-circle { background: var(--ink); color: var(--gold); }
+.editorial-senior .te-revert { color: var(--ink-mute); }
+.editorial-senior .te-revert:hover { color: var(--oxblood); }
+.editorial-senior .te-error { color: var(--oxblood); }
+.editorial-senior .te-textarea:focus { box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.22); border-color: var(--ink); }
