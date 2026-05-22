@@ -1,10 +1,24 @@
 import { Toaster } from "sonner";
 import { requireOwner } from "@/lib/auth/permissions";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppMobileMenu } from "@/components/app/AppMobileMenu";
+import { BookProgressBar } from "@/components/app/BookProgressBar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireOwner();
+
+  // Memory count drives the global progress bar (desktop + mobile)
+  let memoryCount = 0;
+  if (user.familyId) {
+    const admin = createAdminClient();
+    const { count } = await admin
+      .from("memories")
+      .select("id", { count: "exact", head: true })
+      .eq("family_id", user.familyId)
+      .eq("status", "published");
+    memoryCount = count ?? 0;
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--color-paper-50)]">
@@ -22,12 +36,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         email={user.email}
       />
 
-      {/* Main content area. Book progress now lives in /dashboard (mini-card)
-       * and in /prompts header action slot — no longer a global sticky bar. */}
+      {/* Main content area. Bottom padding accounts for the sticky
+       * BookProgressBar (~64px) on both desktop and mobile. */}
       <div className="flex min-h-screen w-full flex-col md:ml-[280px]">
-        <main className="flex-1 px-5 py-6 pt-[calc(3.5rem+1.25rem)] md:px-10 md:py-10 md:pt-10 max-w-[980px]">
+        <main className="flex-1 px-5 py-6 pt-[calc(3.5rem+1.25rem)] md:px-10 md:py-10 md:pt-10 max-w-[980px] pb-24">
           {children}
         </main>
+
+        {/* Global book progress — visible on desktop AND mobile per user
+         * request. Renders as a sticky bottom strip in every owner-app page. */}
+        {user.familyId && (
+          <BookProgressBar count={memoryCount} familyId={user.familyId} />
+        )}
       </div>
 
       {/* Toast feedback — bottom-right desktop, top-center mobile. Cream
