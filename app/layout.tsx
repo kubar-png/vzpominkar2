@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Instrument_Sans, Caveat, Outfit, Vollkorn, Inter } from "next/font/google";
 import "./globals.css";
+import { CookieConsent } from "@/components/shared/CookieConsent";
 
 /* PP Pangaia — display serif. Licensed OTFs live in /public/fonts/.
  * This is the new editorial display face that replaces Vollkorn on the
@@ -97,6 +98,7 @@ export default function RootLayout({
         }}
       >
         {children}
+        <CookieConsent />
       </body>
     </html>
   );
