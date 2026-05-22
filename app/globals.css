@@ -598,7 +598,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .logo-mark {
   display: block;
-  width: clamp(150px, 16vw, 200px);
+  width: clamp(120px, 13vw, 165px);
   aspect-ratio: 1892 / 390;
   background-color: var(--gold);
   -webkit-mask: url('/brand/logo-mask.png') no-repeat left center / contain;
@@ -606,7 +606,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 /* Slightly smaller logo in the dark mobile menu drawer */
 .editorial .mobile-menu-head .logo-mark {
-  width: clamp(140px, 38vw, 180px);
+  width: clamp(115px, 32vw, 150px);
 }
 .editorial .nav-links { display: flex; gap: 32px; font-size: 14px; color: var(--ink); }
 .editorial .nav-links a { transition: color 0.2s; }
