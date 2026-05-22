@@ -53,10 +53,10 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
     const classes = cn(
       "group relative mx-3 flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 transition-colors",
       active
-        ? "bg-[var(--color-navy-800)] text-[var(--color-paper-50)]"
+        ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
         : disabled
-          ? "cursor-default text-[var(--color-navy-700)] opacity-40"
-          : "text-[var(--color-paper-500)] hover:bg-[var(--color-navy-800)] hover:text-[var(--color-paper-100)]",
+          ? "cursor-default text-[var(--color-paper-300)] opacity-40"
+          : "text-[var(--color-paper-200)] hover:bg-[var(--color-navy-900)] hover:text-[var(--color-paper-50)]",
     );
 
     const content = (
@@ -72,10 +72,10 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
           className={cn(
             "w-7 shrink-0 font-[family-name:var(--font-display)] text-[10px]",
             active
-              ? "text-[var(--color-gold-300)]"
+              ? "text-[var(--color-gold-400)]"
               : disabled
-                ? "text-[var(--color-navy-700)]"
-                : "text-[var(--color-navy-600)] group-hover:text-[var(--color-gold-400)]",
+                ? "text-[var(--color-paper-400)]"
+                : "text-[var(--color-paper-400)] group-hover:text-[var(--color-gold-400)]",
           )}
         >
           {item.numeral}.
@@ -83,7 +83,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
         <Icon
           size={14}
           aria-hidden
-          className={active ? "text-[var(--color-paper-200)]" : ""}
+          className={active ? "text-[var(--color-paper-100)]" : ""}
         />
         <span className="text-sm font-medium">{item.label}</span>
       </>
@@ -104,19 +104,19 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[260px] flex-col bg-[var(--color-navy-950)] md:flex">
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[260px] flex-col bg-[var(--color-navy-800)] md:flex">
       {/* Logo area */}
       <div className="px-6 pb-5 pt-7">
         <Logo variant="wordmark" href="/dashboard" size={20} invert />
       </div>
 
       {/* Decorative rule with diamond */}
-      <div className="mx-5 mb-4 flex items-center gap-3 opacity-50">
-        <span className="h-px flex-1 bg-[var(--color-navy-700)]" />
+      <div className="mx-5 mb-4 flex items-center gap-3">
+        <span className="h-px flex-1 bg-[var(--color-paper-200)]/20" />
         <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
           <path d="M4 0.5 L7.5 4 L4 7.5 L0.5 4 Z" stroke="var(--color-gold-400)" strokeWidth="1" />
         </svg>
-        <span className="h-px flex-1 bg-[var(--color-navy-700)]" />
+        <span className="h-px flex-1 bg-[var(--color-paper-200)]/20" />
       </div>
 
       {/* Main nav */}
@@ -125,20 +125,20 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
           <NavLink key={item.numeral} item={item} />
         ))}
 
-        <div className="mx-5 my-3 h-px bg-[var(--color-navy-800)]" />
+        <div className="mx-5 my-3 h-px bg-[var(--color-paper-200)]/15" />
 
         <NavLink item={SETTINGS_ITEM} />
       </nav>
 
       {/* User strip */}
-      <div className="border-t border-[var(--color-navy-800)] px-5 py-5">
-        <p className="font-[family-name:var(--font-display)] text-sm text-[var(--color-paper-400)]">
+      <div className="border-t border-[var(--color-paper-200)]/15 px-5 py-5">
+        <p className="font-[family-name:var(--font-display)] text-sm text-[var(--color-paper-200)]">
           {displayName ?? email ?? ""}
         </p>
         <form action={signOut} className="mt-2">
           <button
             type="submit"
-            className="flex items-center gap-1.5 text-xs text-[var(--color-navy-600)] transition-colors hover:text-[var(--color-paper-400)]"
+            className="flex items-center gap-1.5 text-xs text-[var(--color-paper-300)] transition-colors hover:text-[var(--color-gold-400)]"
           >
             <LogOut size={10} aria-hidden />
             Odhlásit se
