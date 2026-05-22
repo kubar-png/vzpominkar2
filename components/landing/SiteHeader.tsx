@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { buttonVariants } from "@/components/ui/button";
-import { MarketingMobileMenu } from "@/components/landing/MarketingMobileMenu";
+import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 
 interface SiteHeaderProps {
   /**
@@ -11,75 +9,46 @@ interface SiteHeaderProps {
   variant?: "full" | "minimal";
 }
 
+/**
+ * Editorial header — shared across the marketing surface.
+ * Matches the homepage hero header: gold-tinted brand logo,
+ * five inline nav links, gold pill CTA on the right, and a
+ * full-screen mobile drawer on small viewports.
+ */
 export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
   if (variant === "minimal") {
     return (
-      <header className="bg-[var(--color-bg)]">
-        <div
-          data-sticky-header
-          className="mx-auto flex max-w-[var(--container-wide)] items-center justify-center px-6"
-        >
-          <div data-sticky-logo>
-            <Logo variant="wordmark" href="/" size={28} />
-          </div>
+      <header className="editorial-header">
+        <div className="container">
+          <nav className="nav" style={{ justifyContent: "center" }}>
+            <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
+              <span className="logo-mark" aria-hidden="true" />
+            </Link>
+          </nav>
         </div>
       </header>
     );
   }
 
   return (
-    <header
-      data-sticky-header-bg
-      className="sticky top-0 z-40 bg-[var(--color-bg)]/85 backdrop-blur"
-    >
-      <div
-        data-sticky-header
-        className="mx-auto flex max-w-[var(--container-wide)] items-center justify-between px-6"
-      >
-        <div data-sticky-logo>
-          <Logo variant="wordmark" href="/" size={28} />
-        </div>
-        <nav className="hidden items-center gap-9 text-sm md:flex">
-          <Link
-            href="/jak-to-funguje"
-            className="text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
-          >
-            Jak to funguje
+    <header className="editorial-header">
+      <div className="container">
+        <nav className="nav">
+          <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
+            <span className="logo-mark" aria-hidden="true" />
           </Link>
-          <Link
-            href="/cenik"
-            className="text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
-          >
-            Ceník
+          <div className="nav-links">
+            <Link href="/jak-to-funguje">Jak to funguje</Link>
+            <Link href="/cenik">Ceník</Link>
+            <Link href="/darek">Jako dárek</Link>
+            <Link href="/faq">Otázky</Link>
+            <Link href="/o-nas">Náš příběh</Link>
+          </div>
+          <Link href="/signup" className="btn btn-gold nav-cta-desktop">
+            Začít zdarma <span className="arrow">↗</span>
           </Link>
-          <Link
-            href="/darek"
-            className="text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
-          >
-            Jako dárek
-          </Link>
-          <Link
-            href="/faq"
-            className="text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
-          >
-            FAQ
-          </Link>
+          <HomeMobileMenu />
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
-          <Link
-            href="/login"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            Přihlášení
-          </Link>
-          <Link
-            href="/signup"
-            className={buttonVariants({ variant: "primary", size: "sm" })}
-          >
-            Začít zdarma
-          </Link>
-        </div>
-        <MarketingMobileMenu />
       </div>
     </header>
   );

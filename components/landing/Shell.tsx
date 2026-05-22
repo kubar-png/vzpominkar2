@@ -34,7 +34,7 @@ export function Shell({
   stickyMobileCta = true,
 }: ShellProps) {
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="editorial min-h-screen">
       {motion ? (
         <>
           <RevealOnScroll />
