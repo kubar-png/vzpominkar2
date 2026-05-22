@@ -19,6 +19,7 @@ interface SeniorCardProps {
     contact_channel: string | null;
     contact_address: string | null;
     prompt_frequency: number;
+    is_senior: boolean;
     memoryCount: number;
   };
   manageHref: string;
@@ -42,6 +43,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
   const [editChannel, setEditChannel] = useState(senior.contact_channel ?? "");
   const [editAddress, setEditAddress] = useState(senior.contact_address ?? "");
   const [editFrequency, setEditFrequency] = useState(senior.prompt_frequency ?? 1);
+  const [editIsSenior, setEditIsSenior] = useState(senior.is_senior ?? true);
   const [deleteInput, setDeleteInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -53,6 +55,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
     setEditChannel(senior.contact_channel ?? "");
     setEditAddress(senior.contact_address ?? "");
     setEditFrequency(senior.prompt_frequency ?? 1);
+    setEditIsSenior(senior.is_senior ?? true);
     setError(null);
     setPhase("view");
   }
@@ -66,6 +69,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
         contactChannel: editChannel || null,
         contactAddress: editAddress.trim() || null,
         promptFrequency: editFrequency as 1 | 2,
+        isSenior: editIsSenior,
       });
       if (result.ok) {
         setPhase("view");
@@ -162,6 +166,44 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
                   <option value={2}>Dvakrát týdně</option>
                 </select>
               </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[var(--color-border)] pt-4">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-text-subtle)]">
+              Režim aplikace
+            </p>
+            <div className="space-y-2">
+              <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
+                <input
+                  type="radio"
+                  name={`mode-${senior.id}`}
+                  checked={editIsSenior === true}
+                  onChange={() => setEditIsSenior(true)}
+                  className="mt-1"
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[var(--color-text)]">Senior režim</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
+                    Velká tlačítka, kontrastní typografie, jednoduchý flow. Bez možnosti editace přepisu. Pro starší uživatele.
+                  </p>
+                </div>
+              </label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
+                <input
+                  type="radio"
+                  name={`mode-${senior.id}`}
+                  checked={editIsSenior === false}
+                  onChange={() => setEditIsSenior(false)}
+                  className="mt-1"
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[var(--color-text)]">Klasický režim</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
+                    Kompaktnější UI, vyprávějící může sám editovat přepis nahrávky, vylepšit text s AI a vybírat otázky z archivu.
+                  </p>
+                </div>
+              </label>
             </div>
           </div>
 

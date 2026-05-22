@@ -19,11 +19,11 @@ export default async function RodinaPage({
 
   const { data: seniors } = await admin
     .from("profiles")
-    .select("id, display_name, username, senior_role, contact_channel, contact_address, prompt_frequency, created_at")
+    .select("id, display_name, username, senior_role, contact_channel, contact_address, prompt_frequency, is_senior, created_at")
     .eq("family_id", familyId)
     .eq("role", "senior")
     .order("created_at")
-    .returns<{ id: string; display_name: string | null; username: string | null; senior_role: string | null; contact_channel: string | null; contact_address: string | null; prompt_frequency: number; created_at: string }[]>();
+    .returns<{ id: string; display_name: string | null; username: string | null; senior_role: string | null; contact_channel: string | null; contact_address: string | null; prompt_frequency: number; is_senior: boolean; created_at: string }[]>();
 
   const seniorList = seniors ?? [];
 
@@ -69,6 +69,7 @@ export default async function RodinaPage({
                 contact_channel: senior.contact_channel,
                 contact_address: senior.contact_address,
                 prompt_frequency: senior.prompt_frequency,
+                is_senior: senior.is_senior ?? true,
                 memoryCount: countById.get(senior.id) ?? 0,
               }}
               manageHref={`/family/${familyId}/senior?seniorId=${senior.id}`}

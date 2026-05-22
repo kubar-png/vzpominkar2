@@ -15,6 +15,7 @@ const updateSchema = z.object({
   contactChannel: z.enum(["email", "whatsapp"]).optional().nullable(),
   contactAddress: z.string().max(200).optional().nullable(),
   promptFrequency: z.union([z.literal(1), z.literal(2)]).default(1),
+  isSenior: z.boolean().optional(),
 });
 
 const deliverySchema = z.object({
@@ -34,6 +35,7 @@ export async function updateSeniorProfile(
     contactChannel?: string | null;
     contactAddress?: string | null;
     promptFrequency?: number;
+    isSenior?: boolean;
   },
 ): Promise<SeniorActionResult> {
   await requireOwnerOfFamily(familyId);
@@ -45,15 +47,27 @@ export async function updateSeniorProfile(
 
   const admin = createAdminClient();
 
+  const update: {
+    display_name: string;
+    senior_role: string | null;
+    contact_channel: "email" | "whatsapp" | null;
+    contact_address: string | null;
+    prompt_frequency: number;
+    is_senior?: boolean;
+  } = {
+    display_name: parsed.data.displayName,
+    senior_role: parsed.data.seniorRole ?? null,
+    contact_channel: parsed.data.contactChannel ?? null,
+    contact_address: parsed.data.contactAddress?.trim() || null,
+    prompt_frequency: parsed.data.promptFrequency,
+  };
+  if (typeof parsed.data.isSenior === "boolean") {
+    update.is_senior = parsed.data.isSenior;
+  }
+
   const { error } = await admin
     .from("profiles")
-    .update({
-      display_name: parsed.data.displayName,
-      senior_role: parsed.data.seniorRole ?? null,
-      contact_channel: parsed.data.contactChannel ?? null,
-      contact_address: parsed.data.contactAddress?.trim() || null,
-      prompt_frequency: parsed.data.promptFrequency,
-    })
+    .update(update)
     .eq("id", seniorId)
     .eq("family_id", familyId)
     .eq("role", "senior");
