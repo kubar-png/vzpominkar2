@@ -49,6 +49,7 @@ export default async function RodinaPage({
         sectionLabel="Rodina"
         title="Rodina"
         description="Kdo vypráví, jak se přihlašuje a jak se mu otázky doručují."
+        italic
       />
 
       <div className="space-y-3">

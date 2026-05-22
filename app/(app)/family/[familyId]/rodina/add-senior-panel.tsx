@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input, Label, Select } from "@/components/ui/input";
+import { FormSection } from "@/components/ui/form-section";
 import { createSeniorAccount } from "@/lib/auth/actions";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
@@ -163,90 +164,92 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
           Přidání dalšího blízkého bude v budoucnu zpoplatněno. Nyní je v testovacím provozu zdarma.
         </p>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="new-displayName">Celé jméno (jméno a příjmení)</Label>
-            <Input
-              id="new-displayName"
-              name="displayName"
-              required
-              maxLength={80}
-              placeholder="Jana Nováková"
-              autoComplete="off"
-            />
-          </div>
+        <form onSubmit={onSubmit} className="space-y-6">
+          <FormSection title="Profil" hideDivider compact>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-displayName">Celé jméno (jméno a příjmení)</Label>
+              <Input
+                id="new-displayName"
+                name="displayName"
+                required
+                maxLength={80}
+                placeholder="Jana Nováková"
+                autoComplete="off"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-seniorRole">Role v rodině</Label>
+              <Select id="new-seniorRole" name="seniorRole">
+                <option value="">- nevybráno -</option>
+                {SENIOR_ROLE_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </Select>
+            </div>
+          </FormSection>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="new-seniorRole">Role v rodině</Label>
-            <Select id="new-seniorRole" name="seniorRole">
-              <option value="">- nevybráno -</option>
-              {SENIOR_ROLE_OPTIONS.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </Select>
-          </div>
+          <FormSection title="Doručování" description="Kam a jak často chodí otázky." compact>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-contactChannel">Kam posílat otázky</Label>
+              <Select id="new-contactChannel" name="contactChannel">
+                <option value="">- nevybráno -</option>
+                <option value="email">E-mail</option>
+                <option value="whatsapp">WhatsApp</option>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-contactAddress">E-mail nebo telefon (WhatsApp)</Label>
+              <Input
+                id="new-contactAddress"
+                name="contactAddress"
+                type="text"
+                maxLength={200}
+                placeholder="jana@email.cz nebo +420 777 123 456"
+                autoComplete="off"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-promptFrequency">Jak často posílat otázky</Label>
+              <Select id="new-promptFrequency" name="promptFrequency" defaultValue="1">
+                <option value="1">Jednou týdně</option>
+                <option value="2">Dvakrát týdně</option>
+              </Select>
+            </div>
+          </FormSection>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="new-contactChannel">Kam posílat otázky</Label>
-            <Select id="new-contactChannel" name="contactChannel">
-              <option value="">- nevybráno -</option>
-              <option value="email">E-mail</option>
-              <option value="whatsapp">WhatsApp</option>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="new-contactAddress">E-mail nebo telefon (WhatsApp)</Label>
-            <Input
-              id="new-contactAddress"
-              name="contactAddress"
-              type="text"
-              maxLength={200}
-              placeholder="jana@email.cz nebo +420 777 123 456"
-              autoComplete="off"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="new-promptFrequency">Jak často posílat otázky</Label>
-            <Select id="new-promptFrequency" name="promptFrequency" defaultValue="1">
-              <option value="1">Jednou týdně</option>
-              <option value="2">Dvakrát týdně</option>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="new-username">Uživatelské jméno</Label>
-            <Input
-              id="new-username"
-              name="username"
-              required
-              minLength={3}
-              maxLength={32}
-              autoComplete="off"
-              autoCapitalize="none"
-              spellCheck={false}
-              placeholder="babicka.marie"
-              pattern="^[a-z][a-z0-9_.\-]{2,31}$"
-            />
-            <p className="text-xs text-[var(--color-text-muted)]">
-              Malá písmena, číslice, tečka, pomlčka nebo podtržítko. Bez diakritiky.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="new-password">Heslo (aspoň 8 znaků)</Label>
-            <Input
-              id="new-password"
-              name="password"
-              type="text"
-              required
-              minLength={8}
-              maxLength={128}
-              autoComplete="off"
-              placeholder="Jednoduché heslo, které zvládne bez brýlí"
-            />
-          </div>
+          <FormSection title="Přihlašovací údaje" description="Tyto údaje předáte blízkému na lístečku." compact>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-username">Uživatelské jméno</Label>
+              <Input
+                id="new-username"
+                name="username"
+                required
+                minLength={3}
+                maxLength={32}
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                placeholder="babicka.marie"
+                pattern="^[a-z][a-z0-9_.\-]{2,31}$"
+              />
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Malá písmena, číslice, tečka, pomlčka nebo podtržítko. Bez diakritiky.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-password">Heslo (aspoň 8 znaků)</Label>
+              <Input
+                id="new-password"
+                name="password"
+                type="text"
+                required
+                minLength={8}
+                maxLength={128}
+                autoComplete="off"
+                placeholder="Jednoduché heslo, které zvládne bez brýlí"
+              />
+            </div>
+          </FormSection>
 
           {phase.error ? (
             <p

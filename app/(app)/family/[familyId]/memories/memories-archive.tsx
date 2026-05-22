@@ -287,7 +287,7 @@ function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors",
         active
           ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
           : "bg-[var(--color-paper-200)] text-[var(--color-text-muted)] hover:bg-[var(--color-paper-300)]",

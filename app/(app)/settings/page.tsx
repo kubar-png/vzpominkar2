@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { FormSection } from "@/components/ui/form-section";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { DisplayNameForm } from "./display-name-form";
 import { PasswordForm } from "./password-form";
@@ -37,36 +38,28 @@ export default async function SettingsPage() {
       </Link>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Vaše jméno</CardTitle>
-          <CardDescription>
-            Jak vás aplikace osloví v přehledu a v emailech.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <DisplayNameForm initial={owner.displayName ?? ""} />
-        </CardContent>
-      </Card>
+        <CardContent className="space-y-8 p-6">
+          <FormSection
+            title="Vaše jméno"
+            description="Jak vás aplikace osloví v přehledu a v emailech."
+            hideDivider
+          >
+            <DisplayNameForm initial={owner.displayName ?? ""} />
+          </FormSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Změnit heslo</CardTitle>
-          <CardDescription>
-            Nové heslo musí mít alespoň 10 znaků. Po uložení vás Vzpomínkář ponechá přihlášené.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <PasswordForm />
-        </CardContent>
-      </Card>
+          <FormSection
+            title="E-mail"
+            description={`Aktuální adresa: ${owner.email ?? "—"}`}
+          >
+            <EmailForm current={owner.email ?? null} />
+          </FormSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>E-mail</CardTitle>
-          <CardDescription>Aktuální adresa: {owner.email}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <EmailForm current={owner.email ?? null} />
+          <FormSection
+            title="Heslo"
+            description="Nové heslo musí mít alespoň 10 znaků. Po uložení vás Vzpomínkář ponechá přihlášené."
+          >
+            <PasswordForm />
+          </FormSection>
         </CardContent>
       </Card>
     </div>

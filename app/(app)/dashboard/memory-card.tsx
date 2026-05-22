@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
 import type { MemoryItem } from "./page";
 
@@ -68,10 +69,10 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
               onClick={onToggleFavorite}
               aria-label={favorite ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
               aria-pressed={favorite}
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--color-paper-200)]"
+              className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--color-paper-200)]"
             >
               <Heart
-                size={16}
+                size={18}
                 className={favorite ? "text-[var(--color-red-600)]" : "text-[var(--color-text-subtle)]"}
                 fill={favorite ? "currentColor" : "none"}
               />
@@ -91,7 +92,11 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
 
         {/* Audio player */}
         {m.audioUrl ? (
-          <audio controls src={m.audioUrl} className="w-full" preload="metadata" />
+          <InlineAudioPlayer
+            src={m.audioUrl}
+            duration={m.audio_duration_seconds}
+            tone="owner"
+          />
         ) : null}
 
         {/* Text content */}
