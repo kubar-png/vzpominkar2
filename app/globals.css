@@ -653,20 +653,39 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .nav-cta-desktop { display: none !important; }
 }
 
-.editorial .mobile-menu-overlay {
+.editorial .mobile-menu-backdrop {
   position: fixed;
   inset: 0;
+  background: rgba(28, 24, 20, 0.42);
+  z-index: 99;
+  animation: backdrop-fade-in 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+@keyframes backdrop-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.editorial .mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 420px;
   background: var(--bg);
   z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 28px var(--gutter-editorial) 36px;
-  animation: menu-fade-in 0.22s ease;
+  padding: 28px 28px 36px;
+  animation: menu-slide-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
+  box-shadow: -16px 0 48px -12px rgba(28, 24, 20, 0.28);
 }
-@keyframes menu-fade-in {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes menu-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 .editorial .mobile-menu-head {
   display: flex;

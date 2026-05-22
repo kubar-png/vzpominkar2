@@ -46,7 +46,13 @@ export function HomeMobileMenu() {
       </button>
 
       {open && (
-        <div className="mobile-menu-overlay" role="dialog" aria-modal="true">
+        <>
+          <div
+            className="mobile-menu-backdrop"
+            aria-hidden
+            onClick={() => setOpen(false)}
+          />
+          <div className="mobile-menu-overlay" role="dialog" aria-modal="true">
           <div className="mobile-menu-head">
             <Link
               href="/"
@@ -95,7 +101,8 @@ export function HomeMobileMenu() {
               Začít zdarma <span className="arrow">↗</span>
             </Link>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </>
   );
