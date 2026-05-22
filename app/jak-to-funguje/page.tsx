@@ -147,7 +147,7 @@ export default function JakToFungujePage() {
       </section>
 
       {/* In-between belt — quote */}
-      <section className="bg-[var(--color-navy-900)] py-24 text-[var(--color-paper-100)] sm:py-32">
+      <section className="bg-[#1c1814] py-24 text-[#ede4cf] sm:py-32">
         <div className="mx-auto max-w-3xl px-6 text-center" data-reveal>
           <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-400)]">
             <span className="mr-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
@@ -155,13 +155,13 @@ export default function JakToFungujePage() {
             <span className="ml-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
           </p>
           <p
-            className="mt-8 font-[family-name:var(--font-display)] text-2xl leading-snug text-[var(--color-paper-50)] sm:text-3xl"
+            className="mt-8 font-[family-name:var(--font-display)] text-3xl leading-snug text-[#ede4cf] sm:text-4xl"
             style={{ textWrap: "balance" }}
           >
             &bdquo;Maminka první pondělí odpověděla z čistého pocitu povinnosti.
             Třetí pondělí už čekala telefonem v ruce, kdy otázka přijde.&ldquo;
           </p>
-          <p className="mt-6 text-[11px] uppercase tracking-[0.28em] text-[var(--color-paper-400)]">
+          <p className="mt-6 text-[11px] uppercase tracking-[0.28em] text-[#ede4cf]/55">
             — Lucie, 47 let, Plzeň
           </p>
         </div>
@@ -214,19 +214,19 @@ export default function JakToFungujePage() {
             </h2>
             <ul className="mt-8 space-y-5 text-base leading-relaxed text-[var(--color-text-muted)]">
               <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-red-700)]" />
+                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
                 <span>Posíláme otázky každé pondělí ráno v 10:00.</span>
               </li>
               <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-red-700)]" />
+                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
                 <span>Přepisujeme nahrávky a vyhladíme věty.</span>
               </li>
               <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-red-700)]" />
+                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
                 <span>Sázíme stránky, vybíráme typografii, řadíme kapitoly.</span>
               </li>
               <li className="flex gap-4">
-                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-red-700)]" />
+                <span aria-hidden className="mt-2 inline-block h-px w-6 shrink-0 bg-[var(--color-gold-500)]" />
                 <span>Tiskneme, vážeme, balíme a posíláme.</span>
               </li>
             </ul>
@@ -235,7 +235,7 @@ export default function JakToFungujePage() {
       </section>
 
       {/* Mini-FAQ */}
-      <section className="bg-[var(--color-surface)] py-24">
+      <section className="bg-[var(--color-paper-100)] py-24">
         <div className="mx-auto max-w-[var(--container-wide)] px-6">
           <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
             <div data-reveal>
