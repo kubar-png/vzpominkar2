@@ -35,7 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       />
 
       {/* Main content area */}
-      <div className="flex min-h-screen w-full flex-col md:ml-[260px]">
+      <div className="flex min-h-screen w-full flex-col md:ml-[280px]">
         {/*
           Mobile: pt-14 to clear the fixed header bar.
           Desktop: no top padding - sidebar handles branding.
