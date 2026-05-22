@@ -1763,9 +1763,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .story-block,
   .editorial .gift-block,
   .editorial .dark-card { grid-template-columns: 1fr; }
-  /* Hero: pull book up less so it doesn't overlap the CTA */
+  /* Hero: pull book up less so it doesn't overlap the CTA; tighten stage */
   .editorial .bg-wordmark { margin: 36px 0 -90px; }
-  .editorial .book-stage { padding-bottom: clamp(160px, 26vw, 240px); }
+  .editorial .book-stage {
+    min-height: 0;
+    padding-bottom: clamp(60px, 12vw, 120px);
+  }
 
   /* ─── How it works: horizontal-scroll carousel on mobile ─── */
   .editorial .steps {
