@@ -119,7 +119,22 @@ function WaveformPlayer({
         ref={audioRef}
         src={src}
         preload="metadata"
-        onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? initialDuration ?? 0)}
+        onLoadedMetadata={() => {
+          // WebM from MediaRecorder reports duration as Infinity; fall back
+          // to the DB-stored seconds (initialDuration) when that happens.
+          const d = audioRef.current?.duration;
+          setDuration(
+            typeof d === "number" && Number.isFinite(d) && d > 0
+              ? d
+              : initialDuration ?? 0
+          );
+        }}
+        onDurationChange={() => {
+          const d = audioRef.current?.duration;
+          if (typeof d === "number" && Number.isFinite(d) && d > 0) {
+            setDuration(d);
+          }
+        }}
         onEnded={handleEnded}
       />
 
