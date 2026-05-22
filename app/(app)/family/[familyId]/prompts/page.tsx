@@ -5,7 +5,10 @@ import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
+import { BookProgressCard } from "@/components/app/BookProgressCard";
 import { ScheduledList } from "./scheduled-list";
 import { PromptPickers } from "./prompt-pickers";
 
@@ -34,7 +37,7 @@ export default async function PromptsPage({
   const supabase = createAdminClient();
 
   // Fetch seniors and prompts/assignments in parallel
-  const [seniorsResult, assignmentsResult, promptsResult] = await Promise.all([
+  const [seniorsResult, assignmentsResult, promptsResult, memoryCountResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, display_name")
@@ -70,7 +73,14 @@ export default async function PromptsPage({
         is_active: boolean;
         order_index: number;
       }[]>(),
+
+    supabase
+      .from("memories")
+      .select("id", { count: "exact", head: true })
+      .eq("family_id", familyId)
+      .eq("status", "published"),
   ]);
+  const memoryCount = memoryCountResult.count ?? 0;
 
   const seniors = seniorsResult.data ?? [];
   const seniorNameById = new Map(seniors.map((s) => [s.id, s.display_name]));
@@ -107,18 +117,26 @@ export default async function PromptsPage({
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="III"
+        numeral="IV"
         sectionLabel="Plánování"
         title="Otázky"
         description="Co se vašich blízkých v které pondělí zeptáme."
         action={
-          <Link
-            href="/settings/otazky"
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-subtle)] transition-colors hover:text-[var(--color-text-muted)]"
-          >
-            <Settings2 size={12} />
-            Nastavení doručování
-          </Link>
+          <div className="flex items-center gap-3">
+            <BookProgressCard
+              familyId={familyId}
+              count={memoryCount}
+              variant="compact"
+            />
+            <Link
+              href="/settings/otazky"
+              className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+            >
+              <Settings2 size={14} aria-hidden />
+              <span className="hidden sm:inline">Nastavení doručování</span>
+              <span className="sm:hidden">Nastavení</span>
+            </Link>
+          </div>
         }
       />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { removeAssignment } from "@/lib/prompts/actions";
 
 interface Item {
@@ -45,14 +45,19 @@ export function ScheduledList({
             </p>
             <p>{a.question}</p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             disabled={pending}
-            onClick={() => start(() => void removeAssignment(familyId, a.id))}
+            className="shrink-0 self-start text-xs font-medium text-[var(--color-red-700)] underline-offset-2 transition-colors hover:underline disabled:opacity-50"
+            onClick={() =>
+              start(async () => {
+                await removeAssignment(familyId, a.id);
+                toast.success("Otázka odebrána");
+              })
+            }
           >
             Odebrat
-          </Button>
+          </button>
         </li>
       ))}
     </ul>

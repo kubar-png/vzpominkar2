@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart, Search, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select } from "@/components/ui/input";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { cn } from "@/lib/utils";
 
@@ -157,16 +158,17 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
           {/* Sort - pushed to right */}
           <div className="ml-auto flex items-center gap-2 text-xs text-[var(--color-text-subtle)]">
             <label htmlFor="memarch-sort">Seřadit:</label>
-            <select
+            <Select
               id="memarch-sort"
+              selectSize="sm"
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOrder)}
-              className="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-2 py-1 text-xs text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+              className="w-auto min-w-[160px]"
             >
               <option value="newest">Nejnovější</option>
               <option value="oldest">Nejstarší</option>
               <option value="favorite">Oblíbené první</option>
-            </select>
+            </Select>
           </div>
         </div>
       </div>
@@ -285,7 +287,7 @@ function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors",
         active
           ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
           : "bg-[var(--color-paper-200)] text-[var(--color-text-muted)] hover:bg-[var(--color-paper-300)]",

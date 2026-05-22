@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea, Label } from "@/components/ui/input";
 import { addCustomPromptAndSchedule } from "@/lib/prompts/actions";
@@ -14,23 +15,19 @@ export function CustomPromptForm({
 }) {
   const [pending, start] = useTransition();
   const [scheduleType, setScheduleType] = useState<"queue" | "now" | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   function submit(type: "queue" | "now") {
     const question = String(new FormData(formRef.current!).get("question") ?? "").trim();
     if (!question) return;
-    setError(null);
-    setSuccess(false);
     setScheduleType(type);
     start(async () => {
       const result = await addCustomPromptAndSchedule(familyId, question, type, seniorIds);
       if (result.ok) {
         formRef.current?.reset();
-        setSuccess(true);
+        toast.success(type === "now" ? "Otázka odeslána" : "Naplánováno na příští pondělí");
       } else {
-        setError(result.error ?? "Něco se nepovedlo.");
+        toast.error(result.error ?? "Něco se nepovedlo.");
       }
       setScheduleType(null);
     });
@@ -48,17 +45,8 @@ export function CustomPromptForm({
           minLength={8}
           maxLength={280}
           placeholder="Např.: Jak jste se s tátou poprvé setkali na nádraží v roce 1972?"
-          onChange={() => setSuccess(false)}
         />
       </div>
-
-      {error ? (
-        <p className="text-sm text-[var(--color-red-700)]" role="alert">{error}</p>
-      ) : null}
-
-      {success ? (
-        <p className="text-sm font-medium text-[var(--color-navy-700)]">✓ Naplánováno</p>
-      ) : null}
 
       <div className="flex gap-2">
         <Button

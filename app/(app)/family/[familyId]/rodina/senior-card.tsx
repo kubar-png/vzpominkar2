@@ -3,9 +3,11 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, AlertTriangle, X, Check } from "lucide-react";
+import { Pencil, Trash2, AlertTriangle, X, Check, MoreHorizontal } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Select } from "@/components/ui/input";
+import { FormSection } from "@/components/ui/form-section";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { updateSeniorProfile, deleteSeniorAccount } from "@/lib/auth/senior-actions";
 
@@ -73,6 +75,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
       });
       if (result.ok) {
         setPhase("view");
+        toast.success("Uloženo");
         router.refresh();
       } else {
         setError(result.error ?? "Nepodařilo se uložit.");
@@ -84,7 +87,9 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
     setError(null);
     start(async () => {
       const result = await deleteSeniorAccount(familyId, senior.id);
-      if (!result.ok) {
+      if (result.ok) {
+        toast.success(`Účet ${senior.display_name ?? "blízkého"} smazán`);
+      } else {
         setError(result.error ?? "Smazání selhalo.");
       }
       // On success the page refreshes via revalidatePath - no need to router.refresh()
@@ -99,113 +104,101 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
             Upravit blízkého
           </p>
         </div>
-        <div className="space-y-4 p-6">
-          <div className="space-y-1.5">
-            <Label htmlFor={`name-${senior.id}`}>Celé jméno</Label>
-            <Input
-              id={`name-${senior.id}`}
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              maxLength={80}
-              autoFocus
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor={`role-${senior.id}`}>Role v rodině</Label>
-            <select
-              id={`role-${senior.id}`}
-              value={editRole}
-              onChange={(e) => setEditRole(e.target.value)}
-              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-            >
-              <option value="">- nevybráno -</option>
-              {SENIOR_ROLE_OPTIONS.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="border-t border-[var(--color-border)] pt-4">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-text-subtle)]">
-              Doručování otázek
-            </p>
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor={`channel-${senior.id}`}>Způsob doručení</Label>
-                <select
-                  id={`channel-${senior.id}`}
-                  value={editChannel}
-                  onChange={(e) => setEditChannel(e.target.value)}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-                >
-                  <option value="">- nevybráno -</option>
-                  <option value="email">E-mail</option>
-                  <option value="whatsapp">WhatsApp</option>
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`address-${senior.id}`}>E-mail nebo telefon (WhatsApp)</Label>
-                <Input
-                  id={`address-${senior.id}`}
-                  value={editAddress}
-                  onChange={(e) => setEditAddress(e.target.value)}
-                  maxLength={200}
-                  placeholder="jana@email.cz nebo +420 777 123 456"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`freq-${senior.id}`}>Frekvence</Label>
-                <select
-                  id={`freq-${senior.id}`}
-                  value={editFrequency}
-                  onChange={(e) => setEditFrequency(Number(e.target.value) as 1 | 2)}
-                  className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
-                >
-                  <option value={1}>Jednou týdně</option>
-                  <option value={2}>Dvakrát týdně</option>
-                </select>
-              </div>
+        <div className="space-y-6 p-6">
+          <FormSection title="Profil" hideDivider compact>
+            <div className="space-y-1.5">
+              <Label htmlFor={`name-${senior.id}`}>Celé jméno</Label>
+              <Input
+                id={`name-${senior.id}`}
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                maxLength={80}
+                autoFocus
+              />
             </div>
-          </div>
-
-          <div className="border-t border-[var(--color-border)] pt-4">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-text-subtle)]">
-              Režim aplikace
-            </p>
-            <div className="space-y-2">
-              <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
-                <input
-                  type="radio"
-                  name={`mode-${senior.id}`}
-                  checked={editIsSenior === true}
-                  onChange={() => setEditIsSenior(true)}
-                  className="mt-1"
-                />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[var(--color-text)]">Senior režim</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
-                    Velká tlačítka, kontrastní typografie, jednoduchý flow. Bez možnosti editace přepisu. Pro starší uživatele.
-                  </p>
-                </div>
-              </label>
-              <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
-                <input
-                  type="radio"
-                  name={`mode-${senior.id}`}
-                  checked={editIsSenior === false}
-                  onChange={() => setEditIsSenior(false)}
-                  className="mt-1"
-                />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[var(--color-text)]">Klasický režim</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
-                    Kompaktnější UI, vyprávějící může sám editovat přepis nahrávky, vylepšit text s AI a vybírat otázky z archivu.
-                  </p>
-                </div>
-              </label>
+            <div className="space-y-1.5">
+              <Label htmlFor={`role-${senior.id}`}>Role v rodině</Label>
+              <Select
+                id={`role-${senior.id}`}
+                value={editRole}
+                onChange={(e) => setEditRole(e.target.value)}
+              >
+                <option value="">- nevybráno -</option>
+                {SENIOR_ROLE_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </Select>
             </div>
-          </div>
+          </FormSection>
+
+          <FormSection title="Doručování" description="Kam a jak často chodí otázky." compact>
+            <div className="space-y-1.5">
+              <Label htmlFor={`channel-${senior.id}`}>Způsob doručení</Label>
+              <Select
+                id={`channel-${senior.id}`}
+                value={editChannel}
+                onChange={(e) => setEditChannel(e.target.value)}
+              >
+                <option value="">- nevybráno -</option>
+                <option value="email">E-mail</option>
+                <option value="whatsapp">WhatsApp</option>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`address-${senior.id}`}>E-mail nebo telefon (WhatsApp)</Label>
+              <Input
+                id={`address-${senior.id}`}
+                value={editAddress}
+                onChange={(e) => setEditAddress(e.target.value)}
+                maxLength={200}
+                placeholder="jana@email.cz nebo +420 777 123 456"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`freq-${senior.id}`}>Frekvence</Label>
+              <Select
+                id={`freq-${senior.id}`}
+                value={editFrequency}
+                onChange={(e) => setEditFrequency(Number(e.target.value) as 1 | 2)}
+              >
+                <option value={1}>Jednou týdně</option>
+                <option value={2}>Dvakrát týdně</option>
+              </Select>
+            </div>
+          </FormSection>
+
+          <FormSection title="Režim aplikace" description="Jak se vašemu blízkému aplikace zobrazí." compact>
+            <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
+              <input
+                type="radio"
+                name={`mode-${senior.id}`}
+                checked={editIsSenior === true}
+                onChange={() => setEditIsSenior(true)}
+                className="mt-1"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[var(--color-text)]">Senior režim</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
+                  Velká tlačítka, kontrastní typografie, jednoduchý flow. Bez možnosti editace přepisu. Pro starší uživatele.
+                </p>
+              </div>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-3 hover:border-[var(--color-navy-700)]">
+              <input
+                type="radio"
+                name={`mode-${senior.id}`}
+                checked={editIsSenior === false}
+                onChange={() => setEditIsSenior(false)}
+                className="mt-1"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[var(--color-text)]">Klasický režim</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[var(--color-text-muted)]">
+                  Kompaktnější UI, vyprávějící může sám editovat přepis nahrávky, vylepšit text s AI a vybírat otázky z archivu.
+                </p>
+              </div>
+            </label>
+          </FormSection>
 
           {error ? (
             <p role="alert" className="text-sm text-[var(--color-danger)]">{error}</p>
@@ -321,26 +314,36 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
         <div className="flex items-center gap-2">
           <Link
             href={manageHref}
-            className="rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
+            className="inline-flex h-11 items-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-4 text-sm font-medium text-[var(--color-text)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
           >
-            Správa přístupu
+            Spravovat
           </Link>
-          <button
-            type="button"
-            onClick={() => setPhase("edit")}
-            className="rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-1.5 text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
-            title="Upravit"
-          >
-            <Pencil size={14} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => setPhase("delete")}
-            className="rounded-[var(--radius-md)] border border-[var(--color-border-strong)] p-1.5 text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-red-300)] hover:text-[var(--color-red-600)]"
-            title="Smazat"
-          >
-            <Trash2 size={14} aria-hidden />
-          </button>
+          <details className="relative">
+            <summary
+              aria-label="Další akce"
+              className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)] [&::-webkit-details-marker]:hidden"
+            >
+              <MoreHorizontal size={16} aria-hidden />
+            </summary>
+            <div className="absolute right-0 top-12 z-10 min-w-[180px] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-md)]">
+              <button
+                type="button"
+                onClick={() => setPhase("edit")}
+                className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm text-[var(--color-text)] transition-colors hover:bg-[var(--color-paper-100)]"
+              >
+                <Pencil size={14} aria-hidden />
+                Upravit
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhase("delete")}
+                className="flex w-full items-center gap-2.5 border-t border-[var(--color-border)] px-4 py-3 text-left text-sm text-[var(--color-red-700)] transition-colors hover:bg-[var(--color-red-50)]"
+              >
+                <Trash2 size={14} aria-hidden />
+                Smazat účet
+              </button>
+            </div>
+          </details>
         </div>
       </div>
     </div>

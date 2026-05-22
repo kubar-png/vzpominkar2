@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
-import { ArrowLeft, Play, Pause, Download, Heart, Pencil, Check, X } from "lucide-react";
+import { ArrowLeft, Play, Pause, Download, Heart, Pencil } from "lucide-react";
+import { toast } from "sonner";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
 import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
@@ -353,6 +354,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       if (result.ok) {
         setText(draftText.trim() || null);
         setEditing(false);
+        toast.success("Vzpomínka uložena");
       } else {
         setEditError(result.error);
       }

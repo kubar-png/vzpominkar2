@@ -62,7 +62,7 @@ export default async function BookPage({
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="IV"
+        numeral="V"
         sectionLabel="Kniha"
         title="Tištěná kniha"
         description="Až bude vzpomínek dost, vytiskneme z nich knihu. Pošleme ji na vámi zadanou adresu."
