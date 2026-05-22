@@ -135,6 +135,8 @@ export type Database = {
           audio_duration_seconds: number | null
           audio_path: string | null
           audio_transcript: string | null
+          audio_transcript_polished: string | null
+          transcript_edited_at: string | null
           author_id: string
           created_at: string
           family_id: string
@@ -151,6 +153,8 @@ export type Database = {
           audio_duration_seconds?: number | null
           audio_path?: string | null
           audio_transcript?: string | null
+          audio_transcript_polished?: string | null
+          transcript_edited_at?: string | null
           author_id: string
           created_at?: string
           family_id: string
@@ -167,6 +171,8 @@ export type Database = {
           audio_duration_seconds?: number | null
           audio_path?: string | null
           audio_transcript?: string | null
+          audio_transcript_polished?: string | null
+          transcript_edited_at?: string | null
           author_id?: string
           created_at?: string
           family_id?: string

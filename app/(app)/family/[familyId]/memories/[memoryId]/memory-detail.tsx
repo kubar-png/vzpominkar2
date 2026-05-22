@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Play, Pause, Download, Heart, Pencil, Check, X } from "lucide-react";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
+import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
 import type { MemoryDetailData } from "./page";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -473,18 +474,11 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
             downloadName={`vzpominka-${m.id.slice(0, 8)}.m4a`}
           />
           {m.audio_transcript ? (
-            <details
-              open={transcriptOpen}
-              onToggle={(e) => setTranscriptOpen((e.target as HTMLDetailsElement).open)}
-              className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)]"
-            >
-              <summary className="cursor-pointer list-none px-4 py-3 text-xs font-medium uppercase tracking-wider text-[var(--color-text-muted)] hover:text-[var(--color-navy-700)]">
-                {transcriptOpen ? "Skrýt přepis" : "Zobrazit přepis nahrávky"}
-              </summary>
-              <p className="whitespace-pre-line border-t border-[var(--color-border)] px-4 py-4 text-sm leading-relaxed text-[var(--color-text)]">
-                {m.audio_transcript}
-              </p>
-            </details>
+            <TranscriptEditor
+              memoryId={m.id}
+              rawTranscript={m.audio_transcript}
+              polishedTranscript={m.audio_transcript_polished}
+            />
           ) : null}
         </div>
       )}

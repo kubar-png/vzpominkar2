@@ -23,6 +23,8 @@ export type MemoryDetailData = {
   audioUrl: string | null;
   audio_duration_seconds: number | null;
   audio_transcript: string | null;
+  audio_transcript_polished: string | null;
+  transcript_edited_at: string | null;
   is_favorite: boolean;
   status: string;
   created_at: string;
@@ -51,7 +53,7 @@ export default async function MemoryDetailPage({
   const { data: raw } = await admin
     .from("memories")
     .select(
-      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, status, is_favorite, created_at, memory_date,
+      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, audio_transcript_polished, transcript_edited_at, status, is_favorite, created_at, memory_date,
        prompts(question),
        profiles!memories_author_id_fkey(display_name, senior_role)`,
     )
@@ -64,6 +66,8 @@ export default async function MemoryDetailPage({
       audio_path: string | null;
       audio_duration_seconds: number | null;
       audio_transcript: string | null;
+      audio_transcript_polished: string | null;
+      transcript_edited_at: string | null;
       status: string;
       is_favorite: boolean;
       created_at: string;
@@ -97,6 +101,8 @@ export default async function MemoryDetailPage({
     audioUrl: raw.audio_path ? (audioUrls.get(raw.audio_path) ?? null) : null,
     audio_duration_seconds: raw.audio_duration_seconds,
     audio_transcript: raw.audio_transcript,
+    audio_transcript_polished: raw.audio_transcript_polished,
+    transcript_edited_at: raw.transcript_edited_at,
     is_favorite: raw.is_favorite ?? false,
     status: raw.status,
     created_at: raw.created_at,
