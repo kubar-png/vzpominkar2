@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { buttonVariants } from "@/components/ui/button";
 import { Placeholder } from "@/components/shared/Placeholder";
 
 export const metadata: Metadata = {
@@ -78,9 +77,9 @@ export default function JakToFungujePage() {
           className="heritage-press mx-auto mt-8 max-w-[20ch] font-[family-name:var(--font-display)] text-5xl font-medium leading-[1.05] tracking-tight text-[var(--color-navy-900)] sm:text-6xl"
           style={{ textWrap: "balance" }}
         >
-          Čtyři kroky <em>od otázky ke knize</em>.
+          Čtyři kroky <span>od otázky ke knize</span>.
         </h1>
-        <p className="mx-auto mt-7 max-w-[54ch] font-[family-name:var(--font-display)] text-lg italic leading-relaxed text-[var(--color-text-muted)] sm:text-xl">
+        <p className="mx-auto mt-7 max-w-[54ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)] sm:text-xl">
           Vy vyberete otázky. Rodič odpoví hlasem nebo textem. My všechno
           vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
         </p>
@@ -95,34 +94,43 @@ export default function JakToFungujePage() {
               <li
                 key={step.n}
                 data-reveal
-                className="grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16"
+                className="relative grid items-start gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16"
               >
-                <div className={isEven ? "lg:order-2" : ""}>
-                  <div className="flex items-baseline gap-5">
-                    <span className="font-[family-name:var(--font-display)] text-5xl font-medium leading-none text-[var(--color-gold-500)] sm:text-6xl">
-                      {step.n}
-                    </span>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-red-700)]">
-                        {step.eyebrow}
-                      </p>
-                      <h2
-                        className="heritage-press mt-3 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-                        style={{ textWrap: "balance" }}
-                      >
-                        {step.title}
-                      </h2>
-                    </div>
-                  </div>
+                {/* Huge transparent Roman numeral behind the step */}
+                <span
+                  aria-hidden
+                  className={`pointer-events-none absolute select-none font-[family-name:var(--font-display)] font-medium leading-[0.8] text-[var(--color-navy-900)] ${
+                    isEven ? "right-[-2vw] lg:right-[-1vw]" : "left-[-2vw] lg:left-[-1vw]"
+                  } top-[-2vw]`}
+                  style={{
+                    fontSize: "clamp(180px, 28vw, 380px)",
+                    opacity: 0.06,
+                    letterSpacing: "-0.04em",
+                    zIndex: 0,
+                  }}
+                >
+                  {step.n}
+                </span>
+
+                <div className={`relative z-10 ${isEven ? "lg:order-2" : ""}`}>
+                  <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-red-700)]">
+                    {step.eyebrow}
+                  </p>
+                  <h2
+                    className="heritage-press mt-3 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
+                    style={{ textWrap: "balance" }}
+                  >
+                    {step.title}
+                  </h2>
                   <p className="mt-7 max-w-[52ch] text-lg leading-relaxed text-[var(--color-text-muted)]">
                     {step.body}
                   </p>
-                  <p className="mt-6 max-w-[52ch] border-l-2 border-[var(--color-gold-400)] pl-5 font-[family-name:var(--font-display)] text-base italic leading-relaxed text-[var(--color-text-subtle)]">
+                  <p className="mt-6 max-w-[52ch] border-l-2 border-[var(--color-gold-400)] pl-5 font-[family-name:var(--font-display)] text-base leading-relaxed text-[var(--color-text-subtle)]">
                     {step.aside}
                   </p>
                 </div>
 
-                <div className={isEven ? "lg:order-1" : ""}>
+                <div className={`relative z-10 ${isEven ? "lg:order-1" : ""}`}>
                   <Placeholder
                     kind="image"
                     w={720}
@@ -147,7 +155,7 @@ export default function JakToFungujePage() {
             <span className="ml-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
           </p>
           <p
-            className="mt-8 font-[family-name:var(--font-display)] text-2xl italic leading-snug text-[var(--color-paper-50)] sm:text-3xl"
+            className="mt-8 font-[family-name:var(--font-display)] text-2xl leading-snug text-[var(--color-paper-50)] sm:text-3xl"
             style={{ textWrap: "balance" }}
           >
             &bdquo;Maminka první pondělí odpověděla z čistého pocitu povinnosti.
@@ -171,7 +179,7 @@ export default function JakToFungujePage() {
               className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
               style={{ textWrap: "balance" }}
             >
-              Vy <em>jen vyprávíte</em>.
+              Vy <span>jen vyprávíte</span>.
             </h2>
             <ul className="mt-8 space-y-5 text-base leading-relaxed text-[var(--color-text-muted)]">
               <li className="flex gap-4">
@@ -202,7 +210,7 @@ export default function JakToFungujePage() {
               className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
               style={{ textWrap: "balance" }}
             >
-              My <em>všechno ostatní</em>.
+              My <span>všechno ostatní</span>.
             </h2>
             <ul className="mt-8 space-y-5 text-base leading-relaxed text-[var(--color-text-muted)]">
               <li className="flex gap-4">
@@ -239,7 +247,7 @@ export default function JakToFungujePage() {
                 className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
                 style={{ textWrap: "balance" }}
               >
-                Tři otázky, které <em>slyšíme nejčastěji</em>.
+                Tři otázky, které <span>slyšíme nejčastěji</span>.
               </h2>
               <p className="mt-6 max-w-prose text-base leading-relaxed text-[var(--color-text-muted)]">
                 Celý seznam najdete v plném{" "}
@@ -259,7 +267,7 @@ export default function JakToFungujePage() {
                   >
                     <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 py-6 text-left">
                       <span className="font-[family-name:var(--font-display)] text-xl font-medium text-[var(--color-navy-900)] sm:text-2xl">
-                        <span className="mr-4 inline-block w-8 text-sm italic text-[var(--color-text-subtle)]">
+                        <span className="mr-4 inline-block w-8 text-sm text-[var(--color-text-subtle)]">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         {f.q}
@@ -289,18 +297,19 @@ export default function JakToFungujePage() {
             className="heritage-press mx-auto max-w-[22ch] font-[family-name:var(--font-display)] text-4xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-5xl"
             style={{ textWrap: "balance" }}
           >
-            Začněte dnes. <em>Pošleme první otázku v pondělí.</em>
+            Začněte dnes. <span>Pošleme první otázku v pondělí.</span>
           </h2>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
             <Link
               href="/signup"
-              className={buttonVariants({ size: "lg" })}
+              className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-[var(--color-gold-500)] bg-[var(--color-gold-500)] py-3 pl-6 pr-3.5 text-[15px] font-medium text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)] hover:border-[var(--color-gold-400)]"
             >
               Začít zdarma
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-navy-900)] text-[13px] font-semibold text-[var(--color-gold-500)]">↗</span>
             </Link>
             <Link
               href="/cenik"
-              className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
+              className="font-[family-name:var(--font-display)] text-lg text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
             >
               Podívat se na ceník →
             </Link>
