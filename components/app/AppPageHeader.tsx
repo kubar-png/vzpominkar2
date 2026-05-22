@@ -8,6 +8,8 @@ interface AppPageHeaderProps {
   sectionLabel?: string;
   title: string;
   description?: string;
+  /** Render the description in PP Pangaia italic — warmer, narrator's voice. */
+  italic?: boolean;
   action?: React.ReactNode;
   className?: string;
 }
@@ -21,6 +23,7 @@ export function AppPageHeader({
   sectionLabel,
   title,
   description,
+  italic,
   action,
   className,
 }: AppPageHeaderProps) {
@@ -40,7 +43,14 @@ export function AppPageHeader({
         {action ? <div className="shrink-0 pb-1">{action}</div> : null}
       </div>
       {description ? (
-        <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-[var(--color-text-muted)]">
+        <p
+          className={cn(
+            "mt-4 max-w-[60ch] leading-relaxed text-[var(--color-text-muted)]",
+            italic
+              ? "font-[family-name:var(--font-display)] text-lg italic"
+              : "text-base",
+          )}
+        >
           {description}
         </p>
       ) : null}

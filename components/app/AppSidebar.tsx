@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, MessageSquare, BookOpen, Settings, LogOut } from "lucide-react";
+import { Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { signOut } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
@@ -22,13 +22,14 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { numeral: "I",   href: "/dashboard",     label: "Domů",    icon: Home },
-  { numeral: "II",  href: "FAMILY/rodina",  label: "Rodina",  icon: Users,         requiresFamily: true },
-  { numeral: "III", href: "FAMILY/prompts", label: "Otázky",  icon: MessageSquare, requiresFamily: true },
-  { numeral: "IV",  href: "FAMILY/book",    label: "Kniha",   icon: BookOpen,      requiresFamily: true },
+  { numeral: "I",   href: "/dashboard",        label: "Domů",            icon: Home },
+  { numeral: "II",  href: "FAMILY/memories",   label: "Vzpomínky",       icon: Archive,       requiresFamily: true },
+  { numeral: "III", href: "FAMILY/rodina",     label: "Rodina",          icon: Users,         requiresFamily: true },
+  { numeral: "IV",  href: "FAMILY/prompts",    label: "Otázky",          icon: MessageSquare, requiresFamily: true },
+  { numeral: "V",   href: "FAMILY/book",       label: "Kniha",           icon: BookOpen,      requiresFamily: true },
 ];
 
-const SETTINGS_ITEM: NavItem = { numeral: "V", href: "/settings", label: "Nastavení", icon: Settings };
+const SETTINGS_ITEM: NavItem = { numeral: "VI", href: "/settings", label: "Nastavení", icon: Settings };
 
 export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
   const pathname = usePathname();
