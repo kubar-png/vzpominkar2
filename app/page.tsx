@@ -82,16 +82,6 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Mobile-only secondary CTAs between hero text and the book */}
-          <div className="hero-mobile-ctas" aria-label="Rychlé volby">
-            <a href="/jak-to-funguje" className="btn btn-outline">
-              Jak to funguje <span className="arrow">↗</span>
-            </a>
-            <a href="/signup" className="btn btn-gold">
-              Vyzkoušejte zdarma <span className="arrow">↗</span>
-            </a>
-          </div>
-
           <div className="bg-wordmark" aria-hidden="true">
             VZPOMÍNKÁŘ.
           </div>
