@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
+import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 
 /* ─────────────────────────────────────────────────────────────────────────
  * Marketing homepage — editorial direction (M3 reskin, vzpominkar2)
@@ -55,9 +56,10 @@ export default function HomePage() {
               <a href="#faq">Otázky</a>
               <a href="/o-nas">Náš příběh</a>
             </div>
-            <a href="/signup" className="btn btn-gold">
+            <a href="/signup" className="btn btn-gold nav-cta-desktop">
               Začít zdarma <span className="arrow">↗</span>
             </a>
+            <HomeMobileMenu />
           </nav>
         </div>
       </header>
