@@ -65,6 +65,7 @@ export function HomeMobileMenu() {
             </button>
           </div>
 
+          <span className="mobile-menu-eyebrow">Navigace</span>
           <nav className="mobile-menu-links" aria-label="Hlavní navigace">
             {NAV.map((item) => (
               <a
@@ -78,6 +79,7 @@ export function HomeMobileMenu() {
           </nav>
 
           <div className="mobile-menu-actions">
+            <span className="mobile-menu-eyebrow">Začněte zde</span>
             <Link
               href="/login"
               className="btn btn-outline"
