@@ -604,9 +604,10 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   -webkit-mask: url('/brand/logo-mask.png') no-repeat left center / contain;
   mask: url('/brand/logo-mask.png') no-repeat left center / contain;
 }
-/* Slightly smaller logo in the dark mobile menu drawer */
-.editorial .mobile-menu-head .logo-mark {
-  width: clamp(92px, 26vw, 120px);
+/* Logo in mobile menu drawer + footer — same size as header */
+.editorial .mobile-menu-head .logo-mark,
+.editorial .editorial-footer .logo-mark {
+  width: clamp(96px, 10vw, 132px);
 }
 .editorial .nav-links { display: flex; gap: 32px; font-size: 14px; color: var(--ink); }
 .editorial .nav-links a { transition: color 0.2s; }
@@ -1736,6 +1737,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   grid-template-columns: 1.6fr 1fr 1fr;
   gap: clamp(40px, 6vw, 80px);
 }
+.editorial .footer-logo { display: block; margin-bottom: 28px; }
 .editorial .footer-left h2 {
   color: var(--footer-ink);
   font-size: clamp(34px, 4.2vw, 56px);
