@@ -613,7 +613,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   max-width: 520px;
   line-height: 1.55;
 }
-.editorial .hero-cta { margin-bottom: 28px; }
+.editorial .hero-cta { margin-bottom: 28px; position: relative; z-index: 5; }
 
 /* ─── Mobile menu (homepage hero header) ─── */
 .editorial .mobile-menu-trigger {
@@ -1763,6 +1763,10 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .story-block,
   .editorial .gift-block,
   .editorial .dark-card { grid-template-columns: 1fr; }
+  /* Hero: pull book up less so it doesn't overlap the CTA */
+  .editorial .bg-wordmark { margin: 36px 0 -90px; }
+  .editorial .book-stage { padding-bottom: clamp(160px, 26vw, 240px); }
+
   /* ─── How it works: horizontal-scroll carousel on mobile ─── */
   .editorial .steps {
     display: flex;
