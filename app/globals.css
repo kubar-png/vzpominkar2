@@ -1630,9 +1630,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 8px;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  interpolate-size: allow-keywords;
 }
-.editorial .faq-item[open] { box-shadow: 0 8px 24px -10px rgba(14,59,100,.12); }
+.editorial .faq-item[open] {
+  box-shadow: 0 8px 24px -10px rgba(14, 59, 100, 0.12);
+  border-color: var(--line-2);
+}
 .editorial .faq-item summary {
   list-style: none;
   cursor: pointer;
@@ -1644,21 +1648,54 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink);
 }
 .editorial .faq-item summary::-webkit-details-marker { display: none; }
+
+/* Gold circle + ↗ arrow, mirrors the button arrow style */
 .editorial .faq-item summary::after {
-  content: '+';
-  font-family: var(--font-body-editorial);
-  font-size: 24px; font-weight: 400;
-  color: var(--oxblood);
-  transition: transform 0.25s;
+  content: '↗';
   flex-shrink: 0;
+  width: 36px; height: 36px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 50%;
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease;
 }
-.editorial .faq-item[open] summary::after { transform: rotate(45deg); }
+.editorial .faq-item[open] summary::after {
+  transform: rotate(135deg);
+  background: var(--gold-soft);
+}
+
 .editorial .faq-item .faq-body {
   padding: 0 24px 24px;
   color: var(--ink-soft);
   font-size: 16px;
   line-height: 1.65;
   max-width: 680px;
+}
+
+/* Height + fade transition on expand. Uses ::details-content (Chrome 131+,
+ * Edge 131+, Opera 116+); in Safari/Firefox the content just appears
+ * instantly, the icon rotation still gives feedback. */
+@supports (interpolate-size: allow-keywords) {
+  .editorial .faq-item::details-content {
+    block-size: 0;
+    opacity: 0;
+    overflow: clip;
+    transition:
+      content-visibility 0.34s allow-discrete,
+      opacity 0.28s ease,
+      block-size 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .editorial .faq-item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
 }
 .editorial .faq-cta { text-align: center; margin-top: 40px; }
 
@@ -1851,7 +1888,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .footer-logo {
   display: block;
-  margin: clamp(40px, 6vw, 64px) 0 0 auto;
+  margin: clamp(40px, 6vw, 64px) auto 0 0;
 }
 .editorial .footer-left h2 {
   color: var(--footer-ink);
