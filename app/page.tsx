@@ -201,7 +201,7 @@ export default function HomePage() {
             <div className="section-head">
               <span className="eyebrow">Otázky z knihovny</span>
               <h2 className="q-deck-title">
-                Co všechno <em>nevíte</em>
+                Co všechno nevíte
                 <br />
                 o svých blízkých?
               </h2>
