@@ -9,6 +9,21 @@ import { sendEmail } from "@/lib/email/send";
 import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
 
+/**
+ * Detect Next.js's internal redirect throw. `redirect()` propagates by
+ * throwing an error with `digest` starting with "NEXT_REDIRECT"; if we
+ * swallow it in a catch we'd kill the navigation and surface it as an
+ * app error to the user. Rethrow in every Server Action catch block.
+ */
+function isNextRedirect(e: unknown): boolean {
+  return (
+    e instanceof Error &&
+    "digest" in e &&
+    typeof (e as { digest?: unknown }).digest === "string" &&
+    (e as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+  );
+}
+
 async function notifyOwnerOfNewMemory(opts: {
   familyId: string;
   seniorId: string;
@@ -149,6 +164,7 @@ export async function saveTextMemory(
     }
     return { ok: true, memoryId: realId };
   } catch (e) {
+    if (isNextRedirect(e)) throw e;
     return { ok: false, error: e instanceof Error ? e.message : "Něco se pokazilo." };
   }
 }
@@ -218,6 +234,7 @@ export async function saveAudioMemory(
     revalidatePath("/my-memories");
     redirect("/my-memories?saved=1");
   } catch (e) {
+    if (isNextRedirect(e)) throw e;
     return { ok: false, error: e instanceof Error ? e.message : "Něco se pokazilo." };
   }
 }
@@ -294,6 +311,7 @@ export async function savePhotoMemory(
     revalidatePath("/my-memories");
     redirect("/my-memories?saved=1");
   } catch (e) {
+    if (isNextRedirect(e)) throw e;
     return { ok: false, error: e instanceof Error ? e.message : "Něco se pokazilo." };
   }
 }
