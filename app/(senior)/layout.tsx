@@ -17,8 +17,10 @@ import { signOut } from "@/lib/auth/actions";
 export default async function SeniorLayout({ children }: { children: React.ReactNode }) {
   const user = await requireSenior();
 
+  const mode = user.isSenior ? "senior" : "klasik";
+
   return (
-    <div className="editorial-senior" data-surface="senior">
+    <div className="editorial-senior" data-surface="senior" data-mode={mode}>
       <header className="es-header">
         <div className="es-header-inner">
           <Link href="/home" className="es-logo" aria-label="Vzpomínkář — domů">

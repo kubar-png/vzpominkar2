@@ -12,6 +12,13 @@ export interface AuthedUser {
   familyId: string | null;
   displayName: string | null;
   username: string | null;
+  /**
+   * For role='senior' profiles: whether the simplified senior surface
+   * (huge buttons, AAA contrast, no editing features) is enabled.
+   * For owners this is always true (unused).
+   * Defaults to true if column missing or null.
+   */
+  isSenior: boolean;
 }
 
 /**
@@ -29,13 +36,14 @@ export async function currentUser(): Promise<AuthedUser | null> {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("role, family_id, display_name, username")
+    .select("role, family_id, display_name, username, is_senior")
     .eq("id", auth.user.id)
     .maybeSingle<{
       role: string;
       family_id: string | null;
       display_name: string | null;
       username: string | null;
+      is_senior: boolean | null;
     }>();
 
   if (!profile) return null;
@@ -47,6 +55,7 @@ export async function currentUser(): Promise<AuthedUser | null> {
     familyId: profile.family_id,
     displayName: profile.display_name,
     username: profile.username,
+    isSenior: profile.is_senior ?? true,
   };
 }
 

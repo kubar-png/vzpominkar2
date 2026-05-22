@@ -25,7 +25,7 @@ export default async function MyMemoriesPage({
 
   const { data: memories } = await supabase
     .from("memories")
-    .select("id, title, text_content, audio_path, status, created_at, prompt_id, prompts(question)")
+    .select("id, title, text_content, audio_path, audio_transcript, audio_transcript_polished, status, created_at, prompt_id, prompts(question)")
     .eq("family_id", senior.familyId ?? "")
     .eq("author_id", senior.id)
     .eq("status", "published")
@@ -36,6 +36,8 @@ export default async function MyMemoriesPage({
         title: string | null;
         text_content: string | null;
         audio_path: string | null;
+        audio_transcript: string | null;
+        audio_transcript_polished: string | null;
         status: string;
         created_at: string;
         prompt_id: string | null;
@@ -116,6 +118,7 @@ export default async function MyMemoriesPage({
           {list.map((m) => (
             <MemoryItem
               key={m.id}
+              isSenior={senior.isSenior}
               memory={{
                 id: m.id,
                 title: m.title,
@@ -123,6 +126,8 @@ export default async function MyMemoriesPage({
                 createdAt: m.created_at,
                 question: m.prompts?.question ?? null,
                 audioUrl: m.audio_path ? signedAudioUrls.get(m.audio_path) ?? null : null,
+                audioTranscript: m.audio_transcript,
+                audioTranscriptPolished: m.audio_transcript_polished,
                 attachments: attachmentByMemory.get(m.id) ?? [],
               }}
             />

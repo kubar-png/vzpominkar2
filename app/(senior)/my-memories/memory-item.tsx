@@ -1,4 +1,5 @@
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
+import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
 
 interface Memory {
   id: string;
@@ -7,6 +8,8 @@ interface Memory {
   createdAt: string;
   question: string | null;
   audioUrl: string | null;
+  audioTranscript: string | null;
+  audioTranscriptPolished: string | null;
   attachments: { storage_path: string; mime_type: string; caption: string | null; signedUrl: string | null }[];
 }
 
@@ -17,7 +20,7 @@ interface Memory {
  * PP Pangaia title → audio player / text body / photo grid. The card uses
  * the paper surface like the marketing site's testimonial cards.
  */
-export function MemoryItem({ memory }: { memory: Memory }) {
+export function MemoryItem({ memory, isSenior }: { memory: Memory; isSenior: boolean }) {
   const date = new Date(memory.createdAt).toLocaleDateString("cs-CZ", {
     day: "numeric",
     month: "long",
@@ -43,6 +46,18 @@ export function MemoryItem({ memory }: { memory: Memory }) {
       {memory.audioUrl ? (
         <div className="mb-4">
           <InlineAudioPlayer src={memory.audioUrl} tone="senior" />
+        </div>
+      ) : null}
+
+      {/* Klasik mode: editable transcript with AI cleanup. Senior mode: nothing
+       * — the audio + question is enough, no clutter. */}
+      {!isSenior && memory.audioTranscript ? (
+        <div className="mb-4">
+          <TranscriptEditor
+            memoryId={memory.id}
+            rawTranscript={memory.audioTranscript}
+            polishedTranscript={memory.audioTranscriptPolished}
+          />
         </div>
       ) : null}
 

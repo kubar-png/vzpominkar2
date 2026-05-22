@@ -3087,3 +3087,75 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-top: 1px solid var(--color-border-strong);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Klasický režim (data-mode="klasik") — compact override of the senior surface
+ *
+ * Same palette + tokens, but tighter scale: normal body fonts, smaller
+ * buttons, tighter spacing. Activated when profiles.is_senior = false.
+ * ─────────────────────────────────────────────────────────────────────── */
+.editorial-senior[data-mode="klasik"] {
+  font-size: 17px;
+  line-height: 1.55;
+}
+.editorial-senior[data-mode="klasik"] p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+.editorial-senior[data-mode="klasik"] h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; }
+.editorial-senior[data-mode="klasik"] h2 { font-size: clamp(22px, 3vw, 30px); line-height: 1.18; }
+.editorial-senior[data-mode="klasik"] h3 { font-size: clamp(18px, 2.2vw, 22px); line-height: 1.25; }
+
+[data-surface="senior"][data-mode="klasik"] :where(h1) { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; }
+[data-surface="senior"][data-mode="klasik"] :where(h2) { font-size: clamp(22px, 3vw, 30px); line-height: 1.18; }
+[data-surface="senior"][data-mode="klasik"] :where(h3) { font-size: clamp(18px, 2.2vw, 22px); line-height: 1.25; }
+[data-surface="senior"][data-mode="klasik"] {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* Compact senior buttons */
+.editorial-senior[data-mode="klasik"] .es-btn {
+  padding: 12px 22px;
+  font-size: 15px;
+  min-height: 44px;
+  border-radius: 999px;
+}
+.editorial-senior[data-mode="klasik"] .es-btn .arrow {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+
+/* Compact senior container — narrower max + lighter vertical rhythm */
+.editorial-senior[data-mode="klasik"] .es-container {
+  padding-block: 28px;
+  max-width: 760px;
+}
+
+/* Action tiles on /home: compact */
+.editorial-senior[data-mode="klasik"] .es-action-tile {
+  min-height: 64px;
+  padding: 16px 20px;
+}
+.editorial-senior[data-mode="klasik"] .es-action-tile-label { font-size: 17px; }
+.editorial-senior[data-mode="klasik"] .es-action-tile-icon { font-size: 20px; }
+
+/* Inputs + textareas — smaller */
+.editorial-senior[data-mode="klasik"] .es-input,
+.editorial-senior[data-mode="klasik"] .es-textarea {
+  font-size: 16px;
+  padding: 12px 16px;
+  min-height: 44px;
+}
+.editorial-senior[data-mode="klasik"] .es-textarea { min-height: 160px; }
+
+/* Card padding tightened */
+.editorial-senior[data-mode="klasik"] .es-card {
+  padding: 20px 24px;
+}
+
+/* Memory cards on /my-memories */
+.editorial-senior[data-mode="klasik"] .es-memory-card {
+  padding: 18px 20px;
+}
