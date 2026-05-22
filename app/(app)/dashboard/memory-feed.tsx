@@ -101,16 +101,16 @@ export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
 
 function ColumnLabel({ label, count }: { label: string; count: number }) {
   return (
-    <div className="mb-5 flex items-center gap-3">
-      <p className="shrink-0 text-[11px] font-medium uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
+    <div className="mb-6 flex items-center gap-3">
+      <p className="shrink-0 font-[family-name:var(--font-display)] text-base font-medium text-[var(--color-navy-900)]">
         {label}
       </p>
       {count > 0 && (
-        <span className="text-[11px] tabular-nums text-[var(--color-text-subtle)] opacity-50">
+        <span className="rounded-full bg-[var(--color-gold-100)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--color-navy-900)]">
           {count}
         </span>
       )}
-      <span className="h-px flex-1 bg-[var(--color-border)]" aria-hidden />
+      <span className="h-px flex-1 bg-[var(--color-border-strong)]" aria-hidden />
     </div>
   );
 }

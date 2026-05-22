@@ -48,7 +48,7 @@ export default async function RodinaPage({
         numeral="II"
         sectionLabel="Rodina"
         title="Rodina"
-        description="Správa blízkých a jejich přístupu k aplikaci."
+        description="Kdo vypráví, jak se přihlašuje a jak se mu otázky doručují."
       />
 
       <div className="space-y-3">

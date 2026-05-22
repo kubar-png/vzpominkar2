@@ -19,7 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-bg)]">
+    <div className="flex min-h-screen bg-[var(--color-paper-50)]">
       {/* Desktop sidebar */}
       <AppSidebar
         familyId={user.familyId}

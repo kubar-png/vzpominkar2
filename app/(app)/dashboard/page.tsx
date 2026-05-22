@@ -128,13 +128,23 @@ export default async function DashboardPage() {
     displayName: s.display_name ?? "Blízký",
   }));
 
+  const onlySenior = seniors.length === 1 ? seniors[0] : null;
+  const firstName = onlySenior
+    ? (onlySenior.displayName.split(/\s+/)[0] || onlySenior.displayName)
+    : null;
+  const description = firstName
+    ? `Co ${firstName} zatím vyprávěl${firstName.endsWith("a") || firstName.endsWith("á") ? "a" : ""}.`
+    : seniors.length > 1
+      ? "Co vaši blízcí zatím vyprávěli."
+      : "Tady se objeví vzpomínky, jakmile začne první vyprávění.";
+
   return (
     <div className="space-y-10">
       <AppPageHeader
         numeral="I"
-        sectionLabel="Vzpomínky"
+        sectionLabel="Tento týden"
         title="Vzpomínky"
-        description="Vše, co váš blízký zatím zaznamenal."
+        description={description}
       />
       <MemoryFeed memories={memories} seniors={seniors} familyId={owner.familyId} />
     </div>

@@ -19,7 +19,7 @@ export default async function SettingsPage() {
         numeral="V"
         sectionLabel="Nastavení"
         title="Nastavení"
-        description="Vaše údaje a způsob doručování otázek blízkému."
+        description="Jak se vám rodina v aplikaci představuje a jak chodí otázky."
       />
 
       <Link

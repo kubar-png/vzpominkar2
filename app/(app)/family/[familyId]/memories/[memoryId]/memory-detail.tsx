@@ -486,18 +486,19 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       {/* Text content (editable) */}
       <div className="pb-8">
         {editing ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <textarea
               autoFocus
               value={draftText}
               onChange={(e) => setDraftText(e.target.value)}
-              className="block w-full min-h-[240px] rounded-[var(--radius-md)] border-2 border-[var(--color-border-strong)] bg-[var(--color-surface)] p-4 text-base leading-[1.7] text-[var(--color-text)] focus:border-[var(--color-navy-500)] focus:outline-none"
+              className="te-textarea"
+              style={{ minHeight: 240 }}
               placeholder="Napište text vzpomínky…"
             />
             {editError ? (
-              <p role="alert" className="text-sm text-[var(--color-red-700)]">{editError}</p>
+              <p className="te-error">{editError}</p>
             ) : null}
-            <div className="flex justify-end gap-2">
+            <div className="te-actions justify-end">
               <button
                 type="button"
                 onClick={() => {
@@ -505,16 +506,16 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
                   setDraftText(text ?? "");
                   setEditError(null);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
+                className="te-btn te-btn-outline"
               >
-                <X size={12} aria-hidden /> Zrušit
+                Zrušit
               </button>
               <button
                 type="button"
                 onClick={onSaveEdit}
-                className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--color-navy-800)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-navy-900)]"
+                className="te-btn te-btn-gold"
               >
-                <Check size={12} aria-hidden /> Uložit
+                Uložit úpravy <span className="te-btn-circle" aria-hidden>↗</span>
               </button>
             </div>
           </div>

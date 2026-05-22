@@ -110,7 +110,7 @@ export default async function PromptsPage({
         numeral="III"
         sectionLabel="Plánování"
         title="Otázky"
-        description="Plánujte, co se vašemu blízkému v které pondělí ukáže."
+        description="Co se vašich blízkých v které pondělí zeptáme."
         action={
           <Link
             href="/settings/otazky"

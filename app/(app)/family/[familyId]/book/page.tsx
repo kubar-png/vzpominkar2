@@ -65,7 +65,7 @@ export default async function BookPage({
         numeral="IV"
         sectionLabel="Kniha"
         title="Tištěná kniha"
-        description="Až bude vzpomínek dost, objednáte fyzickou knihu, kterou pošleme poštou."
+        description="Až bude vzpomínek dost, vytiskneme z nich knihu. Pošleme ji na vámi zadanou adresu."
         action={
           memories > 0 ? (
             <Link
