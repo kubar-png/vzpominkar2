@@ -111,7 +111,6 @@ function WaveformPlayer({
   }
 
   const progress = duration > 0 ? currentTime / duration : 0;
-  const playedBars = Math.floor(progress * count);
 
   return (
     <div className="overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-navy-950)]">
@@ -150,9 +149,9 @@ function WaveformPlayer({
         </p>
       </div>
 
-      {/* Waveform */}
+      {/* Waveform — neutral bars in back, gold bars clipped to progress in front */}
       <div
-        className="mx-6 flex cursor-pointer items-end gap-[2px]"
+        className="relative mx-6"
         style={{ height: 72 }}
         role="slider"
         aria-label="Průběh nahrávky"
@@ -160,26 +159,41 @@ function WaveformPlayer({
         aria-valuemin={0}
         aria-valuemax={100}
       >
-        {bars.map((h, i) => {
-          const played = i < playedBars;
-          const isHead = i === playedBars;
-          return (
+        {/* Neutral layer */}
+        <div className="flex h-full cursor-pointer items-end gap-[2px]">
+          {bars.map((h, i) => (
             <div
               key={i}
               onClick={() => seek(i)}
-              className="flex-1 rounded-full transition-colors duration-75"
+              className="flex-1 rounded-full"
               style={{
                 height: `${Math.round(h * 100)}%`,
                 minWidth: 2,
-                backgroundColor: played
-                  ? "var(--color-gold-400)"
-                  : isHead
-                    ? "rgba(201,169,73,0.55)"
-                    : "rgba(255,255,255,0.08)",
+                backgroundColor: "rgba(255,255,255,0.08)",
               }}
             />
-          );
-        })}
+          ))}
+        </div>
+        {/* Played overlay — clipped from the right edge to current progress.
+         * Updates every animation frame via tick(), so it slides smoothly
+         * with playback instead of jumping bar-by-bar. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 flex items-end gap-[2px]"
+          style={{ clipPath: `inset(0 ${(1 - progress) * 100}% 0 0)` }}
+        >
+          {bars.map((h, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-full"
+              style={{
+                height: `${Math.round(h * 100)}%`,
+                minWidth: 2,
+                backgroundColor: "var(--color-gold-400)",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Controls */}
