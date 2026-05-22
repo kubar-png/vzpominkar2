@@ -614,6 +614,21 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   line-height: 1.55;
 }
 .editorial .hero-cta { margin-bottom: 28px; }
+
+/* Mobile-only secondary CTAs row between hero text and book — hidden on desktop */
+.editorial .hero-mobile-ctas {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin: 8px auto 32px;
+  padding: 0 var(--gutter);
+  max-width: 360px;
+}
+.editorial .hero-mobile-ctas .btn { width: 100%; justify-content: center; }
+@media (max-width: 900px) {
+  .editorial .hero-mobile-ctas { display: flex; }
+}
 .editorial .stars { display: inline-flex; gap: 2px; color: var(--gold); font-size: 14px; }
 
 .editorial .bg-wordmark {
