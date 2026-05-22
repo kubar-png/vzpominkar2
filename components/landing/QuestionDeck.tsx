@@ -1,85 +1,130 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface QuestionDeckProps {
   questions: ReadonlyArray<{ category: string; question: string }>;
   totalCount: number;
 }
 
+const ANIM_MS = 520;
+
 /**
- * Question Deck — paper-card slider with sample prompts.
- * Editorial styling: cream paper card, italic PP Pangaia question,
- * top-left chapter eyebrow + top-right page count, oxblood pagination dots.
- * Inspired by booktora.cz; styled to match Vzpomínkář.
+ * Question Deck — paper-card slider with sample prompts + exit animation.
+ * The outgoing card flips up + sideways (booktora-style toss); the incoming
+ * card fades up from below. Auto-advances every 6s.
  */
 export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
   const [index, setIndex] = useState(0);
+  const [exiting, setExiting] = useState<{ idx: number; dir: "next" | "prev" } | null>(null);
   const count = questions.length;
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-advance every 6s; pauses on hover/touch via :hover state on wrapper
+  // Auto-advance every 6s
   useEffect(() => {
     if (count <= 1) return;
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % count);
+      go(1);
     }, 6000);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
+  // Clear any lingering exit timer on unmount
+  useEffect(() => () => {
+    if (exitTimer.current) clearTimeout(exitTimer.current);
+  }, []);
+
   function go(delta: number) {
-    setIndex((i) => (i + delta + count) % count);
+    setIndex((current) => {
+      const dir: "next" | "prev" = delta > 0 ? "next" : "prev";
+      setExiting({ idx: current, dir });
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+      exitTimer.current = setTimeout(() => setExiting(null), ANIM_MS);
+      return (current + delta + count) % count;
+    });
+  }
+
+  function jumpTo(target: number) {
+    if (target === index) return;
+    const delta = target > index ? 1 : -1;
+    setIndex(() => {
+      setExiting({ idx: index, dir: delta > 0 ? "next" : "prev" });
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+      exitTimer.current = setTimeout(() => setExiting(null), ANIM_MS);
+      return target;
+    });
   }
 
   const current = questions[index];
+  const leaving = exiting ? questions[exiting.idx] : null;
   if (!current) return null;
 
   return (
     <div className="q-deck">
-      <button
-        type="button"
-        className="q-arrow q-arrow-left"
-        onClick={() => go(-1)}
-        aria-label="Předchozí otázka"
-      >
-        ←
-      </button>
+      <div className="q-card-stage">
+        {leaving && exiting && (
+          <div
+            className={`q-card q-card-exit q-card-exit-${exiting.dir}`}
+            aria-hidden
+            key={`exit-${exiting.idx}`}
+          >
+            <div className="q-card-head">
+              <span className="q-card-eyebrow">{leaving.category}</span>
+              <span className="q-card-page">
+                {String(exiting.idx + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+              </span>
+            </div>
+            <blockquote className="q-card-question">{leaving.question}</blockquote>
+            <div className="q-card-foot">— Náhodně —</div>
+          </div>
+        )}
 
-      <div className="q-card" key={index}>
-        <div className="q-card-head">
-          <span className="q-card-eyebrow">{current.category}</span>
-          <span className="q-card-page">
-            {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-          </span>
+        <div className="q-card q-card-enter" key={`enter-${index}`}>
+          <div className="q-card-head">
+            <span className="q-card-eyebrow">{current.category}</span>
+            <span className="q-card-page">
+              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
+          </div>
+          <blockquote className="q-card-question">{current.question}</blockquote>
+          <div className="q-card-foot">— Náhodně —</div>
         </div>
-
-        <blockquote className="q-card-question">
-          {current.question}
-        </blockquote>
-
-        <div className="q-card-foot">— Náhodně —</div>
       </div>
 
-      <button
-        type="button"
-        className="q-arrow q-arrow-right"
-        onClick={() => go(1)}
-        aria-label="Další otázka"
-      >
-        →
-      </button>
+      {/* Control row — arrows flank a pill-style pagination indicator */}
+      <div className="q-controls">
+        <button
+          type="button"
+          className="q-arrow"
+          onClick={() => go(-1)}
+          aria-label="Předchozí otázka"
+        >
+          ←
+        </button>
 
-      <div className="q-dots" role="tablist">
-        {questions.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            role="tab"
-            aria-selected={i === index}
-            aria-label={`Otázka ${i + 1}`}
-            onClick={() => setIndex(i)}
-            className={`q-dot${i === index ? " is-active" : ""}`}
-          />
-        ))}
+        <div className="q-dots" role="tablist">
+          {questions.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === index}
+              aria-label={`Otázka ${i + 1}`}
+              onClick={() => jumpTo(i)}
+              className={`q-dot${i === index ? " is-active" : ""}`}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="q-arrow"
+          onClick={() => go(1)}
+          aria-label="Další otázka"
+        >
+          →
+        </button>
       </div>
 
       <p className="q-footnote">

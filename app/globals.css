@@ -3392,7 +3392,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   position: relative;
   max-width: 720px;
   margin: clamp(40px, 6vw, 72px) auto 0;
-  padding-inline: clamp(40px, 8vw, 80px); /* room for arrows */
+}
+
+/* Stage for stacked enter/exit cards */
+.editorial .q-card-stage {
+  position: relative;
 }
 
 /* Paper card */
@@ -3411,11 +3415,49 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
     0 1px 0 rgba(28, 24, 20, 0.05),
     0 14px 28px -16px rgba(28, 24, 20, 0.18),
     inset 0 0 0 1px rgba(168, 35, 31, 0.05);
-  animation: q-card-in 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center 70%;
+  will-change: transform, opacity;
 }
-@keyframes q-card-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+
+/* The card currently visible — sits in flow */
+.editorial .q-card-enter {
+  animation: q-card-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes q-card-enter {
+  from { opacity: 0; transform: translateY(16px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* The previous card stacks on top while exiting, then disappears */
+.editorial .q-card-exit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.editorial .q-card-exit-next {
+  animation: q-card-toss-right 0.52s cubic-bezier(0.5, -0.1, 0.6, 1) both;
+}
+@keyframes q-card-toss-right {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0); }
+  100% { opacity: 0; transform: translate(28%, -110%) rotate(11deg); }
+}
+.editorial .q-card-exit-prev {
+  animation: q-card-toss-left 0.52s cubic-bezier(0.5, -0.1, 0.6, 1) both;
+}
+@keyframes q-card-toss-left {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0); }
+  100% { opacity: 0; transform: translate(-28%, -110%) rotate(-11deg); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .editorial .q-card-enter,
+  .editorial .q-card-exit-next,
+  .editorial .q-card-exit-prev {
+    animation: none;
+  }
+  .editorial .q-card-exit { display: none; }
 }
 
 /* Decorative inner border like booktora */
@@ -3473,53 +3515,57 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink-mute);
 }
 
-/* Arrows on the sides of the deck */
+/* Control row below the card — left arrow, pill-style dots, right arrow */
+.editorial .q-controls {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
 .editorial .q-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
   background: transparent;
   color: var(--ink);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   display: grid;
   place-items: center;
   transition: background 0.18s, color 0.18s, transform 0.18s;
+  flex-shrink: 0;
 }
 .editorial .q-arrow:hover {
   background: var(--ink);
   color: var(--bg);
-  transform: translateY(-50%) scale(1.05);
+  transform: scale(1.06);
 }
-.editorial .q-arrow-left  { left: 0; }
-.editorial .q-arrow-right { right: 0; }
 
-/* Pagination dots */
+/* Pagination dots — active dot expands into a pill */
 .editorial .q-dots {
-  margin-top: 28px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .editorial .q-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: rgba(14, 59, 100, 0.18);
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(14, 59, 100, 0.22);
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background 0.22s, transform 0.22s;
+  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s ease;
 }
-.editorial .q-dot:hover { background: rgba(14, 59, 100, 0.4); }
+.editorial .q-dot:hover { background: rgba(14, 59, 100, 0.45); }
 .editorial .q-dot.is-active {
+  width: 28px;
   background: var(--oxblood);
-  transform: scale(1.4);
 }
 
 /* Footnote below */
