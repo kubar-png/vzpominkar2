@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
 import { signOut } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +63,23 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
     <>
       {/* Top header bar - mobile only */}
       <header className="fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 px-5 backdrop-blur-sm md:hidden">
-        <Logo variant="wordmark" href="/dashboard" size={18} />
+        <Link
+          href="/dashboard"
+          aria-label="Vzpomínkář — domovská stránka"
+          className="inline-flex"
+        >
+          <span
+            aria-hidden
+            className="block"
+            style={{
+              width: 110,
+              aspectRatio: "1892 / 390",
+              backgroundColor: "var(--gold)",
+              WebkitMask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+              mask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+            }}
+          />
+        </Link>
         <button
           type="button"
           onClick={() => setOpen(true)}

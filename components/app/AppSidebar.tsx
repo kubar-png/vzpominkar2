@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
 import { signOut } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
 
@@ -106,9 +105,25 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#1c1814] md:flex">
-      {/* Logo area */}
+      {/* Logo — gold wordmark via CSS mask, matches homepage */}
       <div className="px-6 pb-6 pt-8">
-        <Logo variant="wordmark" href="/dashboard" size={22} invert />
+        <Link
+          href="/dashboard"
+          aria-label="Vzpomínkář — domovská stránka"
+          className="inline-flex"
+        >
+          <span
+            aria-hidden
+            className="block"
+            style={{
+              width: 132,
+              aspectRatio: "1892 / 390",
+              backgroundColor: "var(--gold)",
+              WebkitMask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+              mask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+            }}
+          />
+        </Link>
       </div>
 
       {/* Decorative rule with diamond */}
