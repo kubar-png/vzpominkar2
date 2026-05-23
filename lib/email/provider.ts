@@ -7,13 +7,15 @@ import "server-only";
 
 export interface EmailMessage {
   to: string;
-  /** RFC-822 friendly name + email, e.g. `Vzpomínkář <noreply@…>`. */
+  /** RFC-822 friendly name + email, e.g. `Vzpomínkář <ahoj@vzpominkar.cz>`. */
   from?: string;
+  /** Reply-To address; defaults to ahoj@vzpominkar.cz so replies hit a real inbox. */
+  replyTo?: string;
   bcc?: string[];
   subject: string;
   /** Pre-rendered HTML body. */
   html: string;
-  /** Plaintext fallback. */
+  /** Plaintext fallback. Strongly recommended — many inboxes hide HTML. */
   text?: string;
   /** Tag for analytics; e.g. "weekly_reminder". */
   tag?: string;
@@ -35,10 +37,12 @@ class NoopProvider implements EmailProvider {
 class ResendProvider implements EmailProvider {
   private key: string;
   private defaultFrom: string;
+  private defaultReplyTo: string;
 
-  constructor(apiKey: string, defaultFrom: string) {
+  constructor(apiKey: string, defaultFrom: string, defaultReplyTo: string) {
     this.key = apiKey;
     this.defaultFrom = defaultFrom;
+    this.defaultReplyTo = defaultReplyTo;
   }
 
   async send(message: EmailMessage): Promise<{ id: string }> {
@@ -48,6 +52,7 @@ class ResendProvider implements EmailProvider {
     const client = new Resend(this.key);
     const { data, error } = await client.emails.send({
       from: message.from ?? this.defaultFrom,
+      replyTo: message.replyTo ?? this.defaultReplyTo,
       to: message.to,
       bcc: message.bcc,
       subject: message.subject,
@@ -67,11 +72,15 @@ let _provider: EmailProvider | null = null;
 export function getEmailProvider(): EmailProvider {
   if (_provider) return _provider;
   const key = process.env.RESEND_API_KEY;
+  // TODO(domain): switch the fallback to `Vzpomínkář <ahoj@vzpominkar.cz>`
+  // once the apex domain is verified in Resend. Until then we keep the
+  // resend.dev sandbox so dev sends don't 403.
   const from = process.env.EMAIL_FROM ?? "Vzpomínkář <onboarding@resend.dev>";
+  const replyTo = process.env.EMAIL_REPLY_TO ?? "ahoj@vzpominkar.cz";
   if (!key) {
     _provider = new NoopProvider();
     return _provider;
   }
-  _provider = new ResendProvider(key, from);
+  _provider = new ResendProvider(key, from, replyTo);
   return _provider;
 }

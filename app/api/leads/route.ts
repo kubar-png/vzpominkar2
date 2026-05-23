@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getEmailProvider } from "@/lib/email/provider";
+import { leadNotificationEmail } from "@/lib/email/templates";
 
 /**
  * POST /api/leads
@@ -46,16 +47,17 @@ export async function POST(request: Request) {
   try {
     const notifyTo = process.env.LEADS_NOTIFY_TO ?? process.env.EMAIL_FROM;
     if (notifyTo && process.env.RESEND_API_KEY) {
-      // Escape the user-controlled email before interpolating into HTML —
-      // Zod validates the address syntax but a value like
-      // `"x"@foo<script>...` still passes RFC 5321.
-      const safe = escapeHtml(email);
+      // leadNotificationEmail already escapes the user-supplied address before
+      // interpolating it into HTML — Zod validates RFC syntax but a value like
+      // `"x"@foo<script>…` would still pass.
+      const tpl = leadNotificationEmail({ email, source: "homepage / lead-magnet" });
       const provider = getEmailProvider();
       await provider.send({
         to: notifyTo.replace(/^.*<|>$/g, ""),
-        subject: `Nový lead z Vzpomínkáře — ${email}`,
-        html: `<p>Nový e-mail z lead-magnet formuláře na homepage:</p><p><strong>${safe}</strong></p>`,
-        text: `Nový lead: ${email}`,
+        replyTo: email,
+        subject: tpl.subject,
+        html: tpl.html,
+        text: tpl.text,
         tag: "lead_magnet",
       });
     }
@@ -65,13 +67,4 @@ export async function POST(request: Request) {
 
   // Browsers form-post here, so 303 forces a GET on the redirect target.
   return NextResponse.redirect(new URL(SUCCESS_URL, request.url), 303);
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }

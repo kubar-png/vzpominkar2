@@ -56,6 +56,7 @@ async function notifyOwnerOfNewMemory(opts: {
       to: owner.email,
       subject: tpl.subject,
       html: tpl.html,
+      text: tpl.text,
       tag: "memory_notification",
     });
   } catch (err) {
