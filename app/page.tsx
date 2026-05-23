@@ -505,11 +505,11 @@ export default function HomePage() {
                 <div>
                   <h2>Náš příběh</h2>
                   <p>
-                    Vzpomínkář není nový nápad. V devatenáctém století měla
-                    skoro každá rodina svou knihu. Kožený hřbet, papír
-                    s vodoznakem, pero namáčené do kalamáře. Zapisovaly se
-                    křty, svatby, smrti. Roky úrody i hladu. Kdo narukoval.
-                    Kdo se vrátil. Co bylo v rozhlase, když přišel Mnichov.
+                    Vzpomínkář není nový nápad. V devatenáctém století žila
+                    v měšťanských i sedláckých rodinách tradice písmáctví.
+                    Lidé si vedli pamětní knihy. Zapisovaly se křty, svatby,
+                    smrti. Roky úrody i hladu. Kdo narukoval. Kdo se vrátil.
+                    Co bylo v rozhlase, když přišel Mnichov.
                   </p>
                   <p>
                     Kniha putovala z generace na generaci. Přežila habsburskou
@@ -517,18 +517,12 @@ export default function HomePage() {
                     při útěku, někdy shořela s domem. Většinou ale dorazila.
                   </p>
                   <p>
-                    Zlomilo to teprve poválečné Československo. Statky padly,
-                    gruntovní knihy ztratily smysl. Z kuchyňských stolů, kde
-                    se večer vyprávělo, se staly paneláky se sedačkou před
-                    televizí. Příběhy si zařídily nový režim: prošly vzduchem
-                    a zmizely. Za jednu generaci jsme zapomněli, jak se to dělá.
-                  </p>
-                  <p>
-                    Když mojí babičce bylo osmdesát, začal jsem ji nahrávat.
-                    Telefonem, pod stolem, ať nevidí. Bál jsem se, že
-                    zapomenu, jak zní. Po roce jsem měl třicet hodin záznamu
-                    a žádný způsob, jak z nich udělat něco, co se dá podržet
-                    v ruce.
+                    Zlomilo se to teprve v poválečném Československu.
+                    Kolektivizace přetrhla kontinuitu selských rodů.
+                    Vícegenerační domácnosti se rozpadly. Večery, kdy se u stolu
+                    vyprávělo, pozvolna zaplnila televize a nová tempa
+                    všedního dne. Během jedné nebo dvou generací jsme
+                    zapomněli, jak se to dělá.
                   </p>
                   <p>
                     Tak vznikl Vzpomínkář. Stará tradice, jen s pojistkou
