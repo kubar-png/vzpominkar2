@@ -4570,11 +4570,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Stats sidebar — right-side navy card on every owner-app page. Hidden on
- * <1280px so the main content column never gets squeezed. Sticky
- * positioned, inset from the viewport edges so it reads as a *card* (less
- * heavy than the warm-brown left sidebar). Navy paper, cream-tinted text,
- * gold numerals for the wow moments. */
+ * Stats sidebar — right-side navy card on every owner-app page. Reuses the
+ * homepage `.signup-card` recipe: var(--ink) background, gold radial glow
+ * in the top-right corner, cream-tinted body text, gold numerals. Sticky,
+ * nearly full viewport height, inset from edges so it reads as a card,
+ * not a chrome column. Hidden below 1280px so main content never squeezes. */
 .vzp-stats-aside {
   display: none;
 }
@@ -4582,7 +4582,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .vzp-stats-aside {
     display: block;
     flex-shrink: 0;
-    width: 280px;
+    width: 320px;
     padding: 24px 24px 24px 0;
   }
 }
@@ -4590,107 +4590,142 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   position: sticky;
   top: 24px;
   background: var(--ink);
-  color: var(--color-paper-100, #f1e8d0);
-  border-radius: 16px;
-  padding: 28px 24px 22px;
-  /* Don't let the card overflow viewport; if content grows, scroll inside. */
+  color: var(--footer-ink);
+  border: 1px solid var(--ink);
+  border-radius: 20px;
+  padding: 36px 30px 32px;
+  /* Nearly full viewport height; minus top+bottom 24 spacing. */
+  min-height: calc(100vh - 48px);
   max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  box-shadow: 0 18px 40px -28px rgba(8, 35, 61, 0.45);
+  overflow: hidden;
+  position: sticky;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 48px -32px rgba(8, 35, 61, 0.4);
 }
+/* Gold radial glow in top-right corner — mirrors the homepage signup-card */
+.vzp-stats-card::before {
+  content: '';
+  position: absolute;
+  inset: -22% -16% auto auto;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+  opacity: 0.16;
+  pointer-events: none;
+}
+.vzp-stats-card > * { position: relative; }
+
 .vzp-stats-empty {
+  margin: auto 0;
   font-family: var(--font-body-editorial);
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(241, 232, 208, 0.7);
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(237, 228, 207, 0.75);
   text-align: center;
   padding: 12px 4px;
 }
+
+/* Hero block — biggest number, top of card */
+.vzp-stats-hero { margin: 0 0 8px; }
 .vzp-stats-eyebrow {
   font-family: var(--font-body-editorial);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgba(241, 232, 208, 0.55);
-  margin: 0 0 12px;
+  color: var(--gold);
+  margin: 0 0 16px;
 }
-.vzp-stats-hero { margin: 0 0 4px; }
 .vzp-stats-num-hero {
   font-family: var(--font-display-editorial);
-  font-size: 44px;
+  font-size: clamp(64px, 5vw, 84px);
   font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--gold);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--footer-ink);
   margin: 0;
   font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .vzp-stats-num-hero span {
-  font-family: var(--font-body-editorial);
-  font-size: 18px;
+  font-family: var(--font-display-editorial);
+  font-size: clamp(22px, 1.8vw, 28px);
   font-weight: 500;
-  color: rgba(241, 232, 208, 0.75);
-  margin-left: 4px;
-  letter-spacing: normal;
+  color: rgba(237, 228, 207, 0.75);
+  letter-spacing: -0.01em;
 }
 .vzp-stats-hero-sub {
   font-family: var(--font-body-editorial);
-  font-size: 14px;
-  color: rgba(241, 232, 208, 0.7);
-  margin: 6px 0 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(237, 228, 207, 0.78);
+  margin: 14px 0 0;
 }
 .vzp-stats-hero-meta {
   font-family: var(--font-body-editorial);
-  font-size: 12px;
-  color: rgba(241, 232, 208, 0.5);
-  margin: 14px 0 0;
+  font-size: 13px;
+  color: rgba(237, 228, 207, 0.55);
+  margin: 12px 0 0;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
+
+/* Hairline between hero and list */
 .vzp-stats-rule {
   height: 1px;
-  background: rgba(241, 232, 208, 0.12);
-  margin: 22px 0 18px;
+  background: rgba(237, 228, 207, 0.14);
+  margin: 28px 0 22px;
 }
+
+/* List of secondary metrics — label sits ABOVE the number */
 .vzp-stats-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 22px;
+  flex: 1;
+  min-height: 0;
 }
 .vzp-stats-list li {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: column-reverse; /* label on top, number below visually */
+  gap: 6px;
 }
 .vzp-stats-num {
   font-family: var(--font-display-editorial);
-  font-size: 22px;
+  font-size: clamp(34px, 2.6vw, 42px);
   font-weight: 500;
-  color: var(--gold);
-  line-height: 1.1;
+  color: var(--footer-ink);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .vzp-stats-num-warm {
-  color: var(--gold-soft);
+  color: var(--gold);
 }
 .vzp-stats-label {
   font-family: var(--font-body-editorial);
-  font-size: 13px;
-  color: rgba(241, 232, 208, 0.7);
-  line-height: 1.35;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(237, 228, 207, 0.7);
+  line-height: 1.3;
 }
 .vzp-stats-footer {
-  margin: 20px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(241, 232, 208, 0.1);
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(237, 228, 207, 0.1);
   font-family: var(--font-body-editorial);
   font-size: 12px;
-  color: rgba(241, 232, 208, 0.5);
-  line-height: 1.4;
+  color: rgba(237, 228, 207, 0.5);
+  line-height: 1.45;
   font-variant-numeric: tabular-nums;
 }
 
