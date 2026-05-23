@@ -19,10 +19,12 @@ import { welcomeEmail } from "@/lib/email/templates";
 /**
  * ActionResult - discriminated union returned by Server Actions called from
  * client forms. Lets the form render an error message without throwing.
- * Successful flows redirect server-side, so they do not return.
+ * Most successful flows redirect server-side, so they don't return; owner
+ * signup is the exception (returns `{ ok: true, checkEmail: true }` so the
+ * form can render a "podívejte se do schránky" card without auto-login).
  */
 export type ActionResult =
-  | { ok: true }
+  | { ok: true; checkEmail?: boolean }
   | { ok: false; error: string; field?: string };
 
 /* -------------------------------------------------------------------------- */
@@ -43,37 +45,30 @@ export async function signUpOwner(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
-  const admin = createAdminClient();
-  const { data, error } = await admin.auth.admin.createUser({
+  // Email-confirmed signup: send the user a magic link, no auto-login.
+  // The auth.users row is created in unconfirmed state; profile insert is
+  // deferred to /auth/callback which fires once the user clicks the link.
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    email_confirm: true,
-    user_metadata: { display_name: parsed.data.displayName },
+    options: {
+      emailRedirectTo: `${appUrl}/auth/callback`,
+      data: { display_name: parsed.data.displayName, role: "owner" },
+    },
   });
 
   if (error) {
     return { ok: false, error: humanizeAuthError(error.message) };
   }
 
-  // Create profile row eagerly via admin client (RLS would block direct
-  // insert, and the auth.users row exists immediately even before email
-  // confirmation).
-  if (data.user) {
-    const adminClient = createAdminClient();
-    const { error: profileErr } = await adminClient.from("profiles").insert({
-      id: data.user.id,
-      role: "owner",
-      display_name: parsed.data.displayName,
-      email: parsed.data.email,
-    });
-    if (profileErr && profileErr.code !== "23505") {
-      // 23505 = unique violation (profile already exists, e.g. retry)
-      return { ok: false, error: "Účet vznikl, ale profil se nepodařilo uložit. Kontaktujte podporu." };
-    }
-
+  // Best-effort welcome email — Supabase already sends the confirm link,
+  // this is the warm follow-up. Failure is non-fatal.
+  try {
     const tpl = welcomeEmail({
       displayName: parsed.data.displayName,
-      appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz",
+      appUrl,
     });
     await sendEmail({
       to: parsed.data.email,
@@ -82,16 +77,11 @@ export async function signUpOwner(
       text: tpl.text,
       tag: "welcome",
     });
-
-    // Sign in immediately - no email confirmation round-trip needed.
-    const supabase = await createClient();
-    await supabase.auth.signInWithPassword({
-      email: parsed.data.email,
-      password: parsed.data.password,
-    });
+  } catch (err) {
+    console.error("[signup] welcome email failed (non-fatal):", err);
   }
 
-  redirect("/onboarding");
+  return { ok: true, checkEmail: true };
 }
 
 export async function signInOwner(
