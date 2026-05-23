@@ -253,7 +253,7 @@ function MediaGallery({
                 style={{ aspectRatio: images.length === 1 ? "4/3" : "1/1" }}
               />
               {img.caption && (
-                <p className="mt-1.5 text-center text-xs italic text-[var(--color-text-subtle)]">
+                <p className="mt-1.5 text-center text-xs text-[var(--color-text-subtle)]">
                   {img.caption}
                 </p>
               )}
@@ -408,7 +408,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
             {m.title}
           </h1>
         ) : (
-          <h1 className="font-[family-name:var(--font-display)] text-2xl italic text-[var(--color-text-muted)]">
+          <h1 className="font-[family-name:var(--font-display)] text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-[var(--color-text-muted)] md:text-4xl">
             {m.question ? `„${m.question}"` : "Bez názvu"}
           </h1>
         )}
@@ -451,7 +451,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       {m.question && m.title && (
         <div className="pb-8">
           <blockquote className="border-l-2 border-[var(--color-gold-300)] pl-5">
-            <p className="font-[family-name:var(--font-display)] text-lg italic leading-relaxed text-[var(--color-text-muted)]">
+            <p className="font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
               &#8222;{m.question}&#8220;
             </p>
           </blockquote>

@@ -2,25 +2,27 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface FormSectionProps {
-  /** PP Pangaia italic heading. Kept short — a single phrase. */
+  /** Short section heading — kept to a single phrase. */
   title: string;
   /** Optional supporting line, sets the tone for the fields below. */
   description?: string;
   /** Pulls section into a compact stack (used inside cards). */
   compact?: boolean;
-  /** Hide the gold-diamond divider — useful for the first section. */
+  /** Hide the hairline divider — useful for the first section. */
   hideDivider?: boolean;
   className?: string;
   children: React.ReactNode;
 }
 
 /**
- * Editorial form section. Reused inside senior cards, the senior intake
+ * Form section primitive. Reused inside senior cards, the senior intake
  * form, and the /settings page so multi-field forms read like chapters
  * instead of label soup.
  *
- * Layout: optional gold-diamond divider rule → italic heading +
- * description → children container.
+ * Visual: optional hairline divider → semibold sans heading (Inter, 15px)
+ * with a small uppercase eyebrow vibe via tracking — no italics, no
+ * decorative gold diamonds. The brief asks for Linear-clean inside the
+ * owner app. Marketing copy still gets the editorial flourishes.
  */
 export function FormSection({
   title,
@@ -33,20 +35,16 @@ export function FormSection({
   return (
     <section className={cn(compact ? "space-y-3" : "space-y-4", className)}>
       {!hideDivider ? (
-        <div className="flex items-center gap-3">
-          <span className="h-px flex-1 bg-[var(--color-border)]" />
-          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
-            <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-500)" strokeWidth="1" />
-          </svg>
-          <span className="h-px flex-1 bg-[var(--color-border)]" />
-        </div>
+        <div aria-hidden className="h-px w-full bg-[var(--color-border)]" />
       ) : null}
       <header className="space-y-1">
-        <h3 className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-900)]">
+        <h3 className="text-[15px] font-semibold tracking-tight text-[var(--color-navy-900)]">
           {title}
         </h3>
         {description ? (
-          <p className="text-xs text-[var(--color-text-muted)]">{description}</p>
+          <p className="text-xs leading-relaxed text-[var(--color-text-muted)]">
+            {description}
+          </p>
         ) : null}
       </header>
       <div className={cn(compact ? "space-y-3" : "space-y-4")}>{children}</div>

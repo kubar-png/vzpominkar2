@@ -7,6 +7,8 @@ import { batchSignUrls } from "@/lib/family/server";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
 import { BookProgressCard } from "@/components/app/BookProgressCard";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { MemoryFeed } from "./memory-feed";
 
 export const metadata: Metadata = { title: "Domů" };
@@ -184,11 +186,17 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="I"
-        sectionLabel="Tento týden"
-        title="Domů"
+        title={`Vítejte zpět${firstName ? `, ${firstName}` : ""}.`}
         description={description}
-        italic
+        action={
+          <Link
+            href={`/family/${owner.familyId}/prompts`}
+            className={cn(buttonVariants({ size: "sm" }))}
+          >
+            Poslat další otázku
+            <span aria-hidden>↗</span>
+          </Link>
+        }
       />
 
       <StatusBlock

@@ -201,7 +201,7 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
               ) : null}
             </p>
             {m.question ? (
-              <p className="text-sm italic text-[var(--color-text-muted)]">&bdquo;{m.question}&ldquo;</p>
+              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{m.question}&ldquo;</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">

@@ -4633,3 +4633,78 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .cookie-bar-actions { width: 100%; }
   .cookie-bar-btn { flex: 1; justify-content: center; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * OWNER-APP utility helpers
+ * Tiny, opt-in classes used inside the (app) route group. The marketing
+ * `.editorial` scope stays untouched — these are plain utilities that ride
+ * alongside Tailwind and avoid duplicating the same hover/elevation pattern
+ * in every clickable card.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* Eyebrow label used above titles, status rows, etc. The brief asks for
+ * 12px, weight 500, uppercase, letter-spacing 0.08em. */
+.app-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+/* Clickable card: applies a soft hover lift + the muted brand shadow.
+ * Pair with the <Card> primitive (or any white surface) when the whole
+ * surface is a link / button. */
+.app-card-hover {
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.app-card-hover:hover {
+  border-color: var(--color-paper-300);
+  box-shadow: 0 6px 16px -8px rgb(14 59 100 / 0.10);
+}
+.app-card-hover:focus-visible {
+  outline: none;
+  border-color: var(--color-navy-500);
+  box-shadow: 0 0 0 3px rgb(80 101 142 / 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-card-hover { transition: none; }
+}
+
+/* Pill filter — used by the dashboard senior filter, archive filters, etc.
+ * One class instead of redeclaring the same nine Tailwind utilities. */
+.app-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.app-pill:hover {
+  border-color: var(--color-paper-300);
+  color: var(--color-navy-700);
+}
+.app-pill[data-active="true"] {
+  background: var(--color-navy-900);
+  border-color: var(--color-navy-900);
+  color: var(--color-paper-50);
+}
+.app-pill[data-active="true"]:hover { color: var(--color-paper-50); }
+
+/* Owner-app text utility: tabular numerals (counts, times, progress) */
+.app-num { font-variant-numeric: tabular-nums; }
+

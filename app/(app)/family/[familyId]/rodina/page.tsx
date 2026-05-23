@@ -45,11 +45,8 @@ export default async function RodinaPage({
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="III"
-        sectionLabel="Rodina"
         title="Rodina"
-        description="Kdo vypráví, jak se přihlašuje a jak se mu otázky doručují."
-        italic
+        description="Vaši blízcí a jak jim otázky doručujeme."
       />
 
       <div className="space-y-3">

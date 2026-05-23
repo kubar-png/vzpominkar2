@@ -1,6 +1,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/* Card primitive for the owner app.
+ *
+ * Linear/Cron-leaning visual: pure white surface that lifts off the cream
+ * page background via a single hairline border. No baseline shadow — the
+ * surface should feel weightless. A subtle elevation is reserved for the
+ * hover state on interactive cards (apply via the `app-card-hover` utility
+ * class declared in globals.css). True overlays use the toast / modal
+ * shadow tokens. */
 export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function Card({ className, ...props }, ref) {
     return (
@@ -8,8 +16,7 @@ export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
         ref={ref}
         className={cn(
           "bg-white text-[var(--color-text)]",
-          "rounded-[var(--radius-xl)] border border-[var(--color-border)] ring-1 ring-black/[0.03]",
-          "shadow-[var(--shadow-sm)]",
+          "rounded-[var(--radius-xl)] border border-[var(--color-border)]",
           className,
         )}
         {...props}
@@ -32,8 +39,9 @@ export const CardTitle = React.forwardRef<
     <h3
       ref={ref}
       className={cn(
-        "font-[family-name:var(--font-display)] text-xl font-normal tracking-tight",
-        "text-[var(--color-ink-900)]",
+        // 17px Inter, weight 600 — the Linear card-title spec from the brief
+        "text-[17px] font-semibold tracking-tight",
+        "text-[var(--color-navy-900)]",
         className,
       )}
       {...props}

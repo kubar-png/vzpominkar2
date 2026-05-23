@@ -17,8 +17,6 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="VI"
-        sectionLabel="Nastavení"
         title="Nastavení"
         description="Jak se vám rodina v aplikaci představuje a jak chodí otázky."
       />

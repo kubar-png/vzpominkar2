@@ -46,8 +46,6 @@ export default async function OtazkySettingsPage() {
           Zpět na nastavení
         </Link>
         <AppPageHeader
-          numeral="VI"
-          sectionLabel="Nastavení"
           title="Nastavení otázek"
           description="Kam a jak často se otázky doručují každému z vašich blízkých."
         />

@@ -99,10 +99,8 @@ export default async function FamilyMemoriesPage({
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="II"
-        sectionLabel="Archiv"
-        title="Všechny vzpomínky"
-        description={`${memories.length} vzpomínek nahraných ve vaší rodině.`}
+        title="Vzpomínky"
+        description="Vše, co jste zatím nahráli."
       />
 
       <MemoriesArchive memories={memories} seniors={seniors} familyId={familyId} />
