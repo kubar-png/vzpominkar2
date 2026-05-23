@@ -517,12 +517,11 @@ export default function HomePage() {
                     při útěku, někdy shořela s domem. Většinou ale dorazila.
                   </p>
                   <p>
-                    Zlomilo se to teprve v poválečném Československu.
-                    Kolektivizace přetrhla kontinuitu selských rodů.
-                    Vícegenerační domácnosti se rozpadly. Večery, kdy se u stolu
-                    vyprávělo, pozvolna zaplnila televize a nová tempa
-                    všedního dne. Během jedné nebo dvou generací jsme
-                    zapomněli, jak se to dělá.
+                    Někdy ve druhé polovině dvacátého století se to vytratilo.
+                    Z domácností, ze stolu, ze zvyku. Možná za to mohla
+                    televize. Možná stěhování do měst a menší byty. Možná to,
+                    že nás je v jedné kuchyni najednou méně. V každém případě
+                    jsme během dvou generací zapomněli, jak se to dělá.
                   </p>
                   <p>
                     Tak vznikl Vzpomínkář. Stará tradice, jen s pojistkou
