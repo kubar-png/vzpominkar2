@@ -137,7 +137,7 @@ html { scroll-behavior: smooth; }
   transform: scale(1.08);
 }
 .editorial .faq-item[open] summary:hover::after {
-  transform: rotate(135deg) scale(1.08);
+  transform: rotate(90deg) scale(1.08);
 }
 
 /* Footer links — underline expands left-to-right on hover */
@@ -1848,9 +1848,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .faq-item summary::-webkit-details-marker { display: none; }
 
-/* Gold circle + ↗ arrow, mirrors the button arrow style */
+/* Gold circle + horizontal → arrow. Rotates 90° on open so the closed
+ * 'read more →' becomes an 'expanded ↓' affordance that points into the
+ * revealed body text. */
 .editorial .faq-item summary::after {
-  content: '↗';
+  content: '→';
   flex-shrink: 0;
   width: 36px; height: 36px;
   display: inline-grid;
@@ -1859,14 +1861,14 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink);
   border-radius: 50%;
   font-family: var(--font-body-editorial);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
               background 0.2s ease;
 }
 .editorial .faq-item[open] summary::after {
-  transform: rotate(135deg);
+  transform: rotate(90deg);
   background: var(--gold-soft);
 }
 
