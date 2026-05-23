@@ -245,7 +245,7 @@ export default function JakToFungujePage() {
         <div className="container">
           <div className="signup-card">
             <span className="eyebrow">Začněte dnes</span>
-            <h2>První otázka odejde v pondělí.</h2>
+            <h2>Zeptejte se na to důležité ještě dnes.</h2>
             <p className="lede">
               Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
             </p>
