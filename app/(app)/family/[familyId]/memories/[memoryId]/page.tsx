@@ -42,6 +42,9 @@ export type MemoryDetailData = {
   status: string;
   created_at: string;
   memory_date: string | null;
+  extracted_year: number | null;
+  extracted_year_label: string | null;
+  extracted_year_confidence: string | null;
   question: string | null;
   authorName: string | null;
   authorRole: string | null;
@@ -66,7 +69,7 @@ export default async function MemoryDetailPage({
   const { data: raw } = await admin
     .from("memories")
     .select(
-      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, audio_transcript_polished, transcript_edited_at, status, is_favorite, created_at, memory_date,
+      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, audio_transcript_polished, transcript_edited_at, status, is_favorite, created_at, memory_date, extracted_year, extracted_year_label, extracted_year_confidence,
        prompts(question),
        profiles!memories_author_id_fkey(display_name, senior_role)`,
     )
@@ -85,6 +88,9 @@ export default async function MemoryDetailPage({
       is_favorite: boolean;
       created_at: string;
       memory_date: string | null;
+      extracted_year: number | null;
+      extracted_year_label: string | null;
+      extracted_year_confidence: string | null;
       prompts: { question: string } | null;
       profiles: { display_name: string | null; senior_role: string | null } | null;
     }>();
@@ -120,6 +126,9 @@ export default async function MemoryDetailPage({
     status: raw.status,
     created_at: raw.created_at,
     memory_date: raw.memory_date,
+    extracted_year: raw.extracted_year,
+    extracted_year_label: raw.extracted_year_label,
+    extracted_year_confidence: raw.extracted_year_confidence,
     question: raw.prompts?.question ?? null,
     authorName: raw.profiles?.display_name ?? null,
     authorRole: raw.profiles?.senior_role ?? null,

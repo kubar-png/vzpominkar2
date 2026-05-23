@@ -4570,6 +4570,131 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+ * Stats sidebar — right-side navy card on every owner-app page. Hidden on
+ * <1280px so the main content column never gets squeezed. Sticky
+ * positioned, inset from the viewport edges so it reads as a *card* (less
+ * heavy than the warm-brown left sidebar). Navy paper, cream-tinted text,
+ * gold numerals for the wow moments. */
+.vzp-stats-aside {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .vzp-stats-aside {
+    display: block;
+    flex-shrink: 0;
+    width: 280px;
+    padding: 24px 24px 24px 0;
+  }
+}
+.vzp-stats-card {
+  position: sticky;
+  top: 24px;
+  background: var(--ink);
+  color: var(--color-paper-100, #f1e8d0);
+  border-radius: 16px;
+  padding: 28px 24px 22px;
+  /* Don't let the card overflow viewport; if content grows, scroll inside. */
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  box-shadow: 0 18px 40px -28px rgba(8, 35, 61, 0.45);
+}
+.vzp-stats-empty {
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(241, 232, 208, 0.7);
+  text-align: center;
+  padding: 12px 4px;
+}
+.vzp-stats-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(241, 232, 208, 0.55);
+  margin: 0 0 12px;
+}
+.vzp-stats-hero { margin: 0 0 4px; }
+.vzp-stats-num-hero {
+  font-family: var(--font-display-editorial);
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--gold);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.vzp-stats-num-hero span {
+  font-family: var(--font-body-editorial);
+  font-size: 18px;
+  font-weight: 500;
+  color: rgba(241, 232, 208, 0.75);
+  margin-left: 4px;
+  letter-spacing: normal;
+}
+.vzp-stats-hero-sub {
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  color: rgba(241, 232, 208, 0.7);
+  margin: 6px 0 0;
+}
+.vzp-stats-hero-meta {
+  font-family: var(--font-body-editorial);
+  font-size: 12px;
+  color: rgba(241, 232, 208, 0.5);
+  margin: 14px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.vzp-stats-rule {
+  height: 1px;
+  background: rgba(241, 232, 208, 0.12);
+  margin: 22px 0 18px;
+}
+.vzp-stats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.vzp-stats-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vzp-stats-num {
+  font-family: var(--font-display-editorial);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.vzp-stats-num-warm {
+  color: var(--gold-soft);
+}
+.vzp-stats-label {
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  color: rgba(241, 232, 208, 0.7);
+  line-height: 1.35;
+}
+.vzp-stats-footer {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(241, 232, 208, 0.1);
+  font-family: var(--font-body-editorial);
+  font-size: 12px;
+  color: rgba(241, 232, 208, 0.5);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
  * Cookie consent bar — GDPR notice, bottom-sticky, global (not scoped to
  * .editorial since it lives in the root layout and needs to work on every
  * surface — marketing, owner-app, senior).

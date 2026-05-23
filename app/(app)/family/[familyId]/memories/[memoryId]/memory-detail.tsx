@@ -415,6 +415,21 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
         <p className="mt-2 text-[13px] text-[var(--color-text-subtle)]">
           Vzpomínka na: <span className="text-[var(--color-text-muted)]">{memoryDate}</span>
         </p>
+      ) : m.extracted_year_label || m.extracted_year ? (
+        <p
+          className="mt-2 text-[13px] text-[var(--color-text-subtle)]"
+          title={
+            m.extracted_year_confidence === "low"
+              ? "Tento odhad období je nejistý — vypravěč jen vágně zmínil čas."
+              : "Období jsme vytáhli z vyprávění."
+          }
+        >
+          Vzpomínka na:{" "}
+          <span className="text-[var(--color-text-muted)]">
+            {m.extracted_year_label ?? `rok ${m.extracted_year}`}
+            {m.extracted_year_confidence === "low" ? " (přibližně)" : null}
+          </span>
+        </p>
       ) : null}
 
       {/* Question quote — small, calm, not gold */}
