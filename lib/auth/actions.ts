@@ -127,6 +127,10 @@ export async function signInSenior(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
+  // Same generic error regardless of whether the username exists — otherwise
+  // anyone could enumerate valid senior usernames by checking the response.
+  const GENERIC_ERROR = "Špatné uživatelské jméno nebo heslo.";
+
   const admin = createAdminClient();
   const { data: profile, error: lookupErr } = await admin
     .from("profiles")
@@ -136,7 +140,7 @@ export async function signInSenior(
     .maybeSingle();
 
   if (lookupErr || !profile) {
-    return { ok: false, error: "Uživatel nebyl nalezen. Zkontrolujte uživatelské jméno." };
+    return { ok: false, error: GENERIC_ERROR };
   }
 
   const supabase = await createClient();
@@ -144,7 +148,7 @@ export async function signInSenior(
     email: buildSeniorEmail(profile.id),
     password: parsed.data.password,
   });
-  if (error) return { ok: false, error: "Špatné heslo. Zkuste to znovu." };
+  if (error) return { ok: false, error: GENERIC_ERROR };
 
   redirect("/home");
 }
