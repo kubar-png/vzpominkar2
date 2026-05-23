@@ -593,9 +593,9 @@ export default function HomePage() {
             <div className="section-head">
               <span className="eyebrow">Časté otázky</span>
               <h2>
-                Co se rodiny
+                Na co se nás
                 <br />
-                nejčastěji ptají.
+                často ptáte.
               </h2>
             </div>
             <div className="faq-list">
