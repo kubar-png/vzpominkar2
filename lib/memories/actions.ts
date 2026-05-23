@@ -8,6 +8,7 @@ import { requireSenior } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/send";
 import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
+import { extractYear } from "@/lib/memories/extract-metadata";
 
 /**
  * Detect Next.js's internal redirect throw. `redirect()` propagates by
@@ -166,6 +167,9 @@ export async function saveTextMemory(
     }
 
     if (finalize) {
+      // Background year extraction — non-blocking on the user's save flow.
+      // The redirect below fires while extraction runs server-side.
+      void extractAndStoreYear(realId, text);
       await notifyOwnerOfNewMemory({ familyId, seniorId: userId });
       revalidatePath("/my-memories");
       redirect("/my-memories?saved=1");
@@ -174,6 +178,27 @@ export async function saveTextMemory(
   } catch (e) {
     if (isNextRedirect(e)) throw e;
     return { ok: false, error: e instanceof Error ? e.message : "Něco se pokazilo." };
+  }
+}
+
+/** Fire-and-forget: pull a year mention out of the text via AI and stamp it
+ * onto the memory row. Silent on failure; the memory simply has no temporal
+ * anchor. */
+async function extractAndStoreYear(memoryId: string, text: string): Promise<void> {
+  try {
+    const result = await extractYear(text);
+    if (!result.year && !result.year_label) return;
+    const admin = createAdminClient();
+    await admin
+      .from("memories")
+      .update({
+        extracted_year: result.year,
+        extracted_year_label: result.year_label,
+        extracted_year_confidence: result.confidence,
+      })
+      .eq("id", memoryId);
+  } catch (err) {
+    console.warn("[extractAndStoreYear] failed (non-fatal):", err);
   }
 }
 
@@ -228,6 +253,9 @@ export async function saveAudioMemory(
     const transcript = await transcribeAudio(file);
     if (transcript) {
       await admin.from("memories").update({ audio_transcript: transcript }).eq("id", memoryId);
+      // Background year extraction from the transcript. Non-blocking on the
+      // user's redirect (which happens further down in the calling action).
+      void extractAndStoreYear(memoryId, transcript);
     }
 
     if (assignmentId) {

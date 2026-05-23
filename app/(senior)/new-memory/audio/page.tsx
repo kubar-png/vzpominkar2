@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { getAssignmentContext } from "@/lib/memories/server";
+import { MemoryWhenHint } from "@/components/senior/MemoryWhenHint";
 import { AudioMemoryForm } from "./audio-form";
 
 export const metadata: Metadata = { title: "Vyprávět nahlas" };
@@ -42,6 +43,8 @@ export default async function NewAudioMemoryPage({
         )}
         <div className="es-rule-gold" />
       </header>
+
+      <MemoryWhenHint />
 
       <AudioMemoryForm assignmentId={ctx?.assignmentId ?? null} />
     </div>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAssignmentContext } from "@/lib/memories/server";
+import { MemoryWhenHint } from "@/components/senior/MemoryWhenHint";
 import { TextMemoryForm } from "./text-form";
 
 export const metadata: Metadata = { title: "Napsat odpověď" };
@@ -55,6 +56,8 @@ export default async function NewTextMemoryPage({
         )}
         <div className="es-rule-gold" />
       </header>
+
+      <MemoryWhenHint />
 
       <TextMemoryForm
         assignmentId={ctx?.assignmentId ?? null}

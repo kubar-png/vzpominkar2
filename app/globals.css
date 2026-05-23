@@ -3256,6 +3256,44 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   opacity: 0.6;
   margin: 20px 0;
 }
+
+/* Warm tip card above the recording / writing UI. Senior-friendly: high
+ * contrast text on cream paper, generous padding, gold mark on the left so
+ * the eye anchors there. Never blocks the primary action. */
+.editorial-senior .es-when-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0 0 28px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.editorial-senior .es-when-hint p {
+  margin: 0;
+  font-family: var(--font-body-editorial);
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.editorial-senior .es-when-hint p strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.editorial-senior .es-when-hint-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 14px;
+  margin-top: 2px;
+}
 .editorial-senior .es-rule {
   height: 1px;
   background: var(--line);

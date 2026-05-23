@@ -139,6 +139,9 @@ export type Database = {
           transcript_edited_at: string | null
           author_id: string
           created_at: string
+          extracted_year: number | null
+          extracted_year_label: string | null
+          extracted_year_confidence: string | null
           family_id: string
           id: string
           is_favorite: boolean
@@ -157,6 +160,9 @@ export type Database = {
           transcript_edited_at?: string | null
           author_id: string
           created_at?: string
+          extracted_year?: number | null
+          extracted_year_label?: string | null
+          extracted_year_confidence?: string | null
           family_id: string
           id?: string
           is_favorite?: boolean
@@ -175,6 +181,9 @@ export type Database = {
           transcript_edited_at?: string | null
           author_id?: string
           created_at?: string
+          extracted_year?: number | null
+          extracted_year_label?: string | null
+          extracted_year_confidence?: string | null
           family_id?: string
           id?: string
           is_favorite?: boolean
