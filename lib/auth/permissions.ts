@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -25,10 +26,15 @@ export interface AuthedUser {
  * Get the current authed user + profile. Returns null if not signed in or
  * profile row missing. Use this for optional-auth pages.
  *
+ * Wrapped in React `cache()` so concurrent layout + page calls within the
+ * same request share a single auth + profile fetch instead of double-hitting
+ * Supabase. Cache is per-request, so signOut etc. still invalidates as soon
+ * as the next request comes in.
+ *
  * Profile is read via the service-role client so the lookup works regardless
  * of how the project's PostgREST JWT verification is configured.
  */
-export async function currentUser(): Promise<AuthedUser | null> {
+export const currentUser = cache(async (): Promise<AuthedUser | null> => {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return null;
@@ -57,7 +63,7 @@ export async function currentUser(): Promise<AuthedUser | null> {
     username: profile.username,
     isSenior: profile.is_senior ?? true,
   };
-}
+});
 
 /** Owner-only gate. Redirects unauthenticated users to /login. */
 export async function requireOwner(): Promise<AuthedUser> {
