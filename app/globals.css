@@ -1890,6 +1890,68 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .jtf-roles { grid-template-columns: 1fr; }
 }
 
+/* ─── /darek — three-step gifting + occasions grid ─── */
+.editorial .darek-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.editorial .darek-step {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 32px 28px;
+  position: relative;
+}
+.editorial .darek-step-numeral {
+  display: block;
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: 36px;
+  color: var(--oxblood);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.editorial .darek-step h3 {
+  font-size: clamp(20px, 1.8vw, 24px);
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+.editorial .darek-step p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+@media (max-width: 900px) {
+  .editorial .darek-steps { grid-template-columns: 1fr; gap: 16px; }
+}
+
+.editorial .darek-occasions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(28px, 4vw, 48px) clamp(40px, 6vw, 64px);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.editorial .darek-occasion {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.editorial .darek-occasion h3 {
+  font-size: clamp(20px, 2vw, 24px);
+  margin-bottom: 10px;
+  font-style: italic;
+}
+.editorial .darek-occasion p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 44ch;
+}
+@media (max-width: 700px) {
+  .editorial .darek-occasions { grid-template-columns: 1fr; }
+}
+
 /* ─── /kontakt — channel cards + quicklinks row ─── */
 .editorial .kontakt-grid {
   display: grid;
