@@ -129,7 +129,7 @@ export default function PricingPage() {
               <span className="eyebrow">Tisk a doplňky</span>
               <h2 style={{ margin: "12px 0 20px" }}>
                 Tištěná kniha{" "}
-                <em style={{ fontStyle: "italic" }}>{formatCzk(PRICE_BOOK)}</em>
+                {formatCzk(PRICE_BOOK)}
                 .
               </h2>
               <p style={{ maxWidth: "44ch", marginBottom: 28 }}>

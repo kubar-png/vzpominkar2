@@ -129,7 +129,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
 
       <p className="q-footnote">
         A dalších {totalCount - count} otázek, na které možná nikdy nedostanete
-        odpověď. <em>Pokud se nezeptáte.</em>
+        odpověď. Pokud se nezeptáte.
       </p>
     </div>
   );

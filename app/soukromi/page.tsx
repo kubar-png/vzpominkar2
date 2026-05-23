@@ -14,7 +14,7 @@ export default function SoukromiPage() {
       eyebrow="Ochrana soukromí"
       title={
         <>
-          Vaše vzpomínky <em>patří vám</em>.
+          Vaše vzpomínky patří vám.
         </>
       }
       intro={

@@ -518,7 +518,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .roman {
   color: var(--oxblood);
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 12px;
   letter-spacing: 0;
   margin-right: 4px;
@@ -760,7 +759,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   align-items: baseline;
   gap: 14px;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 30px;
   line-height: 1.25;
   color: var(--footer-ink);
@@ -909,7 +907,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .book-title {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(30px, 3.4vw, 44px);
   line-height: 1;
   color: var(--ink);
@@ -963,7 +960,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .book-personal {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(20px, 2vw, 26px);
   color: var(--ink-soft);
   line-height: 1.1;
@@ -974,7 +970,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: clamp(11px, 1vw, 13px);
   color: var(--ink-soft);
   letter-spacing: 0.04em;
-  font-style: italic;
 }
 .editorial .book-fleuron {
   color: var(--oxblood);
@@ -1011,7 +1006,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   content: 'Třebíč, 1962';
   position: absolute; top: 14px; left: 18px;
   font-family: var(--font-display-editorial);
-  font-style: italic; font-size: 11px;
+  font-size: 11px;
   color: var(--oxblood);
 }
 .editorial .leaf-note-2::after { content: 'Brno, jaro 1968'; }
@@ -1039,7 +1034,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   top: 18px; left: 0; right: 0;
   text-align: center;
   font-family: var(--font-display-editorial);
-  font-style: italic; font-size: 11px;
+  font-size: 11px;
   color: var(--ink-soft);
 }
 .editorial .leaf-text::after {
@@ -1078,7 +1073,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 19px;
   color: var(--ink);
   opacity: 0.85;
-  font-style: italic;
 }
 
 /* ─── Section divider ─── */
@@ -1129,7 +1123,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .step-label {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 14px;
   color: var(--oxblood);
   margin-bottom: 6px;
@@ -1162,7 +1155,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .product-img-label {
   position: absolute; bottom: 18px; left: 18px;
-  font-family: var(--font-display-editorial); font-style: italic;
+  font-family: var(--font-display-editorial);
   color: rgba(255,245,225,0.75); font-size: 13px;
 }
 .editorial .product-copy .eyebrow { margin-bottom: 18px; }
@@ -1198,7 +1191,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .pull-quote blockquote {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-weight: 500;
   font-size: clamp(28px, 4vw, 48px);
   line-height: 1.22;
@@ -1211,7 +1203,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .feature-quote .eyebrow { margin-bottom: 36px; }
 .editorial .feature-quote blockquote {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-weight: 500;
   font-size: clamp(28px, 4.2vw, 52px);
   line-height: 1.16;
@@ -1271,7 +1262,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .testimonial h4 { font-size: 18px; margin-bottom: 12px; line-height: 1.2; }
 .editorial .testimonial blockquote {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 16px;
   color: var(--ink-soft);
   margin-bottom: 18px;
@@ -1381,7 +1371,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .phone-screen .play-circle::before { content: '▶'; transform: translateX(1px); }
 .editorial .phone-screen small {
-  font-family: var(--font-display-editorial); font-style: italic;
+  font-family: var(--font-display-editorial);
   font-size: 11px; color: rgba(255,255,255,.85);
   line-height: 1.2;
 }
@@ -1437,7 +1427,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .story-body { padding: 20px; }
 .editorial .story-body blockquote {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 16px;
   color: var(--ink);
   line-height: 1.4;
@@ -1490,7 +1479,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .feature-tile .label {
   font-family: var(--font-display-editorial);
-  font-size: 14px; font-style: italic; color: var(--footer-ink);
+  font-size: 14px; color: var(--footer-ink);
 }
 .editorial .dark-card .btn-record {
   display: inline-flex; align-items: center; gap: 12px;
@@ -1530,7 +1519,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   position: absolute;
   inset: auto 0 50% 0;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 18px;
   color: var(--ink-soft);
   text-align: center;
@@ -1909,7 +1897,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .legal-body :where(h3) {
   font-family: var(--font-display-editorial);
   color: var(--ink);
-  font-style: italic;
 }
 .editorial .legal-body :where(p, ul, ol) {
   color: var(--ink-soft);
@@ -1928,7 +1915,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .legal-body :where(dt) {
   font-family: var(--font-display-editorial);
   color: var(--ink);
-  font-style: italic;
 }
 .editorial .legal-body :where(dd) {
   color: var(--ink-soft);
@@ -1973,7 +1959,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .book-cover.babybook-cover .book-title {
   color: #fbf5e3;
-  font-style: italic;
   font-size: clamp(28px, 3.6vw, 44px);
   letter-spacing: -0.005em;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
@@ -2005,7 +1990,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .babybook-chapter-numeral {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 36px;
   color: var(--oxblood);
   line-height: 1;
@@ -2029,7 +2013,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   display: flex;
   gap: 12px;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 15px;
   color: var(--ink-soft);
   line-height: 1.45;
@@ -2110,7 +2093,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .cert-title {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(22px, 3vw, 32px);
   color: var(--ink);
   line-height: 1.15;
@@ -2118,7 +2100,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .cert-title-2 {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(22px, 3vw, 32px);
   color: var(--ink);
   line-height: 1.15;
@@ -2126,7 +2107,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .cert-message {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(13px, 1.4vw, 16px);
   color: var(--ink-soft);
   line-height: 1.5;
@@ -2167,7 +2147,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   margin-top: 20px;
   font-size: 12px;
   color: var(--ink-mute);
-  font-style: italic;
 }
 
 .editorial .cert-fields {
@@ -2225,7 +2204,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .darek-step-numeral {
   display: block;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 36px;
   color: var(--oxblood);
   line-height: 1;
@@ -2259,7 +2237,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .darek-occasion h3 {
   font-size: clamp(20px, 2vw, 24px);
   margin-bottom: 10px;
-  font-style: italic;
 }
 .editorial .darek-occasion p {
   font-size: 15px;
@@ -2296,7 +2273,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .kontakt-card-head .eyebrow { margin: 0; }
 .editorial .kontakt-card-numeral {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 20px;
   color: var(--oxblood);
   line-height: 1;
@@ -2308,7 +2284,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .kontakt-card-value {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 19px;
   margin-bottom: 14px;
   line-height: 1.3;
@@ -2358,7 +2333,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .onas-value-numeral {
   display: block;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 32px;
   color: var(--oxblood);
   line-height: 1;
@@ -2459,7 +2433,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .faq-toc a:hover { color: var(--ink); }
 .editorial .faq-toc-numeral {
   color: var(--oxblood);
-  font-style: italic;
   font-size: 15px;
 }
 .editorial .faq-toc-foot {
@@ -2488,7 +2461,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .faq-cat-numeral {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 28px;
   color: var(--oxblood);
   line-height: 1;
@@ -2506,7 +2478,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .faq-cat-intro {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 17px;
   color: var(--ink-soft);
   margin: 0 0 24px;
@@ -2516,7 +2487,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .faq-empty {
   padding: 48px 24px;
   text-align: center;
-  font-style: italic;
   color: var(--ink-mute);
   border: 1px dashed var(--line-2);
   border-radius: 6px;
@@ -2566,7 +2536,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .cenik-price-amount {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(56px, 7vw, 84px);
   font-weight: 500;
   color: var(--ink);
@@ -3408,7 +3377,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .auth-eyebrow .roman {
   color: var(--oxblood);
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 13px;
   letter-spacing: 0;
   margin-right: 2px;
@@ -3421,7 +3389,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .auth-title {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-weight: 500;
   font-size: clamp(32px, 4.2vw, 44px);
   line-height: 1.04;
@@ -3492,7 +3459,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-family: var(--font-body-editorial);
   font-size: 13px;
   color: var(--oxblood);
-  font-style: italic;
   line-height: 1.4;
 }
 
@@ -3573,7 +3539,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .auth-back {
   display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 16px;
   color: var(--ink);
   border-bottom: 1px solid var(--line-2);
@@ -3666,7 +3631,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .senior-auth-pitch h2 {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-weight: 500;
   font-size: clamp(36px, 4.4vw, 56px);
   line-height: 1.05;
@@ -3682,7 +3646,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .senior-auth-side .colophon {
   position: relative;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 14px;
   color: rgba(237, 228, 207, 0.55);
 }
@@ -3805,7 +3768,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .legal-body :where(h3) {
   font-family: var(--font-display);
   font-weight: 500;
-  font-style: italic;
   font-size: var(--text-xl);
   line-height: 1.25;
   color: var(--color-navy-900);
@@ -4234,7 +4196,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .q-card-page {
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: 12px;
   color: var(--ink-soft);
   letter-spacing: 0.04em;
@@ -4247,7 +4208,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   align-items: center;
   justify-content: center;
   font-family: var(--font-display-editorial);
-  font-style: italic;
   font-size: clamp(22px, 3vw, 32px);
   line-height: 1.3;
   color: var(--ink);
@@ -4330,7 +4290,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   margin-inline: auto;
 }
 .editorial .q-footnote em {
-  font-style: italic;
+  font-style: normal;
   color: var(--oxblood);
 }
 
@@ -4373,7 +4333,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .cookie-bar-title {
   margin: 0 0 4px;
   font-family: "PP Pangaia", "Fraunces", "Palatino Linotype", Georgia, serif;
-  font-style: italic;
   font-size: 17px;
   font-weight: 500;
   color: #0e3b64;

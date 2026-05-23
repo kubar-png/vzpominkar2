@@ -4,7 +4,7 @@ import { Shell } from "@/components/landing/Shell";
 interface LegalLayoutProps {
   /** Eyebrow above the title (e.g. "Právní informace"). */
   eyebrow: string;
-  /** Page title — set in editorial italic display serif. */
+  /** Page title — set in editorial display serif. */
   title: ReactNode;
   /** One-line standfirst beneath the title. */
   intro?: ReactNode;

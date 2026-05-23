@@ -14,7 +14,7 @@ export default function CookiesPage() {
       eyebrow="Cookies"
       title={
         <>
-          Co o vás <em>ukládáme do prohlížeče</em>.
+          Co o vás ukládáme do prohlížeče.
         </>
       }
       intro={

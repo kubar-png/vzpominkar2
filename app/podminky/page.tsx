@@ -14,7 +14,7 @@ export default function PodminkyPage() {
       eyebrow="Obchodní podmínky"
       title={
         <>
-          Pravidla, za kterých <em>Vzpomínkář</em> funguje.
+          Pravidla, za kterých Vzpomínkář funguje.
         </>
       }
       intro={

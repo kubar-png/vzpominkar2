@@ -493,7 +493,7 @@ export default function HomePage() {
               <span className="eyebrow">Technologie</span>
               <h2>Mluvené slovo, otištěné na papír.</h2>
               <p className="lede">
-                <em>Hlas do příběhu</em> převede nahrávku na plynulý text — a
+                Hlas do příběhu převede nahrávku na plynulý text — a
                 zachová jejich rytmus, jejich slova, jejich vrstvu. Můžete
                 upravit, zkrátit, doplnit. Nikdy nepřepsat.
               </p>
