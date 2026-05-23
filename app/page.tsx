@@ -2,6 +2,28 @@ import Link from "next/link";
 import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
+import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
+
+const FORBES_TESTIMONIALS = [
+  {
+    title: "Z povinnosti se stal rituál",
+    quote:
+      "„Táta se těší na sobotní otázku jako na seriál. Vařím kafe a poslouchám, jak vypráví o vojně v Olomouci.”",
+    author: "Pavla W., dcera",
+  },
+  {
+    title: "Hodiny jejího hlasu",
+    quote:
+      "„Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny — a knihu, kterou děti otevřou kdykoliv.”",
+    author: "Jana M., dcera",
+  },
+  {
+    title: "Pohádka místo pohádky",
+    quote:
+      "„Holky si pouští babiččin hlas na dobrou noc. Vyprávění o tom, jak se v padesátých letech bruslilo na Lužánkách.”",
+    author: "Marie V., matka dvou dcer",
+  },
+] as const;
 
 /* Eight representative questions from the seed library, sampled across the
  * 8 categories. Phrased in tykání as if the visitor is imagining asking the
@@ -280,35 +302,7 @@ export default function HomePage() {
               „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&rdquo;
             </blockquote>
             <div className="feature-attr">— Forbes CZ, podzim 2026</div>
-            <div className="testimonial-grid">
-              <article className="testimonial">
-                <div className="stars">★★★★★</div>
-                <h4>Z povinnosti se stal rituál</h4>
-                <blockquote>
-                  „Táta se těší na sobotní otázku jako na seriál. Vařím kafe a
-                  poslouchám, jak vypráví o vojně v Olomouci.&rdquo;
-                </blockquote>
-                <cite>Pavla W., dcera</cite>
-              </article>
-              <article className="testimonial">
-                <div className="stars">★★★★★</div>
-                <h4>Hodiny jejího hlasu</h4>
-                <blockquote>
-                  „Babička loni odešla. Neměla jsem po ní jediný záznam.
-                  Dneska mám hodiny — a knihu, kterou děti otevřou kdykoliv.&rdquo;
-                </blockquote>
-                <cite>Jana M., dcera</cite>
-              </article>
-              <article className="testimonial">
-                <div className="stars">★★★★★</div>
-                <h4>Pohádka místo pohádky</h4>
-                <blockquote>
-                  „Holky si pouští babiččin hlas na dobrou noc. Vyprávění
-                  o tom, jak se v padesátých letech bruslilo na Lužánkách.&rdquo;
-                </blockquote>
-                <cite>Marie V., matka dvou dcer</cite>
-              </article>
-            </div>
+            <TestimonialCarousel items={FORBES_TESTIMONIALS} />
           </div>
         </section>
 

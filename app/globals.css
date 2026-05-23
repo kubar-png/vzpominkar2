@@ -2744,7 +2744,27 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   }
   .editorial .steps .step:last-child { scroll-snap-align: end; }
 
-  .editorial .testimonial-grid { grid-template-columns: 1fr; }
+  /* Testimonials become a horizontal scroll-snap carousel on mobile.
+   * The TestimonialCarousel client component layers auto-advance on top. */
+  .editorial .testimonial-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter-editorial);
+    margin-inline: calc(-1 * var(--gutter-editorial));
+    padding: 4px var(--gutter-editorial) 24px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .editorial .testimonial-grid::-webkit-scrollbar { display: none; }
+  .editorial .testimonial-grid .testimonial {
+    flex: 0 0 82vw;
+    max-width: 340px;
+    scroll-snap-align: center;
+  }
 
   /* ─── Co píší rodiny: horizontal-scroll carousel on mobile ─── */
   .editorial .gallery-grid {
