@@ -54,6 +54,7 @@ async function handleFreePath(input: CheckoutInput, ownerId: string): Promise<ne
       family_id: input.familyId,
       actor_id: ownerId,
       action: "subscription.activated_free",
+      // Do not put PII or secrets in metadata — visible to every family member via RLS.
       metadata: { reason: "price_zero" },
     });
 
@@ -76,6 +77,7 @@ async function handleFreePath(input: CheckoutInput, ownerId: string): Promise<ne
       family_id: input.familyId,
       actor_id: ownerId,
       action: "book_order.paid_free",
+      // Do not put PII or secrets in metadata — visible to every family member via RLS.
       metadata: { orderId: input.bookOrderId, reason: "price_zero" },
     });
 

@@ -13,6 +13,14 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
  * Public marketing routes stay reachable to anyone.
  */
 
+// TODO(security #6): rate limiting for auth + /api endpoints.
+// Requires @upstash/ratelimit + Vercel KV (or Upstash Redis directly).
+// Provision: `vercel storage create` -> pick KV, then `vercel env pull`.
+// Add KV_REST_API_URL + KV_REST_API_TOKEN to the env, install the deps,
+// then wrap signInOwner / signInSenior / signUpOwner / /api/leads in a
+// per-IP limiter (e.g. 5 attempts / 15 min for auth, 30 / hour for leads).
+// Left as a follow-up so we don't add infra dependencies in this PR.
+
 const AUTH_PATHS = ["/login", "/signup", "/senior-login"];
 
 function startsWithAny(pathname: string, prefixes: string[]) {

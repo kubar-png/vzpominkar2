@@ -184,7 +184,11 @@ export default function FaqPage() {
     <Shell>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+        dangerouslySetInnerHTML={{
+          // Escape `</` so a future dynamic FAQ value can't break out of
+          // the script tag with `</script>`.
+          __html: JSON.stringify(FAQ_JSON_LD).replace(/<\//g, "<\\/"),
+        }}
       />
 
       {/* ═══════════ HERO ═══════════ */}

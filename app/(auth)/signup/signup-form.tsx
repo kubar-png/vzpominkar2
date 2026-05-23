@@ -18,6 +18,46 @@ export function SignupForm({
   const fieldError = (name: string) =>
     state?.ok === false && state.field === name ? state.error : undefined;
 
+  // Email-confirmation flow: after a successful sign-up the user must
+  // click the link in their inbox before we sign them in. Render a quiet
+  // confirmation card instead of the form.
+  if (state?.ok && state.checkEmail) {
+    return (
+      <div className="auth-form" role="status" aria-live="polite">
+        <div
+          style={{
+            padding: "1.5rem",
+            border: "1px solid var(--color-paper-200, #e6dcc4)",
+            borderRadius: "10px",
+            background: "var(--color-paper-100, #faf6ec)",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "1.1rem",
+              lineHeight: 1.5,
+              color: "var(--color-navy-900, #16213a)",
+              margin: 0,
+            }}
+          >
+            Zkontrolujte svou e-mailovou schránku, poslali jsme vám
+            potvrzovací odkaz. Po kliknutí vás přihlásíme a&nbsp;pomůžeme
+            s&nbsp;prvním nastavením.
+          </p>
+          <p
+            style={{
+              marginTop: "0.75rem",
+              fontSize: "0.85rem",
+              color: "var(--color-ink-600, #5b5547)",
+            }}
+          >
+            Nedorazil? Mrkněte do nevyžádané pošty.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form action={formAction} className="auth-form">
       {product ? <input type="hidden" name="product" value={product} /> : null}

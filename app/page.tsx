@@ -54,7 +54,12 @@ export default function HomePage() {
     <div className="editorial">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
+        dangerouslySetInnerHTML={{
+          // Escape `</` so a future dynamic value can't break out of the
+          // script tag with `</script>`. Inputs are static today; this is
+          // a hardening pass.
+          __html: JSON.stringify(ORG_JSON_LD).replace(/<\//g, "<\\/"),
+        }}
       />
       <HeroScrollDriver />
 
