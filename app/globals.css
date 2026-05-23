@@ -4594,11 +4594,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border: 1px solid var(--ink);
   border-radius: 20px;
   padding: 36px 30px 32px;
-  /* Nearly full viewport height; minus top+bottom 24 spacing. */
-  min-height: calc(100vh - 48px);
-  max-height: calc(100vh - 48px);
+  /* Near-full viewport height — minus 24 top, 24 outer bottom, ~64 BookProgressBar
+   * sticky strip, plus 16 buffer so the bottom of the card sits well clear. */
+  min-height: calc(100vh - 128px);
+  max-height: calc(100vh - 128px);
   overflow: hidden;
-  position: sticky;
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 48px -32px rgba(8, 35, 61, 0.4);
@@ -4643,7 +4643,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-weight: 500;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  color: var(--footer-ink);
+  color: var(--gold);
   margin: 0;
   font-variant-numeric: tabular-nums;
   display: flex;
@@ -4655,8 +4655,9 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-family: var(--font-display-editorial);
   font-size: clamp(22px, 1.8vw, 28px);
   font-weight: 500;
-  color: rgba(237, 228, 207, 0.75);
+  color: var(--gold);
   letter-spacing: -0.01em;
+  opacity: 0.85;
 }
 .vzp-stats-hero-sub {
   font-family: var(--font-body-editorial);
