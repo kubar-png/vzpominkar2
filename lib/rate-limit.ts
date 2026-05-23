@@ -42,6 +42,22 @@ function makeLimiter(opts: {
 const authLimiter = makeLimiter({ prefix: "auth", limit: 5, windowSec: 15 * 60 });
 const leadsLimiter = makeLimiter({ prefix: "leads", limit: 30, windowSec: 60 * 60 });
 
+/* ── AI-cost protection limiters ────────────────────────────────────────────
+ * Two-tier defence: per-user hourly cap stops one compromised account from
+ * burning the OpenAI bill before someone notices; per-family daily cap is
+ * the hard ceiling — even if attacker rotates IPs / accounts within one
+ * family, total spend per family per day stays bounded.
+ *
+ * Indicative cost ceilings (gpt-4o-mini + whisper at May 2026 pricing):
+ *   audio-family-daily 30 calls × ~$0.06 avg = ~$1.80 / family / day
+ *   polish-family-daily 100 calls × ~$0.003   = ~$0.30 / family / day
+ * Multiply by # of paying families for worst-case daily exposure. */
+const aiAudioUserLimiter = makeLimiter({ prefix: "ai-audio-u", limit: 10, windowSec: 60 * 60 });
+const aiAudioFamilyLimiter = makeLimiter({ prefix: "ai-audio-f", limit: 30, windowSec: 24 * 60 * 60 });
+const aiPolishUserLimiter = makeLimiter({ prefix: "ai-polish-u", limit: 30, windowSec: 60 * 60 });
+const aiPolishFamilyLimiter = makeLimiter({ prefix: "ai-polish-f", limit: 100, windowSec: 24 * 60 * 60 });
+const aiTextUserLimiter = makeLimiter({ prefix: "ai-text-u", limit: 20, windowSec: 60 * 60 });
+
 export type RateLimitKind = "auth" | "leads";
 
 /** Pulled out so route handlers can pass `request.headers` directly. */
@@ -104,4 +120,87 @@ export function rateLimitMessage(retryAfterSec: number): string {
   }
   const min = Math.ceil(retryAfterSec / 60);
   return `Příliš mnoho pokusů. Zkuste to znovu za ${min} min.`;
+}
+
+/* ── AI cost rate-limit helpers ───────────────────────────────────────────── */
+
+export type AiRateLimitKind = "audio" | "polish" | "text";
+
+interface AiRateLimitResult {
+  ok: boolean;
+  retryAfterSec: number;
+  /** Which limit fired, for logging / error messages. */
+  scope?: "user" | "family";
+}
+
+/**
+ * Two-tier check before any AI call: per-user hourly cap, then per-family
+ * daily cap. Fail-open on Redis errors so legitimate users aren't punished
+ * by infra blips — but cost ceiling at the OpenAI account is the ultimate
+ * backstop (set monthly hard cap in OpenAI dashboard).
+ */
+export async function checkAiRateLimit(
+  kind: AiRateLimitKind,
+  userId: string,
+  familyId: string | null,
+): Promise<AiRateLimitResult> {
+  const { user, family } = pickLimiters(kind);
+  if (!user) return { ok: true, retryAfterSec: 0 };
+
+  // Per-user hourly check first (most common abuser is one compromised account)
+  try {
+    const r = await user.limit(`user:${userId}`);
+    if (!r.success) {
+      return {
+        ok: false,
+        retryAfterSec: Math.max(1, Math.ceil((r.reset - Date.now()) / 1000)),
+        scope: "user",
+      };
+    }
+  } catch (err) {
+    console.error(`[ai-rate-limit:${kind}:user] redis error (fail-open):`, err);
+    return { ok: true, retryAfterSec: 0 };
+  }
+
+  // Per-family daily check
+  if (family && familyId) {
+    try {
+      const r = await family.limit(`family:${familyId}`);
+      if (!r.success) {
+        return {
+          ok: false,
+          retryAfterSec: Math.max(1, Math.ceil((r.reset - Date.now()) / 1000)),
+          scope: "family",
+        };
+      }
+    } catch (err) {
+      console.error(`[ai-rate-limit:${kind}:family] redis error (fail-open):`, err);
+      return { ok: true, retryAfterSec: 0 };
+    }
+  }
+
+  return { ok: true, retryAfterSec: 0 };
+}
+
+function pickLimiters(kind: AiRateLimitKind): { user: Ratelimit | null; family: Ratelimit | null } {
+  switch (kind) {
+    case "audio":
+      return { user: aiAudioUserLimiter, family: aiAudioFamilyLimiter };
+    case "polish":
+      return { user: aiPolishUserLimiter, family: aiPolishFamilyLimiter };
+    case "text":
+      return { user: aiTextUserLimiter, family: null };
+  }
+}
+
+/** User-facing Czech hint when AI calls are throttled. */
+export function aiRateLimitMessage(result: AiRateLimitResult): string {
+  if (result.ok) return "";
+  const min = Math.ceil(result.retryAfterSec / 60);
+  if (result.scope === "family") {
+    return `Vaše rodina dosáhla denního limitu zpracování. Zkuste to zítra (za ${min} min se limit obnoví).`;
+  }
+  if (min < 60) return `Příliš rychle za sebou. Zkuste to znovu za ${min} min.`;
+  const hours = Math.ceil(min / 60);
+  return `Příliš rychle za sebou. Zkuste to znovu za ${hours} h.`;
 }

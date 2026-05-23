@@ -5,6 +5,12 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentUser } from "@/lib/auth/permissions";
 import { polishTranscript, type PolishLevel } from "@/lib/memories/polish";
+import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
+
+/** Cap polish input — a single chapter shouldn't exceed ~5 min of speech
+ * worth of transcript. Hard guard against an attacker shoving 200 KB of
+ * text into a polish call and pushing the OpenAI bill. */
+const POLISH_MAX_INPUT_CHARS = 8000;
 
 export type TranscriptActionState =
   | { ok: true; text: string }
@@ -75,7 +81,17 @@ export async function aiPolishMemoryTranscript(
       return { ok: false, error: "Vzpomínka nemá přepis k úpravě." };
     }
 
-    const polished = await polishTranscript(source, level);
+    // AI cost gate before OpenAI call. Owner is typical caller; pass their
+    // user id + the memory's family id so per-user + per-family limits both
+    // count against the right buckets.
+    const user = await currentUser();
+    if (!user) return { ok: false, error: "Nepřihlášený uživatel." };
+    const rl = await checkAiRateLimit("polish", user.id, familyId);
+    if (!rl.ok) return { ok: false, error: aiRateLimitMessage(rl) };
+
+    // Hard cap input length so a long transcript can't blow up OpenAI cost.
+    const bounded = source.slice(0, POLISH_MAX_INPUT_CHARS);
+    const polished = await polishTranscript(bounded, level);
     if (!polished) {
       return { ok: false, error: "AI úpravu se nepodařilo dokončit. Zkuste znovu." };
     }

@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/email/send";
 import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
 import { extractYear } from "@/lib/memories/extract-metadata";
+import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
 
 /**
  * Detect Next.js's internal redirect throw. `redirect()` propagates by
@@ -145,6 +146,12 @@ export async function saveTextMemory(
       assignmentId,
     });
 
+    // Rate-limit only finalize (not the silent autosave pings every 5s)
+    if (finalize) {
+      const rl = await checkAiRateLimit("text", userId, familyId);
+      if (!rl.ok) return { ok: false, error: aiRateLimitMessage(rl) };
+    }
+
     const admin = createAdminClient();
     const { error } = await admin
       .from("memories")
@@ -223,6 +230,12 @@ export async function saveAudioMemory(
       existingMemoryId,
       assignmentId,
     });
+
+    // Gate AI cost — Whisper transcription is the priciest call per memory.
+    // Per-user hourly + per-family daily ceiling protects against a
+    // compromised senior account hammering OpenAI.
+    const rl = await checkAiRateLimit("audio", userId, familyId);
+    if (!rl.ok) return { ok: false, error: aiRateLimitMessage(rl) };
 
     const admin = createAdminClient();
     const ext = file.name.split(".").pop() || "webm";
