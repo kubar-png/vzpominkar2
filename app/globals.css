@@ -286,15 +286,18 @@ html { scroll-behavior: smooth; }
   --color-red-800: #4e1c1a;
   --color-red-900: #341312;
 
-  /* ---------- Antique gold — muted, burnished, used very sparingly ---------- */
+  /* ---------- Brand gold — realigned to the editorial signature (#d4a017).
+   * 400 and 500 are the visible ones on owner-app surfaces (buttons, accents);
+   * we let the lighter / darker steps stay close to where they were so subtle
+   * uses (highlight tints, deep-text accents) don't visibly shift. */
   --color-gold-50:  #faf6ec;
-  --color-gold-100: #f1e8d0;
-  --color-gold-200: #e4d3a7;
-  --color-gold-300: #d2b97a;
-  --color-gold-400: #bd9d56;
-  --color-gold-500: #9c7f3c; /* signature antique */
-  --color-gold-600: #785f2b;
-  --color-gold-700: #54441e;
+  --color-gold-100: #f7e9c0;
+  --color-gold-200: #efd784;
+  --color-gold-300: #e8c66a;
+  --color-gold-400: #e8b53d; /* hover / lighter accent — matches --gold-soft */
+  --color-gold-500: #d4a017; /* signature brand gold — matches --gold */
+  --color-gold-600: #a87f10;
+  --color-gold-700: #785a0b;
   --color-gold-800: #352c13;
 
   /* ---------- Sepia ink (body text — warmer than navy, like printed book ink) ---------- */
@@ -4131,7 +4134,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border: none;
   cursor: pointer;
   text-align: left;
-  font-family: var(--font-display);
+  /* Inter (UI sans), per the owner-app no-Pangaia-in-controls rule. */
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 500;
   color: var(--color-text);
@@ -4139,10 +4143,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .te-toggle:hover { background: rgba(14, 59, 100, 0.04); }
 .te-toggle-label { letter-spacing: 0.01em; }
+/* "· upraveno" hint sits next to the toggle label. Weight-only emphasis,
+ * no italics per the project ban. */
 .te-edited {
   margin-left: 8px;
-  font-style: italic;
   font-size: 13px;
+  font-weight: 500;
   color: var(--color-text-subtle);
 }
 .te-toggle-icon {

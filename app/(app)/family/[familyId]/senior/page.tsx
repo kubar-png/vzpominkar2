@@ -55,8 +55,6 @@ export default async function SeniorAdminPage({
           Zpět na rodinu
         </Link>
         <AppPageHeader
-          numeral="III"
-          sectionLabel="Rodina"
           title={senior.display_name ?? "Blízký"}
           description="Spravujte přihlašovací údaje a přístup k aplikaci."
         />

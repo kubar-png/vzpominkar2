@@ -1,27 +1,22 @@
 import { cn } from "@/lib/utils";
 
 interface AppPageHeaderProps {
-  /** Optional roman numeral — kept for API compatibility, no longer rendered. */
-  numeral?: string;
-  /** Label kept for API compatibility, no longer rendered. */
-  sectionLabel?: string;
   title: string;
   description?: string;
-  /** Kept for API compatibility. Owner-app no longer italicises descriptions. */
-  italic?: boolean;
   action?: React.ReactNode;
   className?: string;
 }
 
 /**
- * Owner-app page header. Linear-leaning: a clean H1 set in Pangaia, a single
- * tight description line, and an optional right-rail action. The primary
- * action is what makes the page "yours" — exactly one per page per the
- * redesign brief.
+ * Owner-app page header. Per DESIGN.md the page-title is the editorial
+ * moment: Pangaia 32px / 500 / leading 1.1 / tracking -0.02em. Everything
+ * else on the page is Inter. An optional muted lede sits one line below,
+ * capped at 60ch; an optional right-rail action holds the (at most one)
+ * primary CTA for the page.
  *
- * The decorative eyebrow + roman numeral that used to live here belonged to
- * the marketing world; the owner app now lets the sidebar carry the
- * navigation context instead.
+ * The eyebrow + roman numeral chrome that lived here used to mirror the
+ * marketing surface — that pattern was removed; sidebar navigation now
+ * carries the structural context.
  */
 export function AppPageHeader({
   title,
