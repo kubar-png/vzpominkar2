@@ -512,9 +512,11 @@ export default function HomePage() {
                     Co bylo v rozhlase, když přišel Mnichov.
                   </p>
                   <p>
-                    Kniha putovala z generace na generaci. Přežila habsburskou
-                    monarchii. Přežila dvě světové. Někdy ji rodina ztratila
-                    při útěku, někdy shořela s domem. Většinou ale dorazila.
+                    Kniha putovala z generace na generaci. Přežila pád
+                    monarchie. Přežila dvě světové války. Ale papír je papír.
+                    Někdy se ztratila při stěhování, někdy shořela s domem,
+                    někdy nasákla vodou ve sklepě. Dříve nebo později skoro
+                    vždycky.
                   </p>
                   <p>
                     Někdy ve druhé polovině dvacátého století se to vytratilo.
