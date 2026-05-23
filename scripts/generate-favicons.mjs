@@ -21,7 +21,7 @@ import { dirname } from "node:path";
 
 const SOURCE = "public/brand/symbol.png";
 const MASTER_SIZE = 1024;
-const BOOK_INSET = 0.16; // 16% padding around the book inside the rounded square
+const BOOK_INSET = 0.18; // 18% padding around the book inside the rounded square
 
 const OUTPUTS = [
   { path: "app/icon.png", size: 64 },

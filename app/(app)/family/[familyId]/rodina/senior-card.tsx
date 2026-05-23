@@ -98,13 +98,13 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
 
   if (phase === "edit") {
     return (
-      <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]">
-        <div className="border-b border-[var(--color-border)] bg-[var(--color-navy-50)] px-6 py-3">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-navy-700)]">
+      <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-3 md:px-6">
+          <p className="text-[15px] font-semibold tracking-tight text-[var(--color-navy-900)]">
             Upravit blízkého
           </p>
         </div>
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-5 md:p-6">
           <FormSection title="Profil" hideDivider compact>
             <div className="space-y-1.5">
               <Label htmlFor={`name-${senior.id}`}>Celé jméno</Label>
@@ -219,14 +219,14 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
 
   if (phase === "delete") {
     return (
-      <div className="overflow-hidden rounded-[var(--radius-xl)] border-2 border-[var(--color-red-200)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]">
-        <div className="border-b border-[var(--color-red-100)] bg-[var(--color-red-50)] px-6 py-3">
-          <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-red-700)]">
-            <AlertTriangle size={13} />
+      <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-red-200)] bg-white">
+        <div className="flex items-center gap-2 border-b border-[var(--color-red-200)] bg-[var(--color-red-50)]/40 px-5 py-3 md:px-6">
+          <AlertTriangle size={14} className="text-[var(--color-red-700)]" />
+          <p className="text-[15px] font-semibold tracking-tight text-[var(--color-red-800)]">
             Nevratná akce
           </p>
         </div>
-        <div className="space-y-4 p-6">
+        <div className="space-y-4 p-5 md:p-6">
           <p className="text-sm leading-relaxed text-[var(--color-text)]">
             Smazáním účtu <strong>{senior.display_name ?? "blízkého"}</strong> dojde k trvalému
             odstranění přístupu a všech propojených dat. Tuto akci nelze vrátit.
@@ -281,33 +281,41 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
 
   // Phase: view
   const label = roleLabel(senior.senior_role);
+  const initial = (senior.display_name ?? "B").trim().charAt(0).toUpperCase();
   return (
-    <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]">
-      <div className="flex flex-wrap items-start justify-between gap-6 p-6">
-        <div>
-          {/* Name + role - primary identity block */}
-          <p className="font-[family-name:var(--font-display)] text-3xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--color-navy-900)]">
-            {senior.display_name ?? "Senior"}
-          </p>
-          {label ? (
-            <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--color-gold-500)]">
-              {label}
+    <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
+      <div className="flex flex-wrap items-start justify-between gap-6 p-5 md:p-6">
+        <div className="flex min-w-0 items-start gap-4">
+          {/* Avatar with initial — no photo yet */}
+          <div
+            aria-hidden
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-paper-100)] text-base font-semibold text-[var(--color-navy-700)]"
+          >
+            {initial}
+          </div>
+          <div className="min-w-0">
+            {/* Name — card-title (Inter 17/600) per DESIGN.md */}
+            <p className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+              {senior.display_name ?? "Senior"}
             </p>
-          ) : null}
-
-          {/* Secondary info - separated with visual gap */}
-          <div className="mt-4 space-y-1">
-            <p className="font-mono text-sm text-[var(--color-text-muted)]">
-              {senior.username}
-            </p>
-            {senior.contact_address ? (
-              <p className="text-xs text-[var(--color-text-subtle)]">
-                {senior.contact_channel === "whatsapp" ? "WhatsApp" : "E-mail"}: {senior.contact_address}
-              </p>
+            {label ? (
+              <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">{label}</p>
             ) : null}
-            <p className="text-xs text-[var(--color-text-subtle)]">
-              {senior.memoryCount} {pluralMemories(senior.memoryCount)}
-            </p>
+
+            {/* Secondary info — quieter, single block */}
+            <div className="mt-3 space-y-0.5 text-xs text-[var(--color-text-subtle)]">
+              <p className="font-mono text-[var(--color-text-muted)]">
+                {senior.username}
+              </p>
+              {senior.contact_address ? (
+                <p>
+                  {senior.contact_channel === "whatsapp" ? "WhatsApp" : "E-mail"}: {senior.contact_address}
+                </p>
+              ) : null}
+              <p className="tabular-nums">
+                {senior.memoryCount} {pluralMemories(senior.memoryCount)}
+              </p>
+            </div>
           </div>
         </div>
 

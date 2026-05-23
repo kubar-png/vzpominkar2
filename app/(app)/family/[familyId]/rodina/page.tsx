@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { UserPlus } from "lucide-react";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
+import { EmptyState } from "@/components/app/EmptyState";
 import { SeniorCard } from "./senior-card";
 import { AddSeniorPanel } from "./add-senior-panel";
 
@@ -43,19 +45,21 @@ export default async function RodinaPage({
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <AppPageHeader
         title="Rodina"
         description="Vaši blízcí a jak jim otázky doručujeme."
       />
 
-      <div className="space-y-3">
-        {seniorList.length === 0 ? (
-          <div className="rounded-[var(--radius-xl)] border border-dashed border-[var(--color-border-strong)] py-16 text-center text-[var(--color-text-muted)]">
-            Zatím žádný blízký. Přidejte prvního níže.
-          </div>
-        ) : (
-          seniorList.map((senior) => (
+      {seniorList.length === 0 ? (
+        <EmptyState
+          icon={<UserPlus size={18} aria-hidden />}
+          title="Zatím žádný blízký"
+          description="Přidejte prvního blízkého níže — poté mu pošlete úvodní otázku."
+        />
+      ) : (
+        <div className="space-y-3">
+          {seniorList.map((senior) => (
             <SeniorCard
               key={senior.id}
               familyId={familyId}
@@ -72,11 +76,11 @@ export default async function RodinaPage({
               }}
               manageHref={`/family/${familyId}/senior?seniorId=${senior.id}`}
             />
-          ))
-        )}
+          ))}
+        </div>
+      )}
 
-        <AddSeniorPanel familyId={familyId} />
-      </div>
+      <AddSeniorPanel familyId={familyId} />
     </div>
   );
 }
