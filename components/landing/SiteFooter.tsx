@@ -82,7 +82,7 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/darek/certifikat">
+                <Link href={{ pathname: "/darek", hash: "certifikat" }}>
                   Dárkový certifikát <span className="ext">↗</span>
                 </Link>
               </li>

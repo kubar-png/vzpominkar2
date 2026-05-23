@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/cenik`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/darek`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}/darek/certifikat`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/babybook`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/o-nas`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/kontakt`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },

@@ -60,6 +60,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // /darek/certifikat was merged into /darek (single gifting funnel).
+      // Permanent 301 keeps SEO continuity for the sub-page URL.
+      { source: "/darek/certifikat", destination: "/darek", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
