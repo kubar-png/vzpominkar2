@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getEmailProvider } from "@/lib/email/provider";
 import { leadNotificationEmail } from "@/lib/email/templates";
+import { checkRateLimitWithHeaders } from "@/lib/rate-limit";
 
 /**
  * POST /api/leads
@@ -24,6 +25,11 @@ const SUCCESS_URL = "/?signup=success#signup";
 const ERROR_URL = "/?signup=error#signup";
 
 export async function POST(request: Request) {
+  const rl = await checkRateLimitWithHeaders("leads", request.headers);
+  if (!rl.ok) {
+    return NextResponse.redirect(new URL(ERROR_URL, request.url), 303);
+  }
+
   let email: string | undefined;
 
   const contentType = request.headers.get("content-type") ?? "";

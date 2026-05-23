@@ -15,6 +15,7 @@ import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
 import { requireOwner } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail } from "@/lib/email/templates";
+import { checkRateLimit, rateLimitMessage } from "@/lib/rate-limit";
 
 /**
  * ActionResult - discriminated union returned by Server Actions called from
@@ -35,6 +36,9 @@ export async function signUpOwner(
   _prev: ActionResult | null,
   formData: FormData,
 ): Promise<ActionResult> {
+  const rl = await checkRateLimit("auth", "signup");
+  if (!rl.ok) return { ok: false, error: rateLimitMessage(rl.retryAfterSec) };
+
   const parsed = ownerSignupSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -88,6 +92,9 @@ export async function signInOwner(
   _prev: ActionResult | null,
   formData: FormData,
 ): Promise<ActionResult> {
+  const rl = await checkRateLimit("auth", "owner-login");
+  if (!rl.ok) return { ok: false, error: rateLimitMessage(rl.retryAfterSec) };
+
   const parsed = ownerLoginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -118,6 +125,9 @@ export async function signInSenior(
   _prev: ActionResult | null,
   formData: FormData,
 ): Promise<ActionResult> {
+  const rl = await checkRateLimit("auth", "senior-login");
+  if (!rl.ok) return { ok: false, error: rateLimitMessage(rl.retryAfterSec) };
+
   const parsed = seniorLoginSchema.safeParse({
     username: normalizeUsername(String(formData.get("username") ?? "")),
     password: formData.get("password"),

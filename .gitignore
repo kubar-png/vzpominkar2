@@ -47,3 +47,4 @@ next-env.d.ts
 .vercel
 vzpominkar-project.code-workspace
 .claude/scheduled_tasks.lock
+.env*.local
