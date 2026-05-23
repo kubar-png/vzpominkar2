@@ -78,10 +78,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/brand/logo.png"],
   },
-  icons: {
-    icon: [{ url: "/brand/symbol.png", type: "image/png" }],
-    apple: [{ url: "/brand/symbol.png", type: "image/png" }],
-  },
+  // Icons are auto-detected from app/icon.svg + app/apple-icon.svg (file-based
+  // convention from Next.js App Router). Gold book on a warm brown gradient,
+  // sized as a vector so all screens render crisp.
 };
 
 export default function RootLayout({
