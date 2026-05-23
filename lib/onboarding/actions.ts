@@ -91,6 +91,7 @@ export async function startOnboarding(
   }
 
   // 4) Audit log
+  // Do not put PII or secrets in metadata — visible to every family member via RLS.
   await admin.from("activity_log").insert({
     family_id: family.id,
     actor_id: owner.id,
