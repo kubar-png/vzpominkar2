@@ -4446,6 +4446,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
     flex-shrink: 0;
     width: 320px;
     padding: 24px 24px 24px 0;
+    /* Float to the right edge of the viewport regardless of how wide the
+     * main content column is. Main caps at max-w-[980px]; without this the
+     * stats card sat snug against main and left dead space on the right.
+     * `margin-left: auto` absorbs that dead space so the card's right
+     * padding (24px) matches the card's top inset for a clean inset. */
+    margin-left: auto;
   }
 }
 .vzp-stats-card {
