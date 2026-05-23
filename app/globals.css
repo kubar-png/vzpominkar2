@@ -685,22 +685,19 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   cursor: pointer;
   border: 1.5px solid transparent;
 }
-.editorial .btn-gold { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-.editorial .btn-gold:hover { background: var(--gold-soft); border-color: var(--gold-soft); transform: translateY(-1px); }
-/* EXPERIMENTAL: inverted gold pill — lighter gold by default, darker on hover.
- * Text also deepens on hover (--ink → navy-900) so the darker gold doesn't
- * sap the label's contrast — feels like the button settles into the page
- * instead of fading. Currently applied only to the homepage nav CTA so we
- * can A/B it before rolling out across the site. */
-.editorial .btn-gold.btn-gold-light {
+/* Gold pill — brand primary. Lighter gold by default for stronger label
+ * contrast; darker gold on hover with deeper navy text so the button
+ * 'settles in' instead of fading. Result: AAA contrast in both states. */
+.editorial .btn-gold {
   background: var(--gold-soft);
   border-color: var(--gold-soft);
   color: var(--ink);
 }
-.editorial .btn-gold.btn-gold-light:hover {
+.editorial .btn-gold:hover {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--color-navy-900);
+  transform: translateY(-1px);
 }
 .editorial .btn-outline { border-color: var(--ink); color: var(--ink); background: transparent; }
 .editorial .btn-outline:hover { background: var(--ink); color: var(--bg); }
