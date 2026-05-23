@@ -295,7 +295,7 @@ export default function DarekPage() {
         <div className="container">
           <div className="signup-card">
             <span className="eyebrow">Vyberte den, napište vzkaz</span>
-            <h2>Zbytek roku už řešíme my.</h2>
+            <h2>Darujte Vzpomínkář.</h2>
             <p className="lede">
               Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
               Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv.
