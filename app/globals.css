@@ -1890,6 +1890,47 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .jtf-roles { grid-template-columns: 1fr; }
 }
 
+/* ─── /o-nas — value tiles + team avatars ─── */
+.editorial .onas-values {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(28px, 4vw, 48px) clamp(40px, 6vw, 80px);
+  max-width: 980px;
+  margin: 0 auto;
+}
+.editorial .onas-value { position: relative; padding-left: 0; }
+.editorial .onas-value-numeral {
+  display: block;
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: 32px;
+  color: var(--oxblood);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.editorial .onas-value h3 {
+  font-size: clamp(20px, 2vw, 24px);
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+.editorial .onas-value p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 44ch;
+}
+@media (max-width: 700px) {
+  .editorial .onas-values { grid-template-columns: 1fr; }
+}
+
+.editorial .onas-team-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 30% 25%, #d4b89c 0%, #8b6f4f 80%);
+  margin-bottom: 14px;
+}
+
 /* ─── /faq — page grid: sticky TOC + grouped accordion ─── */
 .editorial .faq-page-grid {
   display: grid;

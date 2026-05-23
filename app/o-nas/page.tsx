@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { buttonVariants } from "@/components/ui/button";
-import { Placeholder } from "@/components/shared/Placeholder";
 
 export const metadata: Metadata = {
-  title: "O nás",
+  title: "Náš příběh",
   description:
     "Vzpomínkář založila parta lidí v Praze, kteří přišli o svoje babičky dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to znovu potkalo jinou rodinu.",
 };
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * /o-nas — full editorial rebuild
+ *
+ * Founder letter uses .story-block.dark (mirrors homepage stack — navy
+ * card with signature + author row). Values use homepage step pattern.
+ * Team uses dark-card-like testimonial grid. Final CTA = signup-card.
+ * ─────────────────────────────────────────────────────────────────────── */
 
 const VALUES = [
   {
@@ -61,57 +67,32 @@ const PEOPLE = [
 export default function ONasPage() {
   return (
     <Shell>
-      {/* Hero */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pt-20 pb-16 sm:pt-28">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              <span className="mr-3 inline-block h-px w-10 align-middle bg-[var(--color-gold-500)]" />
-              O nás
-            </p>
-            <h1
-              className="heritage-press mt-8 max-w-[22ch] font-[family-name:var(--font-display)] text-5xl font-medium leading-[1.05] tracking-tight text-[var(--color-navy-900)] sm:text-6xl"
-              style={{ textWrap: "balance" }}
-            >
-              Založeno proto, <em>aby se vzpomínky neztrácely</em>.
-            </h1>
-            <p className="mt-7 max-w-[54ch] font-[family-name:var(--font-display)] text-lg italic leading-relaxed text-[var(--color-text-muted)] sm:text-xl">
-              Vzpomínkář dělá v Praze parta lidí, kteří přišli o svoje babičky
-              dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to
-              znovu potkalo jinou rodinu.
-            </p>
-          </div>
-          <div data-reveal>
-            <Placeholder
-              kind="image"
-              w={640}
-              h={780}
-              aspect="640/780"
-              label="Foto týmu — Praha · 2025"
-              tone="navy"
-            />
-          </div>
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="hero">
+        <div className="container">
+          <span className="eyebrow">Náš příběh</span>
+          <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
+            Pomalá kniha jednoho života.
+          </h1>
+          <p className="lede">
+            Vzpomínkář dělá v Praze parta lidí, kteří přišli o svoje babičky
+            dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to
+            znovu potkalo jinou rodinu.
+          </p>
         </div>
       </section>
 
-      {/* Founder note — letter style */}
-      <section className="bg-[var(--color-surface)] py-24 sm:py-32">
-        <div className="mx-auto max-w-[var(--container-wide)] px-6">
-          <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
-            <div data-reveal>
-              <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-                <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-500)]" />
-                Slovo zakladatele
-              </p>
-              <h2
-                className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-                style={{ textWrap: "balance" }}
-              >
-                Proč jsme to <em>vůbec začali dělat</em>.
+      {/* ═══════════ FOUNDER LETTER — navy story-block ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="story-block dark" data-reveal>
+            <div className="story-video" aria-hidden />
+            <div>
+              <span className="eyebrow">Slovo zakladatele</span>
+              <h2 style={{ margin: "8px 0 20px" }}>
+                Proč jsme to vůbec začali dělat.
               </h2>
-            </div>
-
-            <div data-reveal className="heritage-dropcap font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text)] sm:text-xl">
               <p>
                 Babička Anna mi v devíti vyprávěla, jak ve čtyřicátém pátém
                 přešla pěšky z Berouna do Plzně. Ve dvanácti to vyprávěla
@@ -121,146 +102,142 @@ export default function ONasPage() {
                 holka. Slíbil jsem to. Jenže jsem si nezapamatoval ani jméno
                 kočky, ani cestu z Berouna.
               </p>
-              <p className="mt-5">
+              <p>
                 Když umřela, zůstaly nám tři fotky a krabice s pohlednicemi
                 od příbuzných, které nikdo neznal. Žádné nahrávky. Žádný
                 rukopis. Žádný způsob, jak její vyprávění vrátit.
               </p>
-              <p className="mt-5">
+              <p>
                 Vzpomínkář jsme rozjeli proto, aby ostatním rodinám nezůstaly
                 jen tři fotky. Aby vzpomínky, které dnes večer otec vypráví
                 u stolu, byly za rok napsané. A za deset let pořád slyšitelné.
               </p>
-              <p
-                className="mt-10 font-[family-name:var(--font-script)] text-4xl leading-none text-[var(--color-navy-900)]"
-                aria-hidden
-              >
-                Jakub Š.
-              </p>
-              <p className="mt-3 text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
-                <span className="sr-only">Jakub Š., </span>zakladatel
-              </p>
+              <div className="signature">Jakub</div>
+              <div className="author-row">
+                <div className="avatar" />
+                <div>
+                  <strong>Jakub Š.</strong>
+                  <br />
+                  <span>Zakladatel, Vzpomínkář</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 py-24 sm:py-28">
-        <div className="grid gap-14 lg:grid-cols-[1fr_2fr]">
-          <div data-reveal>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-              <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-500)]" />
-              Čím se řídíme
-            </p>
-            <h2
-              className="heritage-press mt-6 font-[family-name:var(--font-display)] text-3xl font-medium leading-tight text-[var(--color-navy-900)] sm:text-4xl"
-              style={{ textWrap: "balance" }}
-            >
-              Čtyři pravidla, <em>kterých se držíme</em>.
+      {/* ═══════════ PULL QUOTE — emotional breath ═══════════ */}
+      <section className="pull-quote">
+        <div className="container">
+          <blockquote>
+            Vzpomínky mizí dřív,
+            <br />
+            než si jich všimneme.
+          </blockquote>
+        </div>
+      </section>
+
+      {/* ═══════════ VALUES — four numbered tiles ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Čím se řídíme</span>
+            <h2>
+              Čtyři pravidla,
+              <br />
+              kterých se držíme.
             </h2>
-            <p className="mt-6 max-w-prose text-base leading-relaxed text-[var(--color-text-muted)]">
+            <p className="lede">
               Žádné porady o hodnotách, žádné nástěnky. Jen tohle, dokud
               fungujeme.
             </p>
           </div>
 
-          <dl className="grid gap-x-10 gap-y-12 sm:grid-cols-2">
+          <div className="onas-values">
             {VALUES.map((v) => (
-              <div key={v.n} data-reveal>
-                <dt>
-                  <p className="font-[family-name:var(--font-display)] text-3xl font-medium leading-none text-[var(--color-gold-500)]">
-                    {v.n}
-                  </p>
-                  <p className="mt-4 font-[family-name:var(--font-display)] text-2xl font-medium text-[var(--color-navy-900)]">
-                    {v.h}
-                  </p>
-                </dt>
-                <dd className="mt-3 text-base leading-relaxed text-[var(--color-text-muted)]">
-                  {v.body}
-                </dd>
+              <div key={v.n} className="onas-value" data-reveal>
+                <span className="onas-value-numeral">{v.n}</span>
+                <h3>{v.h}</h3>
+                <p>{v.body}</p>
               </div>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
-      {/* Team */}
-      <section className="bg-[var(--color-navy-900)] py-28 text-[var(--color-paper-100)] sm:py-32">
-        <div className="mx-auto max-w-[var(--container-wide)] px-6">
-          <div className="max-w-2xl">
-            <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-400)]">
-              <span className="mr-3 inline-block h-px w-6 align-middle bg-[var(--color-gold-400)]" />
-              Lidé za knihou
-            </p>
-            <h2
-              className="heritage-press mt-6 font-[family-name:var(--font-display)] text-4xl font-medium leading-tight text-[var(--color-paper-50)] sm:text-5xl"
-              style={{ textWrap: "balance" }}
-            >
-              Malá parta. <em>Velký důraz na detail.</em>
-            </h2>
-          </div>
-
-          <div className="mt-16 grid gap-10 sm:grid-cols-3">
+      {/* ═══════════ TEAM — warm-dark testimonial grid ═══════════ */}
+      <section className="feature-quote dark">
+        <div className="container">
+          <span className="eyebrow">Lidé za knihou</span>
+          <blockquote>
+            Malá parta. Velký důraz na detail.
+          </blockquote>
+          <div className="feature-attr">— Praha, Smíchov</div>
+          <div className="testimonial-grid">
             {PEOPLE.map((p) => (
-              <figure
-                key={p.name}
-                data-reveal
-                className="rounded-[var(--radius-lg)] bg-[var(--color-navy-800)]/40 p-7"
-              >
-                <Placeholder
-                  kind="avatar"
-                  w={120}
-                  h={120}
-                  aspect="1/1"
-                  rounded
-                  label={p.name}
-                  tone="navy"
-                  className="!w-20"
-                />
-                <blockquote className="mt-6 font-[family-name:var(--font-display)] text-base italic leading-snug text-[var(--color-paper-100)]">
-                  &bdquo;{p.quote}&ldquo;
-                </blockquote>
-                <figcaption className="mt-5">
-                  <p className="font-[family-name:var(--font-display)] text-lg text-[var(--color-paper-50)]">
-                    {p.name}
-                  </p>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.28em] text-[var(--color-paper-400)]">
-                    {p.role}
-                  </p>
-                </figcaption>
-              </figure>
+              <article className="testimonial" key={p.name}>
+                <div className="onas-team-avatar" aria-hidden />
+                <h4>{p.name}</h4>
+                <blockquote>„{p.quote}&ldquo;</blockquote>
+                <cite>{p.role}</cite>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footnote / contact */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 py-24 text-center">
-        <div data-reveal>
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-500)]">
-            Sídlo a kontakt
-          </p>
-          <h2
-            className="heritage-press mx-auto mt-6 max-w-[26ch] font-[family-name:var(--font-display)] text-3xl font-medium leading-snug text-[var(--color-navy-900)] sm:text-4xl"
-            style={{ textWrap: "balance" }}
+      {/* ═══════════ TRUST BLOCK — what we promise ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Náš slib</span>
+            <h2>
+              Co u nás vždycky platí.
+            </h2>
+          </div>
+          <ul
+            className="feature-list"
+            style={{ maxWidth: 720, margin: "0 auto" }}
           >
-            Praha &mdash; <em>Smíchov, druhé patro nad knihovnou</em>.
-          </h2>
-          <p className="mx-auto mt-6 max-w-prose text-base leading-relaxed text-[var(--color-text-muted)]">
-            Pošta &nbsp;·&nbsp; e-mail &nbsp;·&nbsp; tlustá obálka s rukopisem.
-            Všechno čteme. Na <Link href="/kontakt" className="text-[var(--color-navy-800)] underline-offset-4 hover:underline">stránce kontakt</Link> najdete přesnou adresu i telefon.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-            <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-              Začít zdarma
-            </Link>
-            <Link
-              href="/jak-to-funguje"
-              className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-            >
-              Jak to funguje →
-            </Link>
+            <li>Lidský korektor čte každou nahrávku, kterou pošleme do tisku.</li>
+            <li>Knihu vážeme ručně v malé tiskárně na Smíchově, ne v zahraničí.</li>
+            <li>Data zpracováváme podle GDPR — žádné AI tréninky, žádné prodávání dál.</li>
+            <li>Když napíšete, ozve se vám člověk, ne chatbot. Většinou do hodiny.</li>
+            <li>Vaše vzpomínky si můžete kdykoliv stáhnout nebo nechat smazat.</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* ═══════════ FINAL CTA ═══════════ */}
+      <section className="signup">
+        <div className="container">
+          <div className="signup-card">
+            <span className="eyebrow">Začněte dnes</span>
+            <h2>Pošlete vašemu blízkému první otázku.</h2>
+            <p className="lede">
+              Pilotní verze je zdarma. Vrácení peněz do 30 dnů.
+            </p>
+            <div style={{ display: "inline-flex", position: "relative" }}>
+              <Link href="/signup" className="btn btn-gold">
+                Začít zdarma <span className="arrow">↗</span>
+              </Link>
+            </div>
+            <p className="signup-disclaimer" style={{ marginTop: 18 }}>
+              Nebo si přečtěte,{" "}
+              <Link
+                href="/jak-to-funguje"
+                style={{
+                  color: "var(--gold-soft)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 4,
+                }}
+              >
+                jak to celé funguje
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>
