@@ -42,14 +42,14 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
         {/* Hero — life-years covered (only if AI extracted something reliable) */}
         {hero ? (
           <header className="vzp-stats-hero">
-            <p className="vzp-stats-eyebrow">Pokrýváte</p>
+            <p className="vzp-stats-eyebrow">Vzpomínáte na</p>
             <p className="vzp-stats-num-hero">
               {hero.span} <span>let</span>
             </p>
             <p className="vzp-stats-hero-sub">jejich života</p>
             {stats.oldestStoryLabel ? (
               <p className="vzp-stats-hero-meta">
-                Od „{stats.oldestStoryLabel}“ až dodnes
+                Od {stats.oldestStoryLabel.toLowerCase()} až dodnes
               </p>
             ) : (
               <p className="vzp-stats-hero-meta">
@@ -59,11 +59,11 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           </header>
         ) : (
           <header className="vzp-stats-hero">
-            <p className="vzp-stats-eyebrow">Vašich vzpomínek</p>
+            <p className="vzp-stats-eyebrow">Zatím máte</p>
             <p className="vzp-stats-num-hero">
-              {stats.memoryCount}
+              {stats.memoryCount} <span>{pluralMemory(stats.memoryCount)}</span>
             </p>
-            <p className="vzp-stats-hero-sub">zaznamenaných</p>
+            <p className="vzp-stats-hero-sub">v knize</p>
           </header>
         )}
 
@@ -73,34 +73,34 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           <li>
             <span className="vzp-stats-num">~{stats.approxBookPages}</span>
             <span className="vzp-stats-label">
-              {pluralPages(stats.approxBookPages)} knihy hotových
+              {pluralPages(stats.approxBookPages)} v hotové knize
             </span>
           </li>
           {stats.audioSecondsTotal > 0 ? (
             <li>
               <span className="vzp-stats-num">{audioLabel}</span>
-              <span className="vzp-stats-label">jejich hlasu uloženo</span>
+              <span className="vzp-stats-label">jejich vyprávění</span>
             </li>
           ) : null}
           <li>
             <span className="vzp-stats-num">{formatThousands(stats.wordsTotal)}</span>
             <span className="vzp-stats-label">
-              {pluralWords(stats.wordsTotal)} zachycených
+              {pluralWords(stats.wordsTotal)} v knize
             </span>
           </li>
           <li>
             <span className="vzp-stats-num">{stats.weeksSinceStart}.</span>
             <span className="vzp-stats-label">
-              {pluralWeek(stats.weeksSinceStart)} sbírání
+              {pluralWeek(stats.weeksSinceStart)} vašeho sběru
             </span>
           </li>
           {stats.weekStreak >= 2 ? (
             <li>
               <span className="vzp-stats-num vzp-stats-num-warm">
-                {stats.weekStreak}×
+                {stats.weekStreak}
               </span>
               <span className="vzp-stats-label">
-                {pluralWeek(stats.weekStreak)} v řadě bez přestávky
+                {pluralWeek(stats.weekStreak)} v řadě
               </span>
             </li>
           ) : null}
@@ -108,7 +108,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
 
         {stats.startedAt ? (
           <p className="vzp-stats-footer">
-            Začali jste {formatStartedAt(stats.startedAt)}.
+            Spolu od {formatStartedAt(stats.startedAt)}
           </p>
         ) : null}
       </div>
@@ -136,6 +136,12 @@ function pluralWeek(n: number): string {
   if (n === 1) return "týden";
   if (n >= 2 && n <= 4) return "týdny";
   return "týdnů";
+}
+
+function pluralMemory(n: number): string {
+  if (n === 1) return "vzpomínku";
+  if (n >= 2 && n <= 4) return "vzpomínky";
+  return "vzpomínek";
 }
 
 function formatStartedAt(iso: string): string {

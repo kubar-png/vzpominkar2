@@ -4498,12 +4498,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .vzp-stats-hero { margin: 0 0 8px; }
 .vzp-stats-eyebrow {
   font-family: var(--font-body-editorial);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: rgba(237, 228, 207, 0.7);
+  margin: 0 0 12px;
 }
 .vzp-stats-num-hero {
   font-family: var(--font-display-editorial);
@@ -4580,12 +4580,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .vzp-stats-label {
   font-family: var(--font-body-editorial);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(237, 228, 207, 0.7);
-  line-height: 1.3;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: rgba(237, 228, 207, 0.72);
+  line-height: 1.35;
 }
 .vzp-stats-footer {
   margin: 22px 0 0;
