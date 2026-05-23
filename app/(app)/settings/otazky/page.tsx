@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
+import { EmptyState } from "@/components/app/EmptyState";
 import { DeliveryForm } from "./delivery-form";
 
 export const metadata: Metadata = { title: "Nastavení otázek" };
@@ -40,10 +40,10 @@ export default async function OtazkySettingsPage() {
       <div>
         <Link
           href="/settings"
-          className="mb-4 inline-flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-navy-700)]"
         >
-          <ArrowLeft size={12} />
-          Zpět na nastavení
+          <ArrowLeft size={14} aria-hidden />
+          Nastavení
         </Link>
         <AppPageHeader
           title="Nastavení otázek"
@@ -56,35 +56,41 @@ export default async function OtazkySettingsPage() {
           Nejprve dokončete registraci a přidejte blízkého.
         </p>
       ) : seniors.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-[var(--color-text-muted)]">
-            Zatím žádný blízký.{" "}
+        <EmptyState
+          icon={<UserPlus size={18} aria-hidden />}
+          title="Zatím žádný blízký"
+          description="Přidejte blízkého — pak se zde objeví jeho doručovací nastavení."
+          action={
             <Link
               href={`/family/${owner.familyId}/rodina`}
-              className="underline underline-offset-2 hover:text-[var(--color-text)]"
+              className="inline-flex h-10 items-center rounded-full bg-[var(--color-gold-500)] px-5 text-sm font-semibold text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)]"
             >
               Přidat blízkého
+              <span aria-hidden className="ml-1">↗</span>
             </Link>
-          </CardContent>
-        </Card>
+          }
+        />
       ) : (
         <div className="space-y-6">
           {seniors.map((senior) => (
-            <Card key={senior.id}>
-              <CardHeader>
-                <CardTitle className="font-[family-name:var(--font-display)] text-xl">
+            <section
+              key={senior.id}
+              className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white"
+            >
+              <header className="border-b border-[var(--color-border)] px-5 py-4 md:px-6">
+                <p className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
                   {senior.display_name ?? "Blízký"}
-                </CardTitle>
+                </p>
                 {senior.senior_role ? (
-                  <CardDescription className="text-xs font-medium uppercase tracking-widest text-[var(--color-gold-500)]">
+                  <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
                     {senior.senior_role}
-                  </CardDescription>
+                  </p>
                 ) : null}
-              </CardHeader>
-              <CardContent>
+              </header>
+              <div className="p-5 md:p-6">
                 <DeliveryForm familyId={owner.familyId!} senior={senior} />
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           ))}
 
           <p className="text-xs text-[var(--color-text-subtle)]">

@@ -6,7 +6,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
-import { BookProgressCard } from "@/components/app/BookProgressCard";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MemoryFeed } from "./memory-feed";
@@ -51,7 +50,6 @@ export default async function DashboardPage() {
     { data: rawMemories },
     { data: rawSeniors },
     { data: rawNext },
-    { count: publishedCount },
   ] = await Promise.all([
     supabase
       .from("memories")
@@ -95,11 +93,6 @@ export default async function DashboardPage() {
         senior_id: string | null;
         prompts: { question: string } | null;
       }[]>(),
-    supabase
-      .from("memories")
-      .select("id", { count: "exact", head: true })
-      .eq("family_id", owner.familyId)
-      .eq("status", "published"),
   ]);
 
   const list = rawMemories ?? [];
@@ -205,11 +198,9 @@ export default async function DashboardPage() {
         onlySeniorFirstName={firstName}
       />
 
-      <BookProgressCard familyId={owner.familyId} count={publishedCount ?? 0} />
-
-      <div className="space-y-6">
-        <div className="flex items-end justify-between gap-4 border-b border-[var(--color-border)] pb-2">
-          <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal tracking-tight text-[var(--color-navy-900)]">
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
             Poslední vzpomínky
           </h2>
           <Link

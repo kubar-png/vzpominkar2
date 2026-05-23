@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
-import { Card, CardContent } from "@/components/ui/card";
 import { FormSection } from "@/components/ui/form-section";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { DisplayNameForm } from "./display-name-form";
@@ -15,51 +14,60 @@ export default async function SettingsPage() {
   const owner = await requireOwner();
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <AppPageHeader
         title="Nastavení"
-        description="Jak se vám rodina v aplikaci představuje a jak chodí otázky."
+        description="Jak se vám rodina v aplikaci představuje."
       />
 
+      {/* Cross-link to delivery settings — quiet row, not a CTA. */}
       <Link
         href="/settings/otazky"
-        className="flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-navy-50)] px-5 py-4 transition-colors hover:border-[var(--color-navy-300)] hover:bg-[var(--color-navy-100)]/60"
+        className="group flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white px-5 py-4 transition-colors hover:border-[var(--color-paper-300)]"
       >
         <div className="flex items-center gap-3">
-          <MessageSquare size={16} className="text-[var(--color-navy-700)]" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-paper-100)] text-[var(--color-navy-700)]">
+            <MessageSquare size={16} aria-hidden />
+          </span>
           <div>
-            <p className="text-sm font-medium text-[var(--color-navy-900)]">Nastavení otázek</p>
-            <p className="text-xs text-[var(--color-text-muted)]">Kam a jak často posílat otázky blízkému</p>
+            <p className="text-[15px] font-semibold text-[var(--color-navy-900)]">
+              Nastavení otázek
+            </p>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Kam a jak často posílat otázky blízkému.
+            </p>
           </div>
         </div>
-        <ChevronRight size={16} className="text-[var(--color-text-subtle)]" />
+        <ChevronRight
+          size={16}
+          className="text-[var(--color-text-subtle)] transition-transform group-hover:translate-x-0.5"
+          aria-hidden
+        />
       </Link>
 
-      <Card>
-        <CardContent className="space-y-8 p-6">
-          <FormSection
-            title="Vaše jméno"
-            description="Jak vás aplikace osloví v přehledu a v emailech."
-            hideDivider
-          >
-            <DisplayNameForm initial={owner.displayName ?? ""} />
-          </FormSection>
+      <section className="space-y-6 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-5 md:p-6">
+        <FormSection
+          title="Vaše jméno"
+          description="Jak vás aplikace osloví v přehledu a v e-mailech."
+          hideDivider
+        >
+          <DisplayNameForm initial={owner.displayName ?? ""} />
+        </FormSection>
 
-          <FormSection
-            title="E-mail"
-            description={`Aktuální adresa: ${owner.email ?? "—"}`}
-          >
-            <EmailForm current={owner.email ?? null} />
-          </FormSection>
+        <FormSection
+          title="E-mail"
+          description={`Aktuální adresa: ${owner.email ?? "—"}`}
+        >
+          <EmailForm current={owner.email ?? null} />
+        </FormSection>
 
-          <FormSection
-            title="Heslo"
-            description="Nové heslo musí mít alespoň 10 znaků. Po uložení vás Vzpomínkář ponechá přihlášené."
-          >
-            <PasswordForm />
-          </FormSection>
-        </CardContent>
-      </Card>
+        <FormSection
+          title="Heslo"
+          description="Nové heslo musí mít alespoň 10 znaků. Po uložení zůstanete přihlášeni."
+        >
+          <PasswordForm />
+        </FormSection>
+      </section>
     </div>
   );
 }

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/app/EmptyState";
 import { cn } from "@/lib/utils";
 import { MemoryCard } from "./memory-card";
 import type { MemoryItem, SeniorOption } from "./page";
@@ -28,22 +29,19 @@ export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
 
   if (memories.filter((m) => m.status === "published").length === 0) {
     return (
-      <Card>
-        <CardContent className="space-y-4 py-16 text-center">
-          <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-navy-900)]">
-            Zatím žádné vzpomínky
-          </p>
-          <p className="text-[var(--color-text-muted)]">
-            Váš blízký ještě neodpověděl na žádnou otázku.
-          </p>
+      <EmptyState
+        icon={<MessageSquare size={18} aria-hidden />}
+        title="Zatím žádné vzpomínky"
+        description="Váš blízký ještě neodpověděl na žádnou otázku."
+        action={
           <Link
             href={`/family/${familyId}/prompts`}
-            className={cn(buttonVariants({ variant: "secondary", size: "sm" }), "mt-2")}
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             Naplánovat první otázku
           </Link>
-        </CardContent>
-      </Card>
+        }
+      />
     );
   }
 
@@ -96,10 +94,10 @@ function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors",
+        "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
         active
-          ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-          : "bg-[var(--color-paper-200)] text-[var(--color-text-muted)] hover:bg-[var(--color-paper-300)]",
+          ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
+          : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
       )}
     >
       {children}

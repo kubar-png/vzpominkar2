@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Heart, Search, X } from "lucide-react";
+import { Archive, Heart, Search, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/input";
+import { EmptyState } from "@/components/app/EmptyState";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { cn } from "@/lib/utils";
 
@@ -74,23 +75,18 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
 
   if (empty) {
     return (
-      <Card>
-        <CardContent className="space-y-3 py-16 text-center">
-          <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-navy-900)]">
-            Zatím žádné vzpomínky
-          </p>
-          <p className="text-[var(--color-text-muted)]">
-            Až váš blízký nahraje první vzpomínku, ukáže se tady.
-          </p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={<Archive size={18} aria-hidden />}
+        title="Archiv je zatím prázdný"
+        description="Až váš blízký nahraje první vzpomínku, ukáže se zde."
+      />
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Filter / search bar */}
-      <div className="space-y-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-paper-50)] p-4">
+      {/* Filter / search bar — cream tray, white input inside per DESIGN.md */}
+      <div className="space-y-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-paper-100)] p-3 md:p-4">
         {/* Search */}
         <div className="relative">
           <Search
@@ -103,7 +99,7 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Hledat ve vzpomínkách…"
-            className="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white py-2 pl-9 pr-9 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+            className="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white py-2.5 pl-9 pr-9 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
           />
           {query ? (
             <button
@@ -274,10 +270,10 @@ function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors",
+        "inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors",
         active
-          ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-          : "bg-[var(--color-paper-200)] text-[var(--color-text-muted)] hover:bg-[var(--color-paper-300)]",
+          ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
+          : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
       )}
     >
       {icon}
