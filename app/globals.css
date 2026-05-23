@@ -1084,16 +1084,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   opacity: 0.85;
 }
 
-/* ─── Section divider ─── */
+/* ─── Section divider ─── (spacer-only — the typographic asterism was
+ * removed; keeping the rule so .divider markup still provides vertical
+ * rhythm between sections.) */
 .editorial .divider {
-  text-align: center;
   padding: clamp(56px, 8vw, 96px) 0 clamp(8px, 1vw, 16px);
-  color: var(--oxblood);
-  font-family: var(--font-display-editorial);
-  font-size: 24px;
-  letter-spacing: 0.4em;
 }
-.editorial .divider::before { content: '⁂'; }
 
 /* ─── Sections ─── */
 .editorial .section { padding: clamp(60px, 9vw, 120px) 0; }
