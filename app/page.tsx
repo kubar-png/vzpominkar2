@@ -505,15 +505,34 @@ export default function HomePage() {
                 <div>
                   <h2>Náš příběh</h2>
                   <p>
-                    Když mojí babičce bylo osmdesát, začal jsem ji nahrávat.
-                    Telefonem, pod stolem, ať nevidí. Měl jsem strach, že
-                    zapomenu, jak se směje, jak skládá věty, jak mluví
-                    o válce.
+                    Vzpomínkář není nový nápad. V devatenáctém století měla
+                    skoro každá rodina svou knihu. Kožený hřbet, papír
+                    s vodoznakem, pero namáčené do kalamáře. Zapisovaly se
+                    křty, svatby, smrti. Roky úrody i hladu. Kdo narukoval.
+                    Kdo se vrátil. Co bylo v rozhlase, když přišel Mnichov.
                   </p>
                   <p>
-                    Po roce jsem měl třicet hodin nahrávek a žádný způsob, jak
-                    z nich udělat něco, co se dá podržet v ruce. Tak vznikl
-                    Vzpomínkář.
+                    Kniha putovala z generace na generaci. Přežila habsburskou
+                    monarchii. Přežila dvě světové. Někdy ji rodina ztratila
+                    při útěku, někdy shořela s domem. Většinou ale dorazila.
+                  </p>
+                  <p>
+                    Zlomilo to teprve poválečné Československo. Statky padly,
+                    gruntovní knihy ztratily smysl. Z kuchyňských stolů, kde
+                    se večer vyprávělo, se staly paneláky se sedačkou před
+                    televizí. Příběhy si zařídily nový režim: prošly vzduchem
+                    a zmizely. Za jednu generaci jsme zapomněli, jak se to dělá.
+                  </p>
+                  <p>
+                    Když mojí babičce bylo osmdesát, začal jsem ji nahrávat.
+                    Telefonem, pod stolem, ať nevidí. Bál jsem se, že
+                    zapomenu, jak zní. Po roce jsem měl třicet hodin záznamu
+                    a žádný způsob, jak z nich udělat něco, co se dá podržet
+                    v ruce.
+                  </p>
+                  <p>
+                    Tak vznikl Vzpomínkář. Stará tradice, jen s pojistkou
+                    proti ohni a povodni. A s hlasem u každé kapitoly.
                   </p>
                   <div className="signature">Jakub</div>
                   <div className="author-row">
