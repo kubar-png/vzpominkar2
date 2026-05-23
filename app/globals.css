@@ -10,6 +10,196 @@ html { scroll-behavior: smooth; }
   html { scroll-behavior: auto; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Motion system — scroll reveals + hero page-load + microinteractions
+ *
+ * `[data-reveal]` baseline: invisible, nudged down 24px. Once
+ * IntersectionObserver adds `is-revealed`, the element transitions to
+ * neutral. Stagger via `data-reveal-delay-{n}` (n = 50…600). Variant
+ * `data-reveal-variant="scale"` adds a 0.96 → 1 scale on top.
+ *
+ * Hero animates on page-load via CSS keyframes (no JS observer wait — must
+ * be visible immediately, even if JS is slow to hydrate).
+ *
+ * All of this is hard-killed for users who prefer reduced motion.
+ * ─────────────────────────────────────────────────────────────────────── */
+
+@keyframes vzp-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes vzp-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Scroll-in reveals — keyframe animations (not transitions) so the entrance
+ * doesn't collide with per-element hover transforms that come later. After
+ * the keyframe finishes, fill-mode 'both' keeps the element at its end
+ * state and hover rules take over from there. */
+@keyframes vzp-reveal-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes vzp-reveal-scale {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  will-change: opacity, transform;
+}
+[data-reveal-variant="scale"] {
+  transform: translateY(24px) scale(0.96);
+}
+[data-reveal].is-revealed {
+  animation: vzp-reveal-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-reveal-variant="scale"].is-revealed {
+  animation: vzp-reveal-scale 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-reveal-delay-50].is-revealed  { animation-delay: 50ms; }
+[data-reveal-delay-100].is-revealed { animation-delay: 100ms; }
+[data-reveal-delay-150].is-revealed { animation-delay: 150ms; }
+[data-reveal-delay-200].is-revealed { animation-delay: 200ms; }
+[data-reveal-delay-250].is-revealed { animation-delay: 250ms; }
+[data-reveal-delay-300].is-revealed { animation-delay: 300ms; }
+[data-reveal-delay-400].is-revealed { animation-delay: 400ms; }
+[data-reveal-delay-500].is-revealed { animation-delay: 500ms; }
+[data-reveal-delay-600].is-revealed { animation-delay: 600ms; }
+
+/* Hero — page-load animation (no observer needed; above the fold) */
+.editorial .hero .eyebrow      { animation: vzp-rise 600ms cubic-bezier(0.16, 1, 0.3, 1)   0ms both; }
+.editorial .hero h1            { animation: vzp-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both; }
+.editorial .hero .lede         { animation: vzp-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both; }
+.editorial .hero .hero-cta     { animation: vzp-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) 320ms both; }
+.editorial .hero .book-stage   { animation: vzp-fade 1200ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both; }
+.editorial .hero .bg-wordmark  { animation: vzp-fade 1400ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both; }
+.editorial .press-strip,
+.editorial .press {
+  animation: vzp-fade 800ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both;
+}
+
+/* ─── Microinteractions ─── */
+
+/* Gold + outline buttons: subtle lift on hover */
+.editorial .btn {
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms ease,
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+.editorial .btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -10px rgba(168, 35, 31, 0.28);
+}
+.editorial .btn-gold:active { transform: translateY(0); }
+.editorial .btn-outline:hover { transform: translateY(-2px); }
+.editorial .btn-outline:active { transform: translateY(0); }
+
+/* Subtle card lift — testimonials, steps, contact cards, value tiles, etc. */
+.editorial .testimonial,
+.editorial .step,
+.editorial .kontakt-card,
+.editorial .onas-value,
+.editorial .darek-step,
+.editorial .cenik-card,
+.editorial .faq-cat,
+.editorial .babybook-chapter,
+.editorial .story-card {
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+.editorial .step:hover,
+.editorial .kontakt-card:hover,
+.editorial .onas-value:hover,
+.editorial .darek-step:hover,
+.editorial .babybook-chapter:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px -18px rgba(14, 59, 100, 0.18);
+}
+.editorial .dark .testimonial:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px -18px rgba(0, 0, 0, 0.4);
+}
+
+/* FAQ summary toggle — gold circle scales on hover */
+.editorial .faq-item summary {
+  transition: color 200ms ease;
+}
+.editorial .faq-item summary:hover::after {
+  transform: scale(1.08);
+}
+.editorial .faq-item[open] summary:hover::after {
+  transform: rotate(135deg) scale(1.08);
+}
+
+/* Footer links — underline expands left-to-right on hover */
+.editorial .footer a,
+.editorial .editorial-footer a {
+  position: relative;
+  display: inline-block;
+}
+.editorial .footer a::after,
+.editorial .editorial-footer a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.7;
+}
+.editorial .footer a:hover::after,
+.editorial .editorial-footer a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Honor reduced-motion preference — kill all of the above */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-variant] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .editorial .hero .eyebrow,
+  .editorial .hero h1,
+  .editorial .hero .lede,
+  .editorial .hero .hero-cta,
+  .editorial .hero .book-stage,
+  .editorial .hero .bg-wordmark,
+  .editorial .press,
+  .editorial .press-strip {
+    animation: none !important;
+  }
+  .editorial .btn,
+  .editorial .testimonial,
+  .editorial .step,
+  .editorial .kontakt-card,
+  .editorial .onas-value,
+  .editorial .darek-step,
+  .editorial .cenik-card,
+  .editorial .faq-cat,
+  .editorial .babybook-chapter,
+  .editorial .story-card,
+  .editorial .faq-item summary,
+  .editorial .footer a,
+  .editorial .editorial-footer a {
+    transition: none !important;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Editorial direction (M3 — vzpominkar2 reskin)
  *

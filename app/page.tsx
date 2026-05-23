@@ -171,12 +171,12 @@ export default function HomePage() {
         <div className="divider" />
         <section className="section" id="jak">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Jak to funguje</span>
               <h2>Jednoduchý týdenní rituál.</h2>
             </div>
             <div className="steps">
-              <div className="step">
+              <div className="step" data-reveal>
                 <div className="step-photo" />
                 <div className="step-label">I.</div>
                 <h3>Vyberete otázky</h3>
@@ -186,7 +186,7 @@ export default function HomePage() {
                   příhodu, kterou si pamatujete.
                 </p>
               </div>
-              <div className="step">
+              <div className="step" data-reveal data-reveal-delay-100>
                 <div className="step-photo tone-2" />
                 <div className="step-label">II.</div>
                 <h3>Blízký odpoví</h3>
@@ -196,7 +196,7 @@ export default function HomePage() {
                   žádná hesla.
                 </p>
               </div>
-              <div className="step">
+              <div className="step" data-reveal data-reveal-delay-200>
                 <div className="step-photo tone-3" />
                 <div className="step-label">III.</div>
                 <h3>Vyhladíme přepis</h3>
@@ -206,7 +206,7 @@ export default function HomePage() {
                   podíváte před tiskem.
                 </p>
               </div>
-              <div className="step">
+              <div className="step" data-reveal data-reveal-delay-300>
                 <div className="step-photo tone-4" />
                 <div className="step-label">IV.</div>
                 <h3>Vytiskneme knihu</h3>
@@ -217,7 +217,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            <div className="section-cta">
+            <div className="section-cta" data-reveal data-reveal-delay-200>
               <p>Od první otázky po hotovou knihu — celá cesta v detailech.</p>
               <a href="/jak-to-funguje" className="btn btn-outline">
                 Celý proces <span className="arrow">↗</span>
@@ -229,7 +229,7 @@ export default function HomePage() {
         {/* ═══════════ 3b. QUESTION DECK ═══════════ */}
         <section className="section question-deck-section">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Otázky z knihovny</span>
               <h2 className="q-deck-title">
                 Co všechno nevíte
@@ -242,10 +242,12 @@ export default function HomePage() {
                 otevírá kapitolu, na kterou by jinak nikdy nepřišla řeč.
               </p>
             </div>
-            <QuestionDeck
-              questions={DECK_QUESTIONS}
-              totalCount={300}
-            />
+            <div data-reveal data-reveal-delay-200>
+              <QuestionDeck
+                questions={DECK_QUESTIONS}
+                totalCount={300}
+              />
+            </div>
           </div>
         </section>
 
@@ -253,14 +255,14 @@ export default function HomePage() {
         <section className="product" id="produkt">
           <div className="container">
             <div className="product-grid">
-              <div>
+              <div data-reveal data-reveal-variant="scale">
                 <div className="product-img">
                   <span className="product-img-label">
                     Kniha životních příběhů — ručně vázaná
                   </span>
                 </div>
               </div>
-              <div className="product-copy">
+              <div className="product-copy" data-reveal data-reveal-delay-150>
                 <span className="eyebrow">Produkt</span>
                 <h2>Vázaná kniha s hlasem na každé stránce.</h2>
                 <p className="lede">
@@ -297,12 +299,14 @@ export default function HomePage() {
         <div className="divider" />
         <section className="feature-quote dark">
           <div className="container">
-            <span className="eyebrow">Píše o nás Forbes CZ</span>
-            <blockquote>
+            <span className="eyebrow" data-reveal>Píše o nás Forbes CZ</span>
+            <blockquote data-reveal data-reveal-delay-100>
               „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&rdquo;
             </blockquote>
-            <div className="feature-attr">— Forbes CZ, podzim 2026</div>
-            <TestimonialCarousel items={FORBES_TESTIMONIALS} />
+            <div className="feature-attr" data-reveal data-reveal-delay-200>— Forbes CZ, podzim 2026</div>
+            <div data-reveal data-reveal-delay-300>
+              <TestimonialCarousel items={FORBES_TESTIMONIALS} />
+            </div>
           </div>
         </section>
 
@@ -310,7 +314,7 @@ export default function HomePage() {
         <div className="divider" />
         <section className="qr-section">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Hlas v knize</span>
               <h2>
                 Jejich hlas.
@@ -323,7 +327,7 @@ export default function HomePage() {
                 věty.
               </p>
             </div>
-            <div className="book-mockup">
+            <div className="book-mockup" data-reveal data-reveal-variant="scale" data-reveal-delay-200>
               <div className="book">
                 <div className="book-page">
                   <p className="book-eyebrow">Kapitola 4</p>
@@ -360,7 +364,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="qr-cta">
+            <div className="qr-cta" data-reveal data-reveal-delay-300>
               <a href="/jak-to-funguje" className="btn btn-outline">
                 Podívat se dovnitř knihy <span className="arrow">↗</span>
               </a>
@@ -371,7 +375,7 @@ export default function HomePage() {
         {/* ═══════════ 7. STORY GALLERY ═══════════ */}
         <section className="gallery">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Co píší rodiny</span>
               <h2>
                 Padesát let paměti,
@@ -383,7 +387,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="gallery-grid">
-              <article className="story-card">
+              <article className="story-card" data-reveal>
                 <div className="story-photo">
                   <span className="story-role">Vyprávěla</span>
                   <span className="story-play" />
@@ -396,7 +400,7 @@ export default function HomePage() {
                   <cite>Marie V., 78 let, Třebíč</cite>
                 </div>
               </article>
-              <article className="story-card">
+              <article className="story-card" data-reveal data-reveal-delay-100>
                 <div className="story-photo tone-2">
                   <span className="story-role">Koupila mámě</span>
                   <span className="story-play" />
@@ -409,7 +413,7 @@ export default function HomePage() {
                   <cite>Jana M., dcera, Brno</cite>
                 </div>
               </article>
-              <article className="story-card">
+              <article className="story-card" data-reveal data-reveal-delay-200>
                 <div className="story-photo tone-3">
                   <span className="story-role">Koupila tátovi</span>
                   <span className="story-play" />
@@ -421,7 +425,7 @@ export default function HomePage() {
                   <cite>Pavla W., dcera, Plzeň</cite>
                 </div>
               </article>
-              <article className="story-card">
+              <article className="story-card" data-reveal data-reveal-delay-300>
                 <div className="story-photo tone-4">
                   <span className="story-role">Pro vnoučata</span>
                   <span className="story-play" />
@@ -441,7 +445,7 @@ export default function HomePage() {
         {/* ═══════════ 8. NO WRITING DARK CARD ═══════════ */}
         <section className="no-writing">
           <div className="container">
-            <div className="dark-card">
+            <div className="dark-card" data-reveal data-reveal-variant="scale">
               <div className="dark-card-photo" />
               <div className="dark-card-content">
                 <h2>
@@ -475,7 +479,7 @@ export default function HomePage() {
         <div className="divider" />
         <section className="tech">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Technologie</span>
               <h2>Mluvené slovo, otištěné na papír.</h2>
               <p className="lede">
@@ -484,8 +488,8 @@ export default function HomePage() {
                 upravit, zkrátit, doplnit. Nikdy nepřepsat.
               </p>
             </div>
-            <div className="tech-img" />
-            <a href="/jak-to-funguje" className="arrow-link">
+            <div className="tech-img" data-reveal data-reveal-variant="scale" data-reveal-delay-200 />
+            <a href="/jak-to-funguje" className="arrow-link" data-reveal data-reveal-delay-300>
               Ukázka přepisu
             </a>
           </div>
@@ -496,7 +500,7 @@ export default function HomePage() {
           <div className="container">
             <div className="stack-grid">
               {/* 11a. Founder story */}
-              <div className="story-block dark">
+              <div className="story-block dark" data-reveal data-reveal-variant="scale">
                 <div className="story-video" />
                 <div>
                   <h2>Náš příběh</h2>
@@ -529,7 +533,7 @@ export default function HomePage() {
               </div>
 
               {/* 11b. Gift delivery */}
-              <div className="gift-block">
+              <div className="gift-block" data-reveal data-reveal-variant="scale" data-reveal-delay-100>
                 <div>
                   <span className="eyebrow">Dárek</span>
                   <h2>
@@ -551,7 +555,7 @@ export default function HomePage() {
 
               {/* 11c. Companion cards */}
               <div className="companion-grid">
-                <a href="/darek" className="companion-card">
+                <a href="/darek" className="companion-card" data-reveal>
                   <span className="arrow-icon">↗</span>
                   <h3>Dárkový certifikát</h3>
                   <p>
@@ -560,7 +564,7 @@ export default function HomePage() {
                   </p>
                   <div className="companion-img" />
                 </a>
-                <a href="/babybook" className="companion-card">
+                <a href="/babybook" className="companion-card" data-reveal data-reveal-delay-100>
                   <span className="arrow-icon">↗</span>
                   <h3>Babybook</h3>
                   <p>
@@ -577,7 +581,7 @@ export default function HomePage() {
         {/* ═══════════ 12. FAQ ═══════════ */}
         <section className="faq" id="faq">
           <div className="container">
-            <div className="section-head">
+            <div className="section-head" data-reveal>
               <span className="eyebrow">Časté otázky</span>
               <h2>
                 Na co se nás
@@ -586,7 +590,7 @@ export default function HomePage() {
               </h2>
             </div>
             <div className="faq-list">
-              <details className="faq-item" open>
+              <details className="faq-item" open data-reveal>
                 <summary>
                   Zvládne to babička, která nikdy nepoužívala chytrý telefon?
                 </summary>
@@ -598,7 +602,7 @@ export default function HomePage() {
                   funguje to.
                 </div>
               </details>
-              <details className="faq-item">
+              <details className="faq-item" data-reveal data-reveal-delay-50>
                 <summary>
                   Co když maminka jeden týden vyprávět nestihne?
                 </summary>
@@ -609,7 +613,7 @@ export default function HomePage() {
                   povinnost.
                 </div>
               </details>
-              <details className="faq-item">
+              <details className="faq-item" data-reveal data-reveal-delay-100>
                 <summary>Co všechno je v ceně?</summary>
                 <div className="faq-body">
                   Padesát dva otázek, rok neomezeného nahrávání, jeden výtisk
@@ -618,7 +622,7 @@ export default function HomePage() {
                   stažení a pozvánky pro celou rodinu.
                 </div>
               </details>
-              <details className="faq-item">
+              <details className="faq-item" data-reveal data-reveal-delay-150>
                 <summary>A co bude po roce?</summary>
                 <div className="faq-body">
                   Můžete pokračovat dalším rokem — některé rodiny dělají tři.
@@ -627,7 +631,7 @@ export default function HomePage() {
                   zůstávají vaše.
                 </div>
               </details>
-              <details className="faq-item">
+              <details className="faq-item" data-reveal data-reveal-delay-200>
                 <summary>Můžu upravit, co se v knize objeví?</summary>
                 <div className="faq-body">
                   Před tiskem vám pošleme náhled. Vyberete, které příběhy
@@ -636,7 +640,7 @@ export default function HomePage() {
                   rodina.
                 </div>
               </details>
-              <details className="faq-item">
+              <details className="faq-item" data-reveal data-reveal-delay-250>
                 <summary>Co když Vzpomínkář jednou skončí?</summary>
                 <div className="faq-body">
                   Nahrávky a texty si stáhnete kdykoliv. Kniha je fyzická —
@@ -645,7 +649,7 @@ export default function HomePage() {
                 </div>
               </details>
             </div>
-            <div className="faq-cta">
+            <div className="faq-cta" data-reveal data-reveal-delay-300>
               <a href="/faq" className="arrow-link">
                 Všechny otázky a odpovědi
               </a>
@@ -656,7 +660,7 @@ export default function HomePage() {
         {/* ═══════════ 13. EMAIL CAPTURE ═══════════ */}
         <section className="signup" id="signup">
           <div className="container">
-            <div className="signup-card">
+            <div className="signup-card" data-reveal data-reveal-variant="scale">
               <span className="eyebrow">Ochutnávka — sleva 200 Kč</span>
               <h2>Pošlete jim první otázku zdarma.</h2>
               <p className="lede">
@@ -693,7 +697,7 @@ export default function HomePage() {
       <footer className="editorial-footer">
         <div className="container">
           <div className="footer-grid">
-            <div className="footer-left">
+            <div className="footer-left" data-reveal>
               <h2>
                 Staré příběhy,
                 <br />
@@ -703,7 +707,7 @@ export default function HomePage() {
                 Začít zdarma <span className="arrow">↗</span>
               </a>
             </div>
-            <div className="footer-col">
+            <div className="footer-col" data-reveal data-reveal-delay-100>
               <h4>Procházet</h4>
               <ul>
                 <li>
@@ -728,7 +732,7 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
-            <div className="footer-col">
+            <div className="footer-col" data-reveal data-reveal-delay-200>
               <h4>Dárek</h4>
               <ul>
                 <li>

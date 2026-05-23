@@ -4,6 +4,7 @@ import { Instrument_Sans, Caveat, Outfit, Vollkorn, Inter } from "next/font/goog
 import "./globals.css";
 import { CookieConsent } from "@/components/shared/CookieConsent";
 import { SmoothScroll } from "@/components/marketing/SmoothScroll";
+import { RevealObserver } from "@/components/marketing/RevealObserver";
 
 /* PP Pangaia — display serif. Licensed OTFs live in /public/fonts/.
  * This is the new editorial display face that replaces Vollkorn on the
@@ -100,6 +101,7 @@ export default function RootLayout({
         {children}
         <CookieConsent />
         <SmoothScroll />
+        <RevealObserver />
       </body>
     </html>
   );
