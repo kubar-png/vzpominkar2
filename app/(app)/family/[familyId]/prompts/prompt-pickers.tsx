@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LibraryPicker } from "./library-picker";
 import { CustomPromptForm } from "./custom-prompt-form";
 
@@ -44,72 +43,74 @@ export function PromptPickers({
   return (
     <div className="space-y-10">
       {seniors.length > 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Pro koho?</CardTitle>
-            <CardDescription>Vyberte, komu se otázka zařadí nebo odešle.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {seniors.map((s) => {
-                const selected = selectedIds.includes(s.id);
-                return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => toggle(s.id)}
-                    className={cn(
-                      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                      selected
-                        ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-                        : "border border-[var(--color-border-strong)] text-[var(--color-text-muted)] hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]",
-                    )}
-                  >
-                    {s.displayName ?? "Blízký"}
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        <section className="space-y-3">
+          <SectionHeading title="Pro koho?" subtitle="Vyberte, komu se otázka zařadí nebo odešle." />
+          <div className="flex flex-wrap gap-2">
+            {seniors.map((s) => {
+              const selected = selectedIds.includes(s.id);
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => toggle(s.id)}
+                  className={cn(
+                    "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
+                    selected
+                      ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
+                      : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
+                  )}
+                >
+                  {s.displayName ?? "Blízký"}
+                </button>
+              );
+            })}
+          </div>
+        </section>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Knihovna otázek</CardTitle>
-          <CardDescription>
-            Vyberte z 30+ připravených otázek. Každá se zařadí na konec rozvrhu (po týdnu).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <LibraryPicker familyId={familyId} groups={groups} seniorIds={selectedIds} />
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeading
+          title="Knihovna otázek"
+          subtitle="Vyberte z připravených otázek - každá se zařadí do fronty (po týdnu)."
+        />
+        <LibraryPicker familyId={familyId} groups={groups} seniorIds={selectedIds} />
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Vlastní otázky</CardTitle>
-          <CardDescription>
-            Přidejte si vlastní - třeba něco velmi osobního, co v knihovně není.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <section className="space-y-4">
+        <SectionHeading
+          title="Vlastní otázka"
+          subtitle="Něco velmi osobního, co v knihovně není."
+        />
+        <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-5 md:p-6">
           <CustomPromptForm familyId={familyId} seniorIds={selectedIds} />
+        </div>
 
-          {customPrompts.length > 0 ? (
-            <ul className="space-y-2">
-              {customPrompts.map((p) => (
-                <li
-                  key={p.id}
-                  className="rounded-[var(--radius-md)] border border-[var(--color-border)] p-3"
-                >
-                  {p.question}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </CardContent>
-      </Card>
+        {customPrompts.length > 0 ? (
+          <ul className="space-y-2">
+            {customPrompts.map((p) => (
+              <li
+                key={p.id}
+                className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-[var(--color-text)]"
+              >
+                {p.question}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
+function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+        {title}
+      </h2>
+      {subtitle ? (
+        <p className="text-sm text-[var(--color-text-muted)]">{subtitle}</p>
+      ) : null}
     </div>
   );
 }

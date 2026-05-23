@@ -24,26 +24,32 @@ export function ScheduledList({
 
   if (upcoming.length === 0) {
     return (
-      <p className="text-sm text-[var(--color-text-muted)]">
+      <p className="px-3 py-4 text-sm text-[var(--color-text-muted)]">
         Zatím nic nenaplánováno. Přidejte otázky z knihovny níže.
       </p>
     );
   }
 
   return (
-    <ul className="divide-y divide-[var(--color-border)]">
-      {upcoming.map((a) => (
-        <li key={a.id} className="flex items-start justify-between gap-4 py-3">
-          <div>
-            <p className="text-sm text-[var(--color-text-muted)]">
+    <ul>
+      {upcoming.map((a, i) => (
+        <li
+          key={a.id}
+          className={[
+            "flex items-start justify-between gap-4 px-3 py-3.5",
+            i > 0 ? "border-t border-[var(--color-border)]" : "",
+          ].join(" ")}
+        >
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 text-xs tabular-nums text-[var(--color-text-muted)]">
               {formatDate(a.scheduledFor)}
               {showSeniorName && a.seniorName ? (
-                <span className="ml-2 rounded-full bg-[var(--color-navy-100)] px-2 py-0.5 text-xs text-[var(--color-navy-800)]">
+                <span className="rounded-full bg-[var(--color-paper-100)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-navy-700)]">
                   {a.seniorName}
                 </span>
               ) : null}
             </p>
-            <p>{a.question}</p>
+            <p className="mt-1 text-sm text-[var(--color-text)]">{a.question}</p>
           </div>
           <button
             type="button"

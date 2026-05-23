@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { scheduleNextMonday, scheduleToday } from "@/lib/prompts/actions";
@@ -49,24 +50,26 @@ export function LibraryPicker({
 
   if (groups.length === 0) {
     return (
-      <p className="text-sm text-[var(--color-text-muted)]">Žádné otázky v knihovně.</p>
+      <p className="text-sm text-[var(--color-text-muted)]">
+        Žádné otázky v knihovně.
+      </p>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Tab bar */}
-      <div className="flex flex-wrap gap-1.5">
+    <div className="space-y-5">
+      {/* Category chips — filter pills per DESIGN.md */}
+      <div className="flex flex-wrap gap-2">
         {groups.map((g) => (
           <button
             key={g.key}
             type="button"
             onClick={() => setActiveTab(g.key)}
             className={cn(
-              "rounded-[var(--radius-md)] px-3 py-1.5 text-xs font-medium tracking-wide transition-colors",
+              "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
               g.key === activeTab
-                ? "bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-                : "border border-[var(--color-border-strong)] text-[var(--color-text-muted)] hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]",
+                ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
+                : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
             )}
           >
             {g.label}
@@ -85,17 +88,23 @@ export function LibraryPicker({
                 className={cn(
                   "flex flex-col gap-3 rounded-[var(--radius-md)] border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between",
                   isAdded
-                    ? "border-[var(--color-navy-200)] bg-[var(--color-navy-50)]"
-                    : "border-[var(--color-border)] bg-[var(--color-surface)]",
+                    ? "border-emerald-200 bg-emerald-50/50"
+                    : "border-[var(--color-border)] bg-white",
                 )}
               >
-                <span className={cn("text-sm leading-relaxed", isAdded && "text-[var(--color-navy-700)]")}>
+                <span
+                  className={cn(
+                    "text-sm leading-relaxed",
+                    isAdded ? "text-emerald-900" : "text-[var(--color-text)]",
+                  )}
+                >
                   {p.question}
                 </span>
 
                 {isAdded ? (
-                  <span className="shrink-0 text-sm font-medium text-[var(--color-navy-700)]">
-                    ✓ Naplánováno
+                  <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-emerald-700">
+                    <Check size={14} aria-hidden />
+                    Naplánováno
                   </span>
                 ) : (
                   <div className="flex shrink-0 gap-2">

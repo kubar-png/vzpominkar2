@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Settings2 } from "lucide-react";
+import { Settings2, Inbox } from "lucide-react";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
-import { BookProgressCard } from "@/components/app/BookProgressCard";
+import { EmptyState } from "@/components/app/EmptyState";
 import { ScheduledList } from "./scheduled-list";
 import { PromptPickers } from "./prompt-pickers";
 
@@ -37,7 +35,7 @@ export default async function PromptsPage({
   const supabase = createAdminClient();
 
   // Fetch seniors and prompts/assignments in parallel
-  const [seniorsResult, assignmentsResult, promptsResult, memoryCountResult] = await Promise.all([
+  const [seniorsResult, assignmentsResult, promptsResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, display_name")
@@ -73,14 +71,7 @@ export default async function PromptsPage({
         is_active: boolean;
         order_index: number;
       }[]>(),
-
-    supabase
-      .from("memories")
-      .select("id", { count: "exact", head: true })
-      .eq("family_id", familyId)
-      .eq("status", "published"),
   ]);
-  const memoryCount = memoryCountResult.count ?? 0;
 
   const seniors = seniorsResult.data ?? [];
   const seniorNameById = new Map(seniors.map((s) => [s.id, s.display_name]));
@@ -117,79 +108,104 @@ export default async function PromptsPage({
   return (
     <div className="space-y-10">
       <AppPageHeader
-        numeral="IV"
-        sectionLabel="Plánování"
         title="Otázky"
-        description="Co se vašich blízkých v které pondělí zeptáme."
+        description="Knihovna otázek pro vašeho blízkého."
         action={
-          <div className="flex items-center gap-3">
-            <BookProgressCard
-              familyId={familyId}
-              count={memoryCount}
-              variant="compact"
-            />
-            <Link
-              href="/settings/otazky"
-              className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
-            >
-              <Settings2 size={14} aria-hidden />
-              <span className="hidden sm:inline">Nastavení doručování</span>
-              <span className="sm:hidden">Nastavení</span>
-            </Link>
-          </div>
+          <Link
+            href="/settings/otazky"
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+          >
+            <Settings2 size={14} aria-hidden />
+            <span className="hidden sm:inline">Nastavení doručování</span>
+            <span className="sm:hidden">Nastavení</span>
+          </Link>
         }
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Naplánované otázky</CardTitle>
-          <CardDescription>
-            {upcoming.length === 0
-              ? "Žádné nezodpovězené otázky. Přidejte další níže."
-              : `${upcoming.length} otázek čeká na vašeho blízkého.`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScheduledList
-            familyId={familyId}
-            upcoming={upcoming}
-            showSeniorName={showSeniorName}
+      {/* Scheduled queue — quiet section heading, not boxed in a card. */}
+      <section className="space-y-4">
+        <SectionHeading
+          title="Naplánované"
+          subtitle={
+            upcoming.length === 0
+              ? "Nic ve frontě. Naplánujte další z knihovny níže."
+              : `${upcoming.length} ${pluralOtazek(upcoming.length)} čeká na vašeho blízkého.`
+          }
+        />
+        {upcoming.length === 0 ? (
+          <EmptyState
+            icon={<Inbox size={18} aria-hidden />}
+            title="Fronta otázek je prázdná"
+            description="Vyberte další z knihovny — odešle se na následující určený den."
           />
-        </CardContent>
-      </Card>
+        ) : (
+          <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-2">
+            <ScheduledList
+              familyId={familyId}
+              upcoming={upcoming}
+              showSeniorName={showSeniorName}
+            />
+          </div>
+        )}
+      </section>
 
+      {/* Answered — collapsed list */}
       {answered.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Zodpovězené otázky</CardTitle>
-            <CardDescription>{answered.length} dokončených - klikněte pro otevření vzpomínky.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="divide-y divide-[var(--color-border)]">
-              {answered.map((a) => (
-                <li key={a.id}>
-                  <Link
-                    href={`/family/${familyId}/memories/${a.answered_memory_id}`}
-                    className="-mx-2 flex items-center justify-between gap-4 rounded-[var(--radius-sm)] px-2 py-3 transition-colors hover:bg-[var(--color-paper-100)]"
-                  >
-                    <span className="text-[var(--color-text-muted)] group-hover:text-[var(--color-navy-900)]">
-                      {a.prompts?.question ?? "(odstraněná otázka)"}
-                    </span>
-                    <Badge tone="navy">Hotovo</Badge>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <section className="space-y-4">
+          <SectionHeading
+            title="Zodpovězené"
+            subtitle={`${answered.length} ${pluralOtazek(answered.length)} - klikněte pro otevření vzpomínky.`}
+          />
+          <ul className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
+            {answered.map((a, i) => (
+              <li
+                key={a.id}
+                className={i > 0 ? "border-t border-[var(--color-border)]" : undefined}
+              >
+                <Link
+                  href={`/family/${familyId}/memories/${a.answered_memory_id}`}
+                  className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-[var(--color-paper-50)]"
+                >
+                  <span className="min-w-0 truncate text-sm text-[var(--color-text)]">
+                    {a.prompts?.question ?? "(odstraněná otázka)"}
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-emerald-700">
+                    <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    Zodpovězeno
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
 
+      {/* Library + custom — handled in the picker component */}
       <PromptPickers
         familyId={familyId}
         seniors={seniors.map((s) => ({ id: s.id, displayName: s.display_name }))}
         groups={grouped}
         customPrompts={customPrompts}
       />
+    </div>
+  );
+}
+
+function pluralOtazek(n: number): string {
+  if (n === 1) return "otázka";
+  if (n >= 2 && n <= 4) return "otázky";
+  return "otázek";
+}
+
+function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <h2 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+        {title}
+      </h2>
+      {subtitle ? (
+        <p className="text-sm text-[var(--color-text-muted)]">{subtitle}</p>
+      ) : null}
     </div>
   );
 }
