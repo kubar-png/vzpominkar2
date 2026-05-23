@@ -1890,6 +1890,168 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .jtf-roles { grid-template-columns: 1fr; }
 }
 
+/* ─── /darek/certifikat — CSS-rendered certificate preview + fields ─── */
+.editorial .cert-preview-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+.editorial .cert-preview {
+  position: relative;
+  aspect-ratio: 1 / 1.41; /* A-series feel */
+  max-width: 520px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #fbf5e3 0%, #f4ead0 100%);
+  border-radius: 4px;
+  box-shadow:
+    0 30px 60px -24px rgba(28, 24, 20, 0.28),
+    0 6px 16px -6px rgba(28, 24, 20, 0.12);
+  padding: clamp(32px, 5vw, 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+.editorial .cert-preview::before {
+  content: '';
+  position: absolute;
+  inset: clamp(14px, 2vw, 22px);
+  border: 1.5px solid rgba(168, 35, 31, 0.55);
+  pointer-events: none;
+}
+.editorial .cert-preview::after {
+  content: '';
+  position: absolute;
+  inset: clamp(18px, 2.4vw, 28px);
+  border: 1px solid rgba(168, 35, 31, 0.3);
+  pointer-events: none;
+}
+.editorial .cert-fleuron {
+  color: var(--oxblood);
+  font-family: var(--font-display-editorial);
+  font-size: 22px;
+  letter-spacing: 0.4em;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.editorial .cert-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+.editorial .cert-personal {
+  font-family: var(--font-hand);
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--oxblood);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.editorial .cert-title {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: clamp(22px, 3vw, 32px);
+  color: var(--ink);
+  line-height: 1.15;
+  margin: 0;
+}
+.editorial .cert-title-2 {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: clamp(22px, 3vw, 32px);
+  color: var(--ink);
+  line-height: 1.15;
+  margin: 0 0 22px;
+}
+.editorial .cert-message {
+  font-family: var(--font-display-editorial);
+  font-style: italic;
+  font-size: clamp(13px, 1.4vw, 16px);
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: 36ch;
+  margin: 0 auto 28px;
+}
+.editorial .cert-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+}
+.editorial .cert-sign-name {
+  font-family: var(--font-hand);
+  font-size: clamp(20px, 2.4vw, 26px);
+  color: var(--ink);
+  line-height: 1;
+}
+.editorial .cert-sign-date {
+  font-family: var(--font-body-editorial);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.editorial .cert-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--gold);
+}
+.editorial .cert-corner-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+.editorial .cert-corner-tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
+.editorial .cert-corner-bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
+.editorial .cert-corner-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+.editorial .cert-preview-caption {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  font-style: italic;
+}
+
+.editorial .cert-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(28px, 4vw, 48px) clamp(40px, 6vw, 64px);
+  max-width: 980px;
+  margin: 0 auto;
+}
+.editorial .cert-field {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.editorial .cert-field-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.editorial .cert-field-numeral {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  color: var(--oxblood);
+  font-weight: 500;
+}
+.editorial .cert-field h3 {
+  font-size: clamp(20px, 1.8vw, 24px);
+  line-height: 1.15;
+  margin: 0;
+}
+.editorial .cert-field p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 50ch;
+}
+@media (max-width: 700px) {
+  .editorial .cert-fields { grid-template-columns: 1fr; }
+}
+
 /* ─── /darek — three-step gifting + occasions grid ─── */
 .editorial .darek-steps {
   display: grid;
