@@ -17,13 +17,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const isBabybook = params.product === "babybook";
   const isGift = params.gift === "1";
 
-  if (isBabybook || isGift) {
-    // Log so the variant carries through server-side until we wire it to
-    // user metadata in the signup Server Action.
-    console.log(
-      `[signup] variant — product=${params.product ?? "-"} gift=${params.gift ?? "-"}`,
-    );
-  }
+  // isBabybook / isGift are read above but not yet wired to the signup
+  // Server Action — keep the params parse, drop the debug log.
 
   return (
     <div className="editorial">

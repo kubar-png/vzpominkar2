@@ -45,11 +45,9 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL(ERROR_URL, request.url), 303);
   }
 
-  // Best-effort: log to server console (visible in Vercel logs) and try a
-  // notification email. Neither failure blocks the success redirect — this
-  // is a marketing pixel, not a transactional path.
-  console.log(`[leads] new lead-magnet signup: ${email}`);
-
+  // Best-effort notification email; failure doesn't block the success
+  // redirect — this is a marketing pixel, not a transactional path. The
+  // Resend notification IS the audit trail; no separate console log.
   try {
     const notifyTo = process.env.LEADS_NOTIFY_TO ?? process.env.EMAIL_FROM;
     if (notifyTo && process.env.RESEND_API_KEY) {
