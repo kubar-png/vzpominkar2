@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "./mobile-spacing.css";
 
+/* Native smooth scroll for anchor-link navigation (e.g. nav → #produkt).
+ * Respects prefers-reduced-motion automatically. Wheel + touch scrolling
+ * is unaffected, so scroll-snap carousels and the sticky app sidebar
+ * still behave normally. */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Editorial direction (M3 — vzpominkar2 reskin)
  *

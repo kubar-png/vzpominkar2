@@ -1,5 +1,6 @@
 import sharp from "sharp";
-import { mkdirSync } from "node:fs";
+import pngToIco from "png-to-ico";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 /**
@@ -93,6 +94,17 @@ async function main() {
     await sharp(master).resize(size, size).png({ compressionLevel: 9 }).toFile(path);
     console.log(`✓ ${path} (${size}×${size})`);
   }
+
+  // Legacy /favicon.ico — Safari hits this directly and falls back to a
+  // placeholder if missing, even when modern <link rel="icon"> tags are
+  // present. Multi-resolution ICO embeds 16/32/48 so every UI element picks
+  // the crispest source.
+  const icoBuffers = await Promise.all(
+    [16, 32, 48].map((s) => sharp(master).resize(s, s).png().toBuffer()),
+  );
+  const ico = await pngToIco(icoBuffers);
+  writeFileSync("app/favicon.ico", ico);
+  console.log("✓ app/favicon.ico (16 + 32 + 48)");
 }
 
 main().catch((err) => {

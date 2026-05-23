@@ -52,6 +52,7 @@
     "eslint": "^9.18.0",
     "eslint-config-next": "^15.5.15",
     "jsdom": "^25.0.1",
+    "png-to-ico": "^3.0.1",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "sharp": "^0.34.5",
