@@ -44,8 +44,8 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
   }
 
   return (
-    <Card>
-      <CardContent className="space-y-4 p-4 md:p-6">
+    <Card className="transition-shadow duration-200 hover:shadow-[0_8px_24px_-16px_rgba(8,35,61,0.10)]">
+      <CardContent className="space-y-4 p-5 md:p-6">
         {/* Header row */}
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="space-y-0.5">
@@ -79,9 +79,9 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
           </div>
         </div>
 
-        {/* Title */}
+        {/* Title — card-title spec from DESIGN.md (Inter 17/600, not display) */}
         {m.title ? (
-          <h3 className="font-[family-name:var(--font-display)] text-2xl font-semibold leading-[1.08] tracking-[-0.02em] text-[var(--color-navy-900)] md:text-3xl">
+          <h3 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
             {m.title}
           </h3>
         ) : null}

@@ -190,8 +190,8 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
   const extra = m.images.length - 3;
 
   return (
-    <Card>
-      <CardContent className="space-y-4 p-6">
+    <Card className="transition-shadow duration-200 hover:shadow-[0_8px_24px_-16px_rgba(8,35,61,0.10)]">
+      <CardContent className="space-y-4 p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="text-sm font-medium text-[var(--color-navy-900)]">
@@ -212,7 +212,7 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
         </div>
 
         {m.title ? (
-          <h3 className="font-[family-name:var(--font-display)] text-2xl font-semibold leading-tight tracking-[-0.02em] text-[var(--color-navy-900)]">
+          <h3 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
             {m.title}
           </h3>
         ) : null}

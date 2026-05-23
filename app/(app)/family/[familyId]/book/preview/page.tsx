@@ -177,7 +177,7 @@ export default async function BookPreviewPage({
           <h1 className="font-[family-name:var(--font-display)] text-5xl font-medium leading-[1.05] tracking-tight text-[var(--color-navy-900)] md:text-6xl">
             {familyName}
           </h1>
-          <p className="font-[family-name:var(--font-display)] italic text-[var(--color-text-muted)]">
+          <p className="text-sm tabular-nums text-[var(--color-text-muted)]">
             {spreads.length} vzpomínek · {new Date().toLocaleDateString("cs-CZ", { month: "long", year: "numeric" })}
           </p>
         </section>
@@ -195,7 +195,7 @@ export default async function BookPreviewPage({
             >
               <header className="space-y-3">
                 <div className="flex items-baseline justify-between gap-4">
-                  <p className="font-[family-name:var(--font-display)] text-xs italic text-[var(--color-gold-600)]">
+                  <p className="font-[family-name:var(--font-display)] text-xs font-medium text-[var(--color-gold-600)]">
                     {romanNumeral(i + 1)}.
                   </p>
                   <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
@@ -208,7 +208,7 @@ export default async function BookPreviewPage({
                   </h2>
                 ) : null}
                 {s.title && s.title !== s.question ? (
-                  <p className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-text-muted)]">
+                  <p className="font-[family-name:var(--font-display)] text-lg font-medium text-[var(--color-text-muted)]">
                     {s.title}
                   </p>
                 ) : null}
@@ -236,8 +236,8 @@ export default async function BookPreviewPage({
 
               <footer className="flex items-baseline justify-end gap-3 pt-2">
                 <span aria-hidden className="h-px w-8 bg-[var(--color-gold-400)]" />
-                <p className="font-[family-name:var(--font-display)] italic text-[var(--color-navy-700)]">
-                  - {s.authorName ?? "Blízký"}
+                <p className="font-[family-name:var(--font-display)] text-[var(--color-navy-700)]">
+                  — {s.authorName ?? "Blízký"}
                   {s.authorRole ? `, ${s.authorRole}` : ""}
                 </p>
               </footer>

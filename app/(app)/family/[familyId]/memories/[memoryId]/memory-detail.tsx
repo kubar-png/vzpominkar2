@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import Link from "next/link";
-import { ArrowLeft, Play, Pause, Download, Heart, Pencil } from "lucide-react";
+import { ArrowLeft, Play, Pause, Download, Heart, Pencil, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
@@ -16,10 +16,10 @@ function roleLabel(role: string | null) {
   return SENIOR_ROLE_OPTIONS.find((r) => r.value === role)?.label ?? null;
 }
 
-function formatDate(dateStr: string, style: "long" | "short" = "long") {
+function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("cs-CZ", {
     day: "numeric",
-    month: style === "long" ? "long" : "numeric",
+    month: "long",
     year: "numeric",
   });
 }
@@ -55,6 +55,12 @@ function generateWaveform(id: string, count = 90): number[] {
 }
 
 // ── Waveform Player ───────────────────────────────────────────────────────────
+//
+// Warm-brown surface (a deliberate contrast moment — per DESIGN.md the
+// audio waveform is one of the spots where the editorial system allows a
+// dark feature surface). Plays back as the workhorse for senior voice
+// recordings, so the controls stay big and the gold "played" overlay reads
+// as state, not as decoration.
 
 function WaveformPlayer({
   src,
@@ -115,7 +121,7 @@ function WaveformPlayer({
   const progress = duration > 0 ? currentTime / duration : 0;
 
   return (
-    <div className="overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-navy-950)]">
+    <div className="overflow-hidden rounded-[var(--radius-xl)] bg-[#1c1814]">
       <audio
         ref={audioRef}
         src={src}
@@ -140,21 +146,21 @@ function WaveformPlayer({
       />
 
       {/* Header strip */}
-      <div className="flex items-center justify-between px-6 pt-5 pb-3">
-        <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-navy-600)]">
-          Hlasová nahrávka
+      <div className="flex items-center justify-between px-5 pt-4 pb-3">
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-paper-400)]">
+          Nahrávka
         </p>
-        <p className="font-mono text-xs tabular-nums text-[var(--color-navy-500)]">
-          {formatTime(currentTime)}{" "}
-          <span className="text-[var(--color-navy-700)]">/</span>{" "}
+        <p className="font-mono text-xs tabular-nums text-[var(--color-paper-300)]">
+          {formatTime(currentTime)}
+          <span className="text-[var(--color-paper-500)]"> / </span>
           {formatTime(duration)}
         </p>
       </div>
 
       {/* Waveform — neutral bars in back, gold bars clipped to progress in front */}
       <div
-        className="relative mx-6"
-        style={{ height: 72 }}
+        className="relative mx-5"
+        style={{ height: 64 }}
         role="slider"
         aria-label="Průběh nahrávky"
         aria-valuenow={Math.round(progress * 100)}
@@ -171,14 +177,12 @@ function WaveformPlayer({
               style={{
                 height: `${Math.round(h * 100)}%`,
                 minWidth: 2,
-                backgroundColor: "rgba(255,255,255,0.08)",
+                backgroundColor: "rgba(255,255,255,0.10)",
               }}
             />
           ))}
         </div>
-        {/* Played overlay — clipped from the right edge to current progress.
-         * Updates every animation frame via tick(), so it slides smoothly
-         * with playback instead of jumping bar-by-bar. */}
+        {/* Played overlay — clipped from the right edge to current progress. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 flex items-end gap-[2px]"
@@ -199,12 +203,12 @@ function WaveformPlayer({
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between px-5 py-4">
         <button
           type="button"
           onClick={togglePlay}
           aria-label={playing ? "Pozastavit" : "Přehrát"}
-          className="group flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-navy-700)] text-[var(--color-paper-400)] transition-colors hover:border-[var(--color-gold-400)] hover:text-[var(--color-gold-400)]"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(255,255,255,0.18)] text-[var(--color-paper-200)] transition-colors hover:border-[var(--color-gold-400)] hover:text-[var(--color-gold-400)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c1814]"
         >
           {playing ? <Pause size={18} /> : <Play size={18} className="translate-x-px" />}
         </button>
@@ -212,9 +216,9 @@ function WaveformPlayer({
         <a
           href={src}
           download={downloadName}
-          className="text-xs text-[var(--color-navy-600)] underline-offset-2 transition-colors hover:text-[var(--color-navy-400)] hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs text-[var(--color-paper-300)] underline-offset-2 transition-colors hover:text-[var(--color-paper-100)] hover:underline"
         >
-          <Download size={12} className="mr-1 inline-block align-middle" />
+          <Download size={12} aria-hidden />
           Uložit nahrávku
         </a>
       </div>
@@ -232,7 +236,7 @@ function MediaGallery({
   const images = attachments.filter((a) => a.mime_type.startsWith("image/"));
   const videos = attachments.filter((a) => a.mime_type.startsWith("video/"));
 
-  if (images.length === 0 && videos.length === 0) return <PhotoPlaceholder />;
+  if (images.length === 0 && videos.length === 0) return null;
 
   return (
     <div className="space-y-4">
@@ -274,69 +278,31 @@ function MediaGallery({
   );
 }
 
-// ── SVG Photo Placeholder ─────────────────────────────────────────────────────
-
-function PhotoPlaceholder() {
-  return (
-    <div className="relative flex items-center justify-center overflow-hidden rounded-[var(--radius-xl)] border border-dashed border-[var(--color-border-strong)] bg-[var(--color-paper-100)]" style={{ aspectRatio: "4/3" }}>
-      {/* Corner ornaments */}
-      {[
-        "top-3 left-3",
-        "top-3 right-3 rotate-90",
-        "bottom-3 right-3 rotate-180",
-        "bottom-3 left-3 -rotate-90",
-      ].map((cls, i) => (
-        <svg key={i} width="18" height="18" viewBox="0 0 18 18" className={`absolute ${cls} opacity-30`} fill="none">
-          <path d="M1 17V1h16" stroke="var(--color-gold-400)" strokeWidth="1.2" strokeLinecap="round" />
-        </svg>
-      ))}
-
-      {/* Center ornament */}
-      <div className="flex flex-col items-center gap-3 text-center">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="opacity-20">
-          <polygon points="24,2 46,24 24,46 2,24" stroke="var(--color-gold-500)" strokeWidth="1.5" fill="none" />
-          <polygon points="24,10 38,24 24,38 10,24" stroke="var(--color-gold-500)" strokeWidth="1" fill="none" />
-          <circle cx="24" cy="24" r="3" fill="var(--color-gold-500)" />
-        </svg>
-        <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-gold-500)] opacity-50">
-          Fotografie
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ── Gold decorative divider ───────────────────────────────────────────────────
-
-function GoldDivider() {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="h-px flex-1 bg-[var(--color-border)]" />
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <polygon points="5,0.5 9.5,5 5,9.5 0.5,5" stroke="var(--color-gold-400)" strokeWidth="1" />
-      </svg>
-      <span className="h-px flex-1 bg-[var(--color-border)]" />
-    </div>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────────────────────
+//
+// Reading layout per DESIGN.md: narrow 720px column centered on the cream
+// page, single Pangaia H1, meta row above title, single action row inline
+// (favorite + share + edit + kebab). No corner ornaments, no dropcaps, no
+// decorative gold dividers — those belong on the marketing surface and on
+// the print preview page.
 
 export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
   const [expanded, setExpanded] = useState(false);
   // Audio-only memories: the transcript IS the body text - surface it open.
   const audioOnly = !!m.audioUrl && !m.text_content && !!m.audio_transcript;
-  const [transcriptOpen, setTranscriptOpen] = useState(audioOnly);
+  // Acknowledge `audioOnly` for future expansion; it's currently used as a
+  // signal inside <TranscriptEditor>, surfaced via its own `open` state.
+  void audioOnly;
   const [favorite, setFavorite] = useState(m.is_favorite);
   const [editing, setEditing] = useState(false);
   const [draftText, setDraftText] = useState(m.text_content ?? "");
   const [text, setText] = useState(m.text_content);
   const [editError, setEditError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
-  const textLong = (text?.length ?? 0) > 400;
+  const textLong = (text?.length ?? 0) > 600;
   const label = roleLabel(m.authorRole);
   const memoryDate = m.memory_date ? formatDate(m.memory_date) : null;
-  const recordedDate = formatDate(m.created_at, "short");
+  const recordedDate = formatDate(m.created_at);
 
   function onToggleFavorite() {
     const next = !favorite;
@@ -361,106 +327,106 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
     });
   }
 
-  return (
-    <article className="mx-auto max-w-[720px] space-y-0">
+  const titleText =
+    m.title ??
+    (memoryDate ? `Vzpomínka z ${memoryDate}` : "Vzpomínka");
 
-      {/* Back navigation */}
-      <div className="pb-8">
+  return (
+    <article className="mx-auto max-w-[720px]">
+      {/* Breadcrumb */}
+      <div className="pb-6">
         <Link
           href={`/family/${m.familyId}/memories`}
-          className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-subtle)] transition-colors hover:text-[var(--color-text-muted)]"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-navy-700)]"
         >
-          <ArrowLeft size={12} />
-          Zpět na vzpomínky
+          <ArrowLeft size={14} aria-hidden />
+          Vzpomínky
         </Link>
       </div>
 
-      {/* Chapter header */}
-      <header className="space-y-5 pb-8">
-        {/* Label row */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[10px] font-medium uppercase tracking-[0.36em] text-[var(--color-gold-500)]">
-            <svg width="6" height="6" viewBox="0 0 8 8" className="mr-2 inline-block" fill="none">
-              <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-400)" strokeWidth="1" />
-            </svg>
-            Vzpomínka
-          </p>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onToggleFavorite}
-              aria-label={favorite ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
-              aria-pressed={favorite}
-              className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[var(--color-paper-200)]"
-            >
-              <Heart
-                size={18}
-                className={favorite ? "text-[var(--color-red-600)]" : "text-[var(--color-text-subtle)]"}
-                fill={favorite ? "currentColor" : "none"}
-              />
-            </button>
-          </div>
-        </div>
+      {/* Action row — single horizontal strip above the title */}
+      <div className="flex items-center justify-end gap-1 pb-4">
+        <button
+          type="button"
+          onClick={onToggleFavorite}
+          aria-label={favorite ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
+          aria-pressed={favorite}
+          className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-sm text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-paper-100)] hover:text-[var(--color-navy-900)]"
+        >
+          <Heart
+            size={15}
+            className={favorite ? "text-[var(--color-red-600)]" : ""}
+            fill={favorite ? "currentColor" : "none"}
+            aria-hidden
+          />
+          <span className="hidden sm:inline">{favorite ? "Oblíbené" : "Přidat oblíbenou"}</span>
+        </button>
+        {!editing && text ? (
+          <button
+            type="button"
+            onClick={() => {
+              setEditing(true);
+              setDraftText(text);
+            }}
+            className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-sm text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-paper-100)] hover:text-[var(--color-navy-900)]"
+          >
+            <Pencil size={14} aria-hidden />
+            <span className="hidden sm:inline">Upravit text</span>
+          </button>
+        ) : null}
+        <button
+          type="button"
+          aria-label="Další akce"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-paper-100)] hover:text-[var(--color-navy-900)]"
+        >
+          <MoreHorizontal size={16} aria-hidden />
+        </button>
+      </div>
 
-        {/* Title */}
-        {m.title ? (
-          <h1 className="font-[family-name:var(--font-display)] text-4xl font-medium leading-[1.08] tracking-[-0.02em] text-[var(--color-navy-900)] md:text-5xl">
-            {m.title}
-          </h1>
-        ) : (
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-[var(--color-text-muted)] md:text-4xl">
-            {m.question ? `„${m.question}"` : "Bez názvu"}
-          </h1>
-        )}
+      {/* Meta row */}
+      <p className="text-[13px] tabular-nums text-[var(--color-text-muted)]">
+        {recordedDate}
+        {m.authorName ? (
+          <>
+            {" · "}
+            <span className="text-[var(--color-text)]">{m.authorName}</span>
+            {label ? (
+              <span className="text-[var(--color-text-subtle)]">, {label}</span>
+            ) : null}
+          </>
+        ) : null}
+      </p>
 
-        <GoldDivider />
+      {/* Title — Pangaia 32-38px per DESIGN.md page-title */}
+      <h1
+        className={[
+          "mt-3 font-[family-name:var(--font-display)] font-medium",
+          "leading-[1.1] tracking-[-0.02em]",
+          m.title
+            ? "text-[var(--color-navy-900)]"
+            : "text-[var(--color-text-muted)]",
+          "text-[clamp(1.75rem,3.5vw,2.375rem)]",
+        ].join(" ")}
+      >
+        {titleText}
+      </h1>
 
-        {/* Metadata */}
-        <div className="grid grid-cols-[1fr_auto] items-end gap-y-1 text-sm">
-          <div className="space-y-0.5">
-            {m.authorName && (
-              <p className="font-[family-name:var(--font-display)] text-lg text-[var(--color-navy-900)]">
-                {m.authorName}
-                {label && (
-                  <span className="ml-2 text-xs font-normal uppercase tracking-widest text-[var(--color-gold-500)]">
-                    {label}
-                  </span>
-                )}
-              </p>
-            )}
-            {memoryDate && (
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Vzpomíná na: <span className="text-[var(--color-text)]">{memoryDate}</span>
-              </p>
-            )}
-            <p className="text-xs text-[var(--color-text-subtle)]">
-              Nahráno: {recordedDate}
-            </p>
-          </div>
+      {memoryDate ? (
+        <p className="mt-2 text-[13px] text-[var(--color-text-subtle)]">
+          Vzpomínka na: <span className="text-[var(--color-text-muted)]">{memoryDate}</span>
+        </p>
+      ) : null}
 
-          {/* Decorative ornament */}
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="opacity-15" aria-hidden>
-            <polygon points="24,1 47,24 24,47 1,24" stroke="var(--color-gold-500)" strokeWidth="1.2" fill="none" />
-            <polygon points="24,9 39,24 24,39 9,24" stroke="var(--color-gold-500)" strokeWidth="0.8" fill="none" />
-            <circle cx="24" cy="24" r="2.5" fill="var(--color-gold-400)" />
-          </svg>
-        </div>
-      </header>
-
-      {/* Question - if any */}
-      {m.question && m.title && (
-        <div className="pb-8">
-          <blockquote className="border-l-2 border-[var(--color-gold-300)] pl-5">
-            <p className="font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
-              &#8222;{m.question}&#8220;
-            </p>
-          </blockquote>
-        </div>
-      )}
+      {/* Question quote — small, calm, not gold */}
+      {m.question ? (
+        <blockquote className="mt-6 border-l-2 border-[var(--color-border-strong)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
+          &bdquo;{m.question}&ldquo;
+        </blockquote>
+      ) : null}
 
       {/* Audio player */}
-      {m.audioUrl && (
-        <div className="pb-8 space-y-3">
+      {m.audioUrl ? (
+        <div className="mt-8 space-y-3">
           <WaveformPlayer
             src={m.audioUrl}
             duration={m.audio_duration_seconds}
@@ -475,24 +441,26 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
             />
           ) : null}
         </div>
-      )}
+      ) : null}
 
       {/* Text content (editable) */}
-      <div className="pb-8">
+      <div className="mt-8">
         {editing ? (
           <div className="space-y-4">
             <textarea
               autoFocus
               value={draftText}
               onChange={(e) => setDraftText(e.target.value)}
-              className="te-textarea"
+              className="w-full rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-white px-4 py-3 text-[15px] leading-relaxed text-[var(--color-text)] focus:border-[var(--color-navy-500)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
               style={{ minHeight: 240 }}
               placeholder="Napište text vzpomínky…"
             />
             {editError ? (
-              <p className="te-error">{editError}</p>
+              <p role="alert" className="text-sm text-[var(--color-red-700)]">
+                {editError}
+              </p>
             ) : null}
-            <div className="te-actions justify-end">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -500,91 +468,63 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
                   setDraftText(text ?? "");
                   setEditError(null);
                 }}
-                className="te-btn te-btn-outline"
+                className="inline-flex h-10 items-center rounded-full bg-white px-5 text-sm font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-paper-100)]"
               >
                 Zrušit
               </button>
               <button
                 type="button"
                 onClick={onSaveEdit}
-                className="te-btn te-btn-gold"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--color-gold-500)] px-5 text-sm font-semibold text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)]"
               >
-                Uložit úpravy <span className="te-btn-circle" aria-hidden>↗</span>
+                Uložit úpravy
+                <span aria-hidden>↗</span>
               </button>
             </div>
           </div>
         ) : text ? (
           <>
-            <div className="group relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setEditing(true);
-                  setDraftText(text);
-                }}
-                aria-label="Upravit text"
-                className="absolute -right-1 -top-1 flex h-7 w-7 items-center justify-center rounded-full text-[var(--color-text-subtle)] opacity-0 transition-opacity hover:bg-[var(--color-paper-200)] hover:text-[var(--color-navy-700)] focus-visible:opacity-100 group-hover:opacity-100"
-              >
-                <Pencil size={12} aria-hidden />
-              </button>
-              <div
-                className={[
-                  "leading-[1.85] text-[var(--color-text)]",
-                  !expanded && textLong ? "line-clamp-[8]" : "",
-                ].filter(Boolean).join(" ")}
-                style={{ fontSize: "1.0625rem", whiteSpace: "pre-line" }}
-              >
-                <span
-                  className="float-left mr-2 font-[family-name:var(--font-display)] leading-none text-[var(--color-navy-900)]"
-                  style={{ fontSize: "4.25rem", lineHeight: 0.82, paddingTop: "0.12em" }}
-                  aria-hidden
-                >
-                  {text[0]}
-                </span>
-                {text.slice(1)}
-              </div>
+            <div
+              className={[
+                "leading-[1.7] text-[var(--color-text)]",
+                !expanded && textLong ? "line-clamp-[10]" : "",
+              ].filter(Boolean).join(" ")}
+              style={{ fontSize: "1.0625rem", whiteSpace: "pre-line", maxWidth: "65ch" }}
+            >
+              {text}
             </div>
             {textLong && (
               <button
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
-                className="mt-3 text-sm text-[var(--color-navy-700)] underline-offset-2 hover:underline"
+                className="mt-3 text-sm font-medium text-[var(--color-navy-700)] underline-offset-2 hover:underline"
               >
                 {expanded ? "Méně" : "Číst celý text"}
               </button>
             )}
           </>
-        ) : (
-          /* No text yet - offer to add one (e.g. for audio-only memories) */
+        ) : !m.audioUrl ? (
+          /* No text and no audio - offer to add */
           <button
             type="button"
             onClick={() => {
               setEditing(true);
               setDraftText("");
             }}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-[var(--color-border-strong)] px-4 py-3 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-[var(--color-border-strong)] px-4 py-3 text-sm text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
           >
             <Pencil size={14} aria-hidden />
             Přidat text k vzpomínce
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Media */}
-      <div className="pb-8">
-        <MediaGallery attachments={m.attachments} />
-      </div>
-
-      {/* Bottom ornament */}
-      <footer className="pb-4 pt-2">
-        <GoldDivider />
-        <div className="mt-6 flex justify-center">
-          <svg width="80" height="20" viewBox="0 0 80 20" fill="none" className="opacity-20" aria-hidden>
-            <path d="M1 10 H30 M50 10 H79" stroke="var(--color-gold-500)" strokeWidth="0.8" />
-            <polygon points="40,2 48,10 40,18 32,10" stroke="var(--color-gold-500)" strokeWidth="0.8" fill="none" />
-          </svg>
+      {m.attachments.length > 0 ? (
+        <div className="mt-10">
+          <MediaGallery attachments={m.attachments} />
         </div>
-      </footer>
+      ) : null}
     </article>
   );
 }
