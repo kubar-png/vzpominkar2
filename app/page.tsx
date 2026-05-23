@@ -306,19 +306,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ═══════════ 5b. PULL QUOTE — emotional breath between sections ═══════════ */}
-        <section className="pull-quote">
-          <div className="container">
-            <blockquote>
-              Mami, vyprávej.
-              <br />
-              Táto, vyprávej.
-              <br />
-              A my si vzpomeneme.
-            </blockquote>
-          </div>
-        </section>
-
         {/* ═══════════ 6. QR VOICE / OPEN BOOK ═══════════ */}
         <div className="divider" />
         <section className="qr-section">
