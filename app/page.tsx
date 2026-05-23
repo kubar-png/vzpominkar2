@@ -99,7 +99,7 @@ export default function HomePage() {
               <a href="#faq">Otázky</a>
               <a href="/o-nas">Náš příběh</a>
             </div>
-            <a href="/signup" className="btn btn-gold nav-cta-desktop">
+            <a href="/signup" className="btn btn-gold btn-gold-light nav-cta-desktop">
               Začít zdarma <span className="arrow">↗</span>
             </a>
             <HomeMobileMenu />

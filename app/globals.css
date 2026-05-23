@@ -687,6 +687,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .btn-gold { background: var(--gold); color: var(--ink); border-color: var(--gold); }
 .editorial .btn-gold:hover { background: var(--gold-soft); border-color: var(--gold-soft); transform: translateY(-1px); }
+/* EXPERIMENTAL: inverted gold pill — lighter gold by default, darker on hover.
+ * Currently applied only to the homepage nav CTA so we can A/B it before
+ * deciding whether to roll out across the site. */
+.editorial .btn-gold.btn-gold-light { background: var(--gold-soft); border-color: var(--gold-soft); }
+.editorial .btn-gold.btn-gold-light:hover { background: var(--gold); border-color: var(--gold); }
 .editorial .btn-outline { border-color: var(--ink); color: var(--ink); background: transparent; }
 .editorial .btn-outline:hover { background: var(--ink); color: var(--bg); }
 .editorial .btn-dark { background: var(--ink); color: var(--bg); border-color: var(--ink); }
