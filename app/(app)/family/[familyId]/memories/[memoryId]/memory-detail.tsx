@@ -399,14 +399,6 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
                 fill={favorite ? "currentColor" : "none"}
               />
             </button>
-            <span className={[
-              "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-              m.status === "published"
-                ? "bg-[var(--color-navy-100)] text-[var(--color-navy-700)]"
-                : "bg-[var(--color-paper-300)] text-[var(--color-text-muted)]",
-            ].join(" ")}>
-              {m.status === "published" ? "Hotovo" : "Koncept"}
-            </span>
           </div>
         </div>
 

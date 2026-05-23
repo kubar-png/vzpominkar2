@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Heart, Search, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/input";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { cn } from "@/lib/utils";
@@ -26,7 +25,6 @@ export type ArchiveMemory = {
   images: { storage_path: string; signedUrl: string; caption: string | null }[];
 };
 
-type StatusFilter = "all" | "published" | "draft";
 type SortOrder = "newest" | "oldest" | "favorite";
 
 interface Props {
@@ -37,15 +35,19 @@ interface Props {
 
 export function MemoriesArchive({ memories, seniors, familyId }: Props) {
   const [seniorId, setSeniorId] = useState<string | null>(null);
-  const [status, setStatus] = useState<StatusFilter>("all");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sort, setSort] = useState<SortOrder>("newest");
   const [query, setQuery] = useState("");
 
+  // Drafts are an internal autosave concept; surface only finished memories.
+  const publishedMemories = useMemo(
+    () => memories.filter((m) => m.status === "published"),
+    [memories],
+  );
+
   const visible = useMemo(() => {
-    let list = memories;
+    let list = publishedMemories;
     if (seniorId) list = list.filter((m) => m.authorId === seniorId);
-    if (status !== "all") list = list.filter((m) => m.status === status);
     if (favoritesOnly) list = list.filter((m) => m.isFavorite);
     if (query.trim().length > 0) {
       const q = query.trim().toLowerCase();
@@ -65,9 +67,9 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
       );
     }
     return list;
-  }, [memories, seniorId, status, favoritesOnly, query, sort]);
+  }, [publishedMemories, seniorId, favoritesOnly, query, sort]);
 
-  const empty = memories.length === 0;
+  const empty = publishedMemories.length === 0;
   const filteredEmpty = !empty && visible.length === 0;
 
   if (empty) {
@@ -134,18 +136,6 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
               <span className="mx-1 h-5 w-px bg-[var(--color-border-strong)]" aria-hidden />
             </>
           )}
-
-          <FilterPill active={status === "all"} onClick={() => setStatus("all")}>
-            Všechny
-          </FilterPill>
-          <FilterPill active={status === "published"} onClick={() => setStatus("published")}>
-            Hotové
-          </FilterPill>
-          <FilterPill active={status === "draft"} onClick={() => setStatus("draft")}>
-            Koncepty
-          </FilterPill>
-
-          <span className="mx-1 h-5 w-px bg-[var(--color-border-strong)]" aria-hidden />
 
           <FilterPill
             active={favoritesOnly}
@@ -218,9 +208,6 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
             {m.isFavorite ? (
               <Heart size={14} className="text-[var(--color-red-600)]" fill="currentColor" />
             ) : null}
-            <Badge tone={m.status === "published" ? "navy" : "neutral"}>
-              {m.status === "published" ? "Hotovo" : "Koncept"}
-            </Badge>
           </div>
         </div>
 

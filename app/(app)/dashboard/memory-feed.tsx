@@ -17,14 +17,16 @@ interface MemoryFeedProps {
 export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
   const [filterSeniorId, setFilterSeniorId] = useState<string | null>(null);
 
-  const visible = filterSeniorId
-    ? memories.filter((m) => m.authorId === filterSeniorId)
-    : memories;
+  // Drafts are an internal autosave concept; surface only finished memories
+  // in the owner UI. The senior's text autosave still happens server-side so
+  // they don't lose work mid-typing.
+  const visible = (
+    filterSeniorId
+      ? memories.filter((m) => m.authorId === filterSeniorId)
+      : memories
+  ).filter((m) => m.status === "published");
 
-  const drafts = visible.filter((m) => m.status === "draft");
-  const published = visible.filter((m) => m.status === "published");
-
-  if (memories.length === 0) {
+  if (memories.filter((m) => m.status === "published").length === 0) {
     return (
       <Card>
         <CardContent className="space-y-4 py-16 text-center">
@@ -65,52 +67,17 @@ export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
         </div>
       )}
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 items-start gap-x-10 gap-y-10 md:grid-cols-2">
-        {/* Left - Koncepty */}
-        <div>
-          <ColumnLabel label="Koncepty" count={drafts.length} />
-          {drafts.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-subtle)]">Žádné rozpracované vzpomínky.</p>
-          ) : (
-            <div className="space-y-4">
-              {drafts.map((m) => (
-                <MemoryCard key={m.id} memory={m} familyId={familyId} />
-              ))}
-            </div>
-          )}
+      {visible.length === 0 ? (
+        <p className="text-sm text-[var(--color-text-subtle)]">
+          Žádné dokončené vzpomínky.
+        </p>
+      ) : (
+        <div className="space-y-4">
+          {visible.map((m) => (
+            <MemoryCard key={m.id} memory={m} familyId={familyId} />
+          ))}
         </div>
-
-        {/* Right - Hotové */}
-        <div>
-          <ColumnLabel label="Hotové" count={published.length} />
-          {published.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-subtle)]">Žádné dokončené vzpomínky.</p>
-          ) : (
-            <div className="space-y-4">
-              {published.map((m) => (
-                <MemoryCard key={m.id} memory={m} familyId={familyId} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ColumnLabel({ label, count }: { label: string; count: number }) {
-  return (
-    <div className="mb-6 flex items-center gap-3">
-      <p className="shrink-0 font-[family-name:var(--font-display)] text-base font-medium text-[var(--color-navy-900)]">
-        {label}
-      </p>
-      {count > 0 && (
-        <span className="rounded-full bg-[var(--color-gold-100)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--color-navy-900)]">
-          {count}
-        </span>
       )}
-      <span className="h-px flex-1 bg-[var(--color-border-strong)]" aria-hidden />
     </div>
   );
 }

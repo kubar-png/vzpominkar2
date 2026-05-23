@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
 import type { MemoryItem } from "./page";
@@ -77,9 +76,6 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
                 fill={favorite ? "currentColor" : "none"}
               />
             </button>
-            <Badge tone={m.status === "published" ? "navy" : "neutral"}>
-              {m.status === "published" ? "Hotovo" : "Koncept"}
-            </Badge>
           </div>
         </div>
 
