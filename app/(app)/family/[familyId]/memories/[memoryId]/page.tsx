@@ -8,9 +8,22 @@ import { MemoryDetail } from "./memory-detail";
 type Params = { familyId: string; memoryId: string };
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const { memoryId } = await params;
+  const { familyId, memoryId } = await params;
+  try {
+    // requireOwnerOfFamily throws/redirects for non-members. Catch so the
+    // page itself can render its own 403/redirect cleanly without a leaky
+    // <title> hint about which memory exists.
+    await requireOwnerOfFamily(familyId);
+  } catch {
+    return { title: "Vzpomínka" };
+  }
   const admin = createAdminClient();
-  const { data } = await admin.from("memories").select("title").eq("id", memoryId).maybeSingle();
+  const { data } = await admin
+    .from("memories")
+    .select("title")
+    .eq("id", memoryId)
+    .eq("family_id", familyId)
+    .maybeSingle();
   return { title: data?.title ?? "Vzpomínka" };
 }
 
