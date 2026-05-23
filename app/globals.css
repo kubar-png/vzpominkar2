@@ -1890,6 +1890,53 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .jtf-roles { grid-template-columns: 1fr; }
 }
 
+/* ─── Legal-body inside editorial scope — Pangaia + cream tokens ───
+ * The base .legal-body rules below still target the legacy navy/sepia
+ * scale used elsewhere; these overrides re-skin it inside the editorial
+ * marketing surface so /podminky, /soukromi, /cookies match homepage
+ * typography and palette. */
+.editorial .legal-body {
+  max-width: 68ch;
+  margin: 0 auto;
+  font-family: var(--font-body-editorial);
+  color: var(--ink-soft);
+}
+.editorial .legal-body :where(h2) {
+  font-family: var(--font-display-editorial);
+  color: var(--ink);
+  border-top-color: var(--line);
+}
+.editorial .legal-body :where(h3) {
+  font-family: var(--font-display-editorial);
+  color: var(--ink);
+  font-style: italic;
+}
+.editorial .legal-body :where(p, ul, ol) {
+  color: var(--ink-soft);
+}
+.editorial .legal-body :where(strong) {
+  color: var(--ink);
+}
+.editorial .legal-body :where(a) {
+  color: var(--ink);
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1.5px;
+}
+.editorial .legal-body :where(a:hover) {
+  color: var(--oxblood);
+}
+.editorial .legal-body :where(dt) {
+  font-family: var(--font-display-editorial);
+  color: var(--ink);
+  font-style: italic;
+}
+.editorial .legal-body :where(dd) {
+  color: var(--ink-soft);
+}
+.editorial .legal-body :where(hr) {
+  border-top-color: var(--line);
+}
+
 /* ─── /babybook — soft sage cover variant + chapter cards ─── */
 .editorial .book-cover.babybook-cover {
   background:
