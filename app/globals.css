@@ -4235,24 +4235,28 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   gap: 20px;
 }
 
+/* Gold-filled circles with navy arrow — mirrors the .faq-item summary toggle
+ * and the gold CTA pills used across the site. ↖ / ↗ keep direction clear
+ * while using the same arrow family as the rest of the site. */
 .editorial .q-arrow {
   width: 40px;
   height: 40px;
-  border: 1.5px solid var(--ink);
+  border: none;
   border-radius: 50%;
-  background: transparent;
+  background: var(--gold);
   color: var(--ink);
-  font-size: 16px;
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  font-weight: 600;
   line-height: 1;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.18s, color 0.18s, transform 0.18s;
+  transition: background 0.18s ease, transform 0.18s ease;
   flex-shrink: 0;
 }
 .editorial .q-arrow:hover {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--gold-soft);
   transform: scale(1.06);
 }
 
@@ -4289,11 +4293,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   max-width: 540px;
   margin-inline: auto;
 }
-.editorial .q-footnote em {
-  font-style: normal;
-  color: var(--oxblood);
-}
-
 /* Mobile responsive */
 @media (max-width: 600px) {
   .editorial .q-deck { padding-inline: 0; }

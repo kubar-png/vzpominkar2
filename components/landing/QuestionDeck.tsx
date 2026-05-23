@@ -100,7 +100,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
           onClick={() => go(-1)}
           aria-label="Předchozí otázka"
         >
-          ←
+          ↖
         </button>
 
         <div className="q-dots" role="tablist">
@@ -123,7 +123,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
           onClick={() => go(1)}
           aria-label="Další otázka"
         >
-          →
+          ↗
         </button>
       </div>
 
