@@ -5,164 +5,154 @@ import { Shell } from "@/components/landing/Shell";
 export const metadata: Metadata = {
   title: "Kontakt",
   description:
-    "Napište nám, zavolejte, nebo pošlete poštou. Odpovídá člověk, ne robot.",
+    "Napište nám e-mailem na ahoj@vzpominkar.cz. Odpovídá člověk, ne robot. Telefonní podporu připravujeme.",
 };
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * /kontakt — full editorial rebuild
+ *
+ * Small hero, four paper cards for contact channels, navy founder quote
+ * belt, and a quick-links footnote. NO fake placeholders — channels that
+ * aren't ready say "připravujeme" with an honest pointer to e-mail.
+ * ─────────────────────────────────────────────────────────────────────── */
 
 const CHANNELS = [
   {
+    n: "I",
     eyebrow: "Nejrychlejší",
     label: "E-mail",
     value: "ahoj@vzpominkar.cz",
-    href: "mailto:ahoj@vzpominkar.cz",
-    body:
-      "Odpovídáme do jednoho pracovního dne, většinou do hodiny. Hodí se, když máte konkrétní dotaz k účtu nebo objednávce.",
+    href: "mailto:ahoj@vzpominkar.cz" as string | null,
+    body: "Odpovídáme do jednoho pracovního dne, většinou do hodiny. Hodí se na konkrétní dotaz k účtu nebo objednávce.",
   },
   {
-    /* TODO: doplnit reálné telefonní číslo */
+    n: "II",
     eyebrow: "Po telefonu",
     label: "Telefon",
+    /* TODO: doplnit reálné telefonní číslo, jakmile bude linka spuštěna */
     value: "Telefonní podpora — připravujeme",
-    href: null as string | null,
-    body:
-      "Telefonní linku spouštíme krátce po pilotu. Mezitím napište e-mailem — odpovídáme do hodiny v pracovní době.",
+    href: null,
+    body: "Telefonní linku spouštíme krátce po pilotu. Mezitím napište e-mailem — odpovídáme do hodiny v pracovní době.",
   },
   {
-    /* TODO: doplnit reálnou adresu sídla před spuštěním */
+    n: "III",
     eyebrow: "Osobně",
-    label: "Adresa",
-    value: "Sídlo — doplníme před spuštěním",
-    href: null as string | null,
-    body:
-      "Adresu redakce zveřejníme s ostrým spuštěním. Pokud nás potřebujete potkat dřív, napište a domluvíme se.",
+    label: "Sídlo",
+    /* TODO: doplnit reálnou adresu sídla před spuštěním placené verze */
+    value: "Adresa — připravujeme",
+    href: null,
+    body: "Adresu redakce zveřejníme s ostrým spuštěním. Pokud nás potřebujete potkat dřív, napište a domluvíme se.",
   },
   {
-    /* TODO: doplnit IČO, DIČ a fakturační adresu po založení s.r.o. */
-    eyebrow: "Poštou",
-    label: "Fakturační údaje",
-    value: "Firemní údaje — připravujeme",
-    href: null as string | null,
-    body:
-      "Po dokončení zápisu do obchodního rejstříku tu najdete IČO, DIČ i fakturační adresu pro zaslání rukopisů a poštovních zásilek.",
+    n: "IV",
+    eyebrow: "Fakturace",
+    label: "Firemní údaje",
+    /* TODO: doplnit IČO, DIČ a fakturační adresu po zápisu s.r.o. */
+    value: "IČO a DIČ — připravujeme",
+    href: null,
+    body: "Po dokončení zápisu do obchodního rejstříku tu najdete IČO, DIČ i fakturační adresu pro zaslání zásilek.",
   },
-];
+] as const;
 
 export default function KontaktPage() {
   return (
     <Shell>
-      {/* Hero */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pt-20 pb-16 text-center sm:pt-28">
-        <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          <span className="mr-3 inline-block h-px w-10 align-middle bg-[var(--color-gold-500)]" />
-          Kontakt
-          <span className="ml-3 inline-block h-px w-10 align-middle bg-[var(--color-gold-500)]" />
-        </p>
-        <h1
-          className="heritage-press mx-auto mt-8 max-w-[20ch] font-[family-name:var(--font-display)] text-5xl font-medium leading-[1.05] tracking-tight text-[var(--color-navy-900)] sm:text-6xl"
-          style={{ textWrap: "balance" }}
-        >
-          Pište. Volejte. <em>Nebo nás potkejte.</em>
-        </h1>
-        <p className="mx-auto mt-7 max-w-[52ch] font-[family-name:var(--font-display)] text-lg italic leading-relaxed text-[var(--color-text-muted)] sm:text-xl">
-          Odpovídá vám člověk z&nbsp;malé pražské party, ne chatbot.
-          A&nbsp;ano, čteme každou zprávu &mdash; i&nbsp;tu, která začíná
-          „Vaše stránka se mi nelíbí, protože&hellip;“.
-        </p>
-      </section>
-
-      {/* Channels grid */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 pb-24">
-        <ul className="grid gap-x-10 gap-y-12 sm:grid-cols-2">
-          {CHANNELS.map((c, i) => (
-            <li key={c.label} data-reveal>
-              <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-red-700)]">
-                {String(i + 1).padStart(2, "0")} &nbsp;·&nbsp; {c.eyebrow}
-              </p>
-              <p className="mt-3 font-[family-name:var(--font-display)] text-2xl font-medium text-[var(--color-navy-900)] sm:text-3xl">
-                {c.label}
-              </p>
-              {c.href ? (
-                <a
-                  href={c.href}
-                  className="mt-3 inline-block font-[family-name:var(--font-display)] text-xl italic text-[var(--color-navy-800)] underline underline-offset-[6px] decoration-[var(--color-gold-500)] hover:text-[var(--color-navy-900)]"
-                >
-                  {c.value}
-                </a>
-              ) : (
-                <p className="mt-3 font-[family-name:var(--font-display)] text-xl italic text-[var(--color-navy-900)]">
-                  {c.value}
-                </p>
-              )}
-              <p className="mt-4 max-w-[44ch] text-base leading-relaxed text-[var(--color-text-muted)]">
-                {c.body}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Founder note — navy chord */}
-      <section className="bg-[var(--color-navy-900)] py-24 text-[var(--color-paper-100)] sm:py-32">
-        <div className="mx-auto max-w-3xl px-6 text-center" data-reveal>
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-400)]">
-            <span className="mr-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
-            Slibujeme jen tohle
-            <span className="ml-3 inline-block h-px w-8 align-middle bg-[var(--color-gold-400)]" />
+      {/* ═══════════ HERO ═══════════ */}
+      <section className="hero">
+        <div className="container">
+          <span className="eyebrow">Kontakt</span>
+          <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
+            Napište. Odpoví člověk.
+          </h1>
+          <p className="lede">
+            Odpovídá vám člověk z malé pražské party, ne chatbot. A ano,
+            čteme každou zprávu — i tu, která začíná „Vaše stránka se mi
+            nelíbí, protože&hellip;“.
           </p>
-          <p
-            className="mt-8 font-[family-name:var(--font-display)] text-2xl italic leading-snug text-[var(--color-paper-50)] sm:text-3xl"
-            style={{ textWrap: "balance" }}
-          >
-            &bdquo;Když napíšete, odpovíme do druhého rána. Když zavoláte,
-            zvedneme. Když pošlete dopis, přečteme ho a&nbsp;napíšeme zpátky
-            &mdash; rukou, na kartě.&ldquo;
-          </p>
-          <p className="mt-8 font-[family-name:var(--font-script)] text-5xl leading-none text-[var(--color-paper-100)]" aria-hidden>
-            Jakub Š.
-          </p>
-          <p className="mt-3 text-[10px] uppercase tracking-[0.32em] text-[var(--color-paper-400)]">
-            <span className="sr-only">Jakub Š., </span>zakladatel
-          </p>
+          <a href="mailto:ahoj@vzpominkar.cz" className="btn btn-gold hero-cta">
+            Napsat na ahoj@vzpominkar.cz <span className="arrow">↗</span>
+          </a>
         </div>
       </section>
 
-      {/* Quick links */}
-      <section className="mx-auto max-w-[var(--container-wide)] px-6 py-20 text-center">
-        <div data-reveal>
-          <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-gold-500)]">
-            Než nám napíšete
-          </p>
-          <h2
-            className="heritage-press mx-auto mt-6 max-w-[26ch] font-[family-name:var(--font-display)] text-3xl font-medium leading-snug text-[var(--color-navy-900)] sm:text-4xl"
-            style={{ textWrap: "balance" }}
-          >
-            Možná najdete odpověď <em>rychleji sami</em>.
-          </h2>
-          <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-            <li>
-              <Link
-                href="/faq"
-                className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-              >
-                Časté otázky →
+      {/* ═══════════ CHANNELS GRID — paper cards ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="kontakt-grid">
+            {CHANNELS.map((c) => (
+              <article key={c.label} className="kontakt-card" data-reveal>
+                <div className="kontakt-card-head">
+                  <span className="kontakt-card-numeral">{c.n}</span>
+                  <span className="eyebrow">{c.eyebrow}</span>
+                </div>
+                <h3>{c.label}</h3>
+                {c.href ? (
+                  <a href={c.href} className="kontakt-card-value kontakt-card-value-link">
+                    {c.value}
+                  </a>
+                ) : (
+                  <p className="kontakt-card-value kontakt-card-value-pending">
+                    {c.value}
+                  </p>
+                )}
+                <p className="kontakt-card-body">{c.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ FOUNDER PROMISE — warm dark ═══════════ */}
+      <section className="feature-quote dark">
+        <div className="container">
+          <span className="eyebrow">Slibujeme jen tohle</span>
+          <blockquote>
+            „Když napíšete, odpovíme do druhého rána. Když pošlete dopis,
+            přečteme ho a napíšeme zpátky — rukou, na kartě.&ldquo;
+          </blockquote>
+          <div className="feature-attr">— Jakub Š., zakladatel</div>
+        </div>
+      </section>
+
+      {/* ═══════════ QUICK LINKS — než nám napíšete ═══════════ */}
+      <div className="divider" aria-hidden />
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Než nám napíšete</span>
+            <h2>Možná najdete odpověď rychleji sami.</h2>
+          </div>
+          <div className="kontakt-quicklinks">
+            <Link href="/faq" className="arrow-link">
+              Časté otázky
+            </Link>
+            <Link href="/jak-to-funguje" className="arrow-link">
+              Jak to funguje
+            </Link>
+            <Link href="/cenik" className="arrow-link">
+              Ceník
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ FINAL CTA ═══════════ */}
+      <section className="signup">
+        <div className="container">
+          <div className="signup-card">
+            <span className="eyebrow">Začít rovnou</span>
+            <h2>Pošlete jim první otázku v pondělí.</h2>
+            <p className="lede">
+              Registrace zabere pět minut. Pilotní verze je zdarma, vrácení
+              peněz do 30 dnů.
+            </p>
+            <div style={{ display: "inline-flex", position: "relative" }}>
+              <Link href="/signup" className="btn btn-gold">
+                Začít zdarma <span className="arrow">↗</span>
               </Link>
-            </li>
-            <li>
-              <Link
-                href="/jak-to-funguje"
-                className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-              >
-                Jak to funguje →
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/cenik"
-                className="font-[family-name:var(--font-display)] text-lg italic text-[var(--color-navy-800)] underline-offset-[6px] hover:underline"
-              >
-                Ceník →
-              </Link>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </section>
     </Shell>
