@@ -4296,8 +4296,16 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 /* Mobile responsive */
 @media (max-width: 600px) {
   .editorial .q-deck { padding-inline: 0; }
-  .editorial .q-arrow { display: none; } /* swipe instead */
+  .editorial .q-controls { gap: 14px; }
+  .editorial .q-arrow { width: 44px; height: 44px; font-size: 15px; }
   .editorial .q-card { min-height: 200px; }
+  .editorial .q-card-stage { touch-action: pan-y; }
+  /* Larger tap targets for dots — keep the visual 8px but enlarge the
+   * invisible hit area so older fingers don't miss. */
+  .editorial .q-dot {
+    box-shadow: 0 0 0 8px transparent;
+    background-clip: padding-box;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -17,18 +17,22 @@ const ANIM_MS = 520;
 export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
   const [index, setIndex] = useState(0);
   const [exiting, setExiting] = useState<{ idx: number; dir: "next" | "prev" } | null>(null);
+  const [paused, setPaused] = useState(false);
   const count = questions.length;
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
-  // Auto-advance every 6s
+  // Auto-advance every 6s — pauses once the user has interacted manually
+  // so the carousel doesn't fight their input.
   useEffect(() => {
-    if (count <= 1) return;
+    if (count <= 1 || paused) return;
     const id = setInterval(() => {
       go(1);
     }, 6000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [count]);
+  }, [count, paused]);
 
   // Clear any lingering exit timer on unmount
   useEffect(() => () => {
@@ -56,13 +60,40 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
     });
   }
 
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    if (!t) return;
+    touchStartX.current = t.clientX;
+    touchStartY.current = t.clientY;
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    const startX = touchStartX.current;
+    const startY = touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+    if (startX == null || startY == null) return;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    // Only treat as a swipe if mostly horizontal and >= 50px
+    if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+    setPaused(true);
+    go(dx < 0 ? 1 : -1);
+  }
+
   const current = questions[index];
   const leaving = exiting ? questions[exiting.idx] : null;
   if (!current) return null;
 
   return (
     <div className="q-deck">
-      <div className="q-card-stage">
+      <div
+        className="q-card-stage"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {leaving && exiting && (
           <div
             className={`q-card q-card-exit q-card-exit-${exiting.dir}`}
@@ -97,7 +128,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
         <button
           type="button"
           className="q-arrow"
-          onClick={() => go(-1)}
+          onClick={() => { setPaused(true); go(-1); }}
           aria-label="Předchozí otázka"
         >
           ↖
@@ -111,7 +142,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
               role="tab"
               aria-selected={i === index}
               aria-label={`Otázka ${i + 1}`}
-              onClick={() => jumpTo(i)}
+              onClick={() => { setPaused(true); jumpTo(i); }}
               className={`q-dot${i === index ? " is-active" : ""}`}
             />
           ))}
@@ -120,7 +151,7 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
         <button
           type="button"
           className="q-arrow"
-          onClick={() => go(1)}
+          onClick={() => { setPaused(true); go(1); }}
           aria-label="Další otázka"
         >
           ↗
