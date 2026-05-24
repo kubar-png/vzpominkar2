@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 export const metadata: Metadata = {
   title: "Vzpomínkář jako dárek",
@@ -117,9 +118,7 @@ export default function DarekPage() {
             A na konci kniha, kterou si budou číst i ti, kteří se ještě
             nenarodili.
           </p>
-          <Link href="/signup?gift=1" className="btn btn-gold hero-cta">
-            Darovat Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta href="/signup?gift=1" label="Darovat Vzpomínkář" variant="hero" />
         </div>
       </section>
 
@@ -301,9 +300,7 @@ export default function DarekPage() {
               Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
-              <Link href="/signup?gift=1" className="btn btn-gold">
-                Darovat Vzpomínkář <span className="arrow">↗</span>
-              </Link>
+              <PrimaryCta href="/signup?gift=1" label="Darovat Vzpomínkář" />
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>
               Nebo se podívejte na{" "}

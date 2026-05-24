@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { PrimaryCta } from "./PrimaryCta";
 
 const NAV: ReadonlyArray<{ label: string; href: string }> = [
   { label: "Jak to funguje", href: "#jak" },
@@ -100,13 +101,7 @@ export function HomeMobileMenu() {
             >
               Přihlášení <span className="arrow">↗</span>
             </Link>
-            <Link
-              href="/signup"
-              className="btn btn-gold"
-              onClick={() => setOpen(false)}
-            >
-              Založit Vzpomínkář <span className="arrow">↗</span>
-            </Link>
+            <PrimaryCta onClick={() => setOpen(false)} />
           </div>
           </div>
         </div>,

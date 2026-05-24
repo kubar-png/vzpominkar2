@@ -3,6 +3,7 @@ import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 const FORBES_TESTIMONIALS = [
   {
@@ -99,9 +100,7 @@ export default function HomePage() {
               <a href="#faq">Otázky</a>
               <a href="/o-nas">Náš příběh</a>
             </div>
-            <a href="/signup" className="btn btn-gold nav-cta-desktop">
-              Založit Vzpomínkář <span className="arrow">↗</span>
-            </a>
+            <PrimaryCta variant="nav" />
             <HomeMobileMenu />
           </nav>
         </div>
@@ -123,9 +122,7 @@ export default function HomePage() {
               nejpřirozenější. Za rok mu vyrobíme vázanou knihu pro budoucí
               generace.
             </p>
-            <a href="/signup" className="btn btn-gold hero-cta">
-              Začít sbírat vzpomínky <span className="arrow">↗</span>
-            </a>
+            <PrimaryCta label="Začít sbírat vzpomínky" variant="hero" />
           </div>
 
           <div className="bg-wordmark" aria-hidden="true">
@@ -277,9 +274,7 @@ export default function HomePage() {
                   <li>Vlastní kopie nahrávek navždy</li>
                   <li>Sourozenci a vnoučata se mohou připojit</li>
                 </ul>
-                <a href="/signup" className="btn btn-gold">
-                  Založit Vzpomínkář <span className="arrow">↗</span>
-                </a>
+                <PrimaryCta />
                 <div className="product-meta">
                   <span>
                     <strong>30 dní</strong> na rozmyšlenou
@@ -718,9 +713,7 @@ export default function HomePage() {
                 <br />
                 nová generace.
               </h2>
-              <a href="/signup" className="btn btn-gold">
-                Založit Vzpomínkář <span className="arrow">↗</span>
-              </a>
+              <PrimaryCta />
             </div>
             <div className="footer-col" data-reveal data-reveal-delay-100>
               <h4>Procházet</h4>

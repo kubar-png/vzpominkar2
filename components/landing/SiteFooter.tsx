@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 interface SiteFooterProps {
   /**
@@ -47,9 +48,7 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
               <br />
               nová generace.
             </h2>
-            <Link href="/signup" className="btn btn-gold">
-              Založit Vzpomínkář <span className="arrow">↗</span>
-            </Link>
+            <PrimaryCta />
           </div>
 
           <div className="footer-col">

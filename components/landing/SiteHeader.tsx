@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 interface SiteHeaderProps {
   /**
@@ -44,9 +45,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
             <Link href="/faq">Otázky</Link>
             <Link href="/o-nas">Náš příběh</Link>
           </div>
-          <Link href="/signup" className="btn btn-gold nav-cta-desktop">
-            Založit Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta variant="nav" />
           <HomeMobileMenu />
         </nav>
       </div>

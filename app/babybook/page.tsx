@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 export const metadata: Metadata = {
   title: "Babybook — kniha prvních let",
@@ -117,9 +118,7 @@ export default function BabybookPage() {
             krůčky, směšné věty — než vyblednou. Až bude dospělé, dáte mu
             knihu, kterou si nikdo nikdy nekoupí v obchodě.
           </p>
-          <Link href="/signup?product=babybook" className="btn btn-gold hero-cta">
-            Založit Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta href="/signup?product=babybook" variant="hero" />
         </div>
 
         {/* Soft baby-book mock — pastel sage cover with gold inner border */}
@@ -263,9 +262,7 @@ export default function BabybookPage() {
               Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
-              <Link href="/signup?product=babybook" className="btn btn-gold">
-                Založit Vzpomínkář <span className="arrow">↗</span>
-              </Link>
+              <PrimaryCta href="/signup?product=babybook" />
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>
               Nebo se podívejte na{" "}

@@ -703,6 +703,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .btn-outline:hover { background: var(--ink); color: var(--bg); }
 .editorial .btn-dark { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .editorial .btn-dark:hover { background: #082443; }
+/* Full-width pill variant — used inside cards where the button should
+ * span the card width (e.g. pricing card primary CTA). */
+.editorial .btn.btn-gold-full {
+  width: 100%;
+  justify-content: center;
+}
 .editorial .btn .arrow {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px;

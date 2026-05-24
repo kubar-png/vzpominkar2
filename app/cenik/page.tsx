@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 export const metadata: Metadata = {
   title: "Ceník",
@@ -69,9 +70,7 @@ export default function PricingPage() {
             objednáváte až tehdy, kdy víte, že je hotová. Vrácení peněz do
             třiceti dnů, bez výmluv.
           </p>
-          <Link href="/signup" className="btn btn-gold hero-cta">
-            Založit Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta variant="hero" />
         </div>
       </section>
 
@@ -98,13 +97,7 @@ export default function PricingPage() {
               ))}
             </ul>
 
-            <Link
-              href="/signup"
-              className="btn btn-gold"
-              style={{ width: "100%", justifyContent: "center" }}
-            >
-              Založit Vzpomínkář <span className="arrow">↗</span>
-            </Link>
+            <PrimaryCta className="btn-gold-full" />
             <p className="cenik-price-guarantee">
               Vrácení peněz do 30 dnů · bez závazku
             </p>
@@ -205,9 +198,7 @@ export default function PricingPage() {
               Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
-              <Link href="/signup" className="btn btn-gold">
-                Založit Vzpomínkář <span className="arrow">↗</span>
-              </Link>
+              <PrimaryCta />
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>
               Mám ještě{" "}

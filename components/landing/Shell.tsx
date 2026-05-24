@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { Promo } from "./Promo";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { PrimaryCta } from "./PrimaryCta";
 import { RevealOnScroll } from "@/components/shared/RevealOnScroll";
 import { ScrollState } from "@/components/shared/ScrollState";
 
@@ -50,9 +50,7 @@ export function Shell({
        * Desktop has the header CTA always in view, so this hides on md+. */}
       {stickyMobileCta ? (
         <div className="sticky-mobile-cta" role="region" aria-label="Založit Vzpomínkář">
-          <Link href="/signup" className="btn btn-gold">
-            Založit Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta />
           <p className="sticky-mobile-cta-note">
             Vrácení do 30 dnů, bez závazku.
           </p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
+import { PrimaryCta } from "@/components/landing/PrimaryCta";
 
 export const metadata: Metadata = {
   title: "Jak to funguje",
@@ -93,9 +94,7 @@ export default function JakToFungujePage() {
             Vy vyberete otázky. Rodič odpoví hlasem nebo textem. My všechno
             vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
           </p>
-          <Link href="/signup" className="btn btn-gold hero-cta">
-            Založit Vzpomínkář <span className="arrow">↗</span>
-          </Link>
+          <PrimaryCta variant="hero" />
         </div>
       </section>
 
@@ -255,9 +254,7 @@ export default function JakToFungujePage() {
                 position: "relative",
               }}
             >
-              <Link href="/signup" className="btn btn-gold">
-                Založit Vzpomínkář <span className="arrow">↗</span>
-              </Link>
+              <PrimaryCta />
             </div>
             <p
               className="signup-disclaimer"
