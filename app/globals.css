@@ -2877,6 +2877,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   .editorial .feature-tiles { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .editorial .signup-form { flex-direction: column; }
   .editorial .signup-form input { width: 100%; }
+  .editorial .signup-form .btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 24px;
+  }
+  .editorial .signup-form .btn .arrow { margin-left: auto; }
   .editorial .phone-overlay { right: -2%; bottom: -6%; width: 22%; min-width: 110px; max-width: 150px; }
   .editorial .footer-grid { grid-template-columns: 1fr; text-align: center; }
 }
