@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { EmptyState } from "@/components/app/EmptyState";
+import { plural } from "@/lib/format/czech-plural";
 import { ScheduledList } from "./scheduled-list";
 import { PromptPickers } from "./prompt-pickers";
 
@@ -129,7 +130,7 @@ export default async function PromptsPage({
           subtitle={
             upcoming.length === 0
               ? "Nic ve frontě. Naplánujte další z knihovny níže."
-              : `${upcoming.length} ${pluralOtazek(upcoming.length)} čeká na vašeho blízkého.`
+              : `${upcoming.length} ${plural(upcoming.length, ["otázka", "otázky", "otázek"])} čeká na vašeho blízkého.`
           }
         />
         {upcoming.length === 0 ? (
@@ -154,7 +155,7 @@ export default async function PromptsPage({
         <section className="space-y-4">
           <SectionHeading
             title="Zodpovězené"
-            subtitle={`${answered.length} ${pluralOtazek(answered.length)} - klikněte pro otevření vzpomínky.`}
+            subtitle={`${answered.length} ${plural(answered.length, ["otázka", "otázky", "otázek"])} - klikněte pro otevření vzpomínky.`}
           />
           <ul className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
             {answered.map((a, i) => (
@@ -191,11 +192,6 @@ export default async function PromptsPage({
   );
 }
 
-function pluralOtazek(n: number): string {
-  if (n === 1) return "otázka";
-  if (n >= 2 && n <= 4) return "otázky";
-  return "otázek";
-}
 
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (

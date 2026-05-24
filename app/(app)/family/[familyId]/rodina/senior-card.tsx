@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
 import { FormSection } from "@/components/ui/form-section";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
+import { plural } from "@/lib/format/czech-plural";
 import { updateSeniorProfile, deleteSeniorAccount } from "@/lib/auth/senior-actions";
 
 interface SeniorCardProps {
@@ -34,9 +35,7 @@ function roleLabel(role: string | null): string | null {
   return SENIOR_ROLE_OPTIONS.find((r) => r.value === role)?.label ?? null;
 }
 
-function pluralMemories(n: number): string {
-  return n === 1 ? "vzpomínka" : n >= 2 && n <= 4 ? "vzpomínky" : "vzpomínek";
-}
+const MEMORY_FORMS = ["vzpomínka", "vzpomínky", "vzpomínek"] as const;
 
 export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
   const [phase, setPhase] = useState<Phase>("view");
@@ -233,7 +232,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
           </p>
           {senior.memoryCount > 0 && (
             <p className="rounded-[var(--radius-md)] border border-[var(--color-red-200)] bg-[var(--color-red-50)] px-4 py-3 text-sm text-[var(--color-red-700)]">
-              Upozornění: Váš blízký má {senior.memoryCount} {pluralMemories(senior.memoryCount)}.
+              Upozornění: Váš blízký má {senior.memoryCount} {plural(senior.memoryCount, MEMORY_FORMS)}.
               Zvažte je nejprve uložit jinak.
             </p>
           )}
@@ -313,7 +312,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
                 </p>
               ) : null}
               <p className="tabular-nums">
-                {senior.memoryCount} {pluralMemories(senior.memoryCount)}
+                {senior.memoryCount} {plural(senior.memoryCount, MEMORY_FORMS)}
               </p>
             </div>
           </div>

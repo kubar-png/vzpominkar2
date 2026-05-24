@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { plural } from "@/lib/format/czech-plural";
 
 export interface QA {
   q: string;
@@ -54,12 +55,6 @@ export function FaqList({ categories }: FaqListProps) {
   const totalMatches = filtered.reduce((n, c) => n + c.items.length, 0);
   const isFiltering = query.trim().length > 0;
 
-  function plural(n: number): string {
-    if (n === 1) return "odpověď";
-    if (n < 5) return "odpovědi";
-    return "odpovědí";
-  }
-
   return (
     <div className="faq-page-grid">
       {/* Sticky TOC + search (desktop) — collapses above the list on mobile */}
@@ -80,7 +75,7 @@ export function FaqList({ categories }: FaqListProps) {
             <p className="faq-search-status">
               {totalMatches === 0
                 ? "Žádný výsledek."
-                : `${totalMatches} ${plural(totalMatches)}`}
+                : `${totalMatches} ${plural(totalMatches, ["odpověď", "odpovědi", "odpovědí"])}`}
             </p>
           ) : null}
         </div>
