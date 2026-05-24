@@ -6,6 +6,10 @@ import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
+import {
+  ProgressWidgetAsync,
+  ProgressWidgetSkeleton,
+} from "@/components/app/ProgressWidget";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MemoryFeedAsync, MemoryFeedSkeleton } from "./memory-feed-async";
@@ -86,6 +90,10 @@ export default async function DashboardPage() {
           </Link>
         }
       />
+
+      <Suspense fallback={<ProgressWidgetSkeleton />}>
+        <ProgressWidgetAsync familyId={owner.familyId} />
+      </Suspense>
 
       <StatusBlock
         familyId={owner.familyId}

@@ -1,63 +1,29 @@
-import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { requireOwner } from "@/lib/auth/permissions";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppMobileMenu } from "@/components/app/AppMobileMenu";
-import {
-  BookProgressBarAsync,
-  BookProgressBarSkeleton,
-} from "@/components/app/BookProgressBar";
-import {
-  StatsSidebarAsync,
-  StatsSidebarSkeleton,
-} from "@/components/app/StatsSidebar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  // Auth has to resolve before we can show the shell at all (gating),
-  // but everything else (stats, progress) streams in via <Suspense> so the
-  // sidebar + main column paint immediately on every navigation.
   const user = await requireOwner();
 
   return (
     <div className="flex min-h-screen overflow-x-clip bg-[var(--color-paper-50)]">
-      {/* Desktop sidebar */}
       <AppSidebar
         familyId={user.familyId}
         displayName={user.displayName}
         email={user.email}
       />
 
-      {/* Mobile header + right-side drawer */}
       <AppMobileMenu
         familyId={user.familyId}
         displayName={user.displayName}
         email={user.email}
       />
 
-      {/* Main content area + right stats card. Bottom padding accounts for
-       * the sticky BookProgressBar (~64px) on both desktop and mobile.
-       * `min-w-0` on the flex wrapper + main is critical: without it, any
-       * wide child (FlipBook, long URL, code block) forces main wider than
-       * the viewport and the page scrolls horizontally on phones. */}
       <div className="flex min-h-screen w-full min-w-0 flex-col md:ml-[280px]">
-        <div className="flex min-w-0 flex-1">
-          <main className="min-w-0 flex-1 max-w-[980px] px-5 py-6 pt-[calc(3.5rem+1.25rem)] pb-24 md:px-10 md:py-10 md:pt-10">
-            {children}
-          </main>
-          {user.familyId ? (
-            <Suspense fallback={<StatsSidebarSkeleton />}>
-              <StatsSidebarAsync familyId={user.familyId} />
-            </Suspense>
-          ) : null}
-        </div>
-
-        {/* Global book progress — visible on desktop AND mobile per user
-         * request. Renders as a sticky bottom strip in every owner-app page. */}
-        {user.familyId && (
-          <Suspense fallback={<BookProgressBarSkeleton />}>
-            <BookProgressBarAsync familyId={user.familyId} />
-          </Suspense>
-        )}
+        <main className="min-w-0 w-full max-w-[980px] flex-1 px-5 py-6 pt-[calc(3.5rem+1.25rem)] pb-10 md:px-10 md:py-10 md:pt-10">
+          {children}
+        </main>
       </div>
 
       {/* Toast feedback — bottom-right desktop, top-center mobile. Cream

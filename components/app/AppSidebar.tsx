@@ -13,7 +13,6 @@ interface AppSidebarProps {
 }
 
 interface NavItem {
-  numeral: string;
   href: string;
   label: string;
   icon: React.ElementType;
@@ -21,14 +20,14 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { numeral: "I",   href: "/dashboard",        label: "Domů",            icon: Home },
-  { numeral: "II",  href: "FAMILY/memories",   label: "Vzpomínky",       icon: Archive,       requiresFamily: true },
-  { numeral: "III", href: "FAMILY/rodina",     label: "Rodina",          icon: Users,         requiresFamily: true },
-  { numeral: "IV",  href: "FAMILY/prompts",    label: "Otázky",          icon: MessageSquare, requiresFamily: true },
-  { numeral: "V",   href: "FAMILY/book",       label: "Kniha",           icon: BookOpen,      requiresFamily: true },
+  { href: "/dashboard",      label: "Domů",      icon: Home },
+  { href: "FAMILY/memories", label: "Vzpomínky", icon: Archive,       requiresFamily: true },
+  { href: "FAMILY/rodina",   label: "Rodina",    icon: Users,         requiresFamily: true },
+  { href: "FAMILY/prompts",  label: "Otázky",    icon: MessageSquare, requiresFamily: true },
+  { href: "FAMILY/book",     label: "Kniha",     icon: BookOpen,      requiresFamily: true },
 ];
 
-const SETTINGS_ITEM: NavItem = { numeral: "VI", href: "/settings", label: "Nastavení", icon: Settings };
+const SETTINGS_ITEM: NavItem = { href: "/settings", label: "Nastavení", icon: Settings };
 
 export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
   const pathname = usePathname();
@@ -51,7 +50,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
     const Icon = item.icon;
 
     const classes = cn(
-      "group relative mx-3 flex items-center gap-4 rounded-[var(--radius-md)] px-4 py-3.5 transition-colors",
+      "group relative mx-3 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 transition-colors",
       active
         ? "bg-[#2d2620] text-[var(--color-paper-50)]"
         : disabled
@@ -67,23 +66,10 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
             className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-gold-400)]"
           />
         )}
-        {/* Roman numeral */}
-        <span
-          className={cn(
-            "w-7 shrink-0 font-[family-name:var(--font-display)] text-xs",
-            active
-              ? "text-[var(--color-gold-400)]"
-              : disabled
-                ? "text-[var(--color-paper-400)]"
-                : "text-[var(--color-paper-400)] group-hover:text-[var(--color-gold-400)]",
-          )}
-        >
-          {item.numeral}.
-        </span>
         <Icon
           size={18}
           aria-hidden
-          className={active ? "text-[var(--color-paper-100)]" : ""}
+          className={cn("shrink-0", active && "text-[var(--color-paper-100)]")}
         />
         <span className="text-base font-medium">{item.label}</span>
       </>
@@ -138,7 +124,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
       {/* Main nav */}
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto py-1">
         {NAV_ITEMS.map((item) => (
-          <NavLink key={item.numeral} item={item} />
+          <NavLink key={item.href} item={item} />
         ))}
 
         <div className="mx-5 my-4 h-px bg-[var(--color-paper-200)]/12" />

@@ -14,7 +14,6 @@ interface AppMobileMenuProps {
 }
 
 interface NavItem {
-  numeral: string;
   href: string;
   label: string;
   icon: React.ElementType;
@@ -22,12 +21,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { numeral: "I",   href: "/dashboard",        label: "Domů",       icon: Home },
-  { numeral: "II",  href: "FAMILY/memories",   label: "Vzpomínky",  icon: Archive,       requiresFamily: true },
-  { numeral: "III", href: "FAMILY/rodina",     label: "Rodina",     icon: Users,         requiresFamily: true },
-  { numeral: "IV",  href: "FAMILY/prompts",    label: "Otázky",     icon: MessageSquare, requiresFamily: true },
-  { numeral: "V",   href: "FAMILY/book",       label: "Kniha",      icon: BookOpen,      requiresFamily: true },
-  { numeral: "VI",  href: "/settings",         label: "Nastavení",  icon: Settings },
+  { href: "/dashboard",      label: "Domů",      icon: Home },
+  { href: "FAMILY/memories", label: "Vzpomínky", icon: Archive,       requiresFamily: true },
+  { href: "FAMILY/rodina",   label: "Rodina",    icon: Users,         requiresFamily: true },
+  { href: "FAMILY/prompts",  label: "Otázky",    icon: MessageSquare, requiresFamily: true },
+  { href: "FAMILY/book",     label: "Kniha",     icon: BookOpen,      requiresFamily: true },
+  { href: "/settings",       label: "Nastavení", icon: Settings },
 ];
 
 export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuProps) {
@@ -161,24 +160,18 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
                     className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-gold-400)]"
                   />
                 )}
-                <span
-                  className={cn(
-                    "w-7 shrink-0 font-[family-name:var(--font-display)] text-[10px]",
-                    active
-                      ? "text-[var(--color-gold-400)]"
-                      : "text-[var(--color-paper-400)] group-hover:text-[var(--color-gold-400)]",
-                  )}
-                >
-                  {item.numeral}.
-                </span>
-                <Icon size={16} aria-hidden className={active ? "text-[var(--color-paper-100)]" : ""} />
-                <span className="text-sm font-medium">{item.label}</span>
+                <Icon
+                  size={18}
+                  aria-hidden
+                  className={cn("shrink-0", active && "text-[var(--color-paper-100)]")}
+                />
+                <span className="text-base font-medium">{item.label}</span>
               </>
             );
 
             return disabled ? (
               <span
-                key={item.numeral}
+                key={item.href}
                 className={classes}
                 title="Nejprve dokončete nastavení rodiny"
                 aria-disabled="true"
@@ -186,7 +179,7 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
                 {content}
               </span>
             ) : (
-              <Link key={item.numeral} href={href} className={classes}>{content}</Link>
+              <Link key={item.href} href={href} className={classes}>{content}</Link>
             );
           })}
         </nav>

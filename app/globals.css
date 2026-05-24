@@ -4446,170 +4446,169 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Stats sidebar — right-side navy card on every owner-app page. Reuses the
- * homepage `.signup-card` recipe: var(--ink) background, gold radial glow
- * in the top-right corner, cream-tinted body text, gold numerals. Sticky,
- * nearly full viewport height, inset from edges so it reads as a card,
- * not a chrome column. Hidden below 1280px so main content never squeezes. */
-.vzp-stats-aside {
-  display: none;
-}
-@media (min-width: 1280px) {
-  .vzp-stats-aside {
-    display: block;
-    flex-shrink: 0;
-    width: 320px;
-    padding: 24px 24px 24px 0;
-    /* Float to the right edge of the viewport regardless of how wide the
-     * main content column is. Main caps at max-w-[980px]; without this the
-     * stats card sat snug against main and left dead space on the right.
-     * `margin-left: auto` absorbs that dead space so the card's right
-     * padding (24px) matches the card's top inset for a clean inset. */
-    margin-left: auto;
-  }
-}
-.vzp-stats-card {
-  position: sticky;
-  top: 24px;
+ * Dashboard progress widget — replaces the right-side stats sidebar +
+ * bottom sticky BookProgressBar with one inline card at the top of the
+ * dashboard. Two-column on desktop (hero + secondary stats), stacked on
+ * mobile. Navy paper card so the brand chord stays consistent with the
+ * senior-area and homepage stats vibes.
+ * ─────────────────────────────────────────────────────────────────────── */
+.vzp-progress-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  padding: 32px 28px;
+  border-radius: 20px;
   background: var(--ink);
   color: var(--footer-ink);
   border: 1px solid var(--ink);
-  border-radius: 20px;
-  padding: 36px 30px 32px;
-  /* Near-full viewport height — minus 24 top, 24 outer bottom, ~64 BookProgressBar
-   * sticky strip, plus 16 buffer so the bottom of the card sits well clear. */
-  min-height: calc(100vh - 128px);
-  max-height: calc(100vh - 128px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 48px -32px rgba(8, 35, 61, 0.4);
 }
-/* Gold radial glow in top-right corner — mirrors the homepage signup-card */
-.vzp-stats-card::before {
-  content: '';
-  position: absolute;
-  inset: -22% -16% auto auto;
-  width: 240px;
-  height: 240px;
-  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
-  opacity: 0.16;
-  pointer-events: none;
+@media (min-width: 768px) {
+  .vzp-progress-card {
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    padding: 40px 36px;
+  }
 }
-.vzp-stats-card > * { position: relative; }
-
-.vzp-stats-empty {
-  margin: auto 0;
+.vzp-progress-hero { min-width: 0; }
+.vzp-progress-empty {
   font-family: var(--font-body-editorial);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.55;
-  color: rgba(237, 228, 207, 0.75);
-  text-align: center;
-  padding: 12px 4px;
-}
-
-/* Hero block — biggest number, top of card */
-.vzp-stats-hero { margin: 0 0 8px; }
-.vzp-stats-eyebrow {
-  font-family: var(--font-body-editorial);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: normal;
-  text-transform: none;
   color: rgba(237, 228, 207, 0.7);
+  margin: 0;
+}
+.vzp-progress-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(237, 228, 207, 0.62);
   margin: 0 0 12px;
 }
-.vzp-stats-num-hero {
+.vzp-progress-num {
   font-family: var(--font-display-editorial);
-  font-size: clamp(64px, 5vw, 84px);
+  font-size: clamp(56px, 6vw, 76px);
   font-weight: 500;
   line-height: 0.95;
   letter-spacing: -0.03em;
   color: var(--gold-soft);
   margin: 0;
   font-variant-numeric: tabular-nums;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
 }
-.vzp-stats-num-hero span {
-  font-family: var(--font-display-editorial);
-  font-size: clamp(22px, 1.8vw, 28px);
-  font-weight: 500;
-  color: var(--gold-soft);
+.vzp-progress-num-of {
+  font-size: clamp(22px, 2vw, 28px);
+  color: rgba(232, 181, 61, 0.55);
   letter-spacing: -0.01em;
-  opacity: 0.85;
 }
-.vzp-stats-hero-sub {
+.vzp-progress-sub {
   font-family: var(--font-body-editorial);
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 15px;
   color: rgba(237, 228, 207, 0.78);
-  margin: 14px 0 0;
+  margin: 10px 0 0;
 }
-.vzp-stats-hero-meta {
+.vzp-progress-bar {
+  position: relative;
+  height: 8px;
+  margin: 24px 0 10px;
+  background: rgba(237, 228, 207, 0.12);
+  border-radius: 999px;
+  overflow: visible;
+}
+.vzp-progress-fill {
+  height: 100%;
+  background: var(--gold-soft);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.vzp-progress-milestone {
+  position: absolute;
+  top: -6px;
+  width: 2px;
+  height: 20px;
+  background: rgba(237, 228, 207, 0.55);
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+.vzp-progress-milestone-label {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-body-editorial);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(237, 228, 207, 0.55);
+}
+.vzp-progress-status {
   font-family: var(--font-body-editorial);
   font-size: 13px;
-  color: rgba(237, 228, 207, 0.55);
-  margin: 12px 0 0;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
+  line-height: 1.5;
+  color: rgba(237, 228, 207, 0.7);
+  margin: 28px 0 0;
+}
+.vzp-progress-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  color: var(--ink);
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid var(--gold-soft);
+  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+.vzp-progress-cta:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: translateY(-1px);
 }
 
-/* Hairline between hero and list */
-.vzp-stats-rule {
-  height: 1px;
-  background: rgba(237, 228, 207, 0.14);
-  margin: 28px 0 22px;
-}
-
-/* List of secondary metrics — label sits ABOVE the number */
-.vzp-stats-list {
+.vzp-progress-stats {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  flex: 1;
-  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 16px;
+  align-content: start;
 }
-.vzp-stats-list li {
-  display: flex;
-  flex-direction: column-reverse; /* label on top, number below visually */
-  gap: 6px;
+@media (min-width: 768px) {
+  .vzp-progress-stats {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding-top: 4px;
+    border-left: 1px solid rgba(237, 228, 207, 0.12);
+    padding-left: 32px;
+  }
 }
-.vzp-stats-num {
+.vzp-progress-stats li {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  min-width: 0;
+}
+.vzp-progress-stat-num {
   font-family: var(--font-display-editorial);
-  font-size: clamp(34px, 2.6vw, 42px);
+  font-size: clamp(26px, 2.4vw, 34px);
   font-weight: 500;
   color: var(--footer-ink);
   line-height: 0.95;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
-.vzp-stats-num-warm {
+.vzp-progress-stat-num-warm {
   color: var(--gold-soft);
 }
-.vzp-stats-label {
+.vzp-progress-stat-label {
   font-family: var(--font-body-editorial);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(237, 228, 207, 0.72);
-  line-height: 1.35;
-}
-.vzp-stats-footer {
-  margin: 22px 0 0;
-  padding-top: 18px;
-  border-top: 1px solid rgba(237, 228, 207, 0.1);
-  font-family: var(--font-body-editorial);
-  font-size: 12px;
-  color: rgba(237, 228, 207, 0.5);
-  line-height: 1.45;
-  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: rgba(237, 228, 207, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
