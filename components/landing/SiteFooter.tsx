@@ -48,7 +48,7 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
               nová generace.
             </h2>
             <Link href="/signup" className="btn btn-gold">
-              Začít zdarma <span className="arrow">↗</span>
+              Založit Vzpomínkář <span className="arrow">↗</span>
             </Link>
           </div>
 

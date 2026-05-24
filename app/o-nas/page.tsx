@@ -217,11 +217,11 @@ export default function ONasPage() {
             <span className="eyebrow">Začněte dnes</span>
             <h2>Pošlete vašemu blízkému první otázku.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Vrácení peněz do 30 dnů.
+              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
               <Link href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>

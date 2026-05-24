@@ -105,7 +105,7 @@ export function HomeMobileMenu() {
               className="btn btn-gold"
               onClick={() => setOpen(false)}
             >
-              Začít zdarma <span className="arrow">↗</span>
+              Založit Vzpomínkář <span className="arrow">↗</span>
             </Link>
           </div>
           </div>

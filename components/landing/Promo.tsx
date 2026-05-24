@@ -7,16 +7,10 @@ export function Promo() {
   return (
     <div data-promo-banner className="bg-[var(--color-navy-900)] text-[var(--color-paper-100)]">
       <div className="mx-auto flex max-w-[var(--container-wide)] items-center justify-center gap-4 px-6 py-2.5">
-        <span className="hidden font-[family-name:var(--font-display)] text-sm sm:inline">
-          Pilotní verze
-        </span>
-        <span aria-hidden className="hidden text-[var(--color-paper-400)] sm:inline">
-          ·
-        </span>
         <span className="font-[family-name:var(--font-display)] text-sm">
-          roční přístup zdarma pro prvních 100 rodin
+          Sleva 200 Kč pro nové rodiny — pošleme e-mailem
           <span className="ml-2 text-[10px] not-italic uppercase tracking-[0.32em] text-[var(--color-gold-300)]">
-            zdarma
+            ochutnávka
           </span>
         </span>
       </div>

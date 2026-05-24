@@ -297,7 +297,7 @@ export default function DarekPage() {
             <span className="eyebrow">Vyberte den, napište vzkaz</span>
             <h2>Darujte Vzpomínkář.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
+              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
               Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>

@@ -122,7 +122,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Kdy a kolik se platí?",
-        a: "Roční přístup je v pilotní verzi zdarma. Cenu za tisk knihy uvidíte v ceníku — platí se zvlášť, až ji budete chtít skutečně vytisknout. Žádné automatické předplatné.",
+        a: "Jednorázových 2 990 Kč za roční přístup. V ceně je rok týdenních otázek, online knihovna a podpora. Cenu za tisk knihy uvidíte před objednávkou — platí se zvlášť, až ji budete chtít vytisknout. Žádné automatické předplatné.",
       },
       {
         q: "Co se stane po roce, pokud knihu nestihnu objednat?",
@@ -218,14 +218,14 @@ export default function FaqPage() {
         <div className="container">
           <div className="signup-card">
             <span className="eyebrow">Stále váháte?</span>
-            <h2>Vyzkoušejte první týdny zdarma.</h2>
+            <h2>Vyzkoušejte to v klidu prvních 30 dní.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Pokud to není pro vás, do 30 dnů
-              vrátíme peníze.
+              Jednorázových 2 990 Kč. Pokud to není pro vás, do 30 dnů
+              vrátíme peníze bez výmluv.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
               <Link href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>

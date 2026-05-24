@@ -144,12 +144,12 @@ export default function KontaktPage() {
             <span className="eyebrow">Začít rovnou</span>
             <h2>Pošlete jim první otázku v pondělí.</h2>
             <p className="lede">
-              Registrace zabere pět minut. Pilotní verze je zdarma, vrácení
-              peněz do 30 dnů.
+              Registrace zabere pět minut. Jednorázových 2 990 Kč, vrácení
+              peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
               <Link href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
           </div>

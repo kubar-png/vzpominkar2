@@ -94,7 +94,7 @@ export default function JakToFungujePage() {
             vyhladíme. Z toho vznikne kniha, kterou držíte v ruce.
           </p>
           <Link href="/signup" className="btn btn-gold hero-cta">
-            Začít zdarma <span className="arrow">↗</span>
+            Založit Vzpomínkář <span className="arrow">↗</span>
           </Link>
         </div>
       </section>
@@ -247,7 +247,7 @@ export default function JakToFungujePage() {
             <span className="eyebrow">Začněte dnes</span>
             <h2>Zeptejte se na to důležité ještě dnes.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
+              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div
               style={{
@@ -256,7 +256,7 @@ export default function JakToFungujePage() {
               }}
             >
               <Link href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
             <p

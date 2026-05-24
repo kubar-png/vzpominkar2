@@ -100,7 +100,7 @@ export default function HomePage() {
               <a href="/o-nas">Náš příběh</a>
             </div>
             <a href="/signup" className="btn btn-gold nav-cta-desktop">
-              Začít zdarma <span className="arrow">↗</span>
+              Založit Vzpomínkář <span className="arrow">↗</span>
             </a>
             <HomeMobileMenu />
           </nav>
@@ -278,7 +278,7 @@ export default function HomePage() {
                   <li>Sourozenci a vnoučata se mohou připojit</li>
                 </ul>
                 <a href="/signup" className="btn btn-gold">
-                  Začít zdarma <span className="arrow">↗</span>
+                  Založit Vzpomínkář <span className="arrow">↗</span>
                 </a>
                 <div className="product-meta">
                   <span>
@@ -676,11 +676,12 @@ export default function HomePage() {
           <div className="container">
             <div className="signup-card" data-reveal data-reveal-variant="scale">
               <span className="eyebrow">Ochutnávka — sleva 200 Kč</span>
-              <h2>Pošlete jim první otázku zdarma.</h2>
+              <h2>Pošleme ukázku knihy a slevový kód 200 Kč.</h2>
               <p className="lede">
-                Vyzkoušejte, jak Vzpomínkář funguje. Tři e-maily — v prvním
-                ukázka skutečné knihy, ve druhém příběh jedné rodiny, ve
-                třetím slevový kód. Žádný spam, žádné triky.
+                Podívejte se, jak Vzpomínkář funguje, ještě než cokoliv
+                zaplatíte. Tři e-maily — v prvním ukázka skutečné knihy, ve
+                druhém příběh jedné rodiny, ve třetím slevový kód. Žádný spam,
+                žádné triky.
               </p>
               {/* The full sign-up flow lives in /app/(auth) routes. This is a
                * lead-magnet form — a Server Action will be wired in by the
@@ -718,7 +719,7 @@ export default function HomePage() {
                 nová generace.
               </h2>
               <a href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </a>
             </div>
             <div className="footer-col" data-reveal data-reveal-delay-100>

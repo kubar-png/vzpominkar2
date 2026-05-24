@@ -2602,17 +2602,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   margin-bottom: 24px;
 }
 .editorial .cenik-card-head .eyebrow { margin: 0; }
-.editorial .cenik-pilot-badge {
-  font-family: var(--font-body-editorial);
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--bg);
-  background: var(--oxblood);
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-weight: 500;
-}
 .editorial .cenik-price {
   display: flex;
   align-items: baseline;
@@ -2626,12 +2615,6 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink);
   line-height: 1;
   letter-spacing: -0.02em;
-}
-.editorial .cenik-price-strike {
-  font-family: var(--font-display-editorial);
-  font-size: 16px;
-  color: var(--ink-mute);
-  text-decoration: line-through;
 }
 .editorial .cenik-price-sub {
   font-size: 13px;

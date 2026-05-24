@@ -118,7 +118,7 @@ export default function BabybookPage() {
             knihu, kterou si nikdo nikdy nekoupí v obchodě.
           </p>
           <Link href="/signup?product=babybook" className="btn btn-gold hero-cta">
-            Začít zdarma <span className="arrow">↗</span>
+            Založit Vzpomínkář <span className="arrow">↗</span>
           </Link>
         </div>
 
@@ -260,11 +260,11 @@ export default function BabybookPage() {
             <span className="eyebrow">Začněte hned</span>
             <h2>Dokud si první slova ještě pamatujete.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
+              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
               <Link href="/signup?product=babybook" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>

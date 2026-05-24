@@ -160,7 +160,7 @@ export default async function BookPage({
             <p className="text-sm text-[var(--color-text-muted)]">
               {new Date(recentOrder.created_at).toLocaleDateString("cs-CZ")} ·{" "}
               {recentOrder.amount_czk === 0
-                ? "v pilotní verzi zdarma"
+                ? "—"
                 : `${recentOrder.amount_czk.toLocaleString("cs-CZ")} Kč`}
             </p>
           </div>

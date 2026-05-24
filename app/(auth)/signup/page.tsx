@@ -76,7 +76,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           />
 
           <p className="auth-fineprint">
-            Pilotní verze — roční přístup zdarma. Vrácení peněz do 30&nbsp;dnů,
+            Jednorázových 2&nbsp;990&nbsp;Kč na rok. Vrácení peněz do 30&nbsp;dnů,
             bez výmluv.
           </p>
 

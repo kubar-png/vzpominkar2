@@ -5,7 +5,7 @@ import { Shell } from "@/components/landing/Shell";
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "Pilotní verze — roční přístup zdarma. Tištěnou knihu si objednáte, až bude vzpomínek dost. Vrácení peněz do 30 dnů.",
+    "Roční přístup za 2 990 Kč. Tištěnou knihu si objednáte, až bude vzpomínek dost. Vrácení peněz do 30 dnů, bez závazku.",
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -13,14 +13,13 @@ export const metadata: Metadata = {
  *
  * Single paper-card plan (no shadcn), homepage .feature-list bullets,
  * mini-FAQ using .faq-item, final signup-card. Pricing tokens come from
- * env (already wired); pilot reads PRICE_YEARLY_ACCESS_CZK=0.
+ * env; flat 2 990 Kč fallback (pilotní verze retired).
  * ─────────────────────────────────────────────────────────────────────── */
 
-const PRICE_YEARLY = Number(process.env.PRICE_YEARLY_ACCESS_CZK ?? "0");
+const PRICE_YEARLY = Number(process.env.PRICE_YEARLY_ACCESS_CZK ?? "2990");
 const PRICE_BOOK = Number(process.env.PRICE_BOOK_PRINT_CZK ?? "0");
 
 function formatCzk(n: number): string {
-  if (n === 0) return "Zdarma";
   return `${n.toLocaleString("cs-CZ")} Kč`;
 }
 
@@ -61,7 +60,7 @@ export default function PricingPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Ceník · pilotní verze</span>
+          <span className="eyebrow">Ceník</span>
           <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
             Jedna platba. Žádné předplatné.
           </h1>
@@ -71,7 +70,7 @@ export default function PricingPage() {
             třiceti dnů, bez výmluv.
           </p>
           <Link href="/signup" className="btn btn-gold hero-cta">
-            Začít zdarma <span className="arrow">↗</span>
+            Založit Vzpomínkář <span className="arrow">↗</span>
           </Link>
         </div>
       </section>
@@ -83,22 +82,14 @@ export default function PricingPage() {
           <div className="cenik-card" data-reveal>
             <div className="cenik-card-head">
               <span className="eyebrow">Roční přístup</span>
-              <span className="cenik-pilot-badge">Pilotní verze</span>
             </div>
             <div className="cenik-price">
-              <span className="cenik-price-amount">
-                {PRICE_YEARLY === 0 ? "Zdarma" : formatCzk(PRICE_YEARLY)}
-              </span>
-              {PRICE_YEARLY > 0 ? (
-                <span className="cenik-price-strike">1 990 Kč</span>
-              ) : (
-                <span className="cenik-price-sub">na 12 měsíců</span>
-              )}
+              <span className="cenik-price-amount">{formatCzk(PRICE_YEARLY)}</span>
+              <span className="cenik-price-sub">jednorázově, na 12 měsíců</span>
             </div>
             <p className="cenik-price-note">
-              {PRICE_YEARLY === 0
-                ? "V této pilotní verzi je roční přístup zdarma. Cena tisku knihy se přičítá až ve chvíli, kdy ji budete chtít vyrobit."
-                : "Jednorázově na 12 měsíců. Cena tisku knihy se přičítá až ve chvíli, kdy ji budete chtít vyrobit."}
+              Jednorázová platba na rok vyprávění. Cena tisku knihy se přičítá
+              až ve chvíli, kdy ji budete chtít vyrobit.
             </p>
 
             <ul className="feature-list" style={{ margin: "32px 0 32px" }}>
@@ -112,7 +103,7 @@ export default function PricingPage() {
               className="btn btn-gold"
               style={{ width: "100%", justifyContent: "center" }}
             >
-              Začít zdarma <span className="arrow">↗</span>
+              Založit Vzpomínkář <span className="arrow">↗</span>
             </Link>
             <p className="cenik-price-guarantee">
               Vrácení peněz do 30 dnů · bez závazku
@@ -128,17 +119,17 @@ export default function PricingPage() {
             <div data-reveal>
               <span className="eyebrow">Tisk a doplňky</span>
               <h2 style={{ margin: "12px 0 20px" }}>
-                Tištěná kniha{" "}
-                {formatCzk(PRICE_BOOK)}
-                .
+                {PRICE_BOOK > 0
+                  ? <>Tištěná kniha {formatCzk(PRICE_BOOK)}.</>
+                  : "Tištěnou knihu objednáte, až bude hotová."}
               </h2>
               <p style={{ maxWidth: "44ch", marginBottom: 28 }}>
-                {PRICE_BOOK === 0
-                  ? "V této pilotní verzi je tisk v rámci testování zdarma — všechno ostatní (papír, vazba, doprava) hradíme my, abychom kvalitu ladili spolu s rodinami."
-                  : "Tvrdé desky, šitá vazba, papír v krémové barvě. U každé kapitoly QR kód s původním hlasem. Cena včetně tisku, vazby, balení a poštovného v ČR."}
+                Tvrdé desky, šitá vazba, papír v krémové barvě. U každé kapitoly
+                QR kód s původním hlasem. Cenu tisku uvidíte před objednávkou —
+                počítá se podle počtu stran a typu vazby.
               </p>
               <Link href="/signup" className="btn btn-dark">
-                Vyzkoušet zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
 
@@ -211,11 +202,11 @@ export default function PricingPage() {
             <span className="eyebrow">Začněte dnes</span>
             <h2>Pošlete jim první otázku v pondělí.</h2>
             <p className="lede">
-              Pilotní verze je zdarma. Vrácení peněz do 30 dnů, žádný závazek.
+              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
             </p>
             <div style={{ display: "inline-flex", position: "relative" }}>
               <Link href="/signup" className="btn btn-gold">
-                Začít zdarma <span className="arrow">↗</span>
+                Založit Vzpomínkář <span className="arrow">↗</span>
               </Link>
             </div>
             <p className="signup-disclaimer" style={{ marginTop: 18 }}>

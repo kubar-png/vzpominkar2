@@ -45,7 +45,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
             <Link href="/o-nas">Náš příběh</Link>
           </div>
           <Link href="/signup" className="btn btn-gold nav-cta-desktop">
-            Začít zdarma <span className="arrow">↗</span>
+            Založit Vzpomínkář <span className="arrow">↗</span>
           </Link>
           <HomeMobileMenu />
         </nav>
