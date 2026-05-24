@@ -1,4 +1,5 @@
 import { getFamilyStats, type FamilyStats } from "@/lib/family/stats";
+import { plural } from "@/lib/format/czech-plural";
 
 interface StatsSidebarProps {
   stats: FamilyStats;
@@ -89,7 +90,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           <header className="vzp-stats-hero">
             <p className="vzp-stats-eyebrow">Zatím máte</p>
             <p className="vzp-stats-num-hero">
-              {stats.memoryCount} <span>{pluralMemory(stats.memoryCount)}</span>
+              {stats.memoryCount} <span>{plural(stats.memoryCount, ["vzpomínku", "vzpomínky", "vzpomínek"])}</span>
             </p>
             <p className="vzp-stats-hero-sub">v knize</p>
           </header>
@@ -101,7 +102,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           <li>
             <span className="vzp-stats-num">~{stats.approxBookPages}</span>
             <span className="vzp-stats-label">
-              {pluralPages(stats.approxBookPages)} v hotové knize
+              {plural(stats.approxBookPages, ["strana", "strany", "stran"])} v hotové knize
             </span>
           </li>
           {stats.audioSecondsTotal > 0 ? (
@@ -113,13 +114,13 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           <li>
             <span className="vzp-stats-num">{formatThousands(stats.wordsTotal)}</span>
             <span className="vzp-stats-label">
-              {pluralWords(stats.wordsTotal)} v knize
+              {plural(stats.wordsTotal, ["slovo", "slova", "slov"])} v knize
             </span>
           </li>
           <li>
             <span className="vzp-stats-num">{stats.weeksSinceStart}.</span>
             <span className="vzp-stats-label">
-              {pluralWeek(stats.weeksSinceStart)} vašeho sběru
+              {plural(stats.weeksSinceStart, ["týden", "týdny", "týdnů"])} vašeho sběru
             </span>
           </li>
           {stats.weekStreak >= 2 ? (
@@ -128,7 +129,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
                 {stats.weekStreak}
               </span>
               <span className="vzp-stats-label">
-                {pluralWeek(stats.weekStreak)} v řadě
+                {plural(stats.weekStreak, ["týden", "týdny", "týdnů"])} v řadě
               </span>
             </li>
           ) : null}
@@ -146,30 +147,6 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
 
 function formatThousands(n: number): string {
   return n.toLocaleString("cs-CZ").replace(/ /g, " ");
-}
-
-function pluralPages(n: number): string {
-  if (n === 1) return "strana";
-  if (n >= 2 && n <= 4) return "strany";
-  return "stran";
-}
-
-function pluralWords(n: number): string {
-  if (n === 1) return "slovo";
-  if (n >= 2 && n <= 4) return "slova";
-  return "slov";
-}
-
-function pluralWeek(n: number): string {
-  if (n === 1) return "týden";
-  if (n >= 2 && n <= 4) return "týdny";
-  return "týdnů";
-}
-
-function pluralMemory(n: number): string {
-  if (n === 1) return "vzpomínku";
-  if (n >= 2 && n <= 4) return "vzpomínky";
-  return "vzpomínek";
 }
 
 function formatStartedAt(iso: string): string {
