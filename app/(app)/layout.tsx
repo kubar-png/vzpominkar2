@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const stats = await getFamilyStats(user.familyId);
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-paper-50)]">
+    <div className="flex min-h-screen overflow-x-clip bg-[var(--color-paper-50)]">
       {/* Desktop sidebar */}
       <AppSidebar
         familyId={user.familyId}
@@ -27,10 +27,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       />
 
       {/* Main content area + right stats card. Bottom padding accounts for
-       * the sticky BookProgressBar (~64px) on both desktop and mobile. */}
-      <div className="flex min-h-screen w-full flex-col md:ml-[280px]">
-        <div className="flex flex-1">
-          <main className="flex-1 px-5 py-6 pt-[calc(3.5rem+1.25rem)] md:px-10 md:py-10 md:pt-10 max-w-[980px] pb-24">
+       * the sticky BookProgressBar (~64px) on both desktop and mobile.
+       * `min-w-0` on the flex wrapper + main is critical: without it, any
+       * wide child (FlipBook, long URL, code block) forces main wider than
+       * the viewport and the page scrolls horizontally on phones. */}
+      <div className="flex min-h-screen w-full min-w-0 flex-col md:ml-[280px]">
+        <div className="flex min-w-0 flex-1">
+          <main className="min-w-0 flex-1 max-w-[980px] px-5 py-6 pt-[calc(3.5rem+1.25rem)] pb-24 md:px-10 md:py-10 md:pt-10">
             {children}
           </main>
           {user.familyId ? <StatsSidebar stats={stats} /> : null}
