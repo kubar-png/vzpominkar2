@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 
 export const metadata: Metadata = {
   title: "Babybook — kniha prvních let",
@@ -253,34 +254,18 @@ export default function BabybookPage() {
       </section>
 
       {/* ═══════════ FINAL CTA ═══════════ */}
-      <section className="signup">
-        <div className="container">
-          <div className="signup-card">
-            <span className="eyebrow">Začněte hned</span>
-            <h2>Dokud si první slova ještě pamatujete.</h2>
-            <p className="lede">
-              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
-            </p>
-            <div style={{ display: "inline-flex", position: "relative" }}>
-              <PrimaryCta href="/signup?product=babybook" />
-            </div>
-            <p className="signup-disclaimer" style={{ marginTop: 18 }}>
-              Nebo se podívejte na{" "}
-              <Link
-                href="/cenik"
-                style={{
-                  color: "var(--gold-soft)",
-                  textDecoration: "underline",
-                  textUnderlineOffset: 4,
-                }}
-              >
-                ceník
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <FinalCta
+        eyebrow="Začněte hned"
+        heading="Dokud si první slova ještě pamatujete."
+        lede="Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        ctaHref="/signup?product=babybook"
+        footer={
+          <>
+            Nebo se podívejte na{" "}
+            <FinalCtaFooterLink href="/cenik">ceník</FinalCtaFooterLink>.
+          </>
+        }
+      />
     </Shell>
   );
 }

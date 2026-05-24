@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { FinalCta } from "@/components/landing/FinalCta";
 
 export const metadata: Metadata = {
   title: "Kontakt",
@@ -139,21 +139,11 @@ export default function KontaktPage() {
       </section>
 
       {/* ═══════════ FINAL CTA ═══════════ */}
-      <section className="signup">
-        <div className="container">
-          <div className="signup-card">
-            <span className="eyebrow">Začít rovnou</span>
-            <h2>Pošlete jim první otázku v pondělí.</h2>
-            <p className="lede">
-              Registrace zabere pět minut. Jednorázových 2 990 Kč, vrácení
-              peněz do 30 dnů, bez závazku.
-            </p>
-            <div style={{ display: "inline-flex", position: "relative" }}>
-              <PrimaryCta />
-            </div>
-          </div>
-        </div>
-      </section>
+      <FinalCta
+        eyebrow="Začít rovnou"
+        heading="Pošlete jim první otázku v pondělí."
+        lede="Registrace zabere pět minut. Jednorázových 2 990 Kč, vrácení peněz do 30 dnů, bez závazku."
+      />
     </Shell>
   );
 }

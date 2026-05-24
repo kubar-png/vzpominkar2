@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
-import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 import { FaqList, type Category } from "./faq-list";
 
 export const metadata: Metadata = {
@@ -215,35 +215,17 @@ export default function FaqPage() {
       </section>
 
       {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
-      <section className="signup">
-        <div className="container">
-          <div className="signup-card">
-            <span className="eyebrow">Stále váháte?</span>
-            <h2>Vyzkoušejte to v klidu prvních 30 dní.</h2>
-            <p className="lede">
-              Jednorázových 2 990 Kč. Pokud to není pro vás, do 30 dnů
-              vrátíme peníze bez výmluv.
-            </p>
-            <div style={{ display: "inline-flex", position: "relative" }}>
-              <PrimaryCta />
-            </div>
-            <p className="signup-disclaimer" style={{ marginTop: 18 }}>
-              Nenašli jste odpověď?{" "}
-              <Link
-                href="/kontakt"
-                style={{
-                  color: "var(--gold-soft)",
-                  textDecoration: "underline",
-                  textUnderlineOffset: 4,
-                }}
-              >
-                Napište nám
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <FinalCta
+        eyebrow="Stále váháte?"
+        heading="Vyzkoušejte to v klidu prvních 30 dní."
+        lede="Jednorázových 2 990 Kč. Pokud to není pro vás, do 30 dnů vrátíme peníze bez výmluv."
+        footer={
+          <>
+            Nenašli jste odpověď?{" "}
+            <FinalCtaFooterLink href="/kontakt">Napište nám</FinalCtaFooterLink>.
+          </>
+        }
+      />
     </Shell>
   );
 }

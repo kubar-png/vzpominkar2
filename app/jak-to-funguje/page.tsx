@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 
 export const metadata: Metadata = {
   title: "Jak to funguje",
@@ -240,42 +241,17 @@ export default function JakToFungujePage() {
       </section>
 
       {/* ═══════════ FINAL SIGNUP CARD — navy + gold ═══════════ */}
-      <section className="signup">
-        <div className="container">
-          <div className="signup-card">
-            <span className="eyebrow">Začněte dnes</span>
-            <h2>Zeptejte se na to důležité ještě dnes.</h2>
-            <p className="lede">
-              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
-            </p>
-            <div
-              style={{
-                display: "inline-flex",
-                position: "relative",
-              }}
-            >
-              <PrimaryCta />
-            </div>
-            <p
-              className="signup-disclaimer"
-              style={{ marginTop: 18 }}
-            >
-              Nebo se podívejte na{" "}
-              <Link
-                href="/cenik"
-                style={{
-                  color: "var(--gold-soft)",
-                  textDecoration: "underline",
-                  textUnderlineOffset: 4,
-                }}
-              >
-                ceník
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <FinalCta
+        eyebrow="Začněte dnes"
+        heading="Zeptejte se na to důležité ještě dnes."
+        lede="Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        footer={
+          <>
+            Nebo se podívejte na{" "}
+            <FinalCtaFooterLink href="/cenik">ceník</FinalCtaFooterLink>.
+          </>
+        }
+      />
     </Shell>
   );
 }
