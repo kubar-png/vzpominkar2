@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
+import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 
 export const metadata: Metadata = {
   title: "Vzpomínkář jako dárek",
@@ -291,37 +292,19 @@ export default function DarekPage() {
       </section>
 
       {/* ═══════════ FINAL CTA ═══════════ */}
-      <section className="signup">
-        <div className="container">
-          <div className="signup-card">
-            <span className="eyebrow">Vyberte den, napište vzkaz</span>
-            <h2>Darujte Vzpomínkář.</h2>
-            <p className="lede">
-              Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku.
-              Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv.
-            </p>
-            <div style={{ display: "inline-flex", position: "relative" }}>
-              <Link href="/signup?gift=1" className="btn btn-gold">
-                Darovat Vzpomínkář <span className="arrow">↗</span>
-              </Link>
-            </div>
-            <p className="signup-disclaimer" style={{ marginTop: 18 }}>
-              Nebo se podívejte na{" "}
-              <Link
-                href="/cenik"
-                style={{
-                  color: "var(--gold-soft)",
-                  textDecoration: "underline",
-                  textUnderlineOffset: 4,
-                }}
-              >
-                ceník
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <FinalCta
+        eyebrow="Vyberte den, napište vzkaz"
+        heading="Darujte Vzpomínkář."
+        lede="Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku. Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv."
+        ctaHref="/signup?gift=1"
+        ctaLabel="Darovat Vzpomínkář"
+        footer={
+          <>
+            Nebo se podívejte na{" "}
+            <FinalCtaFooterLink href="/cenik">ceník</FinalCtaFooterLink>.
+          </>
+        }
+      />
     </Shell>
   );
 }

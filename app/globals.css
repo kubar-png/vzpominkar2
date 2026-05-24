@@ -1853,6 +1853,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .signup-form input:focus { border-color: var(--ink); }
 .editorial .signup-disclaimer { font-size: 12px; color: var(--ink-mute); max-width: 480px; margin: 0 auto; }
+.editorial .signup-disclaimer-spaced { margin-top: 18px; }
+.editorial .signup-disclaimer-link {
+  color: var(--gold-soft);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 
 /* ─── Sticky mobile CTA bar — bottom of viewport on phones ─── */
 .editorial .sticky-mobile-cta {
