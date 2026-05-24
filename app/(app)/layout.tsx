@@ -1,14 +1,22 @@
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { requireOwner } from "@/lib/auth/permissions";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppMobileMenu } from "@/components/app/AppMobileMenu";
-import { BookProgressBar } from "@/components/app/BookProgressBar";
-import { StatsSidebar } from "@/components/app/StatsSidebar";
-import { getFamilyStats } from "@/lib/family/stats";
+import {
+  BookProgressBarAsync,
+  BookProgressBarSkeleton,
+} from "@/components/app/BookProgressBar";
+import {
+  StatsSidebarAsync,
+  StatsSidebarSkeleton,
+} from "@/components/app/StatsSidebar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // Auth has to resolve before we can show the shell at all (gating),
+  // but everything else (stats, progress) streams in via <Suspense> so the
+  // sidebar + main column paint immediately on every navigation.
   const user = await requireOwner();
-  const stats = await getFamilyStats(user.familyId);
 
   return (
     <div className="flex min-h-screen overflow-x-clip bg-[var(--color-paper-50)]">
@@ -36,13 +44,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <main className="min-w-0 flex-1 max-w-[980px] px-5 py-6 pt-[calc(3.5rem+1.25rem)] pb-24 md:px-10 md:py-10 md:pt-10">
             {children}
           </main>
-          {user.familyId ? <StatsSidebar stats={stats} /> : null}
+          {user.familyId ? (
+            <Suspense fallback={<StatsSidebarSkeleton />}>
+              <StatsSidebarAsync familyId={user.familyId} />
+            </Suspense>
+          ) : null}
         </div>
 
         {/* Global book progress — visible on desktop AND mobile per user
          * request. Renders as a sticky bottom strip in every owner-app page. */}
         {user.familyId && (
-          <BookProgressBar count={stats.memoryCount} familyId={user.familyId} />
+          <Suspense fallback={<BookProgressBarSkeleton />}>
+            <BookProgressBarAsync familyId={user.familyId} />
+          </Suspense>
         )}
       </div>
 

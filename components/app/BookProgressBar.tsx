@@ -1,8 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getFamilyStats } from "@/lib/family/stats";
 
 const FULL_BOOK = 52;
 const ORDER_MIN = 30;
@@ -10,6 +9,29 @@ const ORDER_MIN = 30;
 interface BookProgressBarProps {
   count: number;
   familyId: string;
+}
+
+/** Async wrapper for the sticky bottom progress strip — keeps the layout
+ * shell non-blocking while stats resolve. */
+export async function BookProgressBarAsync({ familyId }: { familyId: string }) {
+  const stats = await getFamilyStats(familyId);
+  return <BookProgressBar count={stats.memoryCount} familyId={familyId} />;
+}
+
+/** Skeleton matches the real bar's outer dimensions so the page bottom
+ * doesn't jump when the real strip streams in. */
+export function BookProgressBarSkeleton() {
+  return (
+    <div
+      aria-hidden
+      className="sticky bottom-0 z-10 flex items-center gap-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3"
+      style={{ opacity: 0.55 }}
+    >
+      <div className="h-3 w-24 shrink-0 rounded bg-[var(--color-paper-200)]" />
+      <div className="h-2 flex-1 rounded-full bg-[var(--color-paper-200)]" />
+      <div className="h-3 w-28 shrink-0 rounded bg-[var(--color-paper-200)]" />
+    </div>
+  );
 }
 
 export function BookProgressBar({ count, familyId }: BookProgressBarProps) {

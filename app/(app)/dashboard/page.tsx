@@ -1,14 +1,14 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { batchSignUrls } from "@/lib/family/server";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MemoryFeed } from "./memory-feed";
+import { MemoryFeedAsync, MemoryFeedSkeleton } from "./memory-feed-async";
 
 export const metadata: Metadata = { title: "Domů" };
 
@@ -44,37 +44,11 @@ export default async function DashboardPage() {
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
 
+  // Fast queries the page header + StatusBlock need (seniors for greeting,
+  // next prompt for the status row). The heavy memory feed + signed URLs
+  // stream in below via <Suspense> so the shell paints immediately.
   const supabase = createAdminClient();
-
-  const [
-    { data: rawMemories },
-    { data: rawSeniors },
-    { data: rawNext },
-  ] = await Promise.all([
-    supabase
-      .from("memories")
-      .select(
-        "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, memory_date, prompts(question), profiles!memories_author_id_fkey(id, display_name)",
-      )
-      .eq("family_id", owner.familyId)
-      .order("is_favorite", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(RECENT_LIMIT)
-      .returns<
-        {
-          id: string;
-          title: string | null;
-          text_content: string | null;
-          audio_path: string | null;
-          audio_duration_seconds: number | null;
-          status: string;
-          is_favorite: boolean;
-          created_at: string;
-          memory_date: string | null;
-          prompts: { question: string } | null;
-          profiles: { id: string; display_name: string | null } | null;
-        }[]
-      >(),
+  const [{ data: rawSeniors }, { data: rawNext }] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, display_name")
@@ -94,60 +68,6 @@ export default async function DashboardPage() {
         prompts: { question: string } | null;
       }[]>(),
   ]);
-
-  const list = rawMemories ?? [];
-  const ids = list.map((m) => m.id);
-
-  const { data: rawAttachments } = ids.length
-    ? await supabase
-        .from("memory_attachments")
-        .select("memory_id, storage_path, mime_type, caption")
-        .in("memory_id", ids)
-        .returns<
-          { memory_id: string; storage_path: string; mime_type: string; caption: string | null }[]
-        >()
-    : { data: [] };
-
-  const audioPaths = list.flatMap((m) => (m.audio_path ? [m.audio_path] : []));
-  const attachPaths = (rawAttachments ?? []).map((a) => a.storage_path);
-
-  const [audioUrls, attachUrls] = await Promise.all([
-    batchSignUrls("memory-audio", audioPaths),
-    batchSignUrls("memory-attachments", attachPaths),
-  ]);
-
-  // Group attachments by memory id
-  const attachByMemory = new Map<
-    string,
-    { storage_path: string; mime_type: string; caption: string | null }[]
-  >();
-  for (const a of rawAttachments ?? []) {
-    const arr = attachByMemory.get(a.memory_id) ?? [];
-    arr.push(a);
-    attachByMemory.set(a.memory_id, arr);
-  }
-
-  const memories: MemoryItem[] = list.map((m) => ({
-    id: m.id,
-    title: m.title,
-    text_content: m.text_content,
-    audio_path: m.audio_path,
-    audioUrl: m.audio_path ? (audioUrls.get(m.audio_path) ?? null) : null,
-    audio_duration_seconds: m.audio_duration_seconds,
-    status: m.status,
-    is_favorite: m.is_favorite ?? false,
-    created_at: m.created_at,
-    memory_date: m.memory_date,
-    question: m.prompts?.question ?? null,
-    authorId: m.profiles?.id ?? null,
-    authorName: m.profiles?.display_name ?? null,
-    attachments: (attachByMemory.get(m.id) ?? []).map((a) => ({
-      storage_path: a.storage_path,
-      signedUrl: attachUrls.get(a.storage_path) ?? "",
-      mime_type: a.mime_type,
-      caption: a.caption,
-    })),
-  }));
 
   const seniors: SeniorOption[] = (rawSeniors ?? []).map((s) => ({
     id: s.id,
@@ -211,7 +131,13 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        <MemoryFeed memories={memories} seniors={seniors} familyId={owner.familyId} />
+        <Suspense fallback={<MemoryFeedSkeleton />}>
+          <MemoryFeedAsync
+            familyId={owner.familyId}
+            seniors={seniors}
+            limit={RECENT_LIMIT}
+          />
+        </Suspense>
       </div>
     </div>
   );

@@ -1,7 +1,35 @@
-import type { FamilyStats } from "@/lib/family/stats";
+import { getFamilyStats, type FamilyStats } from "@/lib/family/stats";
 
 interface StatsSidebarProps {
   stats: FamilyStats;
+}
+
+/** Async wrapper used inside <Suspense> in the app layout. Fetches stats so
+ * the shell can paint immediately and the card streams in when ready. */
+export async function StatsSidebarAsync({ familyId }: { familyId: string }) {
+  const stats = await getFamilyStats(familyId);
+  return <StatsSidebar stats={stats} />;
+}
+
+/** Skeleton shown while StatsSidebarAsync is loading. Same outer dimensions
+ * so the layout doesn't reflow when real content arrives. */
+export function StatsSidebarSkeleton() {
+  return (
+    <aside className="vzp-stats-aside" aria-hidden>
+      <div className="vzp-stats-card" style={{ opacity: 0.6 }}>
+        <div style={{ height: 28, width: "55%", marginBottom: 12, background: "rgba(255,255,255,0.06)", borderRadius: 4 }} />
+        <div style={{ height: 56, width: "70%", marginBottom: 16, background: "rgba(255,255,255,0.08)", borderRadius: 6 }} />
+        <div style={{ height: 14, width: "80%", marginBottom: 28, background: "rgba(255,255,255,0.05)", borderRadius: 4 }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 20 }} />
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
+            <div style={{ height: 14, width: "20%", background: "rgba(255,255,255,0.06)", borderRadius: 3 }} />
+            <div style={{ height: 14, width: "45%", background: "rgba(255,255,255,0.05)", borderRadius: 3 }} />
+          </div>
+        ))}
+      </div>
+    </aside>
+  );
 }
 
 /**
