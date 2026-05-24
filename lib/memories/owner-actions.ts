@@ -4,6 +4,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
+import { invalidateFamilyStats } from "@/lib/family/stats";
 
 export type OwnerMemoryResult = { ok: true } | { ok: false; error: string };
 
@@ -30,6 +31,7 @@ export async function updateMemoryText(
   revalidatePath(`/family/${familyId}/memories/${memoryId}`);
   revalidatePath(`/family/${familyId}/memories`);
   revalidatePath("/dashboard");
+  invalidateFamilyStats(familyId);
   return { ok: true };
 }
 

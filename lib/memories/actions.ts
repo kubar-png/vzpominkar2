@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSenior } from "@/lib/auth/permissions";
+import { invalidateFamilyStats } from "@/lib/family/stats";
 import { sendEmail } from "@/lib/email/send";
 import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
@@ -179,6 +180,7 @@ export async function saveTextMemory(
       void extractAndStoreYear(realId, text);
       await notifyOwnerOfNewMemory({ familyId, seniorId: userId });
       revalidatePath("/my-memories");
+      invalidateFamilyStats(familyId);
       redirect("/my-memories?saved=1");
     }
     return { ok: true, memoryId: realId };
@@ -196,14 +198,17 @@ async function extractAndStoreYear(memoryId: string, text: string): Promise<void
     const result = await extractYear(text);
     if (!result.year && !result.year_label) return;
     const admin = createAdminClient();
-    await admin
+    const { data } = await admin
       .from("memories")
       .update({
         extracted_year: result.year,
         extracted_year_label: result.year_label,
         extracted_year_confidence: result.confidence,
       })
-      .eq("id", memoryId);
+      .eq("id", memoryId)
+      .select("family_id")
+      .maybeSingle<{ family_id: string | null }>();
+    invalidateFamilyStats(data?.family_id);
   } catch (err) {
     console.warn("[extractAndStoreYear] failed (non-fatal):", err);
   }
@@ -282,6 +287,7 @@ export async function saveAudioMemory(
 
     await notifyOwnerOfNewMemory({ familyId, seniorId: userId });
     revalidatePath("/my-memories");
+    invalidateFamilyStats(familyId);
     redirect("/my-memories?saved=1");
   } catch (e) {
     if (isNextRedirect(e)) throw e;
@@ -377,6 +383,7 @@ export async function savePhotoMemory(
 
     await notifyOwnerOfNewMemory({ familyId, seniorId: userId });
     revalidatePath("/my-memories");
+    invalidateFamilyStats(familyId);
     redirect("/my-memories?saved=1");
   } catch (e) {
     if (isNextRedirect(e)) throw e;

@@ -1,15 +1,30 @@
 import "server-only";
 import { cache } from "react";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Family-level statistics surfaced in the right-side stats card.
  *
- * All numbers are derived from the existing `memories` + `families` rows;
- * no separate counters table. The whole computation runs in one
- * round-trip-per-table, then is cached for the request via React's `cache()`
- * so multiple consumers within the same render reuse the same query.
+ * Two-tier caching:
+ *   1. unstable_cache (Next data cache) — tagged "family-stats:<id>",
+ *      survives across requests until a mutation calls invalidateFamilyStats.
+ *      A cold first nav still hits the DB; subsequent navs read from cache.
+ *   2. cache() (React per-request) — dedupes within a single render so
+ *      StatsSidebarAsync + BookProgressBarAsync only resolve once.
  */
+
+/** Tag used to invalidate a single family's stats cache. */
+export function familyStatsTag(familyId: string): string {
+  return `family-stats:${familyId}`;
+}
+
+/** Call after any write that changes a family's stats (memory published,
+ * deleted, transcript updated, audio duration filled in, year extracted). */
+export function invalidateFamilyStats(familyId: string | null | undefined): void {
+  if (!familyId) return;
+  revalidateTag(familyStatsTag(familyId));
+}
 
 export interface FamilyStats {
   memoryCount: number;
@@ -38,8 +53,7 @@ const EMPTY: FamilyStats = {
 const WORDS_PER_BOOK_PAGE = 280;
 const AUDIO_WORDS_PER_MINUTE = 145; // average Czech storytelling pace
 
-export const getFamilyStats = cache(async (familyId: string | null): Promise<FamilyStats> => {
-  if (!familyId) return EMPTY;
+async function computeFamilyStats(familyId: string): Promise<FamilyStats> {
   const admin = createAdminClient();
 
   const [{ data: family }, { data: memories }] = await Promise.all([
@@ -136,6 +150,20 @@ export const getFamilyStats = cache(async (familyId: string | null): Promise<Fam
     oldestStoryLabel,
     startedAt,
   };
+}
+
+export const getFamilyStats = cache(async (familyId: string | null): Promise<FamilyStats> => {
+  if (!familyId) return EMPTY;
+  // Tagged data cache: served across requests until invalidateFamilyStats
+  // is called from a mutation. weeksSinceStart drifts by ≤1 day during a
+  // 24h window, which is acceptable for a stats card; revalidate window
+  // ensures it self-heals even without a write event.
+  const cached = unstable_cache(
+    () => computeFamilyStats(familyId),
+    ["family-stats", familyId],
+    { tags: [familyStatsTag(familyId)], revalidate: 60 * 60 * 6 },
+  );
+  return cached();
 });
 
 function countWords(s: string): number {
