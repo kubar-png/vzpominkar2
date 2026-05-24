@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { FilterPill } from "@/components/app/FilterPill";
 import { LibraryPicker } from "./library-picker";
 import { CustomPromptForm } from "./custom-prompt-form";
 
@@ -46,24 +46,15 @@ export function PromptPickers({
         <section className="space-y-3">
           <SectionHeading title="Pro koho?" subtitle="Vyberte, komu se otázka zařadí nebo odešle." />
           <div className="flex flex-wrap gap-2">
-            {seniors.map((s) => {
-              const selected = selectedIds.includes(s.id);
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => toggle(s.id)}
-                  className={cn(
-                    "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
-                    selected
-                      ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-                      : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
-                  )}
-                >
-                  {s.displayName ?? "Blízký"}
-                </button>
-              );
-            })}
+            {seniors.map((s) => (
+              <FilterPill
+                key={s.id}
+                active={selectedIds.includes(s.id)}
+                onClick={() => toggle(s.id)}
+              >
+                {s.displayName ?? "Blízký"}
+              </FilterPill>
+            ))}
           </div>
         </section>
       )}

@@ -6,6 +6,7 @@ import { Archive, Heart, Search, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/input";
 import { EmptyState } from "@/components/app/EmptyState";
+import { FilterPill } from "@/components/app/FilterPill";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { cn } from "@/lib/utils";
 
@@ -254,30 +255,3 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
   );
 }
 
-function FilterPill({
-  active,
-  onClick,
-  children,
-  icon,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors",
-        active
-          ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-          : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
-      )}
-    >
-      {icon}
-      {children}
-    </button>
-  );
-}

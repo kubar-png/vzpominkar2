@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/app/EmptyState";
+import { FilterPill } from "@/components/app/FilterPill";
 import { cn } from "@/lib/utils";
 import { MemoryCard } from "./memory-card";
 import type { MemoryItem, SeniorOption } from "./types";
@@ -78,27 +79,3 @@ export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
   );
 }
 
-function FilterPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
-        active
-          ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-          : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
