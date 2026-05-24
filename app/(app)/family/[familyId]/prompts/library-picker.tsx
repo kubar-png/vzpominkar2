@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { FilterPill } from "@/components/app/FilterPill";
 import { scheduleNextMonday, scheduleToday } from "@/lib/prompts/actions";
 import { cn } from "@/lib/utils";
 
@@ -58,22 +59,16 @@ export function LibraryPicker({
 
   return (
     <div className="space-y-5">
-      {/* Category chips — filter pills per DESIGN.md */}
+      {/* Category chips */}
       <div className="flex flex-wrap gap-2">
         {groups.map((g) => (
-          <button
+          <FilterPill
             key={g.key}
-            type="button"
+            active={g.key === activeTab}
             onClick={() => setActiveTab(g.key)}
-            className={cn(
-              "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
-              g.key === activeTab
-                ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
-                : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
-            )}
           >
             {g.label}
-          </button>
+          </FilterPill>
         ))}
       </div>
 
