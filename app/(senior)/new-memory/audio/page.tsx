@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { requireSenior } from "@/lib/auth/permissions";
 import { getAssignmentContext } from "@/lib/memories/server";
 import { MemoryWhenHint } from "@/components/senior/MemoryWhenHint";
 import { AudioMemoryForm } from "./audio-form";
@@ -20,7 +19,6 @@ export default async function NewAudioMemoryPage({
 }: {
   searchParams: Promise<{ assignment?: string }>;
 }) {
-  await requireSenior();
   const params = await searchParams;
   const ctx = await getAssignmentContext(params.assignment ?? null);
 

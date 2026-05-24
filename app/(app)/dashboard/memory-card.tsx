@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
-import type { MemoryItem } from "./page";
+import type { MemoryItem } from "./types";
 
 function formatDuration(s: number) {
   const m = Math.floor(s / 60);

@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/app/EmptyState";
 import { cn } from "@/lib/utils";
 import { MemoryCard } from "./memory-card";
-import type { MemoryItem, SeniorOption } from "./page";
+import type { MemoryItem, SeniorOption } from "./types";
 
 interface MemoryFeedProps {
   memories: MemoryItem[];
@@ -18,16 +18,14 @@ interface MemoryFeedProps {
 export function MemoryFeed({ memories, seniors, familyId }: MemoryFeedProps) {
   const [filterSeniorId, setFilterSeniorId] = useState<string | null>(null);
 
-  // Drafts are an internal autosave concept; surface only finished memories
-  // in the owner UI. The senior's text autosave still happens server-side so
-  // they don't lose work mid-typing.
-  const visible = (
-    filterSeniorId
-      ? memories.filter((m) => m.authorId === filterSeniorId)
-      : memories
-  ).filter((m) => m.status === "published");
+  // Drafts are an internal autosave concept; the owner UI shows only
+  // finished memories. The senior's text autosave still happens server-side.
+  const published = memories.filter((m) => m.status === "published");
+  const visible = filterSeniorId
+    ? published.filter((m) => m.authorId === filterSeniorId)
+    : published;
 
-  if (memories.filter((m) => m.status === "published").length === 0) {
+  if (published.length === 0) {
     return (
       <EmptyState
         icon={<MessageSquare size={18} aria-hidden />}

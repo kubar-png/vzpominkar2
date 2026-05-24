@@ -288,11 +288,6 @@ function MediaGallery({
 
 export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
   const [expanded, setExpanded] = useState(false);
-  // Audio-only memories: the transcript IS the body text - surface it open.
-  const audioOnly = !!m.audioUrl && !m.text_content && !!m.audio_transcript;
-  // Acknowledge `audioOnly` for future expansion; it's currently used as a
-  // signal inside <TranscriptEditor>, surfaced via its own `open` state.
-  void audioOnly;
   const [favorite, setFavorite] = useState(m.is_favorite);
   const [editing, setEditing] = useState(false);
   const [draftText, setDraftText] = useState(m.text_content ?? "");

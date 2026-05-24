@@ -75,10 +75,12 @@ export default async function MyMemoriesPage({
   }
 
   const audioPaths = list.flatMap((m) => (m.audio_path ? [m.audio_path] : []));
-  const signedAudioUrls = await batchSign(supabase, "memory-audio", audioPaths);
-
   const attachmentPaths = (attachments ?? []).map((a) => a.storage_path);
-  const signedAttachmentUrls = await batchSign(supabase, "memory-attachments", attachmentPaths);
+
+  const [signedAudioUrls, signedAttachmentUrls] = await Promise.all([
+    batchSign(supabase, "memory-audio", audioPaths),
+    batchSign(supabase, "memory-attachments", attachmentPaths),
+  ]);
   for (const [, atts] of attachmentByMemory) {
     for (const a of atts) {
       a.signedUrl = signedAttachmentUrls.get(a.storage_path) ?? null;

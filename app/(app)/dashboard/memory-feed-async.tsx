@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { MemoryFeed } from "./memory-feed";
-import type { MemoryAttachment, MemoryItem, SeniorOption } from "./page";
+import type { MemoryItem, SeniorOption } from "./types";
 
 interface MemoryFeedAsyncProps {
   familyId: string;
@@ -88,7 +88,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
     question: m.prompts?.question ?? null,
     authorId: m.profiles?.id ?? null,
     authorName: m.profiles?.display_name ?? null,
-    attachments: ((attachByMemory.get(m.id) ?? []) as MemoryAttachment[]).map((a) => ({
+    attachments: (attachByMemory.get(m.id) ?? []).map((a) => ({
       storage_path: a.storage_path,
       signedUrl: attachUrls.get(a.storage_path) ?? "",
       mime_type: a.mime_type,

@@ -42,8 +42,10 @@ interface FlipBookProps {
  */
 export function FlipBook({ familyName, year, variant, memories }: FlipBookProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ w: 480, h: 660 });
-  const [portrait, setPortrait] = useState(false);
+  // Mobile-first default so the pre-measure placeholder never paints
+  // wider than a phone viewport. measure() upgrades to spread on >=760px.
+  const [size, setSize] = useState({ w: 320, h: 442 });
+  const [portrait, setPortrait] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
