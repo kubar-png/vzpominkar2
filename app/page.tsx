@@ -196,7 +196,7 @@ export default function HomePage() {
               <div className="step" data-reveal data-reveal-delay-200>
                 <div className="step-photo tone-3" />
                 <div className="step-label">III.</div>
-                <h3>Vyhladíme přepis</h3>
+                <h3>Uhladíme přepis</h3>
                 <p>
                   Hlas převedeme do textu, korektor jemně uhladí věty —
                   zachová slang, dialekt, oblíbená spojení. Vy se na všechno

@@ -1,11 +1,14 @@
 @import "tailwindcss";
 @import "./mobile-spacing.css";
 
-/* Native smooth scroll for anchor-link navigation (e.g. nav → #produkt).
- * Respects prefers-reduced-motion automatically. Wheel + touch scrolling
- * is unaffected, so scroll-snap carousels and the sticky app sidebar
- * still behave normally. */
+/* Native smooth scroll for anchor-link navigation (e.g. nav → #produkt) on
+ * pages WITHOUT Lenis. On marketing pages Lenis is active and adds `.lenis`
+ * to <html>; there we MUST fall back to `auto`, otherwise native smoothing
+ * stacks on top of Lenis' programmatic scroll and the whole page lags —
+ * worst on a touchpad. Lenis handles anchor scrolling itself (anchors: true).
+ * Respects prefers-reduced-motion automatically. */
 html { scroll-behavior: smooth; }
+html.lenis { scroll-behavior: auto; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }

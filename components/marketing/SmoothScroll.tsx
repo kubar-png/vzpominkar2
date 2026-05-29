@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 
 /**
  * Inertia smooth-scroll on the marketing surface (homepage + landing pages).
@@ -14,6 +15,12 @@ import Lenis from "lenis";
  * Horizontal scroll-snap (testimonial carousel, question deck on mobile,
  * story gallery) is unaffected: Lenis only intercepts vertical wheel/touch
  * on window. Reduced-motion users get native scroll.
+ *
+ * Touchpad lag: Lenis works smoothly on a touchpad on its own demo site — the
+ * lag we had came from our own `html { scroll-behavior: smooth }` stacking a
+ * second layer of native smoothing on top of Lenis' programmatic scrolls.
+ * That's fixed by importing Lenis' recommended CSS (above) and disabling the
+ * native `scroll-behavior` while Lenis is active (`html.lenis` in globals.css).
  */
 
 const MARKETING_PATHS = [
@@ -46,13 +53,15 @@ export function SmoothScroll() {
     if (mql.matches) return;
 
     const lenis = new Lenis({
-      // 1.05 lerp = balanced — gentle inertia, not laggy
       lerp: 0.085,
       smoothWheel: true,
       // Touch on phones is already buttery natively; smoothing it can
       // actually feel worse (and conflicts with momentum scroll on iOS).
       syncTouch: false,
       wheelMultiplier: 1,
+      // Let Lenis own anchor-link scrolling (nav → #produkt). We've disabled
+      // native CSS smooth scroll while Lenis is active, so it must handle it.
+      anchors: true,
     });
 
     let rafId = 0;
