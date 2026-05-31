@@ -378,7 +378,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
         {senior.book.kind === "none" ? (
           <form action={startVolumeCheckout.bind(null, senior.id)}>
             <button type="submit" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "cursor-pointer")}>
-              Aktivovat knihu
+              Začít sbírat vzpomínky
             </button>
           </form>
         ) : senior.book.kind === "finished" ||

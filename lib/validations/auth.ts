@@ -59,6 +59,16 @@ export const seniorAccountSchema = z
       .min(8, "Heslo seniora musí mít aspoň 8 znaků.")
       .max(128),
     seniorRole: z.string().max(40).optional().nullable(),
+    // Year of birth only (no full date) — for usage analytics by age cohort.
+    // Optional at the schema level (the onboarding senior-setup step doesn't
+    // ask for it); the add-senior form makes it required client-side.
+    birthYear: z.coerce
+      .number({ invalid_type_error: "Zadejte rok narození." })
+      .int("Zadejte rok narození.")
+      .min(1900, "Rok narození není platný.")
+      .max(new Date().getFullYear(), "Rok narození není platný.")
+      .optional()
+      .nullable(),
     contactChannel: z.enum(["email", "whatsapp"]).optional().nullable(),
     contactAddress: z.string().max(200).optional().nullable(),
     promptFrequency: z.union([z.literal(1), z.literal(2)]).default(1),

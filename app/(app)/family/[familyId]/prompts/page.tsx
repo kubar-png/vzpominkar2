@@ -142,7 +142,7 @@ export default async function PromptsPage({
           <EmptyState
             icon={<Inbox size={18} aria-hidden />}
             title="Fronta otázek je prázdná"
-            description="Vyberte další z knihovny — odešle se na následující určený den."
+            description="Vyberte další otázku z knihovny — odešle se v následující určený den."
           />
         ) : (
           <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-2">

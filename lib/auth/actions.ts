@@ -117,6 +117,40 @@ export async function signOut(): Promise<void> {
   redirect("/");
 }
 
+/**
+ * Sends a Supabase password-reset email. The link in the email points at
+ * /auth/callback?next=/settings — that route already exchanges the code
+ * for a session, after which the user is signed in and can change their
+ * password via the existing settings form.
+ *
+ * Returns `{ ok: true }` regardless of whether the email exists so we
+ * don't leak account presence. Supabase silently no-ops on unknown emails.
+ */
+export async function requestPasswordReset(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const rl = await checkRateLimit("auth", "password-reset");
+  if (!rl.ok) return { ok: false, error: rateLimitMessage(rl.retryAfterSec) };
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!email || !email.includes("@")) {
+    return { ok: false, error: "Zadejte platný e-mail.", field: "email" };
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${appUrl}/auth/callback?next=/settings`,
+  });
+  if (error) {
+    console.error("[requestPasswordReset]", error);
+    return { ok: false, error: "E-mail se nepodařilo odeslat. Zkuste to za chvíli." };
+  }
+
+  return { ok: true };
+}
+
 /* -------------------------------------------------------------------------- */
 /* Senior login                                                               */
 /* -------------------------------------------------------------------------- */
@@ -188,6 +222,7 @@ export async function createSeniorAccount(
     username: normalizeUsername(input.username),
     password: input.password,
     seniorRole: input.seniorRole ?? null,
+    birthYear: input.birthYear,
     contactChannel: input.contactChannel ?? null,
     contactAddress: input.contactAddress?.trim() || null,
     promptFrequency: input.promptFrequency ?? 1,
@@ -240,6 +275,7 @@ export async function createSeniorAccount(
     display_name: parsed.data.displayName,
     username: parsed.data.username,
     senior_role: parsed.data.seniorRole ?? null,
+    birth_year: parsed.data.birthYear ?? null,
     contact_channel: parsed.data.contactChannel ?? null,
     contact_address: parsed.data.contactAddress ?? null,
     prompt_frequency: parsed.data.promptFrequency,

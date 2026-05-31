@@ -40,13 +40,14 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
     const username = String(fd.get("username") ?? "").trim().toLowerCase();
     const password = String(fd.get("password") ?? "");
     const seniorRole = (fd.get("seniorRole") as string) || null;
+    const birthYear = Number(fd.get("birthYear") ?? 0);
     const contactChannel = (fd.get("contactChannel") as "email" | "whatsapp") || null;
     const contactAddress = String(fd.get("contactAddress") ?? "").trim() || null;
     const promptFrequency = Number(fd.get("promptFrequency") ?? 1) as 1 | 2;
 
     startTransition(async () => {
       const result = await createSeniorAccount(familyId, {
-        displayName, username, password, seniorRole,
+        displayName, username, password, seniorRole, birthYear,
         contactChannel, contactAddress, promptFrequency,
       });
       if (result.ok && result.credentials) {
@@ -185,6 +186,20 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-birthYear">Rok narození</Label>
+              <Input
+                id="new-birthYear"
+                name="birthYear"
+                type="number"
+                inputMode="numeric"
+                required
+                min={1900}
+                max={new Date().getFullYear()}
+                placeholder="1948"
+                autoComplete="off"
+              />
             </div>
           </FormSection>
 

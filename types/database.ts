@@ -342,6 +342,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_year: number | null
           contact_address: string | null
           contact_channel: string | null
           created_at: string
@@ -358,6 +359,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          birth_year?: number | null
           contact_address?: string | null
           contact_channel?: string | null
           created_at?: string
@@ -374,6 +376,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          birth_year?: number | null
           contact_address?: string | null
           contact_channel?: string | null
           created_at?: string
