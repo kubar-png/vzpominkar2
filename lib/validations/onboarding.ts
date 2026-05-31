@@ -10,10 +10,6 @@ export const onboardingStartSchema = z
       .string()
       .min(2, "Zadejte jméno seniora.")
       .max(80, "Jméno je dlouhé."),
-    promptIds: z
-      .array(z.string().uuid("Neplatná otázka."))
-      .min(3, "Vyberte aspoň 3 otázky pro začátek.")
-      .max(20, "Pro start stačí maximálně 20 otázek."),
   })
   .strict();
 
