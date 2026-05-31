@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, AlertTriangle, X, Check, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input, Label, Select } from "@/components/ui/input";
 import { FormSection } from "@/components/ui/form-section";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
@@ -328,14 +329,17 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
         <div className="flex items-center gap-2">
           <Link
             href={manageHref}
-            className="inline-flex h-11 items-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-4 text-sm font-medium text-[var(--color-text)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)]"
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
           >
             Spravovat
           </Link>
           <details className="relative">
             <summary
               aria-label="Další akce"
-              className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-700)] [&::-webkit-details-marker]:hidden"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "icon" }),
+                "cursor-pointer list-none text-[var(--color-text-muted)] [&::-webkit-details-marker]:hidden",
+              )}
             >
               <MoreHorizontal size={16} aria-hidden />
             </summary>
@@ -373,20 +377,14 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
         </p>
         {senior.book.kind === "none" ? (
           <form action={startVolumeCheckout.bind(null, senior.id)}>
-            <button
-              type="submit"
-              className="inline-flex h-11 cursor-pointer items-center rounded-[var(--radius-md)] bg-[var(--color-navy-900)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--color-navy-800)]"
-            >
+            <button type="submit" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "cursor-pointer")}>
               Aktivovat knihu
             </button>
           </form>
         ) : senior.book.kind === "finished" ||
           senior.book.answered >= Math.max(1, senior.book.cap - 7) ? (
           <form action={startVolumeCheckout.bind(null, senior.id)}>
-            <button
-              type="submit"
-              className="inline-flex h-11 cursor-pointer items-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-4 text-sm font-medium text-[var(--color-navy-700)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-900)]"
-            >
+            <button type="submit" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "cursor-pointer")}>
               Pořídit Díl {senior.book.sequenceNo + 1}
             </button>
           </form>
