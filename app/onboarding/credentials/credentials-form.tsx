@@ -28,12 +28,14 @@ export function CredentialsForm({ familyId, seniorDisplayName }: Props) {
     const fd = new FormData(e.currentTarget);
     const username = String(fd.get("username") ?? "").trim().toLowerCase();
     const password = String(fd.get("password") ?? "");
+    const birthYear = Number(fd.get("birthYear") ?? 0);
 
     startTransition(async () => {
       const result = await createSeniorAccount(familyId, {
         displayName: seniorDisplayName,
         username,
         password,
+        birthYear,
       });
       if (result.ok && result.credentials) {
         setState({ phase: "done", credentials: result.credentials });
@@ -51,6 +53,25 @@ export function CredentialsForm({ familyId, seniorDisplayName }: Props) {
     <form onSubmit={onSubmit} className="space-y-6">
       <Card>
         <CardContent className="space-y-5 p-7">
+          <div className="space-y-2">
+            <Label htmlFor="birthYear">Rok narození {seniorDisplayName}</Label>
+            <Input
+              id="birthYear"
+              name="birthYear"
+              type="number"
+              inputMode="numeric"
+              required
+              min={1900}
+              max={new Date().getFullYear()}
+              placeholder="1948"
+              autoComplete="off"
+            />
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Stačí rok — pomáhá nám lépe rozumět, komu Vzpomínkář slouží. Zadává
+              se jen jednou a nelze ho měnit.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="username">Uživatelské jméno</Label>
             <Input
