@@ -141,8 +141,8 @@ function Handoff({ creds }: { creds: { username: string; password: string; displ
             Předejte tento lísteček {creds.displayName ? creds.displayName : "seniorovi"}.
           </h2>
           <p className="text-[var(--color-text-muted)]">
-            Najdete to znovu v sekci Senior, ale heslo už neuvidíte - pokud zapomenete, jednoduše
-            vytvoříte nové.
+            Najdete to znovu v sekci Senior, ale heslo už neuvidíte — pokud heslo
+            zapomenete, jedním kliknutím vytvoříte nové.
           </p>
         </CardContent>
       </Card>
