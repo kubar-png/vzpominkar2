@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BookOrderForm } from "./book-form";
+import { startVolumeCheckout } from "@/lib/stripe/checkout";
 
 export const metadata: Metadata = { title: "Kniha" };
 
@@ -62,6 +63,37 @@ export default async function BookPage({
   const ready = memories >= BOOK_MIN;
   const recentOrder = (orders ?? [])[0] ?? null;
   const pct = Math.min(100, Math.round((memories / BOOK_FULL) * 100));
+
+  // Current volume — drives the "next díl" offer as it nears/reaches the 52 cap.
+  const { data: currentBook } = await supabase
+    .from("books")
+    .select("id, senior_id, sequence_no, status, prompt_cap")
+    .eq("family_id", familyId)
+    .in("status", ["collecting", "full"])
+    .order("sequence_no", { ascending: false })
+    .limit(1)
+    .maybeSingle<{
+      id: string;
+      senior_id: string | null;
+      sequence_no: number;
+      status: string;
+      prompt_cap: number;
+    }>();
+
+  let bookAnswered = 0;
+  if (currentBook) {
+    const { count } = await supabase
+      .from("prompt_assignments")
+      .select("id", { count: "exact", head: true })
+      .eq("book_id", currentBook.id)
+      .not("answered_memory_id", "is", null);
+    bookAnswered = count ?? 0;
+  }
+  const nextVolumeSeniorId =
+    currentBook?.senior_id &&
+    (currentBook.status === "full" || bookAnswered >= Math.max(1, currentBook.prompt_cap - 7))
+      ? currentBook.senior_id
+      : null;
 
   return (
     <div className="space-y-10">
@@ -150,6 +182,30 @@ export default async function BookPage({
           </div>
         </section>
       )}
+
+      {nextVolumeSeniorId ? (
+        <section className="space-y-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-5 md:p-6">
+          <h2 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+            {currentBook?.status === "full"
+              ? "Kniha je plná."
+              : `Kniha se blíží ke konci (${bookAnswered} z ${currentBook?.prompt_cap}).`}
+          </h2>
+          <p className="text-sm text-[var(--color-text-muted)]">
+            Jedna kniha pojme 52 otázek. Pořiďte další díl za zvýhodněnou cenu a
+            plynule pokračujte v dalších vzpomínkách o stejném blízkém — vznikne
+            Díl {(currentBook?.sequence_no ?? 1) + 1}.
+          </p>
+          <form action={startVolumeCheckout.bind(null, nextVolumeSeniorId)}>
+            <button
+              type="submit"
+              className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+            >
+              Pořídit Díl {(currentBook?.sequence_no ?? 1) + 1}
+              <span aria-hidden>↗</span>
+            </button>
+          </form>
+        </section>
+      ) : null}
 
       {recentOrder ? (
         <section className="space-y-3">

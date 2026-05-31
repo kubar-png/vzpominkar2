@@ -11,6 +11,7 @@ import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
 import { extractYear } from "@/lib/memories/extract-metadata";
 import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
+import { onAssignmentAnswered } from "@/lib/books/server";
 
 /**
  * Detect Next.js's internal redirect throw. `redirect()` propagates by
@@ -172,6 +173,7 @@ export async function saveTextMemory(
         .update({ answered_memory_id: realId })
         .eq("id", assignmentId)
         .eq("senior_id", userId);
+      await onAssignmentAnswered(admin, assignmentId, realId);
     }
 
     if (finalize) {
@@ -283,6 +285,7 @@ export async function saveAudioMemory(
         .update({ answered_memory_id: memoryId })
         .eq("id", assignmentId)
         .eq("senior_id", userId);
+      await onAssignmentAnswered(admin, assignmentId, memoryId);
     }
 
     await notifyOwnerOfNewMemory({ familyId, seniorId: userId });
@@ -379,6 +382,7 @@ export async function savePhotoMemory(
         .update({ answered_memory_id: memoryId })
         .eq("id", assignmentId)
         .eq("senior_id", userId);
+      await onAssignmentAnswered(admin, assignmentId, memoryId);
     }
 
     await notifyOwnerOfNewMemory({ familyId, seniorId: userId });

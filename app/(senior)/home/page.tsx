@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { currentBookForSenior } from "@/lib/books/server";
 
 export const metadata: Metadata = { title: "Domů" };
 
@@ -24,38 +25,47 @@ export default async function SeniorHomePage() {
   const supabase = createAdminClient();
   const todayIso = new Date().toISOString().slice(0, 10);
 
-  const { data: dueRaw } = await supabase
-    .from("prompt_assignments")
-    .select("id, scheduled_for, prompt_id, prompts(question)")
-    .eq("senior_id", user.id)
-    .is("answered_memory_id", null)
-    .lte("scheduled_for", todayIso)
-    .order("scheduled_for", { ascending: false })
-    .limit(1)
-    .maybeSingle<{
-      id: string;
-      scheduled_for: string;
-      prompt_id: string;
-      prompts: { question: string } | null;
-    }>();
+  // Only serve prompts from the senior's current collecting book (≤ 52 answered).
+  // When the book is full / unpaid there's no current book → no question is
+  // served until a new volume (Díl 2) is purchased.
+  const currentBook = user.familyId
+    ? await currentBookForSenior(supabase, user.familyId, user.id)
+    : null;
 
-  let active = dueRaw;
-  if (!active) {
-    const { data: upcoming } = await supabase
+  type DuePrompt = {
+    id: string;
+    scheduled_for: string;
+    prompt_id: string;
+    prompts: { question: string } | null;
+  };
+
+  let active: DuePrompt | null = null;
+  if (currentBook) {
+    const { data: dueRaw } = await supabase
       .from("prompt_assignments")
       .select("id, scheduled_for, prompt_id, prompts(question)")
       .eq("senior_id", user.id)
+      .eq("book_id", currentBook.id)
       .is("answered_memory_id", null)
-      .gt("scheduled_for", todayIso)
-      .order("scheduled_for", { ascending: true })
+      .lte("scheduled_for", todayIso)
+      .order("scheduled_for", { ascending: false })
       .limit(1)
-      .maybeSingle<{
-        id: string;
-        scheduled_for: string;
-        prompt_id: string;
-        prompts: { question: string } | null;
-      }>();
-    active = upcoming ?? null;
+      .maybeSingle<DuePrompt>();
+
+    active = dueRaw;
+    if (!active) {
+      const { data: upcoming } = await supabase
+        .from("prompt_assignments")
+        .select("id, scheduled_for, prompt_id, prompts(question)")
+        .eq("senior_id", user.id)
+        .eq("book_id", currentBook.id)
+        .is("answered_memory_id", null)
+        .gt("scheduled_for", todayIso)
+        .order("scheduled_for", { ascending: true })
+        .limit(1)
+        .maybeSingle<DuePrompt>();
+      active = upcoming ?? null;
+    }
   }
 
   // Surface a "continue draft" entry point when the senior left a half-written

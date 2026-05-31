@@ -114,6 +114,65 @@ export async function startBaseCheckout(): Promise<never> {
   return await purchaseBook(bookId);
 }
 
+/**
+ * Add-on purchase for a given senior — buys the NEXT volume for them (Díl 2,
+ * 3, …) or activates the first book of a newly-added senior. The price is the
+ * add-on price (the family already has a paid base book). Reuses an existing
+ * unpaid volume for that senior if one is pending.
+ */
+export async function startVolumeCheckout(seniorId: string): Promise<never> {
+  const owner = await requireOwner();
+  if (!owner.familyId) redirect("/onboarding");
+
+  const admin = createAdminClient();
+  const { data: senior } = await admin
+    .from("profiles")
+    .select("id, family_id, display_name")
+    .eq("id", seniorId)
+    .eq("role", "senior")
+    .maybeSingle<{ id: string; family_id: string | null; display_name: string | null }>();
+  if (!senior || senior.family_id !== owner.familyId) redirect("/dashboard");
+
+  // Reuse a pending unpaid volume for this senior, else create the next one.
+  const { data: unpaid } = await admin
+    .from("books")
+    .select("id")
+    .eq("family_id", owner.familyId)
+    .eq("senior_id", seniorId)
+    .eq("paid", false)
+    .order("sequence_no", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string }>();
+
+  let bookId = unpaid?.id;
+  if (!bookId) {
+    const { data: last } = await admin
+      .from("books")
+      .select("sequence_no")
+      .eq("family_id", owner.familyId)
+      .eq("senior_id", seniorId)
+      .order("sequence_no", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ sequence_no: number }>();
+    const nextSeq = (last?.sequence_no ?? 0) + 1;
+    const { data: created, error } = await admin
+      .from("books")
+      .insert({
+        family_id: owner.familyId,
+        senior_id: seniorId,
+        senior_display_name: senior.display_name,
+        sequence_no: nextSeq,
+        title: `Díl ${nextSeq}`,
+      })
+      .select("id")
+      .single<{ id: string }>();
+    if (error || !created) throw new Error("Další díl se nepodařilo připravit.");
+    bookId = created.id;
+  }
+
+  return await purchaseBook(bookId);
+}
+
 /* ────────────────────────────────────────────────────────────────────────
  * Print order — one-time payment for a physical copy of a finished book.
  * ──────────────────────────────────────────────────────────────────────── */

@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
   // Pull due, unanswered, un-reminded assignments for the current week.
   const { data: rows, error } = await admin
     .from("prompt_assignments")
-    .select("id, family_id, scheduled_for, prompts(question), families(senior_display_name)")
+    .select("id, family_id, scheduled_for, prompts(question), families(senior_display_name), books(status)")
     .lte("scheduled_for", isoWeekEnd)
     .gte("scheduled_for", isoToday)
     .is("answered_memory_id", null)
@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
         scheduled_for: string;
         prompts: { question: string } | null;
         families: { senior_display_name: string | null } | null;
+        books: { status: string } | null;
       }[]
     >();
 
@@ -63,6 +64,13 @@ export async function GET(req: NextRequest) {
 
   for (const row of rows ?? []) {
     if (!row.prompts) {
+      skipped++;
+      continue;
+    }
+
+    // Don't remind for prompts in a full/printed book (past the 52 cap) — only
+    // the current collecting volume is processed. Null book = legacy, allow.
+    if (row.books && row.books.status !== "collecting") {
       skipped++;
       continue;
     }

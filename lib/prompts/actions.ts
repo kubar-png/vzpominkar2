@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
+import { currentBookForSenior } from "@/lib/books/server";
 
 export type PromptResult = { ok: true } | { ok: false; error: string };
 
@@ -50,6 +51,7 @@ export async function scheduleNextMonday(
         family_id: familyId,
         prompt_id: promptId,
         senior_id: seniorId,
+        book_id: (await currentBookForSenior(supabase, familyId, seniorId))?.id ?? null,
         scheduled_for: nextDate.toISOString().slice(0, 10),
       };
     }),
@@ -106,12 +108,15 @@ export async function scheduleToday(
   const supabase = createAdminClient();
 
   const scheduledFor = new Date().toISOString().slice(0, 10);
-  const rows = seniorIds.map((seniorId) => ({
-    family_id: familyId,
-    prompt_id: promptId,
-    senior_id: seniorId,
-    scheduled_for: scheduledFor,
-  }));
+  const rows = await Promise.all(
+    seniorIds.map(async (seniorId) => ({
+      family_id: familyId,
+      prompt_id: promptId,
+      senior_id: seniorId,
+      book_id: (await currentBookForSenior(supabase, familyId, seniorId))?.id ?? null,
+      scheduled_for: scheduledFor,
+    })),
+  );
 
   const { error } = await supabase.from("prompt_assignments").insert(rows);
   if (error) return { ok: false, error: "Nepodařilo se naplánovat." };
@@ -157,6 +162,7 @@ export async function addCustomPromptAndSchedule(
     family_id: string;
     prompt_id: string;
     senior_id: string;
+    book_id: string | null;
     scheduled_for: string;
   };
 
@@ -164,12 +170,15 @@ export async function addCustomPromptAndSchedule(
 
   if (scheduleType === "now") {
     const scheduledFor = new Date().toISOString().slice(0, 10);
-    rows = seniorIds.map((seniorId) => ({
-      family_id: familyId,
-      prompt_id: prompt.id,
-      senior_id: seniorId,
-      scheduled_for: scheduledFor,
-    }));
+    rows = await Promise.all(
+      seniorIds.map(async (seniorId) => ({
+        family_id: familyId,
+        prompt_id: prompt.id,
+        senior_id: seniorId,
+        book_id: (await currentBookForSenior(admin, familyId, seniorId))?.id ?? null,
+        scheduled_for: scheduledFor,
+      })),
+    );
   } else {
     rows = await Promise.all(
       seniorIds.map(async (seniorId) => {
@@ -194,6 +203,7 @@ export async function addCustomPromptAndSchedule(
           family_id: familyId,
           prompt_id: prompt.id,
           senior_id: seniorId,
+          book_id: (await currentBookForSenior(admin, familyId, seniorId))?.id ?? null,
           scheduled_for: nextDate.toISOString().slice(0, 10),
         };
       }),
