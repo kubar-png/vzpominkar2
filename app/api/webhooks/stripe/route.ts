@@ -6,7 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const runtime = "nodejs"; // need Node crypto for signature verification
 export const dynamic = "force-dynamic";
 
-const TRIAL_DAYS = 365;
+/** Paid access period granted per yearly purchase/renewal. Not a trial. */
+const YEAR_DAYS = 365;
 
 /**
  * Stripe webhook receiver.
@@ -18,7 +19,7 @@ const TRIAL_DAYS = 365;
  * loudly rather than double-charging.
  *
  * Events handled:
- *   - checkout.session.completed   (one-shot - book_print + yearly trial)
+ *   - checkout.session.completed   (one-shot - book_print + yearly access)
  *   - invoice.paid                 (recurring renewal of yearly_access)
  *   - customer.subscription.deleted (cancellation)
  */
@@ -74,7 +75,19 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
   const admin = createAdminClient();
 
   if (productType === "yearly_access") {
-    const expiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+    // Idempotent: Stripe can deliver the same event more than once. If we've
+    // already logged this session's activation, skip (mirrors the book_print
+    // payment_intent guard below).
+    const { data: already } = await admin
+      .from("activity_log")
+      .select("id")
+      .eq("family_id", familyId)
+      .eq("action", "subscription.activated")
+      .eq("metadata->>stripeSessionId", session.id)
+      .maybeSingle();
+    if (already) return;
+
+    const expiresAt = new Date(Date.now() + YEAR_DAYS * 24 * 60 * 60 * 1000);
     await admin
       .from("families")
       .update({
@@ -141,7 +154,7 @@ async function onInvoicePaid(invoice: Stripe.Invoice) {
   if (!familyId) return;
 
   const admin = createAdminClient();
-  const expiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + YEAR_DAYS * 24 * 60 * 60 * 1000);
   await admin
     .from("families")
     .update({

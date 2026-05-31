@@ -3,7 +3,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireOwnerOfFamily } from "@/lib/auth/permissions";
+import { requireOwner, requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe, priceForProductCzk, type ProductType } from "@/lib/stripe/server";
 import type { Json } from "@/types/database";
@@ -17,7 +17,8 @@ export interface CheckoutInput {
   shippingAddress?: Json | null;
 }
 
-const TRIAL_DAYS = 365;
+/** Paid access period granted per yearly purchase. Not a trial. */
+const YEAR_DAYS = 365;
 
 /**
  * Hub for both products. If the configured price is 0 CZK, mutate the DB
@@ -35,12 +36,24 @@ export async function createCheckout(input: CheckoutInput): Promise<never> {
   return await handleStripePath(input, priceCzk, owner.id);
 }
 
+/**
+ * Form-action wrapper for the /predplatne renewal button. Derives the family
+ * from the authed owner (never trusts a client-supplied id) and kicks off the
+ * yearly-access flow — the free path when price is 0, Stripe Checkout once a
+ * price is set. Usable as a `<form action={...}>` handler (formData ignored).
+ */
+export async function startYearlyCheckout(): Promise<never> {
+  const owner = await requireOwner();
+  if (!owner.familyId) redirect("/onboarding");
+  return await createCheckout({ familyId: owner.familyId, productType: "yearly_access" });
+}
+
 /* -------------------------------------------------------------------------- */
 async function handleFreePath(input: CheckoutInput, ownerId: string): Promise<never> {
   const admin = createAdminClient();
 
   if (input.productType === "yearly_access") {
-    const expiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + YEAR_DAYS * 24 * 60 * 60 * 1000);
     const { error } = await admin
       .from("families")
       .update({
@@ -124,6 +137,13 @@ async function handleStripePath(
       ownerId,
       ...(input.bookOrderId ? { bookOrderId: input.bookOrderId } : {}),
     },
+    // For subscriptions, copy familyId onto the SUBSCRIPTION too. The
+    // invoice.paid (renewal) and customer.subscription.deleted (cancellation)
+    // webhooks read `subscription.metadata.familyId` — without this they'd
+    // fire with no familyId and silently no-op.
+    ...(input.productType === "yearly_access"
+      ? { subscription_data: { metadata: { familyId: input.familyId } } }
+      : {}),
     success_url: `${baseUrl}${productMeta.successPath}`,
     cancel_url: `${baseUrl}/dashboard?cancelled=1`,
   });

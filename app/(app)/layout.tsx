@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Toaster } from "sonner";
-import { requireOwner } from "@/lib/auth/permissions";
+import { requireActiveOwner } from "@/lib/auth/permissions";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppMobileMenu } from "@/components/app/AppMobileMenu";
 import {
@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // Auth has to resolve before we can show the shell at all (gating),
   // but everything else (stats, progress) streams in via <Suspense> so the
   // sidebar + main column paint immediately on every navigation.
-  const user = await requireOwner();
+  const user = await requireActiveOwner();
 
   return (
     <div className="flex min-h-screen overflow-x-clip bg-[var(--color-paper-50)]">

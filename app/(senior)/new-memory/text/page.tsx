@@ -21,7 +21,7 @@ export default async function NewTextMemoryPage({
 }) {
   const senior = await requireSenior();
   const params = await searchParams;
-  const ctx = await getAssignmentContext(params.assignment ?? null);
+  const ctx = await getAssignmentContext(params.assignment ?? null, senior.familyId);
 
   // Resume an existing draft when /new-memory/text?memory=ID is hit.
   let draft: { id: string; text: string } | null = null;

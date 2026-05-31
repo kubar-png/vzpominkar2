@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { requireSenior } from "@/lib/auth/permissions";
 import { getAssignmentContext } from "@/lib/memories/server";
 import { PhotoMemoryForm } from "./photo-form";
 
@@ -16,8 +17,9 @@ export default async function NewPhotoMemoryPage({
 }: {
   searchParams: Promise<{ assignment?: string }>;
 }) {
+  const senior = await requireSenior();
   const params = await searchParams;
-  const ctx = await getAssignmentContext(params.assignment ?? null);
+  const ctx = await getAssignmentContext(params.assignment ?? null, senior.familyId);
 
   return (
     <div className="pt-10 sm:pt-14 pb-10">

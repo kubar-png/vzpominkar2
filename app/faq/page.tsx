@@ -127,7 +127,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Co se stane po roce, pokud knihu nestihnu objednat?",
-        a: "Online knihovna zůstává navždy zdarma — všechny vzpomínky tam najdete, kdykoliv se vrátíte. Tisk si můžete objednat klidně za pět let. Vzpomínky nemizí.",
+        a: "Vaše vzpomínky nemizí — zůstávají uložené ve vaší knihovně, dokud máte aktivní přístup, a tisk si můžete objednat i s odstupem.",
       },
       {
         q: "Mohu mít víc seniorů — babičku i dědu?",
@@ -217,7 +217,7 @@ export default function FaqPage() {
       {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
       <FinalCta
         eyebrow="Stále váháte?"
-        heading="Vyzkoušejte to v klidu prvních 30 dní."
+        heading="Roční přístup s 30denní zárukou vrácení peněz."
         lede="Jednorázových 2 990 Kč. Pokud to není pro vás, do 30 dnů vrátíme peníze bez výmluv."
         footer={
           <>

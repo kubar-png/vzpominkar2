@@ -161,7 +161,7 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
         </div>
 
         <p className="text-xs text-[var(--color-text-subtle)]">
-          Přidání dalšího blízkého bude v budoucnu zpoplatněno. Nyní je v testovacím provozu zdarma.
+          Dalšího blízkého můžete přidat v rámci svého přístupu.
         </p>
 
         <form onSubmit={onSubmit} className="space-y-6">

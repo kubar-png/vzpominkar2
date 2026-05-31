@@ -12,16 +12,17 @@ export type ActionState =
   | { ok: false; error: string }
   | null;
 
-const TRIAL_DAYS = 365;
-
 /**
  * Step 1 of onboarding (family + senior name + prompt picks).
  *
- * Atomic-ish: family creation, profile.family_id update, trial activation,
- * and initial prompt scheduling all happen via the admin client. RLS would
- * block the owner from creating a family that doesn't yet reference them
- * (chicken/egg with profiles.family_id), so we bypass it here and rely on
- * the requireOwner gate above.
+ * Atomic-ish: family creation, profile.family_id update, and initial prompt
+ * scheduling all happen via the admin client. RLS would block the owner from
+ * creating a family that doesn't yet reference them (chicken/egg with
+ * profiles.family_id), so we bypass it here and rely on the requireOwner gate.
+ *
+ * Hard paywall — the family is created with the default 'trial' status (no
+ * access). The owner pays on /predplatne before the app shell unlocks; there
+ * is no free year.
  */
 export async function startOnboarding(
   _prev: ActionState,
@@ -46,17 +47,15 @@ export async function startOnboarding(
   }
 
   const admin = createAdminClient();
-  const expiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000);
 
-  // 1) Create the family
+  // 1) Create the family. No subscription grant — it starts as 'trial' (the
+  // column default = no access) and the owner must pay on /predplatne.
   const { data: family, error: famErr } = await admin
     .from("families")
     .insert({
       name: parsed.data.familyName.trim(),
       senior_display_name: parsed.data.seniorDisplayName.trim(),
       created_by: owner.id,
-      subscription_status: "active",
-      subscription_expires_at: expiresAt.toISOString(),
     })
     .select("id")
     .single();
@@ -76,8 +75,26 @@ export async function startOnboarding(
   }
 
   // 3) Schedule initial prompt_assignments - one per week starting next Monday.
+  //
+  // Only system prompts (family_id IS NULL) may be scheduled here: the family
+  // was just created so it owns no custom prompts yet. Filtering the
+  // client-posted ids against the active system library stops a caller from
+  // smuggling an arbitrary prompt UUID into their own family.
+  let validPromptIds = parsed.data.promptIds;
+  if (validPromptIds.length > 0) {
+    const { data: allowed } = await admin
+      .from("prompts")
+      .select("id")
+      .is("family_id", null)
+      .eq("is_active", true)
+      .in("id", validPromptIds)
+      .returns<{ id: string }[]>();
+    const allowedIds = new Set((allowed ?? []).map((p) => p.id));
+    validPromptIds = validPromptIds.filter((id) => allowedIds.has(id));
+  }
+
   const startMonday = nextMonday(new Date());
-  const assignments = parsed.data.promptIds.map((promptId, i) => ({
+  const assignments = validPromptIds.map((promptId, i) => ({
     family_id: family.id,
     prompt_id: promptId,
     scheduled_for: addDays(startMonday, i * 7).toISOString().slice(0, 10),

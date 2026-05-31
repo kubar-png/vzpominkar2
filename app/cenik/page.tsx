@@ -147,9 +147,9 @@ export default function PricingPage() {
       <section className="pull-quote">
         <div className="container">
           <blockquote>
-            Vyzkoušejte první týdny v klidu.
+            Záruka vrácení peněz.
             <br />
-            Pokud to není pro vás, peníze do třiceti dnů vrátíme.
+            Pokud to není pro vás, do třiceti dnů vám peníze vrátíme.
           </blockquote>
         </div>
       </section>

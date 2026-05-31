@@ -20,6 +20,27 @@ export interface AuthedUser {
    * Defaults to true if column missing or null.
    */
   isSenior: boolean;
+  /** Family subscription status ('active' | 'cancelled' | …), null if no family. */
+  subscriptionStatus: string | null;
+  /** ISO timestamp the access expires, null = no family or no expiry. */
+  subscriptionExpiresAt: string | null;
+}
+
+/**
+ * True when the user's family has live PAID access.
+ *
+ * Hard paywall — there is NO free trial. The `families.subscription_status`
+ * column allows 'trial' | 'active' | 'expired' | 'cancelled' and DEFAULTS to
+ * 'trial' ("signed up, not paid"). Only an explicitly 'active' subscription
+ * still within its paid period grants access; 'trial'/'expired'/'cancelled'
+ * (and anything else) do not.
+ */
+export function hasActiveAccess(
+  user: Pick<AuthedUser, "subscriptionStatus" | "subscriptionExpiresAt">,
+): boolean {
+  if (user.subscriptionStatus !== "active") return false;
+  if (!user.subscriptionExpiresAt) return true; // active, open-ended
+  return new Date(user.subscriptionExpiresAt).getTime() > Date.now();
 }
 
 /**
@@ -54,6 +75,23 @@ export const currentUser = cache(async (): Promise<AuthedUser | null> => {
 
   if (!profile) return null;
 
+  // Subscription lives on the family, not the profile. Owners and seniors both
+  // belong to a family; fetch it once here (this whole fn is request-cached).
+  let subscriptionStatus: string | null = null;
+  let subscriptionExpiresAt: string | null = null;
+  if (profile.family_id) {
+    const { data: family } = await admin
+      .from("families")
+      .select("subscription_status, subscription_expires_at")
+      .eq("id", profile.family_id)
+      .maybeSingle<{
+        subscription_status: string | null;
+        subscription_expires_at: string | null;
+      }>();
+    subscriptionStatus = family?.subscription_status ?? null;
+    subscriptionExpiresAt = family?.subscription_expires_at ?? null;
+  }
+
   return {
     id: auth.user.id,
     email: auth.user.email ?? null,
@@ -62,6 +100,8 @@ export const currentUser = cache(async (): Promise<AuthedUser | null> => {
     displayName: profile.display_name,
     username: profile.username,
     isSenior: profile.is_senior ?? true,
+    subscriptionStatus,
+    subscriptionExpiresAt,
   };
 });
 
@@ -70,6 +110,20 @@ export async function requireOwner(): Promise<AuthedUser> {
   const user = await currentUser();
   if (!user) redirect("/login");
   if (user.role !== "owner") redirect("/home");
+  return user;
+}
+
+/**
+ * Owner gate that ALSO requires live subscription access. This is the gate the
+ * owner-app shell uses, so a lapsed/expired family can't keep using the app.
+ *
+ * Owners mid-onboarding (no family yet) pass through — onboarding creates the
+ * family with active access. Lapsed owners go to /predplatne to renew; that
+ * page deliberately uses plain requireOwner so it stays reachable.
+ */
+export async function requireActiveOwner(): Promise<AuthedUser> {
+  const user = await requireOwner();
+  if (user.familyId && !hasActiveAccess(user)) redirect("/predplatne");
   return user;
 }
 
