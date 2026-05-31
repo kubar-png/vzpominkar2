@@ -74,7 +74,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10">
       <AppPageHeader
-        title={`Vítejte zpět${firstName ? `, ${firstName}` : ""}.`}
+        title="Vítejte zpět ve vašem Vzpomínkáři."
         description={description}
         action={
           <Link
