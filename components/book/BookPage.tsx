@@ -28,7 +28,7 @@ export const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookP
       : "inset 16px 0 28px -16px rgba(50, 30, 10, 0.25)";
 
   return (
-    <div ref={ref} className="book-page-leaf" data-density="soft">
+    <div ref={ref} className="book-page-leaf h-full w-full" data-density="soft">
       <div
         className="relative flex h-full w-full flex-col bg-[#fbf5e3] text-[#1a1714]"
         style={{ boxShadow: spineShadow }}

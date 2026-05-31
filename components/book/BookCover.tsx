@@ -40,7 +40,7 @@ export const BookCover = forwardRef<HTMLDivElement, BookCoverProps>(function Boo
   const config = variantConfig[variant];
 
   return (
-    <div ref={ref} className={className} data-density="hard">
+    <div ref={ref} className={`h-full w-full ${className ?? ""}`} data-density="hard">
       <div
         className="relative h-full w-full overflow-hidden"
         style={{

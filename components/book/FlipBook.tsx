@@ -67,6 +67,136 @@ function deriveMetrics(w: number, h: number): Metrics {
 }
 
 /**
+ * Lay every memory's text out across fixed-size pages, measuring against
+ * detached, identically-styled probe elements. Returns one MemoryLeaf per
+ * physical page. Runs in the browser only (uses `document`); pure w.r.t.
+ * React state, so it can be called once per measured size with no races.
+ */
+function buildLeaves(memories: FlipBookMemory[], m: Metrics): MemoryLeaf[] {
+  if (memories.length === 0) return [];
+  const { contentW, contentH, bodyFont, qFont } = m;
+
+  // Body-text probe — identical font metrics to the rendered <p>.
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    `position:absolute;left:-99999px;top:0;visibility:hidden;` +
+    `width:${contentW}px;font-family:var(--font-display);` +
+    `font-size:${bodyFont}px;line-height:1.55;` +
+    `white-space:pre-wrap;word-break:break-word;`;
+  document.body.appendChild(probe);
+  const textFits = (s: string, avail: number) => {
+    probe.textContent = s;
+    return probe.scrollHeight <= avail;
+  };
+
+  // Header + question + photo block above the text on a memory's first leaf.
+  const measureFurniture = (mem: FlipBookMemory): number => {
+    const box = document.createElement("div");
+    box.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;`;
+    const header = document.createElement("div");
+    header.style.cssText = "margin-bottom:20px;font-size:11px;line-height:1.4;";
+    header.textContent = mem.date || "—";
+    box.appendChild(header);
+    if (mem.question) {
+      const h3 = document.createElement("div");
+      h3.style.cssText = `font-family:var(--font-display);font-size:${qFont}px;line-height:1.2;font-weight:500;margin-bottom:16px;`;
+      h3.textContent = `„${mem.question}“`;
+      box.appendChild(h3);
+    }
+    if (mem.imageUrls[0]) {
+      const img = document.createElement("div");
+      img.style.cssText = `margin-bottom:16px;height:${Math.round((contentW * 3) / 4)}px;`;
+      box.appendChild(img);
+    }
+    document.body.appendChild(box);
+    const h = box.offsetHeight;
+    document.body.removeChild(box);
+    return h;
+  };
+
+  // Author footer height (constant across memories).
+  const footerProbe = document.createElement("div");
+  footerProbe.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;padding-top:12px;font-family:var(--font-display);font-size:11px;line-height:1.4;`;
+  footerProbe.textContent = "— Blízký";
+  document.body.appendChild(footerProbe);
+  const footerH = footerProbe.offsetHeight;
+  document.body.removeChild(footerProbe);
+
+  const oneLine = Math.ceil(bodyFont * 1.55);
+
+  // Greedily slice `text` into chunks that each fit `avail` px of height,
+  // splitting only at whitespace. The first leaf gets less room (furniture).
+  const sliceText = (
+    text: string,
+    firstAvail: number,
+    contAvail: number,
+  ): string[] => {
+    const tokens = text.split(/(\s+)/).filter((t) => t.length > 0);
+    const chunks: string[] = [];
+    let start = 0;
+    let avail = firstAvail;
+    while (start < tokens.length) {
+      while (start < tokens.length && /^\s+$/.test(tokens[start]!)) start++;
+      if (start >= tokens.length) break;
+      if (textFits(tokens.slice(start).join(""), avail)) {
+        chunks.push(tokens.slice(start).join("").trimEnd());
+        break;
+      }
+      let lo = start + 1;
+      let hi = tokens.length;
+      let fit = start + 1; // always make progress, even on one long word
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (textFits(tokens.slice(start, mid).join(""), avail)) {
+          fit = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      chunks.push(tokens.slice(start, fit).join("").trimEnd());
+      start = fit;
+      avail = contAvail;
+    }
+    return chunks.length > 0 ? chunks : [""];
+  };
+
+  const result: MemoryLeaf[] = [];
+  let pageNo = 2; // front (no num), title (no num), toc = 1, content starts at 2
+
+  memories.forEach((mem, mi) => {
+    const furnitureH = measureFurniture(mem);
+    const text = mem.text?.trim() ?? "";
+    const contAvail = Math.max(oneLine, contentH - footerH);
+    const firstAvail = contentH - furnitureH - footerH;
+
+    let chunks: string[];
+    if (!text) {
+      chunks = [""]; // furniture-only page
+    } else if (firstAvail < oneLine) {
+      // Furniture fills the first page — start the text on the next leaf.
+      chunks = ["", ...sliceText(text, contAvail, contAvail)];
+    } else {
+      chunks = sliceText(text, firstAvail, contAvail);
+    }
+
+    chunks.forEach((chunk, ci) => {
+      result.push({
+        memoryIndex: mi,
+        text: chunk,
+        isFirst: ci === 0,
+        isLast: ci === chunks.length - 1,
+        pageNumber: pageNo,
+      });
+      pageNo++;
+    });
+  });
+
+  document.body.removeChild(probe);
+  return result;
+}
+
+/**
  * Real flipping book — front cover + title spread + TOC + per-memory spreads
  * + back cover. The page size is a FIXED design-spec proportion (~1.38 H/W);
  * each memory's text flows across as many of those fixed pages as it needs —
@@ -86,171 +216,36 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
   // wider than a phone viewport. measure() upgrades to spread on >=760px.
   const [size, setSize] = useState({ w: 320, h: 442 });
   const [portrait, setPortrait] = useState(true);
-  const [mounted, setMounted] = useState(false);
   // null until the offscreen paginator has run for the current size.
   const [leaves, setLeaves] = useState<MemoryLeaf[] | null>(null);
 
-  useEffect(() => setMounted(true), []);
-
+  // Measure the container and paginate in a SINGLE pass, then commit size,
+  // orientation and pages together. Doing it in one shot (rather than a
+  // mobile-default → measured-size two-phase) means react-pageflip mounts
+  // exactly once with a stable page set — no remount race that could drop or
+  // truncate pages. Re-runs on resize (page capacity depends on width).
   useEffect(() => {
-    function measure() {
+    if (typeof document === "undefined") return;
+    function recompute() {
       const el = containerRef.current;
       if (!el) return;
       const cw = el.clientWidth;
       const isPortrait = cw < 760;
-      setPortrait(isPortrait);
-      // Spread aspect: each page is ~1.38× as tall as it is wide. Two-page mode
-      // uses half the container width per page. Cap so big monitors don't get
-      // a giant flipping book that loses intimacy.
+      // Spread aspect: each page is ~1.38× as tall as it is wide. Two-page
+      // mode uses half the container width per page. Cap so big monitors
+      // don't get a giant flipping book that loses intimacy.
       const pageWidth = isPortrait
         ? Math.min(cw, 420)
         : Math.min(Math.floor(cw / 2), 460);
       const pageHeight = Math.round(pageWidth * 1.38);
+      setPortrait(isPortrait);
       setSize({ w: pageWidth, h: pageHeight });
+      setLeaves(buildLeaves(memories, deriveMetrics(pageWidth, pageHeight)));
     }
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  // Paginate every memory's text into fixed-size pages by measuring against a
-  // detached, identically-styled probe element. Re-runs whenever the page
-  // size changes (resize / portrait toggle) since capacity depends on it.
-  useEffect(() => {
-    if (!mounted || typeof document === "undefined") return;
-    if (memories.length === 0) {
-      setLeaves([]);
-      return;
-    }
-
-    const { contentW, contentH, bodyFont, qFont } = deriveMetrics(size.w, size.h);
-
-    // ── Probes (detached; never painted) ───────────────────────────────────
-    const probe = document.createElement("div");
-    probe.style.cssText =
-      `position:absolute;left:-99999px;top:0;visibility:hidden;` +
-      `width:${contentW}px;font-family:var(--font-display);` +
-      `font-size:${bodyFont}px;line-height:1.55;` +
-      `white-space:pre-wrap;word-break:break-word;`;
-    document.body.appendChild(probe);
-
-    const textFits = (s: string, avail: number) => {
-      probe.textContent = s;
-      return probe.scrollHeight <= avail;
-    };
-
-    // Height of the header + question + photo block that sits above the text
-    // on a memory's first leaf — measured per memory so wrapped questions and
-    // present/absent photos are accounted for exactly.
-    const measureFurniture = (m: FlipBookMemory): number => {
-      const box = document.createElement("div");
-      box.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;`;
-      const header = document.createElement("div");
-      header.style.cssText = "margin-bottom:20px;font-size:11px;line-height:1.4;";
-      header.textContent = m.date || "—";
-      box.appendChild(header);
-      if (m.question) {
-        const h3 = document.createElement("div");
-        h3.style.cssText = `font-family:var(--font-display);font-size:${qFont}px;line-height:1.2;font-weight:500;margin-bottom:16px;`;
-        h3.textContent = `„${m.question}“`;
-        box.appendChild(h3);
-      }
-      if (m.imageUrls[0]) {
-        const img = document.createElement("div");
-        img.style.cssText = `margin-bottom:16px;height:${Math.round((contentW * 3) / 4)}px;`;
-        box.appendChild(img);
-      }
-      document.body.appendChild(box);
-      const h = box.offsetHeight;
-      document.body.removeChild(box);
-      return h;
-    };
-
-    // Author footer height (constant across memories).
-    const footerProbe = document.createElement("div");
-    footerProbe.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;padding-top:12px;font-family:var(--font-display);font-size:11px;line-height:1.4;`;
-    footerProbe.textContent = "— Blízký";
-    document.body.appendChild(footerProbe);
-    const footerH = footerProbe.offsetHeight;
-    document.body.removeChild(footerProbe);
-
-    const oneLine = Math.ceil(bodyFont * 1.55);
-
-    // Greedily slice `text` into chunks that each fit `avail` px of height,
-    // splitting only at whitespace. `firstAvail` differs from `contAvail`
-    // because the first leaf also carries the furniture.
-    const sliceText = (
-      text: string,
-      firstAvail: number,
-      contAvail: number,
-    ): string[] => {
-      const tokens = text.split(/(\s+)/).filter((t) => t.length > 0);
-      const chunks: string[] = [];
-      let start = 0;
-      let avail = firstAvail;
-      while (start < tokens.length) {
-        while (start < tokens.length && /^\s+$/.test(tokens[start]!)) start++;
-        if (start >= tokens.length) break;
-        // Whatever's left fits — last chunk.
-        if (textFits(tokens.slice(start).join(""), avail)) {
-          chunks.push(tokens.slice(start).join("").trimEnd());
-          break;
-        }
-        // Binary-search the largest token prefix that still fits.
-        let lo = start + 1;
-        let hi = tokens.length;
-        let fit = start + 1; // always make progress, even on one long word
-        while (lo <= hi) {
-          const mid = (lo + hi) >> 1;
-          if (textFits(tokens.slice(start, mid).join(""), avail)) {
-            fit = mid;
-            lo = mid + 1;
-          } else {
-            hi = mid - 1;
-          }
-        }
-        chunks.push(tokens.slice(start, fit).join("").trimEnd());
-        start = fit;
-        avail = contAvail;
-      }
-      return chunks.length > 0 ? chunks : [""];
-    };
-
-    const result: MemoryLeaf[] = [];
-    let pageNo = 2; // front (no num), title (no num), toc = 1, content starts at 2
-
-    memories.forEach((m, mi) => {
-      const furnitureH = measureFurniture(m);
-      const text = m.text?.trim() ?? "";
-
-      const contAvail = Math.max(oneLine, contentH - footerH);
-      const firstAvail = contentH - furnitureH - footerH;
-
-      let chunks: string[];
-      if (!text) {
-        chunks = [""]; // furniture-only page
-      } else if (firstAvail < oneLine) {
-        // Furniture fills the first page — start the text on the next leaf.
-        chunks = ["", ...sliceText(text, contAvail, contAvail)];
-      } else {
-        chunks = sliceText(text, firstAvail, contAvail);
-      }
-
-      chunks.forEach((chunk, ci) => {
-        result.push({
-          memoryIndex: mi,
-          text: chunk,
-          isFirst: ci === 0,
-          isLast: ci === chunks.length - 1,
-          pageNumber: pageNo,
-        });
-        pageNo++;
-      });
-    });
-
-    document.body.removeChild(probe);
-    setLeaves(result);
-  }, [mounted, memories, size.w, size.h]);
+    recompute();
+    window.addEventListener("resize", recompute);
+    return () => window.removeEventListener("resize", recompute);
+  }, [memories]);
 
   const metrics = useMemo(() => deriveMetrics(size.w, size.h), [size.w, size.h]);
 
@@ -469,7 +464,7 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
 
   return (
     <div ref={containerRef} className="w-full">
-      {mounted && pages !== null ? (
+      {pages !== null ? (
         <div className="flex justify-center">
           <HTMLFlipBook
             key={`${variant}-${size.w}-${portrait}-${pages.length}`}
