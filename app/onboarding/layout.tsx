@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
 import { signOut } from "@/lib/auth/actions";
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
@@ -7,8 +6,19 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <header className="bg-[var(--color-bg)]">
         <div className="mx-auto flex h-[72px] max-w-[var(--container-wide)] items-center justify-between px-6">
-          <Link href="/">
-            <Logo variant="wordmark" size={28} />
+          <Link href="/" aria-label="Vzpomínkář — domů" className="inline-flex">
+            {/* Gold wordmark — same mask technique as the app header/sidebar. */}
+            <span
+              aria-hidden
+              className="block"
+              style={{
+                width: 136,
+                aspectRatio: "1892 / 390",
+                backgroundColor: "var(--gold)",
+                WebkitMask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+                mask: "url('/brand/logo-mask.png') no-repeat left center / contain",
+              }}
+            />
           </Link>
           <form action={signOut}>
             <button
