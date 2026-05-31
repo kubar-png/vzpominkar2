@@ -29,16 +29,56 @@ interface FlipBookProps {
   memories: FlipBookMemory[];
 }
 
+/** One physical leaf of a memory's content after pagination. */
+interface MemoryLeaf {
+  memoryIndex: number;
+  /** Body-text slice for this leaf (may be empty if furniture fills the page). */
+  text: string;
+  /** First leaf of the memory — carries the header, question and photo. */
+  isFirst: boolean;
+  /** Last leaf of the memory — carries the author footer. */
+  isLast: boolean;
+  /** Logical, printed page number. */
+  pageNumber: number;
+}
+
+interface Metrics {
+  pad: number;
+  contentW: number;
+  contentH: number;
+  bodyFont: number;
+  qFont: number;
+}
+
+/**
+ * Page geometry derived from the fixed page size. Fonts are deterministic px
+ * (not vw) so the offscreen paginator measures exactly what gets rendered.
+ * Mirrors BookPage's padding: clamp(20px, 5%, 56px) of the leaf width.
+ */
+function deriveMetrics(w: number, h: number): Metrics {
+  const pad = Math.max(20, Math.min(56, Math.round(w * 0.05)));
+  return {
+    pad,
+    contentW: w - pad * 2,
+    contentH: h - pad * 2,
+    bodyFont: Math.max(11, Math.min(13, Math.round(w / 33))),
+    qFont: Math.max(15, Math.min(19, Math.round(w / 26))),
+  };
+}
+
 /**
  * Real flipping book — front cover + title spread + TOC + per-memory spreads
- * + back cover. Page size is the design-spec spread proportion (~1.4 H/W);
- * on screens narrower than 760px we collapse to portrait single-page mode.
+ * + back cover. The page size is a FIXED design-spec proportion (~1.38 H/W);
+ * each memory's text flows across as many of those fixed pages as it needs —
+ * a long story runs onto a second or third page rather than being cropped,
+ * and a short one simply leaves the rest of its page blank. On screens
+ * narrower than 760px we collapse to portrait single-page mode.
  *
  * react-pageflip handles the actual flip choreography (mouse drag, click on
  * corner, swipe). We provide the page DOM and pages are mounted once; the
- * library never re-renders children, so changing the cover variant remounts
- * the whole book — that's acceptable since variant-switch is a deliberate
- * user action, not animation-critical.
+ * library never re-renders children, so changing the cover variant or the
+ * page count remounts the whole book — acceptable since those are deliberate
+ * actions (variant switch, resize), not animation-critical.
  */
 export function FlipBook({ familyName, year, variant, memories }: FlipBookProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,6 +87,8 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
   const [size, setSize] = useState({ w: 320, h: 442 });
   const [portrait, setPortrait] = useState(true);
   const [mounted, setMounted] = useState(false);
+  // null until the offscreen paginator has run for the current size.
+  const [leaves, setLeaves] = useState<MemoryLeaf[] | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -57,7 +99,7 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
       const cw = el.clientWidth;
       const isPortrait = cw < 760;
       setPortrait(isPortrait);
-      // Spread aspect: each page is ~1.4× as tall as it is wide. Two-page mode
+      // Spread aspect: each page is ~1.38× as tall as it is wide. Two-page mode
       // uses half the container width per page. Cap so big monitors don't get
       // a giant flipping book that loses intimacy.
       const pageWidth = isPortrait
@@ -71,20 +113,156 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  // Build the page list. Order: front cover, title, TOC, then 1 page per
-  // memory, then back cover. Hard pages get density="hard" via BookCover.
+  // Paginate every memory's text into fixed-size pages by measuring against a
+  // detached, identically-styled probe element. Re-runs whenever the page
+  // size changes (resize / portrait toggle) since capacity depends on it.
+  useEffect(() => {
+    if (!mounted || typeof document === "undefined") return;
+    if (memories.length === 0) {
+      setLeaves([]);
+      return;
+    }
+
+    const { contentW, contentH, bodyFont, qFont } = deriveMetrics(size.w, size.h);
+
+    // ── Probes (detached; never painted) ───────────────────────────────────
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      `position:absolute;left:-99999px;top:0;visibility:hidden;` +
+      `width:${contentW}px;font-family:var(--font-display);` +
+      `font-size:${bodyFont}px;line-height:1.55;` +
+      `white-space:pre-wrap;word-break:break-word;`;
+    document.body.appendChild(probe);
+
+    const textFits = (s: string, avail: number) => {
+      probe.textContent = s;
+      return probe.scrollHeight <= avail;
+    };
+
+    // Height of the header + question + photo block that sits above the text
+    // on a memory's first leaf — measured per memory so wrapped questions and
+    // present/absent photos are accounted for exactly.
+    const measureFurniture = (m: FlipBookMemory): number => {
+      const box = document.createElement("div");
+      box.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;`;
+      const header = document.createElement("div");
+      header.style.cssText = "margin-bottom:20px;font-size:11px;line-height:1.4;";
+      header.textContent = m.date || "—";
+      box.appendChild(header);
+      if (m.question) {
+        const h3 = document.createElement("div");
+        h3.style.cssText = `font-family:var(--font-display);font-size:${qFont}px;line-height:1.2;font-weight:500;margin-bottom:16px;`;
+        h3.textContent = `„${m.question}“`;
+        box.appendChild(h3);
+      }
+      if (m.imageUrls[0]) {
+        const img = document.createElement("div");
+        img.style.cssText = `margin-bottom:16px;height:${Math.round((contentW * 3) / 4)}px;`;
+        box.appendChild(img);
+      }
+      document.body.appendChild(box);
+      const h = box.offsetHeight;
+      document.body.removeChild(box);
+      return h;
+    };
+
+    // Author footer height (constant across memories).
+    const footerProbe = document.createElement("div");
+    footerProbe.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${contentW}px;padding-top:12px;font-family:var(--font-display);font-size:11px;line-height:1.4;`;
+    footerProbe.textContent = "— Blízký";
+    document.body.appendChild(footerProbe);
+    const footerH = footerProbe.offsetHeight;
+    document.body.removeChild(footerProbe);
+
+    const oneLine = Math.ceil(bodyFont * 1.55);
+
+    // Greedily slice `text` into chunks that each fit `avail` px of height,
+    // splitting only at whitespace. `firstAvail` differs from `contAvail`
+    // because the first leaf also carries the furniture.
+    const sliceText = (
+      text: string,
+      firstAvail: number,
+      contAvail: number,
+    ): string[] => {
+      const tokens = text.split(/(\s+)/).filter((t) => t.length > 0);
+      const chunks: string[] = [];
+      let start = 0;
+      let avail = firstAvail;
+      while (start < tokens.length) {
+        while (start < tokens.length && /^\s+$/.test(tokens[start]!)) start++;
+        if (start >= tokens.length) break;
+        // Whatever's left fits — last chunk.
+        if (textFits(tokens.slice(start).join(""), avail)) {
+          chunks.push(tokens.slice(start).join("").trimEnd());
+          break;
+        }
+        // Binary-search the largest token prefix that still fits.
+        let lo = start + 1;
+        let hi = tokens.length;
+        let fit = start + 1; // always make progress, even on one long word
+        while (lo <= hi) {
+          const mid = (lo + hi) >> 1;
+          if (textFits(tokens.slice(start, mid).join(""), avail)) {
+            fit = mid;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
+        }
+        chunks.push(tokens.slice(start, fit).join("").trimEnd());
+        start = fit;
+        avail = contAvail;
+      }
+      return chunks.length > 0 ? chunks : [""];
+    };
+
+    const result: MemoryLeaf[] = [];
+    let pageNo = 2; // front (no num), title (no num), toc = 1, content starts at 2
+
+    memories.forEach((m, mi) => {
+      const furnitureH = measureFurniture(m);
+      const text = m.text?.trim() ?? "";
+
+      const contAvail = Math.max(oneLine, contentH - footerH);
+      const firstAvail = contentH - furnitureH - footerH;
+
+      let chunks: string[];
+      if (!text) {
+        chunks = [""]; // furniture-only page
+      } else if (firstAvail < oneLine) {
+        // Furniture fills the first page — start the text on the next leaf.
+        chunks = ["", ...sliceText(text, contAvail, contAvail)];
+      } else {
+        chunks = sliceText(text, firstAvail, contAvail);
+      }
+
+      chunks.forEach((chunk, ci) => {
+        result.push({
+          memoryIndex: mi,
+          text: chunk,
+          isFirst: ci === 0,
+          isLast: ci === chunks.length - 1,
+          pageNumber: pageNo,
+        });
+        pageNo++;
+      });
+    });
+
+    document.body.removeChild(probe);
+    setLeaves(result);
+  }, [mounted, memories, size.w, size.h]);
+
+  const metrics = useMemo(() => deriveMetrics(size.w, size.h), [size.w, size.h]);
+
+  // Build the full page list once pagination is known. Order: front cover,
+  // title, TOC, then the paginated memory leaves, then back cover.
   const pages = useMemo(() => {
+    if (leaves === null) return null;
     const list: { key: string; node: React.ReactElement }[] = [];
 
     list.push({
       key: "front",
-      node: (
-        <BookCover
-          variant={variant}
-          familyName={familyName}
-          year={year}
-        />
-      ),
+      node: <BookCover variant={variant} familyName={familyName} year={year} />,
     });
 
     list.push({
@@ -116,6 +294,12 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
       ),
     });
 
+    // Map each memory to the printed page number of its first leaf.
+    const startPage = new Map<number, number>();
+    leaves.forEach((l) => {
+      if (l.isFirst) startPage.set(l.memoryIndex, l.pageNumber);
+    });
+
     list.push({
       key: "toc",
       node: (
@@ -145,7 +329,7 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
                     className="flex-shrink-0 tabular-nums"
                     style={{ color: "rgba(120, 90, 50, 0.6)" }}
                   >
-                    {i + 2}
+                    {startPage.get(i) ?? i + 2}
                   </span>
                 </li>
               ))
@@ -183,75 +367,92 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
         ),
       });
     } else {
-      memories.forEach((m, i) => {
+      leaves.forEach((leaf, idx) => {
+        const m = memories[leaf.memoryIndex]!;
         list.push({
-          key: m.id,
+          key: `${m.id}-${idx}`,
           node: (
-            <BookPage side={i % 2 === 0 ? "right" : "left"} pageNumber={i + 2}>
-              <header className="mb-5 flex items-baseline justify-between gap-3">
+            <BookPage
+              side={idx % 2 === 0 ? "right" : "left"}
+              pageNumber={leaf.pageNumber}
+            >
+              {leaf.isFirst ? (
+                <>
+                  <header className="mb-5 flex items-baseline justify-between gap-3">
+                    <span
+                      className="font-[family-name:var(--font-display)] text-[11px]"
+                      style={{ color: "rgba(120, 90, 50, 0.7)", letterSpacing: "0.16em" }}
+                    >
+                      {romanNumeral(leaf.memoryIndex + 1)}
+                    </span>
+                    <span
+                      className="text-[9px] font-medium uppercase"
+                      style={{ letterSpacing: "0.32em", color: "rgba(120, 90, 50, 0.6)" }}
+                    >
+                      {m.date}
+                    </span>
+                  </header>
+                  {m.question ? (
+                    <h3
+                      className="mb-4 font-[family-name:var(--font-display)] leading-[1.2]"
+                      style={{ fontSize: metrics.qFont, color: "#0e3b64", fontWeight: 500 }}
+                    >
+                      &bdquo;{m.question}&ldquo;
+                    </h3>
+                  ) : null}
+                  {m.imageUrls[0] && (
+                    <div className="mb-4 overflow-hidden rounded-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={m.imageUrls[0]}
+                        alt=""
+                        className="aspect-[4/3] w-full object-cover"
+                        style={{ filter: "sepia(0.05) saturate(0.95)" }}
+                      />
+                    </div>
+                  )}
+                </>
+              ) : (
                 <span
-                  className="font-[family-name:var(--font-display)] text-[11px]"
-                  style={{ color: "rgba(120, 90, 50, 0.7)", letterSpacing: "0.16em" }}
+                  className="mb-3 block font-[family-name:var(--font-display)] text-[9px] font-medium uppercase"
+                  style={{ letterSpacing: "0.32em", color: "rgba(120, 90, 50, 0.55)" }}
                 >
-                  {romanNumeral(i + 1)}
+                  {romanNumeral(leaf.memoryIndex + 1)} — pokračování
                 </span>
-                <span
-                  className="text-[9px] font-medium uppercase"
-                  style={{ letterSpacing: "0.32em", color: "rgba(120, 90, 50, 0.6)" }}
-                >
-                  {m.date}
-                </span>
-              </header>
-              {m.question ? (
-                <h3
-                  className="mb-4 font-[family-name:var(--font-display)] leading-[1.2]"
-                  style={{
-                    fontSize: "clamp(15px, 1.6vw, 19px)",
-                    color: "#0e3b64",
-                    fontWeight: 500,
-                  }}
-                >
-                  &bdquo;{m.question}&ldquo;
-                </h3>
-              ) : null}
-              {m.imageUrls[0] && (
-                <div className="mb-4 overflow-hidden rounded-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={m.imageUrls[0]}
-                    alt=""
-                    className="aspect-[4/3] w-full object-cover"
-                    style={{ filter: "sepia(0.05) saturate(0.95)" }}
-                  />
-                </div>
               )}
-              {m.text ? (
+              {leaf.text ? (
                 <p
-                  className="font-[family-name:var(--font-display)] leading-[1.55] line-clamp-[12]"
+                  className="flex-1 overflow-hidden font-[family-name:var(--font-display)]"
                   style={{
-                    fontSize: "clamp(11px, 1.05vw, 13px)",
+                    fontSize: metrics.bodyFont,
+                    lineHeight: 1.55,
                     color: "#1a1714",
+                    whiteSpace: "pre-wrap",
                   }}
                 >
-                  {m.text}
+                  {leaf.text}
                 </p>
-              ) : null}
-              <footer
-                className="mt-auto flex items-baseline justify-end gap-2 pt-3"
-                style={{ color: "rgba(60, 40, 20, 0.8)" }}
-              >
-                <span
-                  aria-hidden
-                  className="h-px w-6"
-                  style={{ background: "rgba(120, 90, 50, 0.5)" }}
-                />
-                <span
-                  className="font-[family-name:var(--font-display)]"
-                  style={{ fontSize: "11px" }}
+              ) : (
+                <div className="flex-1" />
+              )}
+              {leaf.isLast ? (
+                <footer
+                  className="mt-auto flex items-baseline justify-end gap-2 pt-3"
+                  style={{ color: "rgba(60, 40, 20, 0.8)" }}
                 >
-                  — {m.authorName ?? "Blízký"}
-                </span>
-              </footer>
+                  <span
+                    aria-hidden
+                    className="h-px w-6"
+                    style={{ background: "rgba(120, 90, 50, 0.5)" }}
+                  />
+                  <span
+                    className="font-[family-name:var(--font-display)]"
+                    style={{ fontSize: "11px" }}
+                  >
+                    — {m.authorName ?? "Blízký"}
+                  </span>
+                </footer>
+              ) : null}
             </BookPage>
           ),
         });
@@ -264,14 +465,14 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
     });
 
     return list;
-  }, [memories, variant, familyName, year]);
+  }, [leaves, memories, variant, familyName, year, metrics.bodyFont, metrics.qFont]);
 
   return (
     <div ref={containerRef} className="w-full">
-      {mounted ? (
+      {mounted && pages !== null ? (
         <div className="flex justify-center">
           <HTMLFlipBook
-            key={`${variant}-${size.w}-${portrait}`}
+            key={`${variant}-${size.w}-${portrait}-${pages.length}`}
             width={size.w}
             height={size.h}
             size="fixed"
