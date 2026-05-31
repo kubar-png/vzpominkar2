@@ -53,7 +53,11 @@ export function SmoothScroll() {
     if (mql.matches) return;
 
     const lenis = new Lenis({
-      lerp: 0.085,
+      // Lenis' default — lighter than 0.085, so the animated position catches
+      // up to the target instead of perpetually chasing it. A low lerp reads
+      // as stutter/rubber-banding under a touchpad's continuous event stream
+      // (a mouse wheel's discrete notches hide it). Matches the Lenis demo.
+      lerp: 0.1,
       smoothWheel: true,
       // Touch on phones is already buttery natively; smoothing it can
       // actually feel worse (and conflicts with momentum scroll on iOS).

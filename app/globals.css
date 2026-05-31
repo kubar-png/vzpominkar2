@@ -1745,28 +1745,27 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .faq-item summary::-webkit-details-marker { display: none; }
 
-/* Gold circle + horizontal → arrow. Rotates 90° on open so the closed
- * 'read more →' becomes an 'expanded ↓' affordance that points into the
- * revealed body text. */
+/* Navy circle + gold arrow — identical to the `.btn .arrow` CTA badge
+ * (same circle, same arrow family, same size), only horizontal (→) instead
+ * of the button's diagonal (↗). Rotates 90° on open so the closed 'read
+ * more →' tips down to point into the revealed body text. */
 .editorial .faq-item summary::after {
   content: '→';
   flex-shrink: 0;
-  width: 36px; height: 36px;
+  width: 28px; height: 28px;
   display: inline-grid;
   place-items: center;
-  background: var(--gold);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--gold);
   border-radius: 50%;
   font-family: var(--font-body-editorial);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.2s ease;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .editorial .faq-item[open] summary::after {
   transform: rotate(90deg);
-  background: var(--gold-soft);
 }
 
 .editorial .faq-item .faq-body {
