@@ -35,11 +35,11 @@ export default async function OnboardingStartPage() {
           className="max-w-[20ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.1] tracking-tight text-[var(--color-ink-900)] sm:text-4xl"
           style={{ textWrap: "balance" }}
         >
-          Začneme tím, koho chcete vyzpovídat.
+          Začneme tím, kdo bude vyprávět.
         </h1>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
-          Pojmenujte rodinný projekt a řekněte nám jméno blízkého, kterého
-          chcete vyzpovídat. Otázky pak v klidu vyberete v aplikaci.
+          Pojmenujte rodinný projekt a řekněte nám jméno blízkého, jehož příběhy
+          chcete zachytit. Otázky pak v klidu vyberete v aplikaci.
         </p>
       </div>
 
