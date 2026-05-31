@@ -1,25 +1,32 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { requireOwner } from "@/lib/auth/permissions";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { CredentialsForm } from "./credentials-form";
 
 export const metadata: Metadata = { title: "Přístup pro seniora" };
+
+// Always render fresh: the redirects depend on the owner's just-created
+// family/senior state, which a stale client/route cache would get wrong.
+export const dynamic = "force-dynamic";
 
 export default async function CredentialsPage() {
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
 
-  const supabase = await createClient();
-  const { data: family } = await supabase
+  // Read via the admin client (like the rest of the app). owner.familyId is
+  // already validated; an RLS read here could intermittently return null right
+  // after creation and ping-pong /onboarding ↔ /credentials.
+  const admin = createAdminClient();
+  const { data: family } = await admin
     .from("families")
     .select("id, name, senior_display_name")
     .eq("id", owner.familyId)
-    .single<{ id: string; name: string; senior_display_name: string | null }>();
+    .maybeSingle<{ id: string; name: string; senior_display_name: string | null }>();
 
   if (!family) redirect("/onboarding");
 
-  const { data: senior } = await supabase
+  const { data: senior } = await admin
     .from("profiles")
     .select("id")
     .eq("family_id", family.id)

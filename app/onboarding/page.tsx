@@ -5,6 +5,10 @@ import { OnboardingForm } from "./onboarding-form";
 
 export const metadata: Metadata = { title: "Nastavení rodiny" };
 
+// Fresh render every time so the familyId-based redirect can't act on stale
+// client/route cache (which caused an /onboarding ↔ /credentials loop).
+export const dynamic = "force-dynamic";
+
 export default async function OnboardingStartPage() {
   const owner = await requireOwner();
   if (owner.familyId) redirect("/onboarding/credentials");
