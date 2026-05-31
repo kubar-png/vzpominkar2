@@ -179,6 +179,7 @@ export type Database = {
           created_by: string
           id: string
           name: string
+          referral_source: string | null
           senior_display_name: string | null
           subscription_expires_at: string | null
           subscription_status: string
@@ -189,6 +190,7 @@ export type Database = {
           created_by: string
           id?: string
           name: string
+          referral_source?: string | null
           senior_display_name?: string | null
           subscription_expires_at?: string | null
           subscription_status?: string
@@ -199,6 +201,7 @@ export type Database = {
           created_by?: string
           id?: string
           name?: string
+          referral_source?: string | null
           senior_display_name?: string | null
           subscription_expires_at?: string | null
           subscription_status?: string

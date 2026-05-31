@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwner } from "@/lib/auth/permissions";
 import { onboardingStartSchema } from "@/lib/validations/onboarding";
+import { REFERRAL_VALUES } from "./referral";
 
 export type ActionState =
   | { ok: true }
@@ -152,4 +153,22 @@ function addDays(d: Date, n: number): Date {
   const out = new Date(d);
   out.setUTCDate(out.getUTCDate() + n);
   return out;
+}
+
+/**
+ * Save the owner's acquisition attribution ("How did you hear about us?"),
+ * asked once right after the first purchase. Form action → redirects to the
+ * dashboard. Unknown/empty source is treated as a skip (no write).
+ */
+export async function saveReferralSource(formData: FormData): Promise<void> {
+  const owner = await requireOwner();
+  const source = String(formData.get("source") ?? "");
+  if (owner.familyId && REFERRAL_VALUES.includes(source)) {
+    const admin = createAdminClient();
+    await admin
+      .from("families")
+      .update({ referral_source: source })
+      .eq("id", owner.familyId);
+  }
+  redirect("/dashboard");
 }

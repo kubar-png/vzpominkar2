@@ -48,7 +48,9 @@ export async function purchaseBook(bookId: string): Promise<never> {
       amountCzk: 0,
     });
     revalidatePath("/dashboard");
-    redirect("/dashboard?activated=1");
+    // After the first (base) purchase, ask the acquisition-attribution
+    // question; further volumes go straight back to the app.
+    redirect(isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1");
   }
 
   const stripe = getStripe();
@@ -68,7 +70,7 @@ export async function purchaseBook(bookId: string): Promise<never> {
       },
     ],
     metadata: { familyId: book.family_id, productType, bookId: book.id, ownerId: owner.id },
-    success_url: `${baseUrl()}/dashboard?activated=1`,
+    success_url: `${baseUrl()}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
     cancel_url: `${baseUrl()}/predplatne?cancelled=1`,
   });
 
