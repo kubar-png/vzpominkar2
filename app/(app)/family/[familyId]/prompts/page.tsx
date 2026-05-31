@@ -87,9 +87,14 @@ export default async function PromptsPage({
       question: a.prompts?.question ?? "(odstraněná otázka)",
       seniorName: a.senior_id ? (seniorNameById.get(a.senior_id) ?? null) : null,
     }));
-  const answered = assignments.filter(
-    (a): a is typeof a & { answered_memory_id: string } => !!a.answered_memory_id,
-  );
+  // Newest first — the base query is scheduled_for ascending (oldest first),
+  // which is right for the upcoming queue but reversed for answered: people
+  // expect the most recently answered question at the top.
+  const answered = assignments
+    .filter(
+      (a): a is typeof a & { answered_memory_id: string } => !!a.answered_memory_id,
+    )
+    .sort((a, b) => b.scheduled_for.localeCompare(a.scheduled_for));
 
   const allPrompts = promptsResult.data ?? [];
   const customPrompts = allPrompts
