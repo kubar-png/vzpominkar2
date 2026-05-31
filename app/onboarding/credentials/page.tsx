@@ -57,7 +57,7 @@ export default async function CredentialsPage() {
           className="max-w-[24ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.1] tracking-tight text-[var(--color-ink-900)] sm:text-4xl"
           style={{ textWrap: "balance" }}
         >
-          Vytvořte přístup pro {seniorName}.
+          Vytvořte přístup pro svého blízkého.
         </h1>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
           Vyberte uživatelské jméno a&nbsp;heslo, kterými se {seniorName} přihlásí.
