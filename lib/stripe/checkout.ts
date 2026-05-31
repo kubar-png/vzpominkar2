@@ -71,7 +71,7 @@ export async function purchaseBook(bookId: string): Promise<never> {
     ],
     metadata: { familyId: book.family_id, productType, bookId: book.id, ownerId: owner.id },
     success_url: `${baseUrl()}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
-    cancel_url: `${baseUrl()}/predplatne?cancelled=1`,
+    cancel_url: `${baseUrl()}/onboarding/platba?cancelled=1`,
   });
 
   if (!session.url) throw new Error("Stripe nevrátil URL pro checkout.");

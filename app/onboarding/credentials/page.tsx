@@ -44,11 +44,12 @@ export default async function CredentialsPage() {
           II.
         </span>
         <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Krok druhý ze dvou
+          Krok druhý ze tří
         </span>
         <div className="ml-2 flex flex-1 items-center gap-1.5">
           <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
           <span className="h-[2px] flex-1 bg-[var(--color-red-700)]" />
+          <span className="h-[2px] flex-1 bg-[var(--color-paper-300)]" />
         </div>
       </div>
 

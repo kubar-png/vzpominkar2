@@ -117,13 +117,13 @@ export async function requireOwner(): Promise<AuthedUser> {
  * Owner gate that ALSO requires live subscription access. This is the gate the
  * owner-app shell uses, so a lapsed/expired family can't keep using the app.
  *
- * Owners mid-onboarding (no family yet) pass through — onboarding creates the
- * family with active access. Lapsed owners go to /predplatne to renew; that
- * page deliberately uses plain requireOwner so it stays reachable.
+ * Owners mid-onboarding (no family yet) pass through. Owners without paid
+ * access go to the /onboarding/platba activation step (which uses plain
+ * requireOwner, so it stays reachable).
  */
 export async function requireActiveOwner(): Promise<AuthedUser> {
   const user = await requireOwner();
-  if (user.familyId && !hasActiveAccess(user)) redirect("/predplatne");
+  if (user.familyId && !hasActiveAccess(user)) redirect("/onboarding/platba");
   return user;
 }
 
