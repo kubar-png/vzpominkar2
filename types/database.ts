@@ -59,6 +59,7 @@ export type Database = {
       book_orders: {
         Row: {
           amount_czk: number
+          book_id: string | null
           created_at: string
           family_id: string
           id: string
@@ -69,6 +70,7 @@ export type Database = {
         }
         Insert: {
           amount_czk?: number
+          book_id?: string | null
           created_at?: string
           family_id: string
           id?: string
@@ -79,6 +81,7 @@ export type Database = {
         }
         Update: {
           amount_czk?: number
+          book_id?: string | null
           created_at?: string
           family_id?: string
           id?: string
@@ -93,6 +96,79 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_orders_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          amount_czk: number
+          created_at: string
+          family_id: string
+          id: string
+          paid: boolean
+          paid_at: string | null
+          prompt_cap: number
+          senior_display_name: string | null
+          senior_id: string | null
+          sequence_no: number
+          status: string
+          stripe_payment_intent_id: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_czk?: number
+          created_at?: string
+          family_id: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          prompt_cap?: number
+          senior_display_name?: string | null
+          senior_id?: string | null
+          sequence_no?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_czk?: number
+          created_at?: string
+          family_id?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          prompt_cap?: number
+          senior_display_name?: string | null
+          senior_id?: string | null
+          sequence_no?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "books_senior_id_fkey"
+            columns: ["senior_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -138,6 +214,7 @@ export type Database = {
           audio_transcript_polished: string | null
           transcript_edited_at: string | null
           author_id: string
+          book_id: string | null
           created_at: string
           extracted_year: number | null
           extracted_year_label: string | null
@@ -159,6 +236,7 @@ export type Database = {
           audio_transcript_polished?: string | null
           transcript_edited_at?: string | null
           author_id: string
+          book_id?: string | null
           created_at?: string
           extracted_year?: number | null
           extracted_year_label?: string | null
@@ -180,6 +258,7 @@ export type Database = {
           audio_transcript_polished?: string | null
           transcript_edited_at?: string | null
           author_id?: string
+          book_id?: string | null
           created_at?: string
           extracted_year?: number | null
           extracted_year_label?: string | null
@@ -207,6 +286,13 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memories_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
             referencedColumns: ["id"]
           },
           {
@@ -315,6 +401,7 @@ export type Database = {
       prompt_assignments: {
         Row: {
           answered_memory_id: string | null
+          book_id: string | null
           created_at: string
           family_id: string
           id: string
@@ -325,6 +412,7 @@ export type Database = {
         }
         Insert: {
           answered_memory_id?: string | null
+          book_id?: string | null
           created_at?: string
           family_id: string
           id?: string
@@ -335,6 +423,7 @@ export type Database = {
         }
         Update: {
           answered_memory_id?: string | null
+          book_id?: string | null
           created_at?: string
           family_id?: string
           id?: string
@@ -356,6 +445,13 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_assignments_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
             referencedColumns: ["id"]
           },
           {

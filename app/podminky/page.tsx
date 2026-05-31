@@ -67,9 +67,11 @@ export default function PodminkyPage() {
 
       <h2>4. Cena a platba</h2>
       <p>
-        Přístup ke službě je placený &mdash; roční přístup aktivujete a hradíte
-        na stránce předplatného. Konkrétní cenu uvidíte před potvrzením platby.
-        Bez aktivního přístupu nelze sbírat vzpomínky ani vytvářet knihu.
+        Přístup ke službě je placený &mdash; jednorázovým poplatkem, který
+        zahrnuje jednoho blízkého a jednu knihu (až 52 otázek) napořád, bez
+        předplatného. Dalšího blízkého nebo další díl pořídíte za zvýhodněnou
+        cenu. Konkrétní cenu uvidíte před potvrzením platby. Bez zaplaceného
+        přístupu nelze sbírat vzpomínky ani vytvářet knihu.
       </p>
       <p>
         Tisk fyzické knihy se účtuje zvlášť, ve chvíli kdy si knihu objednáte.

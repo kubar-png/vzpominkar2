@@ -2,36 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOwner, hasActiveAccess } from "@/lib/auth/permissions";
-import { startYearlyCheckout } from "@/lib/stripe/checkout";
+import { startBaseCheckout } from "@/lib/stripe/checkout";
 import { signOut } from "@/lib/auth/actions";
 
-export const metadata: Metadata = { title: "Předplatné" };
+export const metadata: Metadata = { title: "Přístup ke knize" };
 
 /**
- * Subscription / renewal page. Deliberately OUTSIDE the (app) route group so
- * it's reachable by a lapsed owner — the (app) layout's requireActiveOwner
- * gate redirects expired families here. Uses plain requireOwner so it never
- * redirect-loops.
+ * Access / activation page. Deliberately OUTSIDE the (app) route group so an
+ * un-paid owner can reach it — the (app) layout's requireActiveOwner gate
+ * redirects families without paid access here. Uses plain requireOwner so it
+ * never redirect-loops.
  *
- * While the price is 0 CZK the renew button reactivates instantly (free path
- * in createCheckout) and bounces back to the dashboard; once a real price is
- * configured the same button opens Stripe Checkout.
+ * One-time, lifetime model. While the price is 0 CZK the button activates
+ * instantly (free path in purchaseBook) and bounces to the dashboard; once a
+ * real price is configured the same button opens Stripe Checkout.
  */
 export default async function SubscriptionPage() {
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
 
   const active = hasActiveAccess(owner);
-  const lapsed =
-    owner.subscriptionStatus === "expired" || owner.subscriptionStatus === "cancelled";
-  const cancelled = owner.subscriptionStatus === "cancelled";
-  const expiry = owner.subscriptionExpiresAt
-    ? new Date(owner.subscriptionExpiresAt).toLocaleDateString("cs-CZ", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : null;
 
   return (
     <div className="editorial">
@@ -41,16 +31,14 @@ export default async function SubscriptionPage() {
             className="auth-eyebrow"
             style={{ justifyContent: "center", display: "inline-flex" }}
           >
-            Předplatné
+            Přístup ke knize
           </span>
 
           {active ? (
             <>
               <h1 className="auth-title">Váš přístup je aktivní.</h1>
               <p className="auth-lede">
-                {expiry
-                  ? `Roční přístup máte zaplacený do ${expiry}.`
-                  : "Máte aktivní přístup k Vzpomínkáři."}
+                Máte zaplacený přístup k Vzpomínkáři — napořád.
               </p>
               <div className="auth-meta" style={{ textAlign: "center" }}>
                 <Link href="/dashboard" className="btn btn-gold">
@@ -58,32 +46,16 @@ export default async function SubscriptionPage() {
                 </Link>
               </div>
             </>
-          ) : lapsed ? (
-            <>
-              <h1 className="auth-title">
-                {cancelled ? "Přístup byl zrušen." : "Váš přístup vypršel."}
-              </h1>
-              <p className="auth-lede">
-                {expiry
-                  ? `Platnost skončila ${expiry}. Obnovte roční přístup a pokračujte ve sbírání vzpomínek — vaše dosavadní kniha zůstává zachována.`
-                  : "Obnovte roční přístup a pokračujte ve sbírání vzpomínek — vaše dosavadní kniha zůstává zachována."}
-              </p>
-              <form action={startYearlyCheckout} style={{ marginTop: "8px" }}>
-                <button type="submit" className="btn btn-gold">
-                  Obnovit roční přístup <span className="arrow">↗</span>
-                </button>
-              </form>
-            </>
           ) : (
             <>
               <h1 className="auth-title">Aktivujte přístup.</h1>
               <p className="auth-lede">
-                Pro sbírání vzpomínek a tvorbu knihy je potřeba roční přístup.
-                Aktivujte ho a můžete rovnou začít.
+                Pro sbírání vzpomínek a tvorbu knihy je potřeba jednorázově
+                aktivovat přístup. Zaplatíte jednou a kniha je vaše napořád.
               </p>
-              <form action={startYearlyCheckout} style={{ marginTop: "8px" }}>
+              <form action={startBaseCheckout} style={{ marginTop: "8px" }}>
                 <button type="submit" className="btn btn-gold">
-                  Aktivovat roční přístup <span className="arrow">↗</span>
+                  Aktivovat přístup <span className="arrow">↗</span>
                 </button>
               </form>
             </>

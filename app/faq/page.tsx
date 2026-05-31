@@ -63,7 +63,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Co když odmítne odpovídat?",
-        a: "Pošleme jemnou připomínku po týdnu. Pokud delší dobu mlčí, ozveme se vám i jemu osobně. Někdy stačí změnit otázku, jindy přibrat foto k otázce. Zaplacený rok je váš, ať se rozpovídá kdykoliv.",
+        a: "Pošleme jemnou připomínku po týdnu. Pokud delší dobu mlčí, ozveme se vám i jemu osobně. Někdy stačí změnit otázku, jindy přibrat foto k otázce. Zaplacený přístup je váš napořád, ať se rozpovídá kdykoliv.",
       },
     ],
   },
@@ -123,15 +123,15 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Kdy a kolik se platí?",
-        a: "Jednorázových 2 990 Kč za roční přístup. V ceně je rok týdenních otázek, online knihovna a podpora. Cenu za tisk knihy uvidíte před objednávkou — platí se zvlášť, až ji budete chtít vytisknout. Žádné automatické předplatné.",
+        a: "Jednorázových 2 890 Kč za přístup k jedné knize — jeden blízký a až 52 otázek, napořád. Žádné předplatné, nic se neobnovuje. Další blízký nebo další díl stojí 1 790 Kč. Tisk knihy se platí zvlášť, až ji budete chtít vytisknout.",
       },
       {
-        q: "Co se stane po roce, pokud knihu nestihnu objednat?",
-        a: "Vaše vzpomínky nemizí — zůstávají uložené ve vaší knihovně, dokud máte aktivní přístup, a tisk si můžete objednat i s odstupem.",
+        q: "Co se stane, když vyčerpám 52 otázek?",
+        a: "Tím je kniha plná. Můžete objednat tisk a/nebo si pořídit další díl (1 790 Kč) a plynule pokračovat — vznikne Díl 2 s dalšími 52 otázkami o stejném blízkém. Přístup k hotové knize i vzpomínkám máte napořád.",
       },
       {
         q: "Mohu mít víc seniorů — babičku i dědu?",
-        a: "Zatím podporujeme jednoho seniora na rodinu. Pokud chcete dvě paralelní knihy, zaregistrujte se dvakrát. Společný profil pro dva vyprávějící chystáme.",
+        a: "Ano. Dalšího blízkého přidáte za 1 790 Kč — každý má svou vlastní knihu a svůj jednoduchý přístup. Babička i děda tak mohou vyprávět souběžně, každý svůj příběh.",
       },
       {
         q: "Mohu si peníze nechat vrátit?",
@@ -217,8 +217,8 @@ export default function FaqPage() {
       {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
       <FinalCta
         eyebrow="Stále váháte?"
-        heading="Roční přístup s 30denní zárukou vrácení peněz."
-        lede="Jednorázových 2 990 Kč. Pokud to není pro vás, do 30 dnů vrátíme peníze bez výmluv."
+        heading="Přístup ke knize s 30denní zárukou vrácení peněz."
+        lede="Jednorázových 2 890 Kč. Pokud to není pro vás, do 30 dnů vrátíme peníze bez výmluv."
         footer={
           <>
             Nenašli jste odpověď?{" "}

@@ -7,7 +7,7 @@ import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "Roční přístup za 2 990 Kč. Tištěnou knihu si objednáte, až bude vzpomínek dost. Vrácení peněz do 30 dnů, bez závazku.",
+    "Přístup ke knize za 2 890 Kč jednorázově, napořád. Tištěnou knihu si objednáte, až bude vzpomínek dost. Vrácení peněz do 30 dnů, bez závazku.",
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -15,10 +15,11 @@ export const metadata: Metadata = {
  *
  * Single paper-card plan (no shadcn), homepage .feature-list bullets,
  * mini-FAQ using .faq-item, final signup-card. Pricing tokens come from
- * env; flat 2 990 Kč fallback (pilotní verze retired).
+ * env; flat 2 890 Kč fallback (pilotní verze retired).
  * ─────────────────────────────────────────────────────────────────────── */
 
-const PRICE_YEARLY = Number(process.env.PRICE_YEARLY_ACCESS_CZK ?? "2990");
+const PRICE_BASE = Number(process.env.PRICE_BOOK_BASE_CZK ?? "2890");
+const PRICE_ADDON = Number(process.env.PRICE_BOOK_ADDON_CZK ?? "1790");
 const PRICE_BOOK = Number(process.env.PRICE_BOOK_PRINT_CZK ?? "0");
 
 function formatCzk(n: number): string {
@@ -48,7 +49,7 @@ const FAQ_EXCERPT = [
   },
   {
     q: "Co když rodič přestane odpovídat?",
-    a: "Pošleme jemnou připomínku. Pokud delší dobu mlčí, zavoláme nebo napíšeme a zeptáme se, jak pomoci. Zaplacený rok je váš, ať se rozpovídá kdykoliv.",
+    a: "Pošleme jemnou připomínku. Pokud delší dobu mlčí, zavoláme nebo napíšeme a zeptáme se, jak pomoci. Zaplacený přístup je váš napořád, ať se rozpovídá kdykoliv.",
   },
   {
     q: "Můžu si odpovědi sám/sama upravit?",
@@ -67,9 +68,9 @@ export default function PricingPage() {
             Jedna platba. Žádné předplatné.
           </h1>
           <p className="lede">
-            Roční přístup do knihovny máte v ceně. Tištěnou knihu si
-            objednáváte až tehdy, kdy víte, že je hotová. Vrácení peněz do
-            třiceti dnů, bez výmluv.
+            Zaplatíte jednou a přístup ke knize i online knihovně máte napořád.
+            Tištěnou knihu si objednáváte až tehdy, kdy víte, že je hotová.
+            Vrácení peněz do třiceti dnů, bez výmluv.
           </p>
           <PrimaryCta variant="hero" />
         </div>
@@ -81,15 +82,17 @@ export default function PricingPage() {
         <div className="container">
           <div className="cenik-card" data-reveal>
             <div className="cenik-card-head">
-              <span className="eyebrow">Roční přístup</span>
+              <span className="eyebrow">Přístup ke knize</span>
             </div>
             <div className="cenik-price">
-              <span className="cenik-price-amount">{formatCzk(PRICE_YEARLY)}</span>
-              <span className="cenik-price-sub">jednorázově, na 12 měsíců</span>
+              <span className="cenik-price-amount">{formatCzk(PRICE_BASE)}</span>
+              <span className="cenik-price-sub">jednorázově · napořád</span>
             </div>
             <p className="cenik-price-note">
-              Jednorázová platba na rok vyprávění. Cena tisku knihy se přičítá
-              až ve chvíli, kdy ji budete chtít vyrobit.
+              Jedna platba, kniha je vaše napořád — žádné předplatné. Zahrnuje
+              jednoho blízkého a až 52 otázek. Další blízký nebo další díl{" "}
+              {formatCzk(PRICE_ADDON)}. Cena tisku se přičítá, až knihu budete
+              chtít vyrobit.
             </p>
 
             <ul className="feature-list" style={{ margin: "32px 0 32px" }}>
@@ -193,7 +196,7 @@ export default function PricingPage() {
       <FinalCta
         eyebrow="Začněte dnes"
         heading="Pošlete jim první otázku v pondělí."
-        lede="Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku."
         footer={
           <>
             Mám ještě <FinalCtaFooterLink href="/faq">otázky</FinalCtaFooterLink>.

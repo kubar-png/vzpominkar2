@@ -4,7 +4,7 @@ import "server-only";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
-import { createCheckout } from "@/lib/stripe/checkout";
+import { createPrintCheckout } from "@/lib/stripe/checkout";
 
 const addressSchema = z.object({
   fullName: z.string().min(2).max(120),
@@ -35,10 +35,22 @@ export async function placeBookOrder(
   }
 
   const supabase = await createClient();
+
+  // Link the print order to the family's most recent book (the volume being
+  // printed). Best-effort — book_id is nullable.
+  const { data: book } = await supabase
+    .from("books")
+    .select("id")
+    .eq("family_id", familyId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string }>();
+
   const { data: order, error } = await supabase
     .from("book_orders")
     .insert({
       family_id: familyId,
+      book_id: book?.id ?? null,
       status: "draft",
       shipping_address: parsed.data,
       amount_czk: 0,
@@ -51,13 +63,12 @@ export async function placeBookOrder(
   }
 
   // Hands off to Stripe (or skip if 0 CZK) - both branches redirect.
-  await createCheckout({
+  await createPrintCheckout({
     familyId,
-    productType: "book_print",
     bookOrderId: order.id,
     shippingAddress: parsed.data,
   });
 
-  // createCheckout always redirects, but TS needs a return.
+  // createPrintCheckout always redirects, but TS needs a return.
   return { ok: false, error: "Neočekávaný stav." };
 }

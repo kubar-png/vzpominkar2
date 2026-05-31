@@ -23,15 +23,24 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-export const SUPPORTED_PRODUCTS = ["yearly_access", "book_print"] as const;
+/**
+ * One-time products (no subscriptions):
+ *  - book_base   first book in a family               (e.g. 2 890 Kč)
+ *  - book_addon  every further book — a new senior OR another volume
+ *                ("díl") of an existing senior          (e.g. 1 790 Kč)
+ *  - book_print  physical print of a finished book
+ */
+export const SUPPORTED_PRODUCTS = ["book_base", "book_addon", "book_print"] as const;
 export type ProductType = (typeof SUPPORTED_PRODUCTS)[number];
 
-/** Read price for a product from env (CZK integer). 0 → skip Stripe. */
+/** Read price for a product from env (CZK integer). 0 → skip Stripe (free path). */
 export function priceForProductCzk(product: ProductType): number {
   const raw =
-    product === "yearly_access"
-      ? process.env.PRICE_YEARLY_ACCESS_CZK
-      : process.env.PRICE_BOOK_PRINT_CZK;
+    product === "book_base"
+      ? process.env.PRICE_BOOK_BASE_CZK
+      : product === "book_addon"
+        ? process.env.PRICE_BOOK_ADDON_CZK
+        : process.env.PRICE_BOOK_PRINT_CZK;
   const n = Number(raw ?? "0");
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
 }

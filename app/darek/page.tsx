@@ -294,7 +294,7 @@ export default function DarekPage() {
       <FinalCta
         eyebrow="Vyberte den, napište vzkaz"
         heading="Darujte Vzpomínkář."
-        lede="Jednorázových 2 990 Kč. Vrácení peněz do 30 dnů, bez závazku. Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv."
+        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku. Pokud se obdarovaný nerozpovídá, peníze vrátíme bez výmluv."
         ctaHref="/signup?gift=1"
         ctaLabel="Darovat Vzpomínkář"
         footer={

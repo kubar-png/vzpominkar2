@@ -74,6 +74,23 @@ export async function startOnboarding(
     return { ok: false, error: "Profil se nepodařilo propojit s rodinou." };
   }
 
+  // 2b) Create the first book (Díl 1) — unpaid. It's the paid unit and the
+  // 52-prompt collection target; the owner pays for it on /predplatne.
+  const { data: book, error: bookErr } = await admin
+    .from("books")
+    .insert({
+      family_id: family.id,
+      senior_display_name: parsed.data.seniorDisplayName.trim(),
+      sequence_no: 1,
+      title: "Díl 1",
+    })
+    .select("id")
+    .single<{ id: string }>();
+
+  if (bookErr || !book) {
+    return { ok: false, error: "Knihu se nepodařilo připravit." };
+  }
+
   // 3) Schedule initial prompt_assignments - one per week starting next Monday.
   //
   // Only system prompts (family_id IS NULL) may be scheduled here: the family
@@ -93,9 +110,11 @@ export async function startOnboarding(
     validPromptIds = validPromptIds.filter((id) => allowedIds.has(id));
   }
 
+  // Cap the initial schedule at the book's 52-prompt limit.
   const startMonday = nextMonday(new Date());
-  const assignments = validPromptIds.map((promptId, i) => ({
+  const assignments = validPromptIds.slice(0, 52).map((promptId, i) => ({
     family_id: family.id,
+    book_id: book.id,
     prompt_id: promptId,
     scheduled_for: addDays(startMonday, i * 7).toISOString().slice(0, 10),
   }));
