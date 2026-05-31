@@ -66,19 +66,26 @@ export async function currentBookForSenior(
   familyId: string,
   seniorId: string | null,
 ): Promise<{ id: string; sequence_no: number } | null> {
-  let q = admin
+  // Fetch the family's collecting paid books and pick in JS — avoids
+  // interpolating the (client-supplied) seniorId into a PostgREST .or() filter,
+  // which would be an injection vector.
+  const { data } = await admin
     .from("books")
     .select("id, sequence_no, senior_id")
     .eq("family_id", familyId)
     .eq("paid", true)
     .eq("status", "collecting")
     .order("sequence_no", { ascending: false })
-    .limit(1);
-  if (seniorId) q = q.or(`senior_id.eq.${seniorId},senior_id.is.null`);
-  const { data } = await q.returns<
-    { id: string; sequence_no: number; senior_id: string | null }[]
-  >();
-  const book = data?.[0];
+    .returns<{ id: string; sequence_no: number; senior_id: string | null }[]>();
+
+  const books = data ?? [];
+  // Prefer this senior's own volume; fall back to a family-level book whose
+  // senior_id is still null (onboarding creates the base book before the
+  // senior profile exists).
+  const book =
+    (seniorId ? books.find((b) => b.senior_id === seniorId) : undefined) ??
+    books.find((b) => b.senior_id === null) ??
+    null;
   return book ? { id: book.id, sequence_no: book.sequence_no } : null;
 }
 
