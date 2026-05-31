@@ -5,11 +5,11 @@
  * the page.
  */
 export const REFERRAL_SOURCES = [
-  { value: "social", label: "Sociální sítě (Facebook, Instagram…)" },
-  { value: "google", label: "Google nebo vyhledávání" },
-  { value: "ai", label: "Umělá inteligence (ChatGPT a podobně)" },
+  { value: "social", label: "Sociální sítě" },
+  { value: "google", label: "Google / vyhledávání" },
+  { value: "ai", label: "Umělá inteligence" },
   { value: "friend", label: "Doporučení od známého" },
-  { value: "media", label: "Článek nebo v médiích" },
+  { value: "media", label: "Článek / média" },
   { value: "other", label: "Něco jiného" },
 ] as const;
 

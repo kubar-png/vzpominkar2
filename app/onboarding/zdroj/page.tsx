@@ -1,17 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  Search,
+  Sparkles,
+  Users,
+  Newspaper,
+  Share2,
+  MoreHorizontal,
+  type LucideIcon,
+} from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { saveReferralSource } from "@/lib/onboarding/actions";
 import { REFERRAL_SOURCES } from "@/lib/onboarding/referral";
 
 export const metadata: Metadata = { title: "Jak jste se o nás dozvěděli?" };
 
+const ICONS: Record<string, LucideIcon> = {
+  social: Share2,
+  google: Search,
+  ai: Sparkles,
+  friend: Users,
+  media: Newspaper,
+  other: MoreHorizontal,
+};
+
 /**
  * Acquisition attribution — shown once right after the owner's first purchase
- * (base activation). Saves to families.referral_source; re-visiting once it's
- * set bounces to the dashboard. Skippable.
+ * (base activation). Lives inside the onboarding layout (full-page bg +
+ * wordmark header), so it matches the rest of the flow. Saves to
+ * families.referral_source; re-visiting once set bounces to the dashboard.
  */
 export default async function ReferralPage() {
   const owner = await requireOwner();
@@ -26,45 +47,64 @@ export default async function ReferralPage() {
   if (family?.referral_source) redirect("/dashboard");
 
   return (
-    <div className="editorial">
-      <section className="auth-shell">
-        <div className="auth-card">
-          <span className="auth-eyebrow">Poslední krok</span>
-          <h1 className="auth-title">Jak jste se o Vzpomínkáři dozvěděli?</h1>
-          <p className="auth-lede">
-            Díky tomu víme, co funguje, a můžeme se zlepšovat. Vyberte, co nejvíc
-            sedí.
-          </p>
+    <div className="space-y-10">
+      <div className="flex items-center gap-4">
+        <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
+          Ještě poslední věc
+        </span>
+        <div className="ml-2 flex flex-1 items-center gap-1.5">
+          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
+          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
+          <span className="h-[2px] flex-1 bg-[var(--color-gold-500)]" />
+        </div>
+      </div>
 
-          <form action={saveReferralSource} className="mt-6 flex flex-col gap-2">
-            {REFERRAL_SOURCES.map((s) => (
+      <div className="space-y-5">
+        <h1
+          className="max-w-[24ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.1] tracking-tight text-[var(--color-ink-900)] sm:text-4xl"
+          style={{ textWrap: "balance" }}
+        >
+          Jak jste se o Vzpomínkáři dozvěděli?
+        </h1>
+        <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
+          Díky tomu víme, co funguje, a&nbsp;můžeme se zlepšovat. Vyberte, co
+          nejvíc sedí.
+        </p>
+      </div>
+
+      <form action={saveReferralSource} className="space-y-8">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {REFERRAL_SOURCES.map((s) => {
+            const Icon = ICONS[s.value] ?? MoreHorizontal;
+            return (
               <label
                 key={s.value}
-                className="flex cursor-pointer items-center gap-3 rounded-[8px] border border-[var(--line-2)] px-4 py-3 text-left text-[16px] text-[var(--ink)] transition-colors hover:border-[var(--ink)] has-[:checked]:border-[var(--ink)] has-[:checked]:bg-[var(--paper)]"
+                className="group flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-6 text-center transition-colors hover:border-[var(--color-navy-400)] has-[:checked]:border-[var(--color-navy-700)] has-[:checked]:bg-[var(--color-navy-50)]"
               >
-                <input
-                  type="radio"
-                  name="source"
-                  value={s.value}
-                  required
-                  className="h-4 w-4 accent-[var(--gold)]"
-                />
-                <span>{s.label}</span>
+                <input type="radio" name="source" value={s.value} required className="sr-only" />
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-paper-100)] text-[var(--color-navy-700)] transition-colors group-has-[:checked]:bg-[var(--color-navy-700)] group-has-[:checked]:text-white">
+                  <Icon size={22} aria-hidden />
+                </span>
+                <span className="text-sm font-medium leading-snug text-[var(--color-text)]">
+                  {s.label}
+                </span>
               </label>
-            ))}
-
-            <button type="submit" className="btn btn-gold mt-4 justify-center">
-              Pokračovat <span className="arrow">↗</span>
-            </button>
-          </form>
-
-          <div className="auth-meta" style={{ textAlign: "center" }}>
-            <Link href="/dashboard" className="auth-back">
-              Přeskočit
-            </Link>
-          </div>
+            );
+          })}
         </div>
-      </section>
+
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/dashboard"
+            className="text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
+          >
+            Přeskočit
+          </Link>
+          <button type="submit" className={cn(buttonVariants({ variant: "primary" }))}>
+            Pokračovat <span aria-hidden>↗</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
