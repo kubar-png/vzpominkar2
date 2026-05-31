@@ -44,6 +44,55 @@ export default async function RodinaPage({
     countById.set(m.author_id, (countById.get(m.author_id) ?? 0) + 1);
   }
 
+  // Per-senior book status drives the activate / next-volume CTA. Fetch the
+  // family's paid books + answered counts, then resolve each senior's current
+  // volume. The base book may have a null senior_id (created at onboarding
+  // before the senior profile existed) — attribute it to the first senior.
+  const { data: books } = await admin
+    .from("books")
+    .select("id, senior_id, sequence_no, status, prompt_cap")
+    .eq("family_id", familyId)
+    .eq("paid", true)
+    .order("sequence_no", { ascending: false })
+    .returns<
+      { id: string; senior_id: string | null; sequence_no: number; status: string; prompt_cap: number }[]
+    >();
+  const paidBooks = books ?? [];
+
+  const answeredByBook = new Map<string, number>();
+  if (paidBooks.length) {
+    const { data: answered } = await admin
+      .from("prompt_assignments")
+      .select("book_id")
+      .in("book_id", paidBooks.map((b) => b.id))
+      .not("answered_memory_id", "is", null)
+      .returns<{ book_id: string }[]>();
+    for (const a of answered ?? []) {
+      answeredByBook.set(a.book_id, (answeredByBook.get(a.book_id) ?? 0) + 1);
+    }
+  }
+
+  const firstSeniorId = seniorList[0]?.id ?? null;
+  function bookStatusFor(seniorId: string): {
+    kind: "none" | "collecting" | "finished";
+    answered: number;
+    cap: number;
+    sequenceNo: number;
+  } {
+    const owned = paidBooks.filter(
+      (b) => b.senior_id === seniorId || (b.senior_id === null && seniorId === firstSeniorId),
+    );
+    if (owned.length === 0) return { kind: "none", answered: 0, cap: 52, sequenceNo: 0 };
+    const collecting = owned.find((b) => b.status === "collecting");
+    const book = collecting ?? owned[0]!;
+    return {
+      kind: collecting ? "collecting" : "finished",
+      answered: answeredByBook.get(book.id) ?? 0,
+      cap: book.prompt_cap,
+      sequenceNo: book.sequence_no,
+    };
+  }
+
   return (
     <div className="space-y-8">
       <AppPageHeader
@@ -73,6 +122,7 @@ export default async function RodinaPage({
                 prompt_frequency: senior.prompt_frequency,
                 is_senior: senior.is_senior ?? true,
                 memoryCount: countById.get(senior.id) ?? 0,
+                book: bookStatusFor(senior.id),
               }}
               manageHref={`/family/${familyId}/senior?seniorId=${senior.id}`}
             />

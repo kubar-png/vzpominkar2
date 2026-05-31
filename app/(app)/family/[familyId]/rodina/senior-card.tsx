@@ -11,6 +11,7 @@ import { FormSection } from "@/components/ui/form-section";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { plural } from "@/lib/format/czech-plural";
 import { updateSeniorProfile, deleteSeniorAccount } from "@/lib/auth/senior-actions";
+import { startVolumeCheckout } from "@/lib/stripe/checkout";
 
 interface SeniorCardProps {
   familyId: string;
@@ -24,6 +25,12 @@ interface SeniorCardProps {
     prompt_frequency: number;
     is_senior: boolean;
     memoryCount: number;
+    book: {
+      kind: "none" | "collecting" | "finished";
+      answered: number;
+      cap: number;
+      sequenceNo: number;
+    };
   };
   manageHref: string;
 }
@@ -352,6 +359,38 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
             </div>
           </details>
         </div>
+      </div>
+
+      {/* Book status + purchase CTA — activate a new senior's book or buy the
+          next volume as it nears/reaches the 52-question cap. */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-5 py-3 md:px-6">
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {senior.book.kind === "none"
+            ? "Kniha zatím není aktivní."
+            : senior.book.kind === "finished"
+              ? `Díl ${senior.book.sequenceNo} je hotový — ${senior.book.cap} z ${senior.book.cap} otázek.`
+              : `Díl ${senior.book.sequenceNo} — ${senior.book.answered} z ${senior.book.cap} otázek.`}
+        </p>
+        {senior.book.kind === "none" ? (
+          <form action={startVolumeCheckout.bind(null, senior.id)}>
+            <button
+              type="submit"
+              className="inline-flex h-11 cursor-pointer items-center rounded-[var(--radius-md)] bg-[var(--color-navy-900)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--color-navy-800)]"
+            >
+              Aktivovat knihu
+            </button>
+          </form>
+        ) : senior.book.kind === "finished" ||
+          senior.book.answered >= Math.max(1, senior.book.cap - 7) ? (
+          <form action={startVolumeCheckout.bind(null, senior.id)}>
+            <button
+              type="submit"
+              className="inline-flex h-11 cursor-pointer items-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-4 text-sm font-medium text-[var(--color-navy-700)] transition-colors hover:border-[var(--color-navy-400)] hover:text-[var(--color-navy-900)]"
+            >
+              Pořídit Díl {senior.book.sequenceNo + 1}
+            </button>
+          </form>
+        ) : null}
       </div>
     </div>
   );

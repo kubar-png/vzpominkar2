@@ -24,6 +24,39 @@ function getRedis(): Redis | null {
   return redis;
 }
 
+/** True when the KV/Redis env vars are present (limiters can be built). */
+function isKvConfigured(): boolean {
+  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+}
+
+const isProd = process.env.NODE_ENV === "production";
+
+/**
+ * Decide what to do for the `auth` limiter when we cannot get a verdict from
+ * Redis (KV unconfigured, or a live call threw). In production we fail CLOSED
+ * for auth — a brute-force protection that silently disables itself is worse
+ * than a transient deny. The one exception: if KV is simply not provisioned at
+ * all in production we log loudly but still allow, so a missing integration
+ * can't lock every user out of login. In dev we always stay permissive.
+ *
+ * `reason` is "unconfigured" (no KV env at all) or "error" (KV env present but
+ * the call failed).
+ */
+function authFailDecision(
+  reason: "unconfigured" | "error",
+): { ok: true } | { ok: false; retryAfterSec: number } {
+  if (!isProd) return { ok: true };
+  if (reason === "unconfigured") {
+    console.error(
+      "[rate-limit:auth] KV is not configured in production — auth rate limiting is DISABLED. Provision the Upstash/KV integration (KV_REST_API_URL / KV_REST_API_TOKEN).",
+    );
+    return { ok: true };
+  }
+  // KV is configured but the call errored: fail CLOSED so we don't drop the
+  // brute-force protection during an infra blip.
+  return { ok: false, retryAfterSec: 60 };
+}
+
 function makeLimiter(opts: {
   prefix: string;
   limit: number;
@@ -73,7 +106,13 @@ export async function checkRateLimit(
   scope?: string,
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
   const limiter = kind === "auth" ? authLimiter : leadsLimiter;
-  if (!limiter) return { ok: true };
+  if (!limiter) {
+    // No limiter built → KV unconfigured. `auth` fails closed in prod; `leads`
+    // stays fail-open.
+    return kind === "auth"
+      ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")
+      : { ok: true };
+  }
 
   const h = await headers();
   const ip = getClientIp(h);
@@ -85,6 +124,10 @@ export async function checkRateLimit(
     const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
     return { ok: false, retryAfterSec };
   } catch (err) {
+    if (kind === "auth") {
+      console.error(`[rate-limit:auth] redis error (fail-closed in prod):`, err);
+      return authFailDecision("error");
+    }
     console.error(`[rate-limit:${kind}] redis error (fail-open):`, err);
     return { ok: true };
   }
@@ -97,7 +140,11 @@ export async function checkRateLimitWithHeaders(
   scope?: string,
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
   const limiter = kind === "auth" ? authLimiter : leadsLimiter;
-  if (!limiter) return { ok: true };
+  if (!limiter) {
+    return kind === "auth"
+      ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")
+      : { ok: true };
+  }
 
   const ip = getClientIp(reqHeaders);
   const key = scope ? `${ip}:${scope}` : ip;
@@ -108,6 +155,10 @@ export async function checkRateLimitWithHeaders(
     const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
     return { ok: false, retryAfterSec };
   } catch (err) {
+    if (kind === "auth") {
+      console.error(`[rate-limit:auth] redis error (fail-closed in prod):`, err);
+      return authFailDecision("error");
+    }
     console.error(`[rate-limit:${kind}] redis error (fail-open):`, err);
     return { ok: true };
   }

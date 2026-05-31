@@ -68,6 +68,24 @@ export default async function SeniorHomePage() {
     }
   }
 
+  // Distinguish "your book is finished" (had a paid book, now full/printed) from
+  // "we're still getting set up" (no paid book yet) — so a senior who completed
+  // their 52 questions sees a celebratory, accurate message, not "coming soon".
+  let bookFinished = false;
+  if (!currentBook && user.familyId) {
+    const { data: paidBooks } = await supabase
+      .from("books")
+      .select("status, senior_id")
+      .eq("family_id", user.familyId)
+      .eq("paid", true)
+      .returns<{ status: string; senior_id: string | null }[]>();
+    bookFinished = (paidBooks ?? []).some(
+      (b) =>
+        (b.senior_id === user.id || b.senior_id === null) &&
+        (b.status === "full" || b.status === "ordered" || b.status === "printed"),
+    );
+  }
+
   // Surface a "continue draft" entry point when the senior left a half-written
   // text memory behind. Audio + photo go straight to published, so drafts are
   // text-only.
@@ -153,6 +171,18 @@ export default async function SeniorHomePage() {
                 <span className="es-action-arrow" aria-hidden>↗</span>
               </Link>
             </div>
+          </>
+        ) : bookFinished ? (
+          <>
+            <span className="es-eyebrow">Hotovo</span>
+            <h2 className="es-question">Vaše kniha je celá.</h2>
+            <div className="es-rule-gold" />
+            <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
+              Odpověděli jste na všech 52 otázek — krásná práce. Vaše vzpomínky
+              jsou v bezpečí a rodina z nich teď připraví knihu. Chcete-li
+              vyprávět dál, rodina vám může otevřít další díl. Zatím si můžete
+              procházet, co jste už uložili.
+            </p>
           </>
         ) : (
           <>

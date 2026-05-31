@@ -11,7 +11,7 @@ import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
 import { extractYear } from "@/lib/memories/extract-metadata";
 import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
-import { onAssignmentAnswered } from "@/lib/books/server";
+import { onAssignmentAnswered, currentBookForSenior } from "@/lib/books/server";
 
 /**
  * Detect Next.js's internal redirect throw. `redirect()` propagates by
@@ -86,6 +86,16 @@ async function ensureDraftMemory(opts: {
   if (!senior.familyId) throw new Error("Senior nemá přiřazenou rodinu.");
   const admin = createAdminClient();
 
+  // Gate the paid AI pipeline: a senior may only create memories while their
+  // family has an active, not-yet-full paid book to collect into. Seniors of
+  // unpaid or over-cap families would otherwise consume transcription / AI
+  // cost without an entitlement. Resolve it once and attribute the memory to
+  // that volume from the start.
+  const currentBook = await currentBookForSenior(admin, senior.familyId, senior.id);
+  if (!currentBook) {
+    throw new Error("Tato kniha zatím není aktivní.");
+  }
+
   if (opts.existingMemoryId) {
     const { data } = await admin
       .from("memories")
@@ -118,6 +128,7 @@ async function ensureDraftMemory(opts: {
       family_id: senior.familyId,
       author_id: senior.id,
       prompt_id: promptId,
+      book_id: currentBook.id,
       status: "draft",
     })
     .select("id")
