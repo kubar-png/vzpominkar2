@@ -71,6 +71,15 @@ průběžně.
 
 ---
 
+## 📈 Konverze (až po spuštění / až bude obsah)
+
+### 8. Reálná fotka knihy na paywallu
+- [ ] Na `/onboarding/platba` je teď **CSS mockup** kožené knihy (komponenta `BookCover`). Až bude fotka skutečné tištěné knihy, vyměnit za `next/image` (WebP, `priority`/lazy dle pozice).
+
+### 9. Záchrana opuštěného onboardingu
+> Když owner zaplatí účet, projde krok 1, ale nedojde k platbě, nemáme follow-up.
+- [ ] Po SMTP (bod 2): naplánovaný **e-mail „dokončete nastavení"** ~pár hodin po opuštění (rodina ve stavu `trial` bez platby). Pozor na frekvenci/odhlášení.
+
 ## ✅ Hotovo (kontext)
 - Supabase „Confirm email" (zeď před onboardingem) **vypnuto** — vlastník se po registraci přihlásí hned. *(uděláno 2026-06-01)*
 </content>
