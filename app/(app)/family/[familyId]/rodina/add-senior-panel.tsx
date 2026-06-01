@@ -60,11 +60,14 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
   const [username, setUsername] = useState("");
   const [usernameEdited, setUsernameEdited] = useState(false);
   const [password, setPassword] = useState("");
+  // Drives which address field shows (e-mail vs. phone).
+  const [contactChannel, setContactChannel] = useState<"" | "email" | "whatsapp">("");
 
   function open() {
     setUsername("");
     setUsernameEdited(false);
     setPassword(generatePassword());
+    setContactChannel("");
     setPhase({ name: "form" });
   }
 
@@ -255,23 +258,44 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
           <FormSection title="Doručování" description="Kam a jak často chodí otázky." compact>
             <div className="space-y-1.5">
               <Label htmlFor="new-contactChannel">Kam posílat otázky</Label>
-              <Select id="new-contactChannel" name="contactChannel">
+              <Select
+                id="new-contactChannel"
+                name="contactChannel"
+                value={contactChannel}
+                onChange={(e) => setContactChannel(e.target.value as "" | "email" | "whatsapp")}
+              >
                 <option value="">- nevybráno -</option>
                 <option value="email">E-mail</option>
                 <option value="whatsapp">WhatsApp</option>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="new-contactAddress">E-mail nebo telefon (WhatsApp)</Label>
-              <Input
-                id="new-contactAddress"
-                name="contactAddress"
-                type="text"
-                maxLength={200}
-                placeholder="jana@email.cz nebo +420 777 123 456"
-                autoComplete="off"
-              />
-            </div>
+            {/* The address field follows the chosen channel: e-mail vs. phone. */}
+            {contactChannel === "email" ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="new-contactAddress">E-mailová adresa</Label>
+                <Input
+                  id="new-contactAddress"
+                  name="contactAddress"
+                  type="email"
+                  maxLength={200}
+                  placeholder="jana@email.cz"
+                  autoComplete="off"
+                />
+              </div>
+            ) : contactChannel === "whatsapp" ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="new-contactAddress">Telefonní číslo (WhatsApp)</Label>
+                <Input
+                  id="new-contactAddress"
+                  name="contactAddress"
+                  type="tel"
+                  inputMode="tel"
+                  maxLength={200}
+                  placeholder="+420 777 123 456"
+                  autoComplete="off"
+                />
+              </div>
+            ) : null}
             <div className="space-y-1.5">
               <Label htmlFor="new-promptFrequency">Jak často posílat otázky</Label>
               <Select id="new-promptFrequency" name="promptFrequency" defaultValue="1">
