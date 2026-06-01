@@ -81,9 +81,9 @@ export default function PodminkyPage() {
 
       <h2>5. Vrácení peněz</h2>
       <p>
-        Pokud zjistíte, že Vzpomínkář pro vaši rodinu není to pravé, máte
-        nárok na <strong>vrácení peněz do 30 dnů</strong> od platby ročního
-        přístupu &mdash; bez výmluv a bez nutnosti zdůvodnit důvod.
+        Přístup ke knize a&nbsp;online knihovně je digitální obsah, který
+        zpřístupňujeme ihned po zaplacení. Na jednorázový nákup přístupu
+        neposkytujeme dobrovolnou záruku vrácení peněz.
       </p>
       <p>
         U již zhotovené tištěné knihy (kniha je vyrobena na míru) vrácení peněz

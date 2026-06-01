@@ -118,7 +118,7 @@ export default async function ActivationPage() {
               </form>
               {priceCzk > 0 ? (
                 <p className="text-xs text-[var(--color-paper-300)] md:text-right">
-                  Vrácení peněz do 30 dnů · bez závazku · platba přes zabezpečenou bránu
+                  Bez předplatného · přístup napořád · platba přes zabezpečenou bránu
                 </p>
               ) : null}
             </div>

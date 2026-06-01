@@ -257,7 +257,7 @@ export default function BabybookPage() {
       <FinalCta
         eyebrow="Začněte hned"
         heading="Dokud si první slova ještě pamatujete."
-        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        lede="Jednorázově, přístup napořád — bez předplatného."
         ctaHref="/signup?product=babybook"
         footer={
           <>

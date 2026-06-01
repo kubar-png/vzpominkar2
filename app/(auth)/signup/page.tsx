@@ -75,9 +75,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
             <p className="auth-fineprint">
               {basePriceCzk > 0
-                ? `Jednorázově ${basePriceCzk.toLocaleString("cs-CZ")} Kč, přístup napořád. `
-                : "Přístup napořád. "}
-              Vrácení peněz do&nbsp;30&nbsp;dnů, bez výmluv.
+                ? `Jednorázově ${basePriceCzk.toLocaleString("cs-CZ")} Kč — přístup napořád, bez předplatného.`
+                : "Přístup napořád, bez předplatného."}
             </p>
 
             <div className="auth-meta">

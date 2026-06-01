@@ -276,10 +276,6 @@ export default function HomePage() {
                 </ul>
                 <PrimaryCta />
                 <div className="product-meta">
-                  <span>
-                    <strong>30 dní</strong> na rozmyšlenou
-                  </span>
-                  <span>·</span>
                   <span className="stars">★★★★★</span>
                   <span>
                     <strong>Stovky rodin po celé republice</strong>

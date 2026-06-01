@@ -133,10 +133,6 @@ const CATEGORIES: Category[] = [
         q: "Mohu mít víc seniorů — babičku i dědu?",
         a: "Ano. Dalšího blízkého přidáte za 1 790 Kč — každý má svou vlastní knihu a svůj jednoduchý přístup. Babička i děda tak mohou vyprávět souběžně, každý svůj příběh.",
       },
-      {
-        q: "Mohu si peníze nechat vrátit?",
-        a: "Do 30 dnů od platby ano — bez výmluv, bez otázek. Stačí napsat.",
-      },
     ],
   },
   {
@@ -217,8 +213,8 @@ export default function FaqPage() {
       {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
       <FinalCta
         eyebrow="Stále váháte?"
-        heading="Přístup ke knize s 30denní zárukou vrácení peněz."
-        lede="Jednorázových 2 890 Kč. Pokud to není pro vás, do 30 dnů vrátíme peníze bez výmluv."
+        heading="Přístup ke knize, jednou a napořád."
+        lede="Jednorázově, bez předplatného. Tištěnou knihu si objednáte, až budete mít vzpomínek dost."
         footer={
           <>
             Nenašli jste odpověď?{" "}

@@ -215,7 +215,7 @@ export default function ONasPage() {
       <FinalCta
         eyebrow="Začněte dnes"
         heading="Pošlete vašemu blízkému první otázku."
-        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        lede="Jednorázově, přístup napořád — bez předplatného."
         footer={
           <>
             Nebo si přečtěte,{" "}

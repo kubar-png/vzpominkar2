@@ -52,7 +52,7 @@ export function Shell({
         <div className="sticky-mobile-cta" role="region" aria-label="Založit Vzpomínkář">
           <PrimaryCta />
           <p className="sticky-mobile-cta-note">
-            Vrácení do 30 dnů, bez závazku.
+            Jednorázově, přístup napořád.
           </p>
         </div>
       ) : null}

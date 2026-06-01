@@ -142,7 +142,7 @@ export default function KontaktPage() {
       <FinalCta
         eyebrow="Začít rovnou"
         heading="Pošlete jim první otázku v pondělí."
-        lede="Registrace zabere pět minut. Jednorázových 2 890 Kč, vrácení peněz do 30 dnů, bez závazku."
+        lede="Registrace zabere pět minut. Jednorázově, přístup napořád — bez předplatného."
       />
     </Shell>
   );

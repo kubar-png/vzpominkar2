@@ -7,7 +7,7 @@ import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "Přístup ke knize za 2 890 Kč jednorázově, napořád. Tištěnou knihu si objednáte, až bude vzpomínek dost. Vrácení peněz do 30 dnů, bez závazku.",
+    "Přístup ke knize jednorázově, napořád. Tištěnou knihu si objednáte, až bude vzpomínek dost.",
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -32,7 +32,6 @@ const INCLUDED = [
   "Automatický přepis a korektura",
   "Online knihovna pro celou rodinu",
   "Sourozenci a vnoučata se mohou připojit",
-  "Vrácení peněz do 30 dnů, bez výmluv",
 ];
 
 const ADDONS: ReadonlyArray<readonly [string, string]> = [
@@ -70,7 +69,6 @@ export default function PricingPage() {
           <p className="lede">
             Zaplatíte jednou a přístup ke knize i online knihovně máte napořád.
             Tištěnou knihu si objednáváte až tehdy, kdy víte, že je hotová.
-            Vrácení peněz do třiceti dnů, bez výmluv.
           </p>
           <PrimaryCta variant="hero" />
         </div>
@@ -103,7 +101,7 @@ export default function PricingPage() {
 
             <PrimaryCta className="btn-gold-full" />
             <p className="cenik-price-guarantee">
-              Vrácení peněz do 30 dnů · bez závazku
+              Jednorázově · bez předplatného · přístup napořád
             </p>
           </div>
         </div>
@@ -146,17 +144,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ═══════════ MONEY-BACK GUARANTEE ═══════════ */}
-      <section className="pull-quote">
-        <div className="container">
-          <blockquote>
-            Záruka vrácení peněz.
-            <br />
-            Pokud to není pro vás, do třiceti dnů vám peníze vrátíme.
-          </blockquote>
-        </div>
-      </section>
-
       {/* ═══════════ FAQ EXCERPT ═══════════ */}
       <div className="divider" aria-hidden />
       <section className="faq">
@@ -196,7 +183,7 @@ export default function PricingPage() {
       <FinalCta
         eyebrow="Začněte dnes"
         heading="Pošlete jim první otázku v pondělí."
-        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        lede="Jednorázově, přístup napořád — bez předplatného."
         footer={
           <>
             Mám ještě <FinalCtaFooterLink href="/faq">otázky</FinalCtaFooterLink>.

@@ -244,7 +244,7 @@ export default function JakToFungujePage() {
       <FinalCta
         eyebrow="Začněte dnes"
         heading="Zeptejte se na to důležité ještě dnes."
-        lede="Jednorázových 2 890 Kč. Vrácení peněz do 30 dnů, bez závazku."
+        lede="Jednorázově, přístup napořád — bez předplatného."
         footer={
           <>
             Nebo se podívejte na{" "}

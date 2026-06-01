@@ -45,7 +45,7 @@ export function OnboardingForm() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-[34ch] text-xs text-[var(--color-text-muted)]">
-          Bez závazku — cenu i 30denní záruku vrácení peněz uvidíte v&nbsp;dalším kroku.
+          Cenu uvidíte hned v&nbsp;dalším kroku — jednorázově, bez předplatného.
         </p>
         <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
           {pending ? "Ukládám…" : "Pokračovat"}
