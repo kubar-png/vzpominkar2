@@ -11,21 +11,20 @@ export const dynamic = "force-dynamic";
 
 export default async function OnboardingStartPage() {
   const owner = await requireOwner();
-  if (owner.familyId) redirect("/onboarding/credentials");
+  if (owner.familyId) redirect("/onboarding/platba");
 
   return (
     <div className="space-y-10">
-      {/* Progress strip - two-segment chapter bar */}
+      {/* Progress strip — two-step chapter bar */}
       <div className="flex items-center gap-4">
         <span className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--color-red-700)]">
           I.
         </span>
         <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Krok první ze tří
+          Krok 1 ze 2 · zabere minutu
         </span>
         <div className="ml-2 flex flex-1 items-center gap-1.5">
           <span className="h-[2px] flex-1 bg-[var(--color-red-700)]" />
-          <span className="h-[2px] flex-1 bg-[var(--color-paper-300)]" />
           <span className="h-[2px] flex-1 bg-[var(--color-paper-300)]" />
         </div>
       </div>
@@ -38,8 +37,9 @@ export default async function OnboardingStartPage() {
           Začneme tím, kdo bude vyprávět.
         </h1>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
-          Pojmenujte rodinný projekt a řekněte nám jméno blízkého, jehož příběhy
-          chcete zachytit. Otázky pak v klidu vyberete v aplikaci.
+          Stačí jméno blízkého, jehož příběhy chcete zachytit. Za pár týdnů
+          z&nbsp;jeho vyprávění vznikne kniha pro celou rodinu — otázky i&nbsp;přístup
+          pro něj vyřešíte hned potom, v&nbsp;klidu a&nbsp;bez spěchu.
         </p>
       </div>
 

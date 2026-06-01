@@ -2,13 +2,16 @@ import { z } from "zod";
 
 export const onboardingStartSchema = z
   .object({
+    // Optional now — onboarding only asks for the storyteller's name; the
+    // family/project name is derived from it (the owner can rename later).
     familyName: z
       .string()
-      .min(2, "Pojmenujte svou rodinu (např. „Vzpomínky babičky Marie“).")
-      .max(80, "Název je dlouhý."),
+      .max(80, "Název je dlouhý.")
+      .optional()
+      .nullable(),
     seniorDisplayName: z
       .string()
-      .min(2, "Zadejte jméno seniora.")
+      .min(2, "Zadejte jméno blízkého.")
       .max(80, "Jméno je dlouhé."),
   })
   .strict();

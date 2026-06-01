@@ -17,31 +17,18 @@ export function OnboardingForm() {
       <Card>
         <CardContent className="space-y-5 p-7">
           <div className="space-y-2">
-            <Label htmlFor="familyName">Jak se vaše rodina jmenuje?</Label>
-            <Input
-              id="familyName"
-              name="familyName"
-              required
-              placeholder="Vzpomínky babičky Marie"
-              autoComplete="off"
-            />
-            <p className="text-xs text-[var(--color-text-muted)]">
-              Tohle se objeví v záhlaví aplikace a v pozdější knize.
-            </p>
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="seniorDisplayName">Jméno blízkého, jak ho oslovujete</Label>
             <Input
               id="seniorDisplayName"
               name="seniorDisplayName"
               required
+              autoFocus
               placeholder="Babička Marie"
               autoComplete="off"
             />
             <p className="text-xs text-[var(--color-text-muted)]">
-              Otázky pro vašeho blízkého si v klidu vyberete později v aplikaci —
-              nejdřív se v ní rozhlédnete.
+              Klidně tak, jak mu říkáte doma. Tohle jméno ponese jeho kniha —
+              později ho můžete změnit.
             </p>
           </div>
         </CardContent>
@@ -56,9 +43,13 @@ export function OnboardingForm() {
         </p>
       ) : null}
 
-      <div className="flex justify-end">
-        <Button type="submit" size="lg" disabled={pending}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-[34ch] text-xs text-[var(--color-text-muted)]">
+          Bez závazku — cenu i 30denní záruku vrácení peněz uvidíte v&nbsp;dalším kroku.
+        </p>
+        <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
           {pending ? "Ukládám…" : "Pokračovat"}
+          <span aria-hidden>↗</span>
         </Button>
       </div>
     </form>

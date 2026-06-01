@@ -40,8 +40,8 @@ export default async function SeniorAdminPage({
   }>();
 
   if (!senior) {
-    // Edge case: family exists but no senior - bounce back to onboarding.
-    redirect("/onboarding/credentials");
+    // No storyteller yet — send them to the family page, where they can add one.
+    redirect(`/family/${familyId}/rodina`);
   }
 
   return (

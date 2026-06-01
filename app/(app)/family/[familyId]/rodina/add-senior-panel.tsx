@@ -9,7 +9,34 @@ import { FormSection } from "@/components/ui/form-section";
 import { createSeniorAccount } from "@/lib/auth/actions";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
-import { Plus, X } from "lucide-react";
+import { Plus, X, RefreshCw } from "lucide-react";
+
+// Strip diacritics + punctuation → a valid senior username suggestion.
+// "Babička Marie" → "babicka.marie"
+function deriveUsername(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "")
+    .slice(0, 32);
+}
+
+// Simple, typeable, diacritics-free passphrase for seniors: two words + 2 digits.
+const PW_WORDS = [
+  "slunce", "kniha", "lipa", "most", "kytka", "cesta", "domov", "jaro",
+  "rano", "voda", "strom", "reka", "klic", "kafe", "zima", "leto",
+];
+function generatePassword(): string {
+  const pick = () => PW_WORDS[Math.floor(Math.random() * PW_WORDS.length)];
+  const a = pick();
+  let b = pick();
+  while (b === a) b = pick();
+  const num = Math.floor(Math.random() * 90) + 10;
+  return `${a}-${b}-${num}`;
+}
 
 interface AddSeniorPanelProps {
   familyId: string;
@@ -25,7 +52,17 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
+  // Prefilled to cut friction: username is derived from the name as you type
+  // (until you edit it by hand), and a simple, senior-friendly password is
+  // generated up front (regenerate-able).
+  const [username, setUsername] = useState("");
+  const [usernameEdited, setUsernameEdited] = useState(false);
+  const [password, setPassword] = useState("");
+
   function open() {
+    setUsername("");
+    setUsernameEdited(false);
+    setPassword(generatePassword());
     setPhase({ name: "form" });
   }
 
@@ -176,6 +213,9 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
                 maxLength={80}
                 placeholder="Jana Nováková"
                 autoComplete="off"
+                onChange={(e) => {
+                  if (!usernameEdited) setUsername(deriveUsername(e.target.value));
+                }}
               />
             </div>
             <div className="space-y-1.5">
@@ -246,13 +286,29 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
                 spellCheck={false}
                 placeholder="babicka.marie"
                 pattern="^[a-z][a-z0-9_.\-]{2,31}$"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setUsernameEdited(true);
+                }}
               />
               <p className="text-xs text-[var(--color-text-muted)]">
-                Malá písmena, číslice, tečka, pomlčka nebo podtržítko. Bez diakritiky.
+                Předvyplníme z&nbsp;jména — můžete změnit. Malá písmena, číslice, tečka,
+                pomlčka nebo podtržítko, bez diakritiky.
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="new-password">Heslo (aspoň 8 znaků)</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="new-password">Heslo (aspoň 8 znaků)</Label>
+                <button
+                  type="button"
+                  onClick={() => setPassword(generatePassword())}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-navy-700)] hover:text-[var(--color-navy-900)]"
+                >
+                  <RefreshCw size={12} aria-hidden />
+                  Vygenerovat nové
+                </button>
+              </div>
               <Input
                 id="new-password"
                 name="password"
@@ -262,7 +318,12 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
                 maxLength={128}
                 autoComplete="off"
                 placeholder="Jednoduché heslo, které zvládne bez brýlí"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Předvyplnili jsme jednoduché heslo — klidně ho přepište na vlastní.
+              </p>
             </div>
           </FormSection>
 

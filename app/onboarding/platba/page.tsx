@@ -39,16 +39,15 @@ export default async function ActivationPage() {
 
   return (
     <div className="space-y-10">
-      {/* Progress strip — step three of three */}
+      {/* Progress strip — step two of two */}
       <div className="flex items-center gap-4">
         <span className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--color-red-700)]">
-          III.
+          II.
         </span>
         <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Krok třetí ze tří
+          Krok 2 ze 2 · poslední
         </span>
         <div className="ml-2 flex flex-1 items-center gap-1.5">
-          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
           <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
           <span className="h-[2px] flex-1 bg-[var(--color-red-700)]" />
         </div>
@@ -107,7 +106,7 @@ export default async function ActivationPage() {
                   type="submit"
                   className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center")}
                 >
-                  {priceCzk > 0 ? "Zaplatit a aktivovat" : "Aktivovat přístup"}
+                  {priceCzk > 0 ? "Zaplatit a začít sbírat" : "Začít sbírat vzpomínky"}
                   <span aria-hidden>↗</span>
                 </button>
               </form>
@@ -119,6 +118,23 @@ export default async function ActivationPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Social proof — borrowed from the homepage, kept compact. */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2.5">
+          <span aria-hidden className="text-[var(--color-gold-500)] tracking-[0.15em]">
+            ★★★★★
+          </span>
+          <span className="text-sm text-[var(--color-text-muted)]">
+            <strong className="font-semibold text-[var(--color-ink-900)]">Stovky rodin</strong>{" "}
+            po celé republice
+          </span>
+        </div>
+        <blockquote className="border-l-2 border-[var(--color-gold-400)] pl-4 text-[15px] italic leading-relaxed text-[var(--color-text-muted)]">
+          „Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny
+          — a&nbsp;knihu, kterou děti otevřou kdykoliv.&rdquo;
+        </blockquote>
       </div>
     </div>
   );

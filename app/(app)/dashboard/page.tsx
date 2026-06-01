@@ -2,10 +2,12 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { UserPlus, Check } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
+import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MemoryFeedAsync, MemoryFeedSkeleton } from "./memory-feed-async";
@@ -71,6 +73,22 @@ export default async function DashboardPage() {
       }
     : null;
 
+  const hasSenior = seniors.length > 0;
+
+  // No storyteller yet (creating their account is now optional, done here
+  // rather than during onboarding) → focused empty state instead of the feed.
+  if (!hasSenior) {
+    return (
+      <div className="space-y-10">
+        <AppPageHeader
+          title="Vítejte ve vašem Vzpomínkáři."
+          description="Zbývá jediný krok — přidat vypravěče, jehož příběhy budete sbírat."
+        />
+        <AddStorytellerCard familyId={owner.familyId} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-10">
       <AppPageHeader
@@ -115,5 +133,51 @@ export default async function DashboardPage() {
         </Suspense>
       </div>
     </div>
+  );
+}
+
+/**
+ * Shown on the dashboard when the family has no storyteller yet — the
+ * post-onboarding nudge to create their access. Links to the family page where
+ * the AddSeniorPanel lives.
+ */
+function AddStorytellerCard({ familyId }: { familyId: string }) {
+  const PERKS = [
+    "Vlastní přihlášení — jen jméno a heslo, žádný e-mail",
+    "Otázky mu chodí samy, odpovídá hlasem nebo psaním",
+    "Vše se rovnou ukládá do jeho knihy",
+  ];
+  return (
+    <Card>
+      <CardContent className="flex flex-col items-start gap-6 p-7 sm:p-9">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-gold-100)] text-[var(--color-gold-600)]">
+          <UserPlus size={24} aria-hidden />
+        </span>
+        <div className="space-y-3">
+          <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal leading-tight text-[var(--color-ink-900)] sm:text-3xl">
+            Přidejte vypravěče
+          </h2>
+          <p className="max-w-[48ch] text-[15px] leading-relaxed text-[var(--color-text-muted)]">
+            Vytvoříte mu jednoduchý přístup — jméno a&nbsp;heslo si zapíšete a&nbsp;předáte.
+            Zabere to minutu a&nbsp;pak už můžou chodit první otázky.
+          </p>
+        </div>
+        <ul className="space-y-2.5">
+          {PERKS.map((line) => (
+            <li key={line} className="flex items-start gap-2.5 text-[15px] text-[var(--color-text)]">
+              <Check size={18} className="mt-0.5 shrink-0 text-[var(--color-gold-600)]" aria-hidden />
+              {line}
+            </li>
+          ))}
+        </ul>
+        <Link
+          href={`/family/${familyId}/rodina`}
+          className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center sm:w-auto")}
+        >
+          Přidat vypravěče
+          <span aria-hidden>↗</span>
+        </Link>
+      </CardContent>
+    </Card>
   );
 }

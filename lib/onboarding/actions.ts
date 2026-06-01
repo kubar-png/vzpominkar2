@@ -31,9 +31,11 @@ export async function startOnboarding(
 ): Promise<ActionState> {
   const owner = await requireOwner();
 
-  // If the owner already finished step 1 (has a family), bounce them forward.
+  // If the owner already finished step 1 (has a family), bounce them forward
+  // to the paywall — creating the storyteller's account is no longer part of
+  // onboarding; it happens later (optionally) from the dashboard.
   if (owner.familyId) {
-    redirect("/onboarding/credentials");
+    redirect("/onboarding/platba");
   }
 
   const parsed = onboardingStartSchema.safeParse({
@@ -44,6 +46,11 @@ export async function startOnboarding(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Neplatné údaje." };
   }
 
+  const seniorName = parsed.data.seniorDisplayName.trim();
+  // Family/project name is derived from the storyteller's name when the owner
+  // doesn't supply one (the field was removed from step 1 to cut friction).
+  const familyName = parsed.data.familyName?.trim() || `Vzpomínky — ${seniorName}`;
+
   const admin = createAdminClient();
 
   // 1) Create the family. No subscription grant — it starts as 'trial' (the
@@ -51,8 +58,8 @@ export async function startOnboarding(
   const { data: family, error: famErr } = await admin
     .from("families")
     .insert({
-      name: parsed.data.familyName.trim(),
-      senior_display_name: parsed.data.seniorDisplayName.trim(),
+      name: familyName,
+      senior_display_name: seniorName,
       created_by: owner.id,
     })
     .select("id")
@@ -78,7 +85,7 @@ export async function startOnboarding(
     .from("books")
     .insert({
       family_id: family.id,
-      senior_display_name: parsed.data.seniorDisplayName.trim(),
+      senior_display_name: seniorName,
       sequence_no: 1,
       title: "Díl 1",
     })
@@ -100,7 +107,7 @@ export async function startOnboarding(
   });
 
   revalidatePath("/onboarding", "layout");
-  redirect("/onboarding/credentials");
+  redirect("/onboarding/platba");
 }
 
 /**
