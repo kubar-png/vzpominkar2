@@ -68,8 +68,8 @@ export default async function ActivationPage() {
 
       {/* Navy conversion card — book on the left, the offer on the right. */}
       <div
-        className="overflow-hidden rounded-[18px] bg-[var(--color-navy-900)] text-[var(--color-paper-100)]"
-        style={{ boxShadow: "0 32px 64px -32px rgba(14,36,58,0.55)" }}
+        className="overflow-hidden rounded-[18px] bg-[var(--card-navy)] text-[var(--color-paper-100)]"
+        style={{ boxShadow: "0 32px 64px -32px rgba(14,36,58,0.45)" }}
       >
         <div className="grid gap-9 p-7 sm:p-10 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
           <BookCover seniorName={seniorName} />
@@ -107,7 +107,12 @@ export default async function ActivationPage() {
                   className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center")}
                 >
                   {priceCzk > 0 ? "Zaplatit a začít sbírat" : "Začít sbírat vzpomínky"}
-                  <span aria-hidden>↗</span>
+                  <span
+                    aria-hidden
+                    className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--card-navy)] text-[13px] font-semibold text-[var(--gold)]"
+                  >
+                    ↗
+                  </span>
                 </button>
               </form>
               {priceCzk > 0 ? (
@@ -131,7 +136,7 @@ export default async function ActivationPage() {
             po celé republice
           </span>
         </div>
-        <blockquote className="border-l-2 border-[var(--color-gold-400)] pl-4 text-[15px] italic leading-relaxed text-[var(--color-text-muted)]">
+        <blockquote className="border-l-2 border-[var(--color-gold-400)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
           „Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny
           — a&nbsp;knihu, kterou děti otevřou kdykoliv.&rdquo;
         </blockquote>

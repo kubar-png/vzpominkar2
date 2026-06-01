@@ -54,7 +54,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           "flex w-full appearance-none rounded-[var(--radius-md)]",
           fieldHeight[selectSize],
           "border border-[var(--color-border-strong)]",
-          "bg-[var(--color-surface)] pl-3 pr-9 text-sm text-[var(--color-text)]",
+          "bg-[var(--color-surface)] pl-3 pr-9 text-base text-[var(--color-text)]",
           "shadow-[var(--shadow-inset)]",
           "transition-colors duration-[var(--duration-fast)]",
           "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
