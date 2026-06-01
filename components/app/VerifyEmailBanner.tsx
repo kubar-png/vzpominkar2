@@ -36,8 +36,9 @@ export function VerifyEmailBanner({ email }: { email: string | null }) {
               <span className="text-[var(--color-red-800)]">{state.error}</span>
             ) : (
               <>
-                Poslali jsme vám ověřovací odkaz{email ? ` na ${email}` : ""}. Klikněte na něj,
-                než aktivujete přístup ke knize.
+                Poslali jsme vám ověřovací odkaz{email ? ` na ${email}` : ""}. Kliknutím
+                potvrdíte, že je e-mail váš — ať vám neunikne nic z knihy a můžeme obnovit
+                heslo, kdyby bylo potřeba.
               </>
             )}
           </p>
