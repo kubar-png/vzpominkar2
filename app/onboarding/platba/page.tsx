@@ -74,8 +74,9 @@ export default async function ActivationPage() {
         <div className="grid gap-9 p-7 sm:p-10 md:grid-cols-[210px_1fr] md:items-center md:gap-16">
           <BookCover seniorName={seniorName} />
 
+          {/* Text stays left-aligned, but each block hugs the card's right edge. */}
           <div className="space-y-7">
-            <div>
+            <div className="md:ml-auto md:w-fit">
               <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--color-gold-300)]">
                 Jednorázově · přístup napořád
               </span>
@@ -91,7 +92,7 @@ export default async function ActivationPage() {
               </div>
             </div>
 
-            <ul className="space-y-3">
+            <ul className="space-y-3 md:ml-auto md:w-fit">
               {INCLUDED.map((line) => (
                 <li key={line} className="flex items-start gap-3 text-[15px] leading-snug text-[var(--color-paper-100)]">
                   <Check size={18} className="mt-0.5 shrink-0 text-[var(--color-gold-400)]" aria-hidden />
@@ -100,11 +101,11 @@ export default async function ActivationPage() {
               ))}
             </ul>
 
-            <div className="space-y-3">
-              <form action={startBaseCheckout}>
+            <div className="space-y-3 md:flex md:flex-col md:items-end">
+              <form action={startBaseCheckout} className="w-full md:w-auto">
                 <button
                   type="submit"
-                  className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full sm:w-auto")}
+                  className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full md:w-auto")}
                 >
                   {priceCzk > 0 ? "Zaplatit a začít sbírat" : "Začít sbírat vzpomínky"}
                   <span
@@ -116,7 +117,7 @@ export default async function ActivationPage() {
                 </button>
               </form>
               {priceCzk > 0 ? (
-                <p className="text-xs text-[var(--color-paper-300)]">
+                <p className="text-xs text-[var(--color-paper-300)] md:text-right">
                   Vrácení peněz do 30 dnů · bez závazku · platba přes zabezpečenou bránu
                 </p>
               ) : null}

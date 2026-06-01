@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,6 +40,8 @@ function generatePassword(): string {
 
 interface AddSeniorPanelProps {
   familyId: string;
+  /** Open the form straight away (deep-link from the dashboard CTA). */
+  autoOpen?: boolean;
 }
 
 type Phase =
@@ -47,7 +49,7 @@ type Phase =
   | { name: "form"; error?: string }
   | { name: "done"; credentials: { username: string; password: string; displayName: string } };
 
-export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
+export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelProps) {
   const [phase, setPhase] = useState<Phase>({ name: "closed" });
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -65,6 +67,13 @@ export function AddSeniorPanel({ familyId }: AddSeniorPanelProps) {
     setPassword(generatePassword());
     setPhase({ name: "form" });
   }
+
+  // Deep-link from the dashboard "Přidat vypravěče" CTA opens the form on mount.
+  // (Runs client-side only, so the generated password causes no hydration drift.)
+  useEffect(() => {
+    if (autoOpen) open();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoOpen]);
 
   function close() {
     setPhase({ name: "closed" });

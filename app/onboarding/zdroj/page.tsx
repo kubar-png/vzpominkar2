@@ -8,6 +8,7 @@ import {
   Newspaper,
   Share2,
   MoreHorizontal,
+  Check,
   type LucideIcon,
 } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
@@ -48,15 +49,15 @@ export default async function ReferralPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center gap-4">
-        <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Ještě poslední věc
+      {/* Post-purchase: the funnel is done (payment was the last step). This
+       * is an optional extra, NOT a counted step — so no step bar / "krok". */}
+      <div className="flex items-center gap-3">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-gold-100)] text-[var(--color-gold-600)]">
+          <Check size={14} aria-hidden />
         </span>
-        <div className="ml-2 flex flex-1 items-center gap-1.5">
-          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
-          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
-          <span className="h-[2px] flex-1 bg-[var(--color-gold-500)]" />
-        </div>
+        <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
+          Hotovo · ještě jedna nepovinná otázka
+        </span>
       </div>
 
       <div className="space-y-5">

@@ -171,7 +171,7 @@ function AddStorytellerCard({ familyId }: { familyId: string }) {
           ))}
         </ul>
         <Link
-          href={`/family/${familyId}/rodina`}
+          href={`/family/${familyId}/rodina?add=1`}
           className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center sm:w-auto")}
         >
           Přidat vypravěče

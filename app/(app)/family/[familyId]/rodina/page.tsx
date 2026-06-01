@@ -11,10 +11,13 @@ export const metadata: Metadata = { title: "Rodina" };
 
 export default async function RodinaPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ familyId: string }>;
+  searchParams: Promise<{ add?: string }>;
 }) {
   const { familyId } = await params;
+  const { add } = await searchParams;
   await requireOwnerOfFamily(familyId);
 
   const admin = createAdminClient();
@@ -130,7 +133,7 @@ export default async function RodinaPage({
         </div>
       )}
 
-      <AddSeniorPanel familyId={familyId} />
+      <AddSeniorPanel familyId={familyId} autoOpen={add === "1"} />
     </div>
   );
 }
