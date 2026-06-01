@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SignupForm } from "./signup-form";
+import { priceForProductCzk } from "@/lib/stripe/server";
 
 export const metadata: Metadata = {
   title: "Registrace",
@@ -16,6 +17,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
   const isBabybook = params.product === "babybook";
   const isGift = params.gift === "1";
+  const basePriceCzk = priceForProductCzk("book_base");
 
   // isBabybook / isGift are read above but not yet wired to the signup
   // Server Action — keep the params parse, drop the debug log.
@@ -76,8 +78,10 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           />
 
           <p className="auth-fineprint">
-            Jednorázových 2&nbsp;890&nbsp;Kč, přístup napořád. Vrácení peněz do
-            30&nbsp;dnů, bez výmluv.
+            {basePriceCzk > 0
+              ? `Jednorázově ${basePriceCzk.toLocaleString("cs-CZ")} Kč, přístup napořád. `
+              : "Přístup napořád. "}
+            Vrácení peněz do&nbsp;30&nbsp;dnů, bez výmluv.
           </p>
 
           <div className="auth-meta">

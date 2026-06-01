@@ -58,6 +58,17 @@ průběžně.
 ### 6. Supabase — české šablony e-mailů (kosmetika)
 - [ ] Authentication → Emails → Templates: přepsat **Magic Link** (použijeme jako „Ověřte svůj e-mail"), Confirm signup, Reset password do češtiny.
 
+### 7. Ověřovací odkaz spolehlivě i z mobilu (cross-device)
+> Teď ověřovací / reset odkaz míří na `/auth/callback` a vyměňuje PKCE `code`.
+> To spolehlivě funguje jen ve **stejném prohlížeči**, kde flow začal (PKCE
+> `code_verifier` je v cookie). Když uživatel otevře e-mail na **jiném zařízení**
+> (typicky registrace na PC, klik z mobilu), výměna selže.
+- [ ] Přepnout ověřovací e-mail na **token_hash flow**: šablona „Magic Link" →
+  odkaz na `/auth/confirm?token_hash={{ .TokenHash }}&type=email` a přidat route
+  `app/auth/confirm/route.ts`, která volá `verifyOtp({ token_hash, type })`
+  (nepotřebuje cookie → funguje cross-device). Pak nastaví `email_verified=true`.
+- Pozn.: pro testování ve stejném prohlížeči to teď funguje i bez téhle úpravy.
+
 ---
 
 ## ✅ Hotovo (kontext)

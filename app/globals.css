@@ -3456,74 +3456,42 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
  * Centered editorial card on cream background. Owner auth surface.
  * Senior login has its own split layout below.
  * ──────────────────────────────────────────────────────────────────────── */
+/* Owner auth (login / signup / reset) — open editorial layout matching the
+ * onboarding flow: a narrow left-aligned column on the parchment canvas, no
+ * card chrome, no watermark. (Senior login uses its own .senior-auth-card.) */
 .editorial .auth-shell {
-  min-height: calc(100svh - 160px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(40px, 8vw, 96px) var(--gutter-editorial);
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
-}
-.editorial .auth-shell::before {
-  /* Wash of the parchment wordmark, like on the hero */
-  content: 'Vzpomínkář.';
-  position: absolute;
-  inset: auto 0 -20% 0;
-  text-align: center;
-  font-family: var(--font-display-editorial);
-  font-size: clamp(180px, 28vw, 360px);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  color: transparent;
-  -webkit-text-stroke: 1.2px var(--oxblood);
-  opacity: 0.08;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-  line-height: 0.82;
-}
-.editorial .auth-card {
-  position: relative;
-  z-index: 1;
   width: 100%;
   max-width: 460px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  box-shadow:
-    0 1px 0 rgba(14, 59, 100, 0.04),
-    0 24px 48px -16px rgba(14, 59, 100, 0.14),
-    0 8px 16px -6px rgba(14, 59, 100, 0.08);
-  padding: clamp(32px, 4vw, 48px) clamp(28px, 3.5vw, 44px);
+  margin: 0 auto;
+  padding: clamp(28px, 6vw, 64px) 24px clamp(48px, 9vw, 88px);
+  background: var(--bg);
 }
-.editorial .auth-card.is-wide { max-width: 520px; }
+.editorial .auth-card {
+  width: 100%;
+}
+.editorial .auth-card.is-wide { max-width: none; }
 
+/* Chapter eyebrow — prominent red roman numeral + muted label, like the
+ * onboarding step header. */
 .editorial .auth-eyebrow {
   font-family: var(--font-body-editorial);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--oxblood);
+  color: var(--ink-mute);
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 .editorial .auth-eyebrow .roman {
   color: var(--oxblood);
   font-family: var(--font-display-editorial);
-  font-size: 13px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
   letter-spacing: 0;
-  margin-right: 2px;
-}
-.editorial .auth-eyebrow::before {
-  content: '';
-  width: 28px;
-  height: 1px;
-  background: var(--gold);
 }
 .editorial .auth-title {
   font-family: var(--font-display-editorial);
