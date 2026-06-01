@@ -26,6 +26,13 @@ export default function LoginPage() {
 
           <div className="auth-meta">
             <p>
+              Zapomněli jste heslo?{" "}
+              <Link href="/login/reset" className="auth-link">
+                Pošleme reset na e-mail
+              </Link>
+              .
+            </p>
+            <p>
               Ještě nemáte účet?{" "}
               <Link href="/signup" className="auth-link">
                 Zaregistrujte se

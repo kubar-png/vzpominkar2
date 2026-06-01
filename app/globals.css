@@ -3637,10 +3637,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .auth-submit .arrow {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px;
-  background: var(--ink); color: var(--gold-soft);
+  background: var(--ink); color: var(--gold);
   border-radius: 50%;
   font-size: 13px;
   font-weight: 600;
+  /* Pin the navy circle to the right, matching the homepage CTA pill. */
+  margin-left: auto;
 }
 
 .editorial .auth-fineprint {

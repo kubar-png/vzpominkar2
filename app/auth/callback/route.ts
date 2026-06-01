@@ -16,6 +16,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  // Only honour same-origin `next` paths so an attacker can't redirect
+  // signed-in users to an external URL via a crafted reset link.
+  const nextParam = url.searchParams.get("next");
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
+    ? nextParam
+    : null;
 
   if (!code) {
     return NextResponse.redirect(new URL("/login?error=callback_failed", url.origin));
@@ -58,7 +64,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(
-    new URL(isNewOwner ? "/onboarding" : "/dashboard", url.origin),
-  );
+  // Recovery / password-reset flow: caller passes ?next=/settings so the
+  // user lands directly on the password change form. New-owner onboarding
+  // still takes precedence — they don't yet have a place to update from.
+  const destination = isNewOwner ? "/onboarding" : (safeNext ?? "/dashboard");
+  return NextResponse.redirect(new URL(destination, url.origin));
 }
