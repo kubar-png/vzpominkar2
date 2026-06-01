@@ -65,8 +65,14 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: mime });
+      // Record voice as mono with browser cleanup on — speech doesn't need
+      // stereo, and a low bitrate keeps files small (storage recurs forever
+      // for the QR-code playback). Opus at ~32 kbps mono is transparent for
+      // spoken word, so quality stays fine while size roughly halves.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
+      });
+      const recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
       recorderRef.current = recorder;
       chunksRef.current = [];
       recorder.ondataavailable = (e) => {

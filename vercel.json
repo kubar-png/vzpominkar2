@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/weekly-reminder",
       "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/transcribe-backfill",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

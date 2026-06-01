@@ -6,6 +6,8 @@ import { weeklyReminderEmail } from "@/lib/email/templates";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// Weekly batch can touch many families — take the full Vercel ceiling.
+export const maxDuration = 300;
 
 /** Constant-time equality so a brute-force can't extract the secret byte-by-byte. */
 function safeEqual(a: string, b: string): boolean {
@@ -58,6 +60,32 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Batch-fetch every senior + owner profile for the due families in ONE
+  // query (was 2 queries PER ROW → N+1 that melts at 10k families). Group
+  // by family_id so the loop is pure in-memory lookups.
+  type Prof = {
+    family_id: string;
+    role: string;
+    email: string | null;
+    display_name: string | null;
+    contact_channel: string | null;
+    contact_address: string | null;
+  };
+  const familyIds = [...new Set((rows ?? []).map((r) => r.family_id))];
+  const seniorByFamily = new Map<string, Prof>();
+  const ownerByFamily = new Map<string, Prof>();
+  if (familyIds.length) {
+    const { data: profs } = await admin
+      .from("profiles")
+      .select("family_id, role, email, display_name, contact_channel, contact_address")
+      .in("family_id", familyIds)
+      .in("role", ["senior", "owner"])
+      .returns<Prof[]>();
+    for (const p of profs ?? []) {
+      (p.role === "senior" ? seniorByFamily : ownerByFamily).set(p.family_id, p);
+    }
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
   let sent = 0;
   let skipped = 0;
@@ -75,27 +103,9 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // Senior + owner profiles - fetch in tandem.
-    const [{ data: senior }, { data: owner }] = await Promise.all([
-      admin
-        .from("profiles")
-        .select("id, email, display_name, contact_channel, contact_address")
-        .eq("family_id", row.family_id)
-        .eq("role", "senior")
-        .maybeSingle<{
-          id: string;
-          email: string | null;
-          display_name: string | null;
-          contact_channel: string | null;
-          contact_address: string | null;
-        }>(),
-      admin
-        .from("profiles")
-        .select("id, email, display_name")
-        .eq("family_id", row.family_id)
-        .eq("role", "owner")
-        .maybeSingle<{ id: string; email: string | null; display_name: string | null }>(),
-    ]);
+    // Profiles already loaded in the single batch query above.
+    const senior = seniorByFamily.get(row.family_id) ?? null;
+    const owner = ownerByFamily.get(row.family_id) ?? null;
 
     // Delivery priority:
     // 1. contact_address when channel is email (owner-configured real address)

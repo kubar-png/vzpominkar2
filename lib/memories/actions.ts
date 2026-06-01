@@ -2,6 +2,7 @@
 
 import "server-only";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSenior } from "@/lib/auth/permissions";
@@ -279,15 +280,22 @@ export async function saveAudioMemory(
       .eq("id", memoryId);
     if (updErr) return { ok: false, error: "Uložení vzpomínky selhalo." };
 
-    // Best-effort transcription - null means "skipped or failed"; the column
-    // stays NULL so a future cron retry can fill it in.
-    const transcript = await transcribeAudio(file);
-    if (transcript) {
-      await admin.from("memories").update({ audio_transcript: transcript }).eq("id", memoryId);
-      // Background year extraction from the transcript. Non-blocking on the
-      // user's redirect (which happens further down in the calling action).
-      void extractAndStoreYear(memoryId, transcript);
-    }
+    // Transcription is slow (Whisper) and must NOT block the senior's save.
+    // The memory is already published; transcribe + extract the year AFTER
+    // the response is sent. Failures leave audio_transcript NULL, which the
+    // transcribe-backfill cron retries.
+    after(async () => {
+      try {
+        const t = await transcribeAudio(file);
+        if (t) {
+          const a = createAdminClient();
+          await a.from("memories").update({ audio_transcript: t }).eq("id", memoryId);
+          await extractAndStoreYear(memoryId, t);
+        }
+      } catch (err) {
+        console.error("[saveAudioMemory] async transcription failed", { memoryId, err });
+      }
+    });
 
     if (assignmentId) {
       const admin = createAdminClient();

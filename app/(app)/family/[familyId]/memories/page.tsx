@@ -24,6 +24,10 @@ export default async function FamilyMemoriesPage({
       )
       .eq("family_id", familyId)
       .order("created_at", { ascending: false })
+      // Defensive cap: bounded today by the 52-prompt book cap, but a family
+      // with several seniors/volumes could grow — never sign URLs for an
+      // unbounded list on one page load. Paginate before this bites.
+      .limit(200)
       .returns<
         {
           id: string;

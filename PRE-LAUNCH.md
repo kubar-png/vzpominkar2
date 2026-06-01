@@ -80,6 +80,23 @@ průběžně.
 > Když owner zaplatí účet, projde krok 1, ale nedojde k platbě, nemáme follow-up.
 - [ ] Po SMTP (bod 2): naplánovaný **e-mail „dokončete nastavení"** ~pár hodin po opuštění (rodina ve stavu `trial` bez platby). Pozor na frekvenci/odhlášení.
 
+## 🚀 Škálování (uděláš v dashboardech / až poroste provoz)
+
+> Z auditu na 10 000 rodin. Kód-část (index, batch cronu, přepis mimo request,
+> backfill cron, menší nahrávky, limity) je **hotová a nasazená**. Tyhle zbývají
+> na tebe v dashboardech, nebo až bude doména/objem.
+
+### 10. OpenAI — tvrdý měsíční budget cap + alert  ⚠️ důležité
+- [ ] V **OpenAI dashboardu** nastav **monthly budget limit** + e-mail alert. Limity v kódu (`lib/rate-limit.ts`) jsou **fail-open** (při výpadku Redis se neuplatní) → dashboardový cap je jediná skutečná pojistka proti runaway účtu.
+
+### 11. Alerty (Vercel + Supabase)
+- [ ] Vercel: alert na **error rate** funkcí.
+- [ ] Supabase: alert na **velikost storage** (audio kumuluje navždy — jediný náklad, co pomalu roste) a na DB velikost.
+- [ ] (Volitelně) denní přehled OpenAI spend.
+
+### 12. Resend batch send v týdenním cronu (až bude doména + objem)
+- [ ] Cron `weekly-reminder` už má zbatchované DB dotazy + `maxDuration=300`. Při skutečně velkém objemu (tisíce e-mailů/běh) přepnout odesílání na **Resend batch API** (`/emails/batch`, 100/volání) místo sekvenčního `sendEmail` — jinak ~10 e-mailů/s limit prodlužuje běh. Párovat s bodem 2 (custom SMTP/doména).
+
 ## ✅ Hotovo (kontext)
 - Supabase „Confirm email" (zeď před onboardingem) **vypnuto** — vlastník se po registraci přihlásí hned. *(uděláno 2026-06-01)*
 </content>

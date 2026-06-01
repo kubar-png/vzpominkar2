@@ -7,6 +7,10 @@ import { AudioMemoryForm } from "./audio-form";
 
 export const metadata: Metadata = { title: "Vyprávět nahlas" };
 
+// The save action transcribes audio AFTER the response (via `after()`), which
+// keeps the function warm past the redirect — give it room beyond the default.
+export const maxDuration = 60;
+
 /**
  * Audio answer page — editorial direction.
  *
