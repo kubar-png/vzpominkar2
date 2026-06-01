@@ -20,6 +20,12 @@ export interface AuthedUser {
    * Defaults to true if column missing or null.
    */
   isSenior: boolean;
+  /**
+   * Owner has proven control of their email by clicking an emailed link.
+   * Owners sign in immediately after signup (no confirm wall) and verify
+   * later — this gates the paywall. Seniors have no real email → always true.
+   */
+  emailVerified: boolean;
   /** Family subscription status ('active' | 'cancelled' | …), null if no family. */
   subscriptionStatus: string | null;
   /** ISO timestamp the access expires, null = no family or no expiry. */
@@ -63,7 +69,7 @@ export const currentUser = cache(async (): Promise<AuthedUser | null> => {
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("profiles")
-    .select("role, family_id, display_name, username, is_senior")
+    .select("role, family_id, display_name, username, is_senior, email_verified")
     .eq("id", auth.user.id)
     .maybeSingle<{
       role: string;
@@ -71,6 +77,7 @@ export const currentUser = cache(async (): Promise<AuthedUser | null> => {
       display_name: string | null;
       username: string | null;
       is_senior: boolean | null;
+      email_verified: boolean | null;
     }>();
 
   if (!profile) return null;
@@ -100,6 +107,8 @@ export const currentUser = cache(async (): Promise<AuthedUser | null> => {
     displayName: profile.display_name,
     username: profile.username,
     isSenior: profile.is_senior ?? true,
+    // Seniors have no real inbox to verify; only owners are ever gated on this.
+    emailVerified: profile.role === "senior" ? true : (profile.email_verified ?? false),
     subscriptionStatus,
     subscriptionExpiresAt,
   };

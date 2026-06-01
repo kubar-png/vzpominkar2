@@ -11,6 +11,7 @@ import {
   StatsSidebarAsync,
   StatsSidebarSkeleton,
 } from "@/components/app/StatsSidebar";
+import { VerifyEmailNotice } from "@/components/app/VerifyEmailNotice";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // Auth has to resolve before we can show the shell at all (gating),
@@ -42,6 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="flex min-h-screen w-full min-w-0 flex-col md:ml-[280px]">
         <div className="flex min-w-0 flex-1">
           <main className="min-w-0 flex-1 max-w-[980px] px-5 py-6 pt-[calc(3.5rem+1.25rem)] pb-24 md:px-10 md:py-10 md:pt-10">
+            <VerifyEmailNotice />
             {children}
           </main>
           {user.familyId ? (

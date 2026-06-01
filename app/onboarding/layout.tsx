@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/lib/auth/actions";
+import { VerifyEmailNotice } from "@/components/app/VerifyEmailNotice";
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -31,6 +32,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
         </div>
       </header>
       <main className="mx-auto max-w-[var(--container-default)] px-6 py-10 sm:py-16">
+        <VerifyEmailNotice className="mb-8" />
         {children}
       </main>
     </div>

@@ -86,6 +86,10 @@ export async function purchaseBook(bookId: string): Promise<never> {
 export async function startBaseCheckout(): Promise<never> {
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
+  // Deferred email verification is enforced here: the first (base) activation
+  // can't proceed until the owner has verified their email. The paywall page
+  // shows a verify banner + resend button; this is the server-side backstop.
+  if (!owner.emailVerified) redirect("/onboarding/platba");
 
   const admin = createAdminClient();
   const { data: existing } = await admin

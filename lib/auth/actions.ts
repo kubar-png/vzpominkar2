@@ -12,7 +12,7 @@ import {
   type SeniorAccountInput,
 } from "@/lib/validations/auth";
 import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
-import { requireOwner } from "@/lib/auth/permissions";
+import { requireOwner, currentUser } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail } from "@/lib/email/templates";
 import { checkRateLimit, rateLimitMessage } from "@/lib/rate-limit";
@@ -49,16 +49,17 @@ export async function signUpOwner(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
-  // Email-confirmed signup: send the user a magic link, no auto-login.
-  // The auth.users row is created in unconfirmed state; profile insert is
-  // deferred to /auth/callback which fires once the user clicks the link.
+  // Deferred email verification: with Supabase "Confirm email" OFF, signUp
+  // returns a live session, so the owner is logged in right away and skips the
+  // inbox wall. We verify their email LATER (gated at the paywall).
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${appUrl}/auth/callback`,
+      // Used only if email confirmation is ever re-enabled in Supabase.
+      emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
       data: { display_name: parsed.data.displayName, role: "owner" },
     },
   });
@@ -67,13 +68,32 @@ export async function signUpOwner(
     return { ok: false, error: humanizeAuthError(error.message) };
   }
 
-  // Best-effort welcome email — Supabase already sends the confirm link,
-  // this is the warm follow-up. Failure is non-fatal.
-  try {
-    const tpl = welcomeEmail({
-      displayName: parsed.data.displayName,
-      appUrl,
+  // Session present = confirmation is OFF and the owner is signed in. Create
+  // their profile now (the /auth/callback lazy path no longer fires for
+  // signup) and email a verification link they can click any time before the
+  // paywall. The click lands on /auth/callback, which flips email_verified.
+  if (data.session && data.user) {
+    const admin = createAdminClient();
+    const { error: profileErr } = await admin.from("profiles").insert({
+      id: data.user.id,
+      role: "owner",
+      display_name: parsed.data.displayName,
+      email: parsed.data.email,
+      email_verified: false,
     });
+    if (profileErr && profileErr.code !== "23505") {
+      console.error("[signup] profile insert failed:", profileErr);
+      return { ok: false, error: "Účet se nepodařilo dokončit. Zkuste to prosím znovu." };
+    }
+
+    await sendOwnerVerificationEmail(supabase, parsed.data.email, appUrl);
+    redirect("/onboarding");
+  }
+
+  // Fallback (confirmation re-enabled in Supabase → no session): keep the old
+  // "check your inbox" flow + a warm welcome email.
+  try {
+    const tpl = welcomeEmail({ displayName: parsed.data.displayName, appUrl });
     await sendEmail({
       to: parsed.data.email,
       subject: tpl.subject,
@@ -86,6 +106,63 @@ export async function signUpOwner(
   }
 
   return { ok: true, checkEmail: true };
+}
+
+/**
+ * Sends the owner a "verify your email" link via Supabase magic-link OTP.
+ * Best-effort — a failure here must never block signup, since the owner can
+ * resend from the in-app banner. Clicking the link hits /auth/callback, which
+ * sets profiles.email_verified = true.
+ */
+async function sendOwnerVerificationEmail(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  email: string,
+  appUrl: string,
+): Promise<void> {
+  try {
+    await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
+      },
+    });
+  } catch (err) {
+    console.error("[signup] verification email failed (non-fatal):", err);
+  }
+}
+
+/**
+ * Resends the owner's email-verification link — called from the in-app
+ * "Ověřte svůj e-mail" banner. No-ops (returns ok) if already verified.
+ */
+export async function resendEmailVerification(): Promise<ActionResult> {
+  const rl = await checkRateLimit("auth", "email-verify-resend");
+  if (!rl.ok) return { ok: false, error: rateLimitMessage(rl.retryAfterSec) };
+
+  const user = await currentUser();
+  if (!user || user.role !== "owner") return { ok: false, error: "Nejste přihlášeni." };
+  if (user.emailVerified) return { ok: true };
+  if (!user.email) return { ok: false, error: "U účtu chybí e-mailová adresa." };
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithOtp({
+    email: user.email,
+    options: {
+      shouldCreateUser: false,
+      emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
+    },
+  });
+  if (error) {
+    // Supabase throttles OTP requests (~60 s); surface a calm message.
+    if (/rate|second|limit|too many/i.test(error.message)) {
+      return { ok: false, error: "Odkaz jsme právě poslali. Zkuste to za chvíli znovu." };
+    }
+    console.error("[resendEmailVerification]", error);
+    return { ok: false, error: "E-mail se nepodařilo odeslat. Zkuste to za chvíli." };
+  }
+  return { ok: true };
 }
 
 export async function signInOwner(

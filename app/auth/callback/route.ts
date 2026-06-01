@@ -53,6 +53,8 @@ export async function GET(request: NextRequest) {
         role: "owner",
         display_name: meta.display_name ?? user.email?.split("@")[0] ?? "Vlastník",
         email: user.email ?? null,
+        // Arriving here means they clicked an emailed link → email proven.
+        email_verified: true,
       });
       if (profileErr && profileErr.code !== "23505") {
         console.error("[auth/callback] profile insert failed", profileErr);
@@ -61,6 +63,15 @@ export async function GET(request: NextRequest) {
         );
       }
       isNewOwner = true;
+    } else {
+      // Existing owner clicked an emailed link (verification, magic link, or
+      // password reset) — any of these proves control of the inbox, so mark
+      // the email verified. Idempotent and cheap.
+      await admin
+        .from("profiles")
+        .update({ email_verified: true })
+        .eq("id", user.id)
+        .eq("email_verified", false);
     }
   }
 

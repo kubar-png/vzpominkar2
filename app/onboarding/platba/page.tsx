@@ -83,21 +83,42 @@ export default async function ActivationPage() {
             ))}
           </ul>
 
-          <form action={startBaseCheckout}>
-            <button
-              type="submit"
-              className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center")}
-            >
-              {priceCzk > 0 ? "Zaplatit a aktivovat" : "Aktivovat přístup"}
-              <span aria-hidden>↗</span>
-            </button>
-          </form>
+          {owner.emailVerified ? (
+            <>
+              <form action={startBaseCheckout}>
+                <button
+                  type="submit"
+                  className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full justify-center")}
+                >
+                  {priceCzk > 0 ? "Zaplatit a aktivovat" : "Aktivovat přístup"}
+                  <span aria-hidden>↗</span>
+                </button>
+              </form>
 
-          {priceCzk > 0 ? (
-            <p className="text-center text-xs text-[var(--color-text-muted)]">
-              Vrácení peněz do 30 dnů, bez závazku.
-            </p>
-          ) : null}
+              {priceCzk > 0 ? (
+                <p className="text-center text-xs text-[var(--color-text-muted)]">
+                  Vrácení peněz do 30 dnů, bez závazku.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <div className="space-y-2">
+              <button
+                type="button"
+                disabled
+                className={cn(
+                  buttonVariants({ variant: "primary", size: "lg" }),
+                  "w-full cursor-not-allowed justify-center opacity-60",
+                )}
+              >
+                Nejdřív ověřte e-mail
+              </button>
+              <p className="text-center text-xs text-[var(--color-text-muted)]">
+                Aktivaci odemknete po kliknutí na ověřovací odkaz, který jsme vám poslali
+                e-mailem (viz pruh nahoře).
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
