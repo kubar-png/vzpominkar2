@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ResetRequestForm } from "./reset-request-form";
+import { GoldWordmark } from "@/components/brand/GoldWordmark";
 
 export const metadata: Metadata = {
   title: "Reset hesla",
@@ -11,11 +12,13 @@ export const metadata: Metadata = {
 export default function ResetRequestPage() {
   return (
     <div className="editorial">
-      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+      <div className="senior-auth-mobile-bar">
+        <GoldWordmark height={24} />
+      </div>
 
       <div className="senior-auth">
         <aside className="senior-auth-side">
-          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <GoldWordmark className="senior-auth-logo" height={30} />
           <div className="senior-auth-pitch">
             <span className="eyebrow">Zapomenuté heslo</span>
             <h2>

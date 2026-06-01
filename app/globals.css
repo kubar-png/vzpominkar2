@@ -3618,7 +3618,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 12px;
   line-height: 1.55;
   color: var(--ink-mute);
-  margin-top: 4px;
+  /* Breathing room below the submit button it usually follows. */
+  margin-top: 20px;
 }
 
 .editorial .auth-meta {

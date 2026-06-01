@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GoldWordmark } from "@/components/brand/GoldWordmark";
 
 export const metadata: Metadata = {
   title: "Zkontrolujte e-mail",
@@ -9,11 +10,13 @@ export const metadata: Metadata = {
 export default function CheckEmailPage() {
   return (
     <div className="editorial">
-      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+      <div className="senior-auth-mobile-bar">
+        <GoldWordmark height={24} />
+      </div>
 
       <div className="senior-auth">
         <aside className="senior-auth-side">
-          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <GoldWordmark className="senior-auth-logo" height={30} />
           <div className="senior-auth-pitch">
             <span className="eyebrow">Odkaz odeslán</span>
             <h2>

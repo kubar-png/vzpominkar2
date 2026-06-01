@@ -18,7 +18,7 @@ export function LoginForm() {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="vy@rodina.cz"
+          placeholder="vy@email.cz"
           required
         />
       </div>

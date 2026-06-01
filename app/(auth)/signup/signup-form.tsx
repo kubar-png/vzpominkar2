@@ -66,7 +66,7 @@ export function SignupForm({
         label="Vaše jméno"
         name="displayName"
         autoComplete="name"
-        placeholder="Jana Nováková"
+        placeholder="Jan Novák"
         required
         error={fieldError("displayName")}
       />
@@ -75,7 +75,7 @@ export function SignupForm({
         name="email"
         type="email"
         autoComplete="email"
-        placeholder="vy@rodina.cz"
+        placeholder="vy@email.cz"
         required
         error={fieldError("email")}
       />

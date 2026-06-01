@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SeniorLoginForm } from "./senior-login-form";
+import { GoldWordmark } from "@/components/brand/GoldWordmark";
 
 export const metadata: Metadata = {
   title: "Přihlášení vyprávějícího",
@@ -11,12 +12,14 @@ export default function SeniorLoginPage() {
   return (
     <div className="editorial">
       {/* Mobile-only top bar with logo */}
-      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+      <div className="senior-auth-mobile-bar">
+        <GoldWordmark height={24} />
+      </div>
 
       <div className="senior-auth">
         {/* ── Left side: navy editorial pitch, desktop only ── */}
         <aside className="senior-auth-side" aria-hidden="false">
-          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <GoldWordmark className="senior-auth-logo" height={30} />
 
           <div className="senior-auth-pitch">
             <span className="eyebrow">Vyprávějící</span>

@@ -101,7 +101,7 @@ export default async function ActivationPage() {
               ))}
             </ul>
 
-            <div className="space-y-3 md:flex md:flex-col md:items-end">
+            <div className="flex flex-col gap-4 md:items-end">
               <form action={startBaseCheckout} className="w-full md:w-auto">
                 <button
                   type="submit"

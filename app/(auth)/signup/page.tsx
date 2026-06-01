@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SignupForm } from "./signup-form";
+import { GoldWordmark } from "@/components/brand/GoldWordmark";
 import { priceForProductCzk } from "@/lib/stripe/server";
 
 export const metadata: Metadata = {
@@ -32,14 +33,16 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
   return (
     <div className="editorial">
-      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+      <div className="senior-auth-mobile-bar">
+        <GoldWordmark height={24} />
+      </div>
 
       <div className="senior-auth">
         {/* Left: navy editorial pitch (desktop) */}
         <aside className="senior-auth-side">
-          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <GoldWordmark className="senior-auth-logo" height={30} />
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Nová kronika</span>
+            <span className="eyebrow">Nový Vzpomínkář</span>
             <h2>
               Začněte
               <br />
@@ -47,7 +50,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             </h2>
             <p>
               Pár minut a&nbsp;první otázka může vyrazit za vaším blízkým.
-              Přepis, sazbu i&nbsp;vazbu obstaráme my.
+              Přepis, sazbu i&nbsp;vazbu do krásné knihy obstaráme my.
             </p>
           </div>
           <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>
@@ -59,8 +62,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             <span className="auth-eyebrow">Registrace</span>
             <h1 className="auth-title">Vytvořte si účet.</h1>
             <p className="auth-lede">
-              Stačí jméno, e-mail a&nbsp;heslo. Koho budete zpovídat vyberete
-              hned v&nbsp;dalším kroku.
+              Stačí vaše jméno, e-mail a&nbsp;heslo. Pak řeknete, kdo bude
+              vyprávět — přístup pro něj připravíte za chvíli v&nbsp;aplikaci.
             </p>
 
             {isBabybook ? (

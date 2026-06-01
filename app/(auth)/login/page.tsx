@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
+import { GoldWordmark } from "@/components/brand/GoldWordmark";
 
 export const metadata: Metadata = {
   title: "Přihlášení",
@@ -11,12 +12,14 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="editorial">
-      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+      <div className="senior-auth-mobile-bar">
+        <GoldWordmark height={24} />
+      </div>
 
       <div className="senior-auth">
         {/* Left: navy editorial pitch (desktop) */}
         <aside className="senior-auth-side">
-          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <GoldWordmark className="senior-auth-logo" height={30} />
           <div className="senior-auth-pitch">
             <span className="eyebrow">Vítejte zpět</span>
             <h2>
