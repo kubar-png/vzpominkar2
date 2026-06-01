@@ -9,40 +9,48 @@ export const metadata: Metadata = {
 export default function CheckEmailPage() {
   return (
     <div className="editorial">
-      <section className="auth-shell">
-        <div className="auth-card" style={{ textAlign: "center" }}>
-          <div className="auth-status-mark" aria-hidden>
-            ✉
+      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
+
+      <div className="senior-auth">
+        <aside className="senior-auth-side">
+          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <div className="senior-auth-pitch">
+            <span className="eyebrow">Odkaz odeslán</span>
+            <h2>
+              Podívejte se
+              <br />
+              do schránky.
+            </h2>
+            <p>
+              Poslali jsme vám přihlašovací odkaz. Stačí na něj kliknout
+              a&nbsp;vrátit se sem.
+            </p>
           </div>
+          <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>
+        </aside>
 
-          <span
-            className="auth-eyebrow"
-            style={{ justifyContent: "center", display: "inline-flex" }}
-          >
-            Odkaz odeslán
-          </span>
-          <h1 className="auth-title">Podívejte se do schránky.</h1>
-          <p className="auth-lede">
-            Poslali jsme vám přihlašovací odkaz. Stačí na něj kliknout
-            a&nbsp;vrátit se sem.
-          </p>
+        <main className="senior-auth-main">
+          <div style={{ width: "100%", maxWidth: 460 }}>
+            <span className="auth-eyebrow">Odkaz odeslán</span>
+            <h1 className="auth-title">Podívejte se do schránky.</h1>
+            <p className="auth-lede">
+              Poslali jsme vám přihlašovací odkaz. Stačí na něj kliknout
+              a&nbsp;vrátit se sem.
+            </p>
 
-          <div className="auth-fleuron" aria-hidden>
-            <span>⁂</span>
+            <p className="auth-fineprint">
+              Nedorazil? Mrkněte do nevyžádané pošty. Případně se zkuste přihlásit
+              znovu — pošleme čerstvý odkaz.
+            </p>
+
+            <div className="auth-meta">
+              <Link href="/login" className="auth-link">
+                Zpět na přihlášení
+              </Link>
+            </div>
           </div>
-
-          <p className="auth-fineprint" style={{ textAlign: "center" }}>
-            Nedorazil? Mrkněte do nevyžádané pošty. Případně se zkuste přihlásit
-            znovu — pošleme čerstvý odkaz.
-          </p>
-
-          <div className="auth-meta" style={{ textAlign: "center" }}>
-            <Link href="/login" className="auth-back">
-              Zpět na přihlášení
-            </Link>
-          </div>
-        </div>
-      </section>
+        </main>
+      </div>
     </div>
   );
 }

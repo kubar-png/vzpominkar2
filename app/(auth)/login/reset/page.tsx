@@ -11,28 +11,49 @@ export const metadata: Metadata = {
 export default function ResetRequestPage() {
   return (
     <div className="editorial">
-      <section className="auth-shell">
-        <div className="auth-card">
-          <span className="auth-eyebrow">Zapomenuté heslo</span>
-          <h1 className="auth-title">Pošleme vám odkaz.</h1>
-          <p className="auth-lede">
-            Zadejte e-mail, kterým jste se registrovali. Pošleme vám odkaz, kterým
-            si během pár minut nastavíte nové heslo.
-          </p>
+      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
 
-          <ResetRequestForm />
-
-          <div className="auth-meta">
+      <div className="senior-auth">
+        <aside className="senior-auth-side">
+          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <div className="senior-auth-pitch">
+            <span className="eyebrow">Zapomenuté heslo</span>
+            <h2>
+              Pošleme vám
+              <br />
+              odkaz.
+            </h2>
             <p>
-              Vzpomněli jste si?{" "}
-              <Link href="/login" className="auth-link">
-                Zpět na přihlášení
-              </Link>
-              .
+              Zadejte e-mail, kterým jste se registrovali — během pár minut
+              si nastavíte nové heslo.
             </p>
           </div>
-        </div>
-      </section>
+          <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>
+        </aside>
+
+        <main className="senior-auth-main">
+          <div style={{ width: "100%", maxWidth: 460 }}>
+            <span className="auth-eyebrow">Zapomenuté heslo</span>
+            <h1 className="auth-title">Pošleme vám odkaz.</h1>
+            <p className="auth-lede">
+              Zadejte e-mail, kterým jste se registrovali. Pošleme vám odkaz,
+              kterým si během pár minut nastavíte nové heslo.
+            </p>
+
+            <ResetRequestForm />
+
+            <div className="auth-meta">
+              <p>
+                Vzpomněli jste si?{" "}
+                <Link href="/login" className="auth-link">
+                  Zpět na přihlášení
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

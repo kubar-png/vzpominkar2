@@ -11,44 +11,64 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="editorial">
-      <section className="auth-shell">
-        <div className="auth-card">
-          <span className="auth-eyebrow">
-            <span className="roman">II.</span> Vstup do knihovny
-          </span>
-          <h1 className="auth-title">Vítejte zpátky.</h1>
-          <p className="auth-lede">
-            Vaše vzpomínky čekají přesně tam, kde jste je zanechali. Ani věta navíc,
-            ani věta míň.
-          </p>
+      <div className="senior-auth-mobile-bar">Vzpomínkář.</div>
 
-          <LoginForm />
-
-          <div className="auth-meta">
+      <div className="senior-auth">
+        {/* Left: navy editorial pitch (desktop) */}
+        <aside className="senior-auth-side">
+          <span className="senior-auth-logo">Vzpomínkář.</span>
+          <div className="senior-auth-pitch">
+            <span className="eyebrow">Vítejte zpět</span>
+            <h2>
+              Vaše vzpomínky
+              <br />
+              čekají.
+            </h2>
             <p>
-              Zapomněli jste heslo?{" "}
-              <Link href="/login/reset" className="auth-link">
-                Pošleme reset na e-mail
-              </Link>
-              .
-            </p>
-            <p>
-              Ještě nemáte účet?{" "}
-              <Link href="/signup" className="auth-link">
-                Zaregistrujte se
-              </Link>
-              .
-            </p>
-            <p>
-              Jste senior a dostali jste přihlašovací údaje od rodiny?{" "}
-              <Link href="/senior-login" className="auth-link">
-                Použijte přihlášení pro vyprávějící
-              </Link>
-              .
+              Přihlaste se a&nbsp;pokračujte přesně tam, kde jste skončili —
+              ani věta navíc, ani věta míň.
             </p>
           </div>
-        </div>
-      </section>
+          <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>
+        </aside>
+
+        {/* Right: the form */}
+        <main className="senior-auth-main">
+          <div style={{ width: "100%", maxWidth: 460 }}>
+            <span className="auth-eyebrow">Přihlášení</span>
+            <h1 className="auth-title">Vítejte zpátky.</h1>
+            <p className="auth-lede">
+              Zadejte e-mail a&nbsp;heslo, kterými jste se zaregistrovali.
+            </p>
+
+            <LoginForm />
+
+            <div className="auth-meta">
+              <p>
+                Zapomněli jste heslo?{" "}
+                <Link href="/login/reset" className="auth-link">
+                  Pošleme reset na e-mail
+                </Link>
+                .
+              </p>
+              <p>
+                Ještě nemáte účet?{" "}
+                <Link href="/signup" className="auth-link">
+                  Zaregistrujte se
+                </Link>
+                .
+              </p>
+              <p>
+                Jste senior a dostali jste přihlašovací údaje od rodiny?{" "}
+                <Link href="/senior-login" className="auth-link">
+                  Použijte přihlášení pro vyprávějící
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
