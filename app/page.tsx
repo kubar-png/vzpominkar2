@@ -268,7 +268,7 @@ export default function HomePage() {
                 </p>
                 <ul className="feature-list">
                   <li>Padesát dva otázek, jedna za týden</li>
-                  <li>Jeden výtisk vázané knihy v ceně</li>
+                  <li>Online knihovna pro celou rodinu, napořád</li>
                   <li>Nahrávání z mobilu, počítače nebo tabletu</li>
                   <li>QR u každé kapitoly otevírá nahrávku</li>
                   <li>Vlastní kopie nahrávek navždy</li>
@@ -459,7 +459,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <a href="/jak-to-funguje" className="btn-record">
-                  Zkusit, jak to zní
+                  Podívat se, jak to funguje
                 </a>
               </div>
             </div>
