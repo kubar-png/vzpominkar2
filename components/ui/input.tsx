@@ -59,9 +59,11 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           "transition-colors duration-[var(--duration-fast)]",
           "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          // Custom caret (gold diamond echo) — keeps OS combobox semantics
+          // Custom caret (tan chevron) via the .ui-select-caret class below.
+          // (The chevron lives in /public/select-caret.svg — an inline SVG
+          // data URI here tripped Turbopack and broke `next dev`.)
           "bg-[length:14px_14px] bg-[right_0.75rem_center] bg-no-repeat",
-          "bg-[url(\"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%20fill='none'%20stroke='%23a3957f'%20stroke-width='1.5'%3E%3Cpolyline%20points='5%208%2010%2013%2015%208'/%3E%3C/svg%3E\")]",
+          "ui-select-caret",
           className,
         )}
         {...props}

@@ -2192,6 +2192,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   }
 }
 
+/* Select caret (tan chevron) as a static asset. The previous inline SVG
+ * data-URI tripped Turbopack (CSS parse, then module resolution) and broke
+ * `next dev`; a real /public asset is parsed identically in dev and build. */
+.ui-select-caret {
+  background-image: url("/select-caret.svg");
+}
+
 /* ─── /kniha/sestavit — question configurator ─── */
 .editorial .kc {
   max-width: 760px;
