@@ -27,7 +27,6 @@ const badgeStyle: React.CSSProperties = {
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
-  const isBabybook = params.product === "babybook";
   const isGift = params.gift === "1";
   const basePriceCzk = priceForProductCzk("book_base");
 
@@ -66,12 +65,9 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
               vyprávět — přístup pro něj připravíte za chvíli v&nbsp;aplikaci.
             </p>
 
-            {isBabybook ? (
-              <p style={badgeStyle}>Začínáte s&nbsp;Babybookem &mdash; knihou prvních let.</p>
-            ) : null}
             {isGift ? <p style={badgeStyle}>Registrace pro dárkovou objednávku.</p> : null}
 
-            <SignupForm product={isBabybook ? "babybook" : undefined} gift={isGift} />
+            <SignupForm gift={isGift} />
 
             <p className="auth-fineprint">
               {basePriceCzk > 0

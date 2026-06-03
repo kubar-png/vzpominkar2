@@ -86,8 +86,8 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/babybook">
-                  Babybook <span className="ext">↗</span>
+                <Link href="/kniha">
+                  Kniha vzpomínek <span className="ext">↗</span>
                 </Link>
               </li>
             </ul>

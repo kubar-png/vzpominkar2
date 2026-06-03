@@ -16,7 +16,7 @@ interface FinalCtaProps {
 /**
  * Shared closing card used on every public page except the homepage
  * (which has the email-capture variant). Same shape across cenik, darek,
- * babybook, kontakt, faq, jak-to-funguje, o-nas — eyebrow, heading,
+ * kniha, kontakt, faq, jak-to-funguje, o-nas — eyebrow, heading,
  * lede paragraph, primary CTA, optional footer link.
  */
 export function FinalCta({

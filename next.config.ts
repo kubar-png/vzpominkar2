@@ -71,6 +71,8 @@ const nextConfig: NextConfig = {
       // /darek/certifikat was merged into /darek (single gifting funnel).
       // Permanent 301 keeps SEO continuity for the sub-page URL.
       { source: "/darek/certifikat", destination: "/darek", permanent: true },
+      // /babybook replaced by the physical book product /kniha.
+      { source: "/babybook", destination: "/kniha", permanent: true },
     ];
   },
 };

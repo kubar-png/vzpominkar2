@@ -111,7 +111,7 @@ html.lenis { scroll-behavior: auto; }
 .editorial .darek-step,
 .editorial .cenik-card,
 .editorial .faq-cat,
-.editorial .babybook-chapter,
+.editorial .kniha-chapter,
 .editorial .story-card {
   transition:
     transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -122,7 +122,7 @@ html.lenis { scroll-behavior: auto; }
 .editorial .kontakt-card:hover,
 .editorial .onas-value:hover,
 .editorial .darek-step:hover,
-.editorial .babybook-chapter:hover {
+.editorial .kniha-chapter:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 32px -18px rgba(14, 59, 100, 0.18);
 }
@@ -192,7 +192,7 @@ html.lenis { scroll-behavior: auto; }
   .editorial .darek-step,
   .editorial .cenik-card,
   .editorial .faq-cat,
-  .editorial .babybook-chapter,
+  .editorial .kniha-chapter,
   .editorial .story-card,
   .editorial .faq-item summary,
   .editorial .footer a,
@@ -2025,8 +2025,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-top-color: var(--line);
 }
 
-/* ─── /babybook — soft sage cover variant + chapter cards ─── */
-.editorial .book-cover.babybook-cover {
+/* ─── /kniha — soft sage cover variant + chapter cards ─── */
+.editorial .book-cover.kniha-cover {
   background:
     radial-gradient(ellipse at 30% 25%, rgba(255, 255, 240, 0.45) 0%, transparent 55%),
     linear-gradient(160deg, #c8d4b8 0%, #97ad8a 55%, #6b8068 100%);
@@ -2039,18 +2039,18 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
     inset 0 0 0 1px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
-.editorial .book-cover.babybook-cover::before {
+.editorial .book-cover.kniha-cover::before {
   border-color: rgba(212, 160, 23, 0.85);
   border-width: 1.5px;
 }
-.editorial .book-cover.babybook-cover::after {
+.editorial .book-cover.kniha-cover::after {
   border-color: rgba(212, 160, 23, 0.5);
   border-width: 1px;
 }
-.editorial .book-cover.babybook-cover .book-spine {
+.editorial .book-cover.kniha-cover .book-spine {
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.14) 50%, transparent 100%);
 }
-.editorial .babybook-eyebrow {
+.editorial .kniha-eyebrow {
   font-family: var(--font-body-editorial);
   font-size: 10px;
   letter-spacing: 0.42em;
@@ -2059,30 +2059,30 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-weight: 500;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
-.editorial .book-cover.babybook-cover .book-title {
+.editorial .book-cover.kniha-cover .book-title {
   color: #fbf5e3;
   font-size: clamp(28px, 3.6vw, 44px);
   letter-spacing: -0.005em;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
-.editorial .book-cover.babybook-cover .book-year {
+.editorial .book-cover.kniha-cover .book-year {
   color: rgba(251, 245, 227, 0.85);
 }
 
-.editorial .babybook-chapters {
+.editorial .kniha-chapters {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   max-width: 980px;
   margin: 0 auto;
 }
-.editorial .babybook-chapter {
+.editorial .kniha-chapter {
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: clamp(24px, 3vw, 36px);
 }
-.editorial .babybook-chapter-head {
+.editorial .kniha-chapter-head {
   display: flex;
   align-items: flex-start;
   gap: 18px;
@@ -2090,20 +2090,20 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
 }
-.editorial .babybook-chapter-numeral {
+.editorial .kniha-chapter-numeral {
   font-family: var(--font-display-editorial);
   font-size: 36px;
   color: var(--oxblood);
   line-height: 1;
   flex-shrink: 0;
 }
-.editorial .babybook-chapter-head .eyebrow { margin-bottom: 6px; }
-.editorial .babybook-chapter h3 {
+.editorial .kniha-chapter-head .eyebrow { margin-bottom: 6px; }
+.editorial .kniha-chapter h3 {
   font-size: clamp(20px, 1.8vw, 24px);
   line-height: 1.15;
   margin: 0;
 }
-.editorial .babybook-chapter-list {
+.editorial .kniha-chapter-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -2111,7 +2111,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   flex-direction: column;
   gap: 12px;
 }
-.editorial .babybook-chapter-list li {
+.editorial .kniha-chapter-list li {
   display: flex;
   gap: 12px;
   font-family: var(--font-display-editorial);
@@ -2119,7 +2119,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink-soft);
   line-height: 1.45;
 }
-.editorial .babybook-q-num {
+.editorial .kniha-q-num {
   font-family: var(--font-body-editorial);
   font-style: normal;
   font-size: 11px;
@@ -2129,7 +2129,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   padding-top: 4px;
 }
 @media (max-width: 700px) {
-  .editorial .babybook-chapters { grid-template-columns: 1fr; }
+  .editorial .kniha-chapters { grid-template-columns: 1fr; }
 }
 
 /* ─── /darek/certifikat — CSS-rendered certificate preview + fields ─── */

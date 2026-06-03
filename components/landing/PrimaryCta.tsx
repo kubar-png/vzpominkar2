@@ -5,7 +5,7 @@ import Link from "next/link";
 interface PrimaryCtaProps {
   /** Where the CTA goes. Defaults to /signup so the canonical case is zero-config. */
   href?: string;
-  /** Button label. Defaults to "Založit Vzpomínkář" — only override for gift/babybook/hero. */
+  /** Button label. Defaults to "Založit Vzpomínkář" — only override for gift/hero. */
   label?: string;
   /** Visual modifiers that add the matching CSS class. */
   variant?: "default" | "hero" | "nav";

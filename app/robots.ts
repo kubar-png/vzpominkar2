@@ -13,7 +13,7 @@ export default function robots(): MetadataRoute.Robots {
           "/cenik",
           "/faq",
           "/darek",
-          "/babybook",
+          "/kniha",
           "/o-nas",
           "/kontakt",
           "/podminky",

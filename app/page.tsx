@@ -570,12 +570,12 @@ export default function HomePage() {
                   </p>
                   <div className="companion-img" />
                 </a>
-                <a href="/babybook" className="companion-card" data-reveal data-reveal-delay-100>
+                <a href="/kniha" className="companion-card" data-reveal data-reveal-delay-100>
                   <span className="arrow-icon">↗</span>
-                  <h3>Babybook</h3>
+                  <h3>Kniha vzpomínek</h3>
                   <p>
-                    To samé od druhé strany. Otázky pro rodiče, nahrávky
-                    prvních let, kniha pro to dítě, až bude dospělé.
+                    Klasická vyplňovací kniha jako dárek. Otázky napříč šesti
+                    životními obdobími — blízký je vyplní vlastní rukou.
                   </p>
                   <div className="companion-img" />
                 </a>
@@ -751,8 +751,8 @@ export default function HomePage() {
                   </a>
                 </li>
                 <li>
-                  <a href="/babybook">
-                    Babybook <span className="ext">↗</span>
+                  <a href="/kniha">
+                    Kniha vzpomínek <span className="ext">↗</span>
                   </a>
                 </li>
               </ul>

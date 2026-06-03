@@ -26,7 +26,7 @@ import "lenis/dist/lenis.css";
 const MARKETING_PATHS = [
   "/",
   "/darek",
-  "/babybook",
+  "/kniha",
   "/cenik",
   "/faq",
   "/o-nas",
