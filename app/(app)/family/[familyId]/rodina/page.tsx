@@ -32,20 +32,19 @@ export default async function RodinaPage({
 
   const seniorList = seniors ?? [];
 
-  const seniorIds = seniorList.map((s) => s.id);
-  const { data: memoryCounts } = seniorIds.length
-    ? await admin
-        .from("memories")
-        .select("author_id")
-        .in("author_id", seniorIds)
-        .eq("family_id", familyId)
-        .returns<{ author_id: string }[]>()
-    : { data: [] };
-
+  // Per-senior memory counts via head-count queries (no row transfer). Seniors
+  // per family is tiny, so this is a couple of cheap COUNT queries.
   const countById = new Map<string, number>();
-  for (const m of memoryCounts ?? []) {
-    countById.set(m.author_id, (countById.get(m.author_id) ?? 0) + 1);
-  }
+  await Promise.all(
+    seniorList.map(async (s) => {
+      const { count } = await admin
+        .from("memories")
+        .select("id", { count: "exact", head: true })
+        .eq("author_id", s.id)
+        .eq("family_id", familyId);
+      countById.set(s.id, count ?? 0);
+    }),
+  );
 
   // Per-senior book status drives the activate / next-volume CTA. Fetch the
   // family's paid books + answered counts, then resolve each senior's current

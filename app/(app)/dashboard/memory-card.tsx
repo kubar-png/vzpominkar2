@@ -137,6 +137,8 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
                 <img
                   src={img.signedUrl}
                   alt={img.caption ?? `Fotka ${i + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-square w-full object-cover"
                 />
                 {i === 2 && extraImages > 0 ? (

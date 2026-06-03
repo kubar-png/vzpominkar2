@@ -16,7 +16,7 @@ Vše na branchi `refactor/audit-2026-06`. Každá fáze = samostatný commit + V
 | 1 | Launch-blockery + bezpečnost | ✅ hotovo (preview) |
 | 2 | Datová integrita (index, unique constraint, idempotence webhooku) | ✅ hotovo (preview) |
 | 3 | Testy + CI | ✅ hotovo (preview) |
-| 4 | Výkon + úklid | ⏳ čeká |
+| 4 | Výkon + úklid (kromě 4.2 — lenis/reveal, odloženo) | ✅ hotovo (preview) |
 | 5 | Hloubkový DX (volitelné, po launchi) | ⏳ čeká |
 
 ## Fáze 1 — co se změnilo
@@ -51,6 +51,20 @@ Gate: typecheck ✅ · lint ✅ · build ✅ · test 22/22 ✅.
 Gate: typecheck ✅ · lint ✅ · build ✅ · test 48/48 ✅.
 
 > Pozn.: přímý IDOR test `loadAuthorizedMemory` odložen — privátní helper v „use server" modulu nejde exportovat, aniž by se stal RPC. Pokrytí zatím: `hasActiveAccess` + RLS + inline kontroly.
+
+## Fáze 4 — co se změnilo
+
+- **Smazány nepoužité fonty** Inter + Vollkorn (`app/layout.tsx`) — 2 méně webfont rodin na každém načtení.
+- **Dev strom zabezpečen** v produkci jedním `app/dev/layout.tsx` (dřív jen `/dev/components`; `/dev/fonts*` se servírovaly).
+- **`app/global-error.tsx`** — záchytný boundary pro chybu v root layoutu (česky, on-brand).
+- **Lazy-load fotek** v mřížkách (dashboard, archiv, my-memories): `loading="lazy"` + `decoding="async"`.
+- **Lint: 0 varování** (z 7) — nepoužité importy/konstanty pryč, opraven výraz ve `FlipBook`.
+- **Dedup**: `my-memories` používá sdílený `batchSignUrls` (smazána verbatim kopie); rodina počítá vzpomínky přes `count: head` místo natahování řádků.
+- **Úklid repa**: smazány prázdné `(marketing)/` a `emails/`; `public/saved/*.html` → `docs/saved-mockups/` (nebylo se servírovat z webu).
+
+Gate: typecheck ✅ · lint ✅ (0 varování) · build ✅ · test 48/48 ✅.
+
+> ⏭️ **Odloženo do samostatného passu** (vyžaduje vizuální kontrolu na preview, sahá na záměrně ponechanou homepage): přesun `lenis` + reveal observerů z root layoutu a sjednocení dvou reveal systémů (audit High/Medium). Dále: Suspense streaming archivů, dedup `formatCzk`/`formatDate`.
 
 ## Odloženo / poznámky
 

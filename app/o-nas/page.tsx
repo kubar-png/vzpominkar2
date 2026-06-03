@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 

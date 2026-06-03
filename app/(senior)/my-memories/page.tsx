@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { batchSignUrls } from "@/lib/family/server";
 import { MemoryItem } from "./memory-item";
 
 export const metadata: Metadata = { title: "Moje vzpomínky" };
@@ -78,8 +79,8 @@ export default async function MyMemoriesPage({
   const attachmentPaths = (attachments ?? []).map((a) => a.storage_path);
 
   const [signedAudioUrls, signedAttachmentUrls] = await Promise.all([
-    batchSign(supabase, "memory-audio", audioPaths),
-    batchSign(supabase, "memory-attachments", attachmentPaths),
+    batchSignUrls("memory-audio", audioPaths),
+    batchSignUrls("memory-attachments", attachmentPaths),
   ]);
   for (const [, atts] of attachmentByMemory) {
     for (const a of atts) {
@@ -140,18 +141,4 @@ export default async function MyMemoriesPage({
   );
 }
 
-type SupabaseClient = ReturnType<typeof createAdminClient>;
-
-async function batchSign(
-  supabase: SupabaseClient,
-  bucket: string,
-  paths: string[],
-): Promise<Map<string, string>> {
-  const out = new Map<string, string>();
-  if (paths.length === 0) return out;
-  const { data } = await supabase.storage.from(bucket).createSignedUrls(paths, 60 * 15);
-  for (const row of data ?? []) {
-    if (row.path && row.signedUrl) out.set(row.path, row.signedUrl);
-  }
-  return out;
-}
+// batchSign was a verbatim copy of batchSignUrls (lib/family/server.ts) — removed.

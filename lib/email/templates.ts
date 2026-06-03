@@ -32,7 +32,6 @@ const INK_SOFT = "#5a6b7c";
 const GOLD = "#d4a017";
 const OXBLOOD = "#a8231f";
 const HAIRLINE = "#e8dec3";
-const FOOTER_BG = "#ede4cf";
 
 const DISPLAY_FONT = `Georgia, "Times New Roman", serif`;
 const BODY_FONT = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;

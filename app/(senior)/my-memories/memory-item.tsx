@@ -77,6 +77,8 @@ export function MemoryItem({ memory, isSenior }: { memory: Memory; isSenior: boo
               key={a.storage_path}
               src={a.signedUrl ?? ""}
               alt={a.caption ?? "Fotka ke vzpomínce"}
+              loading="lazy"
+              decoding="async"
               className="es-memory-photo"
               style={
                 photoAttachments.length === 1

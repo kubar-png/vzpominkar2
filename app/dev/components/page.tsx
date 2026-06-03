@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +19,6 @@ const RED = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"
 const PAPER = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"] as const;
 
 export default function ComponentsPage() {
-  if (process.env.NODE_ENV === "production") notFound();
-
   return (
     <div className="mx-auto max-w-[var(--container-wide)] space-y-16 px-6 py-12">
       <header className="flex items-center justify-between border-b border-[var(--color-border)] pb-6">

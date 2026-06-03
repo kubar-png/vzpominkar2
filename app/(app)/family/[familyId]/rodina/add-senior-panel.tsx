@@ -63,7 +63,6 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
   // (Runs client-side only, so the generated password causes no hydration drift.)
   useEffect(() => {
     if (autoOpen) open();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoOpen]);
 
   function close() {

@@ -515,6 +515,11 @@ function romanNumeral(n: number): string {
     [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
   ];
   let out = "";
-  for (const [v, s] of r) while (n >= v) (out += s, n -= v);
+  for (const [v, s] of r) {
+    while (n >= v) {
+      out += s;
+      n -= v;
+    }
+  }
   return out;
 }

@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
 import localFont from "next/font/local";
-import { Instrument_Sans, Caveat, Outfit, Vollkorn, Inter } from "next/font/google";
+import { Instrument_Sans, Caveat, Outfit } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/shared/CookieConsent";
 import { SmoothScroll } from "@/components/marketing/SmoothScroll";
 import { RevealObserver } from "@/components/marketing/RevealObserver";
 
 /* PP Pangaia — display serif. Licensed OTFs live in /public/fonts/.
- * This is the new editorial display face that replaces Vollkorn on the
- * marketing surface. Vollkorn is still loaded as a fallback for the senior
- * surface (which is being reskinned separately by another agent). */
+ * The editorial display face on the marketing surface. */
 const pangaia = localFont({
   src: [
     {
@@ -33,20 +31,6 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
   variable: "--font-sans-loaded",
   weight: ["400", "500", "600"],
-});
-
-const inter = Inter({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-inter-loaded",
-});
-
-const vollkorn = Vollkorn({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-vollkorn-loaded",
-  weight: "variable",
-  style: ["normal", "italic"],
 });
 
 const outfit = Outfit({
@@ -93,7 +77,7 @@ export default function RootLayout({
   return (
     <html
       lang="cs"
-      className={`${instrumentSans.variable} ${inter.variable} ${pangaia.variable} ${vollkorn.variable} ${outfit.variable} ${caveat.variable}`}
+      className={`${instrumentSans.variable} ${pangaia.variable} ${outfit.variable} ${caveat.variable}`}
     >
       <body
         style={{

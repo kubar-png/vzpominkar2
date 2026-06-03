@@ -8,7 +8,6 @@ import { Select } from "@/components/ui/input";
 import { EmptyState } from "@/components/app/EmptyState";
 import { FilterPill } from "@/components/app/FilterPill";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
-import { cn } from "@/lib/utils";
 
 export type ArchiveSenior = { id: string; displayName: string };
 
@@ -232,6 +231,8 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
                 <img
                   src={img.signedUrl}
                   alt={img.caption ?? `Fotka ${i + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-square w-full object-cover"
                 />
                 {i === 2 && extra > 0 ? (
