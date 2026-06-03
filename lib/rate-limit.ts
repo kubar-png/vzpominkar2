@@ -173,6 +173,40 @@ export function rateLimitMessage(retryAfterSec: number): string {
   return `Příliš mnoho pokusů. Zkuste to znovu za ${min} min.`;
 }
 
+/* ── Senior-login per-username throttle ───────────────────────────────────────
+ * Senior usernames are guessable (derived from the display name) and passwords
+ * are short, so the per-IP `checkRateLimit("auth", "senior-login")` alone lets a
+ * rotating-IP attacker hammer one known account. This adds a low per-username
+ * ceiling, keyed by username (not IP). */
+const seniorLoginUserLimiter = makeLimiter({
+  prefix: "senior-login-u",
+  limit: 10,
+  windowSec: 60 * 60,
+});
+
+/**
+ * Extra throttle for senior login, keyed on the username (not IP). Layered on
+ * top of `checkRateLimit("auth", "senior-login")`. Fail behaviour matches the
+ * auth limiter: closed on a live error in prod, open only when KV is entirely
+ * unprovisioned (so a missing integration can't lock everyone out).
+ */
+export async function checkSeniorUsernameLimit(
+  username: string,
+): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  if (!seniorLoginUserLimiter) {
+    return authFailDecision(isKvConfigured() ? "error" : "unconfigured");
+  }
+  try {
+    const res = await seniorLoginUserLimiter.limit(`senior-login:${username}`);
+    if (res.success) return { ok: true };
+    const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
+    return { ok: false, retryAfterSec };
+  } catch (err) {
+    console.error(`[rate-limit:senior-login-u] redis error (fail-closed in prod):`, err);
+    return authFailDecision("error");
+  }
+}
+
 /* ── AI cost rate-limit helpers ───────────────────────────────────────────── */
 
 export type AiRateLimitKind = "audio" | "polish" | "text";

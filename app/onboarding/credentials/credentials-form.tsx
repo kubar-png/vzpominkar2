@@ -6,6 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { createSeniorAccount } from "@/lib/auth/actions";
+import { SITE_HOST } from "@/lib/site";
 
 interface Props {
   familyId: string;
@@ -170,7 +171,7 @@ function Handoff({ creds }: { creds: { username: string; password: string; displ
           </h3>
           <p className="text-[var(--color-text-muted)]">
             Otevřete na adrese{" "}
-            <span className="font-mono text-[var(--color-text)]">vzpominkar.cz/senior-login</span>
+            <span className="font-mono text-[var(--color-text)]">{SITE_HOST}/senior-login</span>
           </p>
           <dl className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--color-border-strong)] p-4">

@@ -13,6 +13,7 @@ import { transcribeAudio } from "@/lib/memories/transcribe";
 import { extractYear } from "@/lib/memories/extract-metadata";
 import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
 import { onAssignmentAnswered, currentBookForSenior } from "@/lib/books/server";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Detect Next.js's internal redirect throw. `redirect()` propagates by
@@ -55,7 +56,7 @@ async function notifyOwnerOfNewMemory(opts: {
       ownerDisplayName: owner.display_name ?? "",
       seniorDisplayName: senior?.display_name ?? "Váš blízký",
       count: 1,
-      appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz",
+      appUrl: SITE_URL,
     });
     await sendEmail({
       to: owner.email,

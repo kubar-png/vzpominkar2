@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const base = SITE_URL;
   const now = new Date();
   return [
     { url: `${base}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },

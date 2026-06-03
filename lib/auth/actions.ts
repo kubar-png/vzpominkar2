@@ -15,7 +15,8 @@ import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
 import { requireOwner, currentUser } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail } from "@/lib/email/templates";
-import { checkRateLimit, rateLimitMessage } from "@/lib/rate-limit";
+import { checkRateLimit, checkSeniorUsernameLimit, rateLimitMessage } from "@/lib/rate-limit";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * ActionResult - discriminated union returned by Server Actions called from
@@ -52,7 +53,7 @@ export async function signUpOwner(
   // Deferred email verification: with Supabase "Confirm email" OFF, signUp
   // returns a live session, so the owner is logged in right away and skips the
   // inbox wall. We verify their email LATER (gated at the paywall).
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const appUrl = SITE_URL;
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -145,7 +146,7 @@ export async function resendEmailVerification(): Promise<ActionResult> {
   if (user.emailVerified) return { ok: true };
   if (!user.email) return { ok: false, error: "U účtu chybí e-mailová adresa." };
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const appUrl = SITE_URL;
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: user.email,
@@ -215,7 +216,7 @@ export async function requestPasswordReset(
     return { ok: false, error: "Zadejte platný e-mail.", field: "email" };
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz";
+  const appUrl = SITE_URL;
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${appUrl}/auth/callback?next=/settings`,
@@ -247,6 +248,11 @@ export async function signInSenior(
     const first = parsed.error.issues[0];
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
+
+  // Per-username throttle (on top of the per-IP limiter above): blocks a
+  // rotating-IP brute force against one known senior account.
+  const userRl = await checkSeniorUsernameLimit(parsed.data.username);
+  if (!userRl.ok) return { ok: false, error: rateLimitMessage(userRl.retryAfterSec) };
 
   // Same generic error regardless of whether the username exists — otherwise
   // anyone could enumerate valid senior usernames by checking the response.

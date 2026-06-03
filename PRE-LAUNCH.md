@@ -32,13 +32,7 @@ průběžně.
 - [ ] **Vercel env** `NEXT_PUBLIC_APP_URL` → `https://<vlastní-doména>` (Settings → Environment Variables, Production).
 - [ ] **Supabase → Authentication → URL Configuration** → Site URL + Redirect URLs (`/auth/callback`) na novou doménu.
 - [ ] **Vercel env** `EMAIL_FROM` → adresa na nové doméně.
-- [ ] Natvrdo zadané odkazy v kódu (projít a sjednotit na novou doménu):
-  - `app/page.tsx` — org schema `url` + `logo` (`vzpominkar2.vercel.app`)
-  - `app/layout.tsx` — `metadataBase` fallback
-  - `app/sitemap.ts`, `app/robots.ts` — fallback `vzpominkar.cz`
-  - `app/onboarding/credentials/credentials-form.tsx` — text `vzpominkar.cz/senior-login`
-  - `app/(app)/family/[familyId]/rodina/add-senior-panel.tsx` a `.../senior/page.tsx` — fallback `vzpominkar.cz`
-  - `lib/auth/actions.ts`, `app/api/cron/weekly-reminder/route.ts` — fallback `vzpominkar.cz`
+- [x] ~~Natvrdo zadané odkazy v kódu~~ — **vyřešeno (refactor 2026-06):** všechny URL teď čtou jeden zdroj `lib/site.ts` (`SITE_URL` / `SITE_HOST`), který bere `NEXT_PUBLIC_APP_URL`. Přepnutí domény = jen nastavit env, žádné hledání v kódu. (Kontaktní e-mail `ahoj@vzpominkar.cz` zatím centralizovaný není — samostatná drobnost.)
 
 ### 4. Napojit Stripe (platby naostro)
 > Odloženo, dokud nemáme doménu. Teď je „free path" (cena 0) → kniha se aktivuje
@@ -70,6 +64,9 @@ průběžně.
 - Pozn.: pro testování ve stejném prohlížeči to teď funguje i bez téhle úpravy.
 
 ---
+
+### 7b. Ověřit Upstash/KV v produkci (auth rate-limit) ⚠️
+- [ ] Zkontroluj, že `KV_REST_API_URL` + `KV_REST_API_TOKEN` jsou ve Vercel **Production** env. Bez nich je auth rate-limiting (login/signup/reset/senior-login) **vypnutý** (fail-open) — `lib/rate-limit.ts` to jen zaloguje. Senior-login má teď i per-username strop (refactor 2026-06), který taky potřebuje KV.
 
 ## 📈 Konverze (až po spuštění / až bude obsah)
 

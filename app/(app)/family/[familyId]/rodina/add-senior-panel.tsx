@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input, Label, Select } from "@/components/ui/input";
 import { FormSection } from "@/components/ui/form-section";
 import { createSeniorAccount } from "@/lib/auth/actions";
+import { suggestSeniorPassword } from "@/lib/auth/senior-account-actions";
+import { SITE_HOST } from "@/lib/site";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
 import { Plus, X, RefreshCw } from "lucide-react";
@@ -22,20 +24,6 @@ function deriveUsername(name: string): string {
     .replace(/[^a-z0-9]+/g, ".")
     .replace(/^\.+|\.+$/g, "")
     .slice(0, 32);
-}
-
-// Simple, typeable, diacritics-free passphrase for seniors: two words + 2 digits.
-const PW_WORDS = [
-  "slunce", "kniha", "lipa", "most", "kytka", "cesta", "domov", "jaro",
-  "rano", "voda", "strom", "reka", "klic", "kafe", "zima", "leto",
-];
-function generatePassword(): string {
-  const pick = () => PW_WORDS[Math.floor(Math.random() * PW_WORDS.length)];
-  const a = pick();
-  let b = pick();
-  while (b === a) b = pick();
-  const num = Math.floor(Math.random() * 90) + 10;
-  return `${a}-${b}-${num}`;
 }
 
 interface AddSeniorPanelProps {
@@ -66,7 +54,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
   function open() {
     setUsername("");
     setUsernameEdited(false);
-    setPassword(generatePassword());
+    void suggestSeniorPassword().then(setPassword);
     setContactChannel("");
     setPhase({ name: "form" });
   }
@@ -164,7 +152,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
             <p className="text-sm text-[var(--color-text-muted)]">
               Přihlaste se na{" "}
               <span className="font-mono text-[var(--color-text)]">
-                {process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, "") ?? "vzpominkar.cz"}
+                {SITE_HOST}
                 /senior-login
               </span>
             </p>
@@ -335,7 +323,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
                 <Label htmlFor="new-password">Heslo (aspoň 8 znaků)</Label>
                 <button
                   type="button"
-                  onClick={() => setPassword(generatePassword())}
+                  onClick={() => void suggestSeniorPassword().then(setPassword)}
                   className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-navy-700)] hover:text-[var(--color-navy-900)]"
                 >
                   <RefreshCw size={12} aria-hidden />

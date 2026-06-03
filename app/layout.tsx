@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 import localFont from "next/font/local";
 import { Instrument_Sans, Caveat, Outfit, Vollkorn, Inter } from "next/font/google";
 import "./globals.css";
@@ -63,7 +64,8 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar2.vercel.app"),
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title: {
     default: "Vzpomínkář — Než zapomenete, jak zněli",
     template: "%s · Vzpomínkář",

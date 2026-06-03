@@ -23,6 +23,17 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
+// Safety: this script DELETES and recreates accounts. Refuse to run against a
+// non-local Supabase unless explicitly overridden, so it can never wipe prod.
+const isLocalSupabase = /127\.0\.0\.1|localhost|:54321/.test(url);
+if (!isLocalSupabase && process.env.SEED_ALLOW_REMOTE !== "1") {
+  console.error(
+    `Refusing to seed a non-local Supabase (${url}).\n` +
+      `This script deletes and recreates accounts. Set SEED_ALLOW_REMOTE=1 to override.`,
+  );
+  process.exit(1);
+}
+
 const admin = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });

@@ -31,6 +31,12 @@ const SECURITY_HEADERS = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(self), geolocation=(), payment=(self)",
   },
+  // Force HTTPS at the browser for a full year (incl. subdomains). Vercel
+  // terminates TLS but does not add HSTS for you.
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
 ];
 
 const nextConfig: NextConfig = {

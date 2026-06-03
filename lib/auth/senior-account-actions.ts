@@ -54,6 +54,16 @@ export async function resetSeniorPassword(
 }
 
 /**
+ * Returns a freshly generated senior-friendly password using the same
+ * crypto-secure generator as the reset flow. Exposed as an action so the
+ * add-senior form can prefill a strong default without shipping the 768-word
+ * lists into the client bundle.
+ */
+export async function suggestSeniorPassword(): Promise<string> {
+  return generateMemorablePassword();
+}
+
+/**
  * Senior-friendly password: 3 short ASCII Czech-rooted words + 2 digits.
  * Example: "lipa-mira-hrasek-42". 14-22 chars total. With 256³ × 90 ≈ 1.5B
  * combinations and crypto-secure sampling we get ~30 bits of entropy —

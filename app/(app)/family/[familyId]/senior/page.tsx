@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { SeniorPasswordReset } from "./senior-password-reset";
+import { SITE_HOST } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Blízký" };
 
@@ -66,7 +67,7 @@ export default async function SeniorAdminPage({
           <CardDescription>
             Váš blízký se přihlašuje na adrese{" "}
             <span className="font-mono text-[var(--color-text)]">
-              {process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, "") ?? "vzpominkar.cz"}
+              {SITE_HOST}
               /senior-login
             </span>
             .

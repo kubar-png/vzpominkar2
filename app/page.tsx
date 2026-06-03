@@ -4,6 +4,7 @@ import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { SITE_URL } from "@/lib/site";
 
 const FORBES_TESTIMONIALS = [
   {
@@ -57,8 +58,8 @@ const ORG_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Vzpomínkář",
-  url: "https://vzpominkar2.vercel.app",
-  logo: "https://vzpominkar2.vercel.app/logo.png",
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
   description:
     "Vzpomínkář — kniha rodinné paměti. Rok týdenních otázek pro rodiče a prarodiče; z jejich hlasů uděláme tištěnou knihu pro vnoučata.",
   contactPoint: [
