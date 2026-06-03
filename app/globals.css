@@ -1709,10 +1709,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .companion-card .arrow-icon {
   position: absolute; top: 24px; right: 24px;
-  width: 36px; height: 36px; border-radius: 50%;
+  /* Match the canonical `.btn .arrow` badge (28px, weight 600). Gold-on-ink
+   * like `.btn-dark .arrow`, because the card itself is --ink navy. */
+  width: 28px; height: 28px; border-radius: 50%;
   background: var(--gold); color: var(--ink);
   display: grid; place-items: center;
   font-size: 13px;
+  font-weight: 600;
 }
 
 /* ─── FAQ ─── */
