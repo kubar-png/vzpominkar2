@@ -8,10 +8,12 @@ import type { NextConfig } from "next";
 //   - api.stripe.com: checkout / customer portal
 //   - api.resend.com: transactional email
 //   - media-src blob: required for in-page playback of MediaRecorder blobs
+//   - img-src blob: required for the senior photo-upload preview thumbnails
+//     (URL.createObjectURL of the picked/compressed image before upload)
 //   - microphone=(self): senior audio recorder needs mic; everything else off
 const CSP = [
   "default-src 'self'",
-  "img-src 'self' data: https://*.supabase.co",
+  "img-src 'self' data: blob: https://*.supabase.co",
   "media-src 'self' blob: https://*.supabase.co",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",

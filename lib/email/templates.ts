@@ -1,4 +1,5 @@
 import "server-only";
+import { resolveGender, type Gender } from "@/lib/gender";
 
 /**
  * Transactional email templates — editorial brand.
@@ -339,6 +340,9 @@ export function newMemoryNotificationEmail(input: {
   seniorDisplayName: string;
   count: number;
   appUrl: string;
+  /** Storyteller's grammatical gender, so the past-tense verb agrees ("přidal"
+   *  vs "přidala"). null falls back to the "přidal/a" slash form. */
+  seniorGender?: Gender | null;
 }) {
   const firstName = (input.ownerDisplayName.split(" ")[0] ?? input.ownerDisplayName).trim();
   const subject =
@@ -347,10 +351,11 @@ export function newMemoryNotificationEmail(input: {
       : `${input.count} nových vzpomínek od ${input.seniorDisplayName}`;
   const ctaUrl = `${input.appUrl}/dashboard`;
 
+  const added = resolveGender("{přidal|přidala}", input.seniorGender ?? null);
   const headline =
     input.count === 1
-      ? `${input.seniorDisplayName} přidal(a) novou vzpomínku.`
-      : `${input.seniorDisplayName} přidal(a) ${input.count} nových vzpomínek.`;
+      ? `${input.seniorDisplayName} ${added} novou vzpomínku.`
+      : `${input.seniorDisplayName} ${added} ${input.count} nových vzpomínek.`;
 
   const html = shell({
     title: subject,

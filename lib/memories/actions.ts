@@ -48,9 +48,9 @@ async function notifyOwnerOfNewMemory(opts: {
         .maybeSingle<{ email: string | null; display_name: string | null }>(),
       admin
         .from("profiles")
-        .select("display_name")
+        .select("display_name, gender")
         .eq("id", opts.seniorId)
-        .maybeSingle<{ display_name: string | null }>(),
+        .maybeSingle<{ display_name: string | null; gender: string | null }>(),
     ]);
     if (!owner?.email) return;
     const tpl = newMemoryNotificationEmail({
@@ -58,6 +58,7 @@ async function notifyOwnerOfNewMemory(opts: {
       seniorDisplayName: senior?.display_name ?? "Váš blízký",
       count: 1,
       appUrl: SITE_URL,
+      seniorGender: (senior?.gender as "male" | "female" | null) ?? null,
     });
     await sendEmail({
       to: owner.email,
