@@ -2192,6 +2192,192 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   }
 }
 
+/* ─── /kniha/sestavit — question configurator ─── */
+.editorial .kc {
+  max-width: 760px;
+  padding-top: clamp(28px, 5vw, 56px);
+  padding-bottom: 96px;
+}
+.editorial .kc-head {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.editorial .kc-head h1 {
+  margin: 10px 0 14px;
+}
+.editorial .kc-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 999px;
+  padding: 10px 12px 10px 24px;
+  margin-bottom: 26px;
+  box-shadow: 0 14px 30px -16px rgba(28, 24, 20, 0.5);
+}
+.editorial .kc-bar-count {
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+}
+.editorial .kc-steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 30px;
+  justify-content: center;
+  font-family: var(--font-body-editorial);
+  font-size: 12px;
+}
+.editorial .kc-steps li {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.editorial .kc-steps li.is-current {
+  background: var(--gold-soft);
+  border-color: var(--gold-soft);
+  color: var(--ink);
+}
+.editorial .kc-steps li.is-done {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.editorial .kc-phase-head {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.editorial .kc-phase-head h2 {
+  margin: 6px 0 0;
+}
+.editorial .kc-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.editorial .kc-q {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 14px 14px 16px;
+}
+.editorial .kc-q-num {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--oxblood);
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+.editorial .kc-q-text {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: vertical;
+  font-family: var(--font-display-editorial);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  padding: 4px 0;
+}
+.editorial .kc-q-text:focus {
+  outline: none;
+}
+.editorial .kc-q-remove {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.editorial .kc-q-remove:hover {
+  background: var(--oxblood);
+  color: #fff;
+  border-color: var(--oxblood);
+}
+.editorial .kc-phase-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+}
+.editorial .kc-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+.editorial .kc-link:hover {
+  border-bottom-color: var(--ink);
+}
+.editorial .kc-link-muted {
+  color: var(--ink-soft);
+}
+.editorial .kc-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+.editorial .kc-hint {
+  color: var(--ink-soft);
+  font-size: 14px;
+  text-align: center;
+  margin: 16px 0;
+}
+.editorial .kc-recap {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+.editorial .kc-recap-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.editorial .kc-recap-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--font-display-editorial);
+}
+.editorial .kc-recap-num {
+  color: var(--ink-soft);
+}
+.editorial .kc-recap-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 4px 24px;
+  font-size: 18px;
+  font-family: var(--font-display-editorial);
+}
+
 /* ─── /darek/certifikat — CSS-rendered certificate preview + fields ─── */
 .editorial .cert-preview-wrap {
   max-width: 640px;
