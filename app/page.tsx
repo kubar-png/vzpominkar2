@@ -561,16 +561,7 @@ export default function HomePage() {
 
               {/* 11c. Companion cards */}
               <div className="companion-grid">
-                <a href="/darek" className="companion-card" data-reveal>
-                  <span className="arrow-icon">↗</span>
-                  <h3>Dárkový certifikát</h3>
-                  <p>
-                    Plátěný certifikát k vytištění. Pro narozeniny, kulatiny,
-                    Vánoce — nebo jen tak.
-                  </p>
-                  <div className="companion-img" />
-                </a>
-                <a href="/kniha" className="companion-card" data-reveal data-reveal-delay-100>
+                <a href="/kniha" className="companion-card" data-reveal>
                   <span className="arrow-icon">↗</span>
                   <h3>Kniha vzpomínek</h3>
                   <p>
@@ -743,11 +734,6 @@ export default function HomePage() {
                 <li>
                   <a href="/darek">
                     Vzpomínkář jako dárek <span className="ext">↗</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/darek">
-                    Dárkový certifikát <span className="ext">↗</span>
                   </a>
                 </li>
                 <li>

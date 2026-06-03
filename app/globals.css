@@ -1679,8 +1679,10 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 
 .editorial .companion-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
+  max-width: 480px;
+  margin-inline: auto;
 }
 .editorial .companion-card {
   background: var(--card-navy);
@@ -1741,12 +1743,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .faq-item summary::-webkit-details-marker { display: none; }
 
-/* Navy circle + gold arrow — identical to the `.btn .arrow` CTA badge
- * (same circle, same arrow family, same size), only horizontal (→) instead
- * of the button's diagonal (↗). Rotates 90° on open so the closed 'read
- * more →' tips down to point into the revealed body text. */
+/* Same badge AND same ↗ glyph as the `.btn .arrow` CTA, but rotated 45° so it
+ * points horizontally right when closed, and 135° (straight down) when open.
+ * Smooth rotation; stays centred (rotates about its own centre). Reusing the
+ * button's chunky ↗ glyph avoids the thin/long horizontal → glyph. */
 .editorial .faq-item summary::after {
-  content: '→';
+  content: '↗';
   flex-shrink: 0;
   width: 28px; height: 28px;
   display: inline-grid;
@@ -1758,10 +1760,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 13px;
   font-weight: 600;
   line-height: 1;
+  transform: rotate(45deg);
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .editorial .faq-item[open] summary::after {
-  transform: rotate(90deg);
+  transform: rotate(135deg);
 }
 
 .editorial .faq-item .faq-body {
