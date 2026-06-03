@@ -227,6 +227,7 @@ export type Database = {
           is_favorite: boolean
           memory_date: string | null
           prompt_id: string | null
+          public_token: string | null
           status: string
           text_content: string | null
           title: string | null
@@ -249,6 +250,7 @@ export type Database = {
           is_favorite?: boolean
           memory_date?: string | null
           prompt_id?: string | null
+          public_token?: string | null
           status?: string
           text_content?: string | null
           title?: string | null
@@ -271,6 +273,7 @@ export type Database = {
           is_favorite?: boolean
           memory_date?: string | null
           prompt_id?: string | null
+          public_token?: string | null
           status?: string
           text_content?: string | null
           title?: string | null

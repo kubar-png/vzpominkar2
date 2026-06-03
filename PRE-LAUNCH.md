@@ -103,8 +103,9 @@ průběžně.
 - [ ] Volba **„Pro koho? (žena / muž)"** v konfigurátoru (`/kniha/sestavit`) → uloží se k objednávce a prožene otázky správným rodem (teď ukazuje „/a").
 - [ ] Napojit konfigurátor na reálný objednávkový flow (guest checkout + Stripe + `shop_orders`) — viz Phase 2.
 
-### 15. QR u vzpomínek → veřejné přehrání nahrávky (návrh se ladí)
-- [ ] Veřejná stránka `/v/{token}` (bez přihlášení) přehraje audio vzpomínky + metadata; QR v knize na ni odkazuje. Audio se podepisuje on-demand na serveru (bucket `memory-audio` zůstává privátní). Vyžaduje vlastní doménu (krátké, trvanlivé URL) → souvisí s bodem 1.
+### 15. QR u vzpomínek → veřejné přehrání nahrávky — ⚠️ POVINNÉ při přechodu na doménu
+Návrh odsouhlasen (2026-06-03): privátní bucket + **signed URL on-demand** · sdílení **trvalé** (token navždy, žádný vypínač) · trvanlivost = závazek služby + **nepřímost** (QR → náš `/v/{token}` → aktuální úložiště, takže úložiště lze migrovat bez přetisku QR). Veřejná stránka `/v/{token}` + tokeny se staví teď na `vercel.app`; audio se podepisuje on-demand (bucket `memory-audio` zůstává privátní).
+- [ ] **Při spuštění na `vzpominkar.cz`:** ověřit, že `NEXT_PUBLIC_APP_URL` = `https://vzpominkar.cz` **DŘÍV, než se vygeneruje/vytiskne jakýkoliv QR** — QR berou doménu ze `SITE_URL`, takže na špatné doméně odkazují do prázdna. Tokeny jsou na doméně nezávislé (stabilní), mění se jen prefix URL. **Netisknout žádnou knihu s QR před finální doménou.**
 
 ## ✅ Hotovo (kontext)
 - Supabase „Confirm email" (zeď před onboardingem) **vypnuto** — vlastník se po registraci přihlásí hned. *(uděláno 2026-06-01)*

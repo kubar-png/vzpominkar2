@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
+import { SITE_URL } from "@/lib/site";
+import QRCode from "qrcode";
 import { MemoryDetail } from "./memory-detail";
 
 type Params = { familyId: string; memoryId: string };
@@ -48,6 +50,9 @@ export type MemoryDetailData = {
   question: string | null;
   authorName: string | null;
   authorRole: string | null;
+  /** Public QR playback link (/v/{token}) + a ready-to-scan QR data URL. */
+  publicUrl: string | null;
+  qrDataUrl: string | null;
   attachments: {
     storage_path: string;
     signedUrl: string;
@@ -69,7 +74,7 @@ export default async function MemoryDetailPage({
   const { data: raw } = await admin
     .from("memories")
     .select(
-      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, audio_transcript_polished, transcript_edited_at, status, is_favorite, created_at, memory_date, extracted_year, extracted_year_label, extracted_year_confidence,
+      `id, title, text_content, audio_path, audio_duration_seconds, audio_transcript, audio_transcript_polished, transcript_edited_at, status, is_favorite, created_at, memory_date, extracted_year, extracted_year_label, extracted_year_confidence, public_token,
        prompts(question),
        profiles!memories_author_id_fkey(display_name, senior_role)`,
     )
@@ -91,6 +96,7 @@ export default async function MemoryDetailPage({
       extracted_year: number | null;
       extracted_year_label: string | null;
       extracted_year_confidence: string | null;
+      public_token: string | null;
       prompts: { question: string } | null;
       profiles: { display_name: string | null; senior_role: string | null } | null;
     }>();
@@ -110,6 +116,12 @@ export default async function MemoryDetailPage({
     batchSignUrls("memory-audio", audioPaths),
     batchSignUrls("memory-attachments", attachPaths),
   ]);
+
+  // Public QR playback link (/v/{token}) + a scannable QR for the owner to test.
+  const publicUrl = raw.public_token ? `${SITE_URL}/v/${raw.public_token}` : null;
+  const qrDataUrl = publicUrl
+    ? await QRCode.toDataURL(publicUrl, { errorCorrectionLevel: "M", margin: 1, width: 320 })
+    : null;
 
   const memory: MemoryDetailData = {
     id: raw.id,
@@ -132,6 +144,8 @@ export default async function MemoryDetailPage({
     question: raw.prompts?.question ?? null,
     authorName: raw.profiles?.display_name ?? null,
     authorRole: raw.profiles?.senior_role ?? null,
+    publicUrl,
+    qrDataUrl,
     attachments: (rawAttachments ?? []).map((a) => ({
       storage_path: a.storage_path,
       signedUrl: attachUrls.get(a.storage_path) ?? "",

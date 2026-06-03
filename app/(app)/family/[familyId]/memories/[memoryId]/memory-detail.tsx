@@ -454,6 +454,48 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
         </div>
       ) : null}
 
+      {/* Public QR share — scan to play this memory anywhere, no login */}
+      {m.publicUrl ? (
+        <div className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-paper-50)] p-5">
+          <p className="text-sm font-semibold text-[var(--color-navy-900)]">Veřejné přehrání (QR do knihy)</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-muted)]">
+            Tento QR i odkaz přehrají nahrávku komukoliv, kdo je načte — bez přihlášení. Stejný kód bude v tištěné knize.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            {m.qrDataUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={m.qrDataUrl}
+                alt="QR kód vzpomínky"
+                width={116}
+                height={116}
+                className="rounded-md border border-[var(--color-border)] bg-white p-1"
+              />
+            ) : null}
+            <div className="min-w-0 flex-1 space-y-2">
+              <a
+                href={m.publicUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block truncate font-mono text-xs text-[var(--color-navy-700)] underline-offset-2 hover:underline"
+              >
+                {m.publicUrl}
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(m.publicUrl!);
+                  toast.success("Odkaz zkopírován");
+                }}
+                className="inline-flex items-center rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--color-navy-700)] hover:bg-[var(--color-paper-100)]"
+              >
+                Kopírovat odkaz
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {/* Text content (editable) */}
       <div className="mt-8">
         {editing ? (
