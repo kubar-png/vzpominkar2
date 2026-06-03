@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { resolveGender, type Gender } from "@/lib/gender";
 import styles from "./book-document.module.css";
 
 /**
@@ -32,11 +33,13 @@ export interface BookDocumentProps {
   sections: BookSection[];
   /** QR image URL for the page footer; a placeholder box is shown if absent. */
   qr?: string;
+  /** Grammatical gender of the recipient; resolves "{masc|fem}" question tokens. Omitted → slash fallback. */
+  gender?: Gender;
 }
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
 
-export function BookDocument({ title, dedication, mode = "blank", sections, qr }: BookDocumentProps) {
+export function BookDocument({ title, dedication, mode = "blank", sections, qr, gender }: BookDocumentProps) {
   return (
     <div className={styles.doc}>
       {/* ── Cover ── */}
@@ -60,7 +63,7 @@ export function BookDocument({ title, dedication, mode = "blank", sections, qr }
           {section.entries.map((entry, qi) => (
             <article key={qi} className={`${styles.page} ${styles.qpage}`}>
               <p className={styles.qkicker}>{section.title}</p>
-              <h3 className={styles.qtext}>{entry.question}</h3>
+              <h3 className={styles.qtext}>{resolveGender(entry.question, gender ?? null)}</h3>
               {mode === "filled" && entry.answer ? (
                 <div className={styles.answerWrap}>
                   <p className={styles.answer}>{entry.answer}</p>

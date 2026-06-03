@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { BOOK_PHASES, type BookQuestion } from "@/lib/book-shop/phases";
+import { resolveGender } from "@/lib/gender";
 
 interface Q {
   id: string;
@@ -24,7 +25,9 @@ function pluralQ(n: number): string {
 function buildDefault(): Selection {
   const out: Selection = {};
   for (const p of BOOK_PHASES) {
-    out[p.key] = p.questions.filter((q) => q.recommended).map((q) => ({ id: q.id, text: q.text }));
+    out[p.key] = p.questions
+      .filter((q) => q.recommended)
+      .map((q) => ({ id: q.id, text: resolveGender(q.text, null) }));
   }
   return out;
 }
@@ -78,7 +81,10 @@ export function Configurator() {
   const pool = phase.questions.filter((q) => !inBookIds.has(q.id));
 
   const addSuggestion = (q: BookQuestion) =>
-    setSelection((p) => ({ ...p, [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: q.text }] }));
+    setSelection((p) => ({
+      ...p,
+      [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: resolveGender(q.text, null) }],
+    }));
   const removeFromBook = (id: string) =>
     setSelection((p) => ({ ...p, [phase.key]: (p[phase.key] ?? []).filter((q) => q.id !== id) }));
   const editInBook = (id: string, text: string) =>
@@ -214,7 +220,7 @@ export function Configurator() {
                         <span className="kc-pool-plus" aria-hidden>
                           +
                         </span>
-                        <span>{q.text}</span>
+                        <span>{resolveGender(q.text, null)}</span>
                       </button>
                     </li>
                   ))}

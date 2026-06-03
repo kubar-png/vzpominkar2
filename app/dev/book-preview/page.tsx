@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookDocument, type BookSection } from "@/components/book-pdf/BookDocument";
 import { BOOK_PHASES } from "@/lib/book-shop/phases";
+import { type Gender } from "@/lib/gender";
 import styles from "@/components/book-pdf/book-document.module.css";
 
 /**
@@ -29,6 +30,7 @@ const VERY_LONG_ANSWER = Array(11).fill(PARA).join("\n\n"); // ≈ 2+ stránky
 
 export default function BookPreviewPage() {
   const [mode, setMode] = useState<"blank" | "filled">("filled");
+  const [gender, setGender] = useState<Gender | null>("female");
 
   const sections: BookSection[] = BOOK_PHASES.map((p, si) => ({
     title: p.title,
@@ -60,12 +62,23 @@ export default function BookPreviewPage() {
         <button type="button" data-active={mode === "blank"} onClick={() => setMode("blank")}>
           Ruční (linky)
         </button>
+        <span aria-hidden style={{ width: 1, alignSelf: "stretch", background: "#d8cdb0" }} />
+        <button type="button" data-active={gender === "female"} onClick={() => setGender("female")}>
+          Žena
+        </button>
+        <button type="button" data-active={gender === "male"} onClick={() => setGender("male")}>
+          Muž
+        </button>
+        <button type="button" data-active={gender === null} onClick={() => setGender(null)}>
+          Neuvedeno
+        </button>
       </div>
       <BookDocument
         title="Zajímá mě tvůj příběh."
         dedication="Pro tebe, babičko"
         mode={mode}
         sections={sections}
+        gender={gender ?? undefined}
       />
     </>
   );
