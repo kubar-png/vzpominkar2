@@ -3,7 +3,19 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { BOOK_PHASES, type BookQuestion } from "@/lib/book-shop/phases";
-import { resolveGender } from "@/lib/gender";
+import { resolveGender, type Gender } from "@/lib/gender";
+import {
+  COVER_BG,
+  COVER_TEXT,
+  COVER_BG_HEX,
+  COVER_TEXT_HEX,
+  DEFAULT_COVER_BG,
+  DEFAULT_COVER_TEXT,
+  isLegibleCover,
+  defaultTextFor,
+  type CoverBg,
+  type CoverText,
+} from "@/lib/book/cover";
 
 interface Q {
   id: string;
@@ -13,6 +25,7 @@ interface Q {
 type Selection = Record<string, Q[]>;
 
 const STORAGE_KEY = "kniha-config-v1";
+const META_KEY = "kniha-config-meta-v1";
 const PRICE_CUSTOM = "1 099 Kč";
 const PHASE_COUNT = BOOK_PHASES.length;
 
@@ -27,7 +40,7 @@ function buildDefault(): Selection {
   for (const p of BOOK_PHASES) {
     out[p.key] = p.questions
       .filter((q) => q.recommended)
-      .map((q) => ({ id: q.id, text: resolveGender(q.text, null) }));
+      .map((q) => ({ id: q.id, text: q.text }));
   }
   return out;
 }
@@ -39,6 +52,16 @@ export function Configurator() {
   const [step, setStep] = useState(0); // 0..PHASE_COUNT-1 = phases · PHASE_COUNT = recap
   const [hydrated, setHydrated] = useState(false);
   const [ordered, setOrdered] = useState(false);
+  // Recipient gender drives how the questions address them; cover bg/text are
+  // the buyer's cover design. Persisted with the draft (carried to the order).
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [coverBg, setCoverBg] = useState<CoverBg>(DEFAULT_COVER_BG);
+  const [coverText, setCoverText] = useState<CoverText>(DEFAULT_COVER_TEXT);
+
+  function chooseCoverBg(bg: CoverBg) {
+    setCoverBg(bg);
+    setCoverText((t) => (isLegibleCover(bg, t) ? t : defaultTextFor(bg)));
+  }
 
   // Restore a saved draft (guest — no account).
   useEffect(() => {
@@ -56,6 +79,17 @@ export function Configurator() {
     } catch {
       /* corrupt draft — fall back to defaults */
     }
+    try {
+      const meta = localStorage.getItem(META_KEY);
+      if (meta) {
+        const m = JSON.parse(meta) as { gender?: Gender | null; coverBg?: CoverBg; coverText?: CoverText };
+        if (m?.gender === "male" || m?.gender === "female") setGender(m.gender);
+        if (m?.coverBg && COVER_BG_HEX[m.coverBg]) setCoverBg(m.coverBg);
+        if (m?.coverText && COVER_TEXT_HEX[m.coverText]) setCoverText(m.coverText);
+      }
+    } catch {
+      /* ignore */
+    }
     setHydrated(true);
   }, []);
 
@@ -68,6 +102,16 @@ export function Configurator() {
       /* ignore quota/availability errors */
     }
   }, [selection, hydrated]);
+
+  // Persist recipient gender + cover design.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(META_KEY, JSON.stringify({ gender, coverBg, coverText }));
+    } catch {
+      /* ignore */
+    }
+  }, [gender, coverBg, coverText, hydrated]);
 
   const total = useMemo(
     () => Object.values(selection).reduce((n, qs) => n + qs.length, 0),
@@ -83,7 +127,7 @@ export function Configurator() {
   const addSuggestion = (q: BookQuestion) =>
     setSelection((p) => ({
       ...p,
-      [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: resolveGender(q.text, null) }],
+      [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: q.text }],
     }));
   const removeFromBook = (id: string) =>
     setSelection((p) => ({ ...p, [phase.key]: (p[phase.key] ?? []).filter((q) => q.id !== id) }));
@@ -127,6 +171,34 @@ export function Configurator() {
           knihy, nebo si vytvořte vlastní. Spěcháte? Klikněte na <strong>Pokračovat
           k objednávce</strong> kdykoliv.
         </p>
+        <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 14, fontWeight: 600 }}>Pro koho knihu sestavujete?</span>
+          <div style={{ display: "inline-flex", gap: 8 }}>
+            {([["female", "Pro ženu"], ["male", "Pro muže"]] as const).map(([val, label]) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setGender(val)}
+                aria-pressed={gender === val}
+                style={{
+                  cursor: "pointer",
+                  borderRadius: 999,
+                  border: "1px solid",
+                  borderColor: gender === val ? "#0e3b64" : "#d8cdb0",
+                  background: gender === val ? "#0e3b64" : "transparent",
+                  color: gender === val ? "#fff" : "#0e3b64",
+                  padding: "6px 14px",
+                  fontSize: 14,
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <span style={{ fontSize: 13, color: "#6b6660" }}>
+            Otázky pak oslovují správně (vyrůstala vs. vyrůstal). Lze změnit kdykoliv.
+          </span>
+        </div>
       </header>
 
       {/* Always-visible order bar — never blocks the path to payment */}
@@ -183,6 +255,111 @@ export function Configurator() {
               </li>
             ))}
           </ul>
+
+          <div style={{ marginTop: 28 }}>
+            <h3 style={{ fontSize: 17, margin: "0 0 4px" }}>Vzhled obálky</h3>
+            <p style={{ fontSize: 14, color: "#6b6660", margin: "0 0 16px" }}>
+              Vyberte barvu přebalu a barvu textu — vpravo vidíte živý náhled.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 32, alignItems: "flex-start" }}>
+              <div style={{ flex: "1 1 240px", minWidth: 220 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, margin: "0 0 8px" }}>Barva přebalu</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20 }}>
+                  {COVER_BG.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      onClick={() => chooseCoverBg(o.value)}
+                      aria-pressed={coverBg === o.value}
+                      title={o.label}
+                      style={{
+                        cursor: "pointer",
+                        width: 42,
+                        height: 42,
+                        borderRadius: 999,
+                        background: o.hex,
+                        border: coverBg === o.value ? "3px solid #0e3b64" : "1px solid #d8cdb0",
+                      }}
+                    />
+                  ))}
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 600, margin: "0 0 8px" }}>Barva textu</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                  {COVER_TEXT.map((o) => {
+                    const ok = isLegibleCover(coverBg, o.value);
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        disabled={!ok}
+                        onClick={() => setCoverText(o.value)}
+                        aria-pressed={coverText === o.value}
+                        title={ok ? o.label : `${o.label} — nečitelné na této barvě`}
+                        style={{
+                          cursor: ok ? "pointer" : "not-allowed",
+                          opacity: ok ? 1 : 0.3,
+                          borderRadius: 999,
+                          padding: "6px 14px",
+                          fontSize: 14,
+                          background: "#fff",
+                          color: "#0e3b64",
+                          border: coverText === o.value ? "2px solid #0e3b64" : "1px solid #d8cdb0",
+                        }}
+                      >
+                        {o.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Live cover preview (B5 ratio) */}
+              <div
+                aria-hidden
+                style={{
+                  flex: "0 0 auto",
+                  width: 176,
+                  height: 250,
+                  background: COVER_BG_HEX[coverBg],
+                  borderRadius: 4,
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+                  padding: 14,
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: `1.5px solid ${COVER_TEXT_HEX[coverText]}`,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    padding: 16,
+                    color: COVER_TEXT_HEX[coverText],
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "Arial, sans-serif",
+                      fontSize: 8,
+                      letterSpacing: "0.3em",
+                      textTransform: "uppercase",
+                      opacity: 0.85,
+                      marginBottom: 12,
+                    }}
+                  >
+                    Kniha vzpomínek
+                  </span>
+                  <span style={{ fontFamily: "Georgia, serif", fontSize: 19, lineHeight: 1.2 }}>
+                    Zajímá mě tvůj příběh.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="kc-recap-total">
             <span>Celkem {total} otázek · vlastní kniha</span>
             <strong>{PRICE_CUSTOM}</strong>
@@ -220,7 +397,7 @@ export function Configurator() {
                         <span className="kc-pool-plus" aria-hidden>
                           +
                         </span>
-                        <span>{resolveGender(q.text, null)}</span>
+                        <span>{resolveGender(q.text, gender)}</span>
                       </button>
                     </li>
                   ))}
@@ -245,7 +422,7 @@ export function Configurator() {
                       <textarea
                         className="kc-book-text"
                         rows={2}
-                        value={q.text}
+                        value={resolveGender(q.text, gender)}
                         placeholder="Napište vlastní otázku…"
                         onChange={(e) => editInBook(q.id, e.target.value)}
                       />
