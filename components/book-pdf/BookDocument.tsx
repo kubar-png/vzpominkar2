@@ -30,11 +30,13 @@ export interface BookDocumentProps {
   dedication?: string;
   mode?: BookMode;
   sections: BookSection[];
+  /** QR image URL for the page footer; a placeholder box is shown if absent. */
+  qr?: string;
 }
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
 
-export function BookDocument({ title, dedication, mode = "blank", sections }: BookDocumentProps) {
+export function BookDocument({ title, dedication, mode = "blank", sections, qr }: BookDocumentProps) {
   return (
     <div className={styles.doc}>
       {/* ── Cover ── */}
@@ -78,6 +80,15 @@ export function BookDocument({ title, dedication, mode = "blank", sections }: Bo
               ) : (
                 <div className={styles.lines} aria-hidden />
               )}
+              <footer className={styles.pagefoot}>
+                <span className={styles.pagenum} />
+                {qr ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={qr} alt="" className={styles.qr} />
+                ) : (
+                  <span className={styles.qr}>QR</span>
+                )}
+              </footer>
             </article>
           ))}
         </Fragment>
