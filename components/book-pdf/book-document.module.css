@@ -141,12 +141,16 @@
 .lines {
   flex: 1;
   min-height: 60mm;
+  /* One extra blank row between heading and the first rule (no line drawn on
+   * top) so there's room to start writing; rows ~33% taller (9 → 12 mm) so the
+   * hand-written book is easier to write into. */
+  margin-top: 12mm;
   background-image: repeating-linear-gradient(
     to bottom,
     rgba(14, 59, 100, 0.16) 0,
     rgba(14, 59, 100, 0.16) 1px,
     transparent 1px,
-    transparent 9mm
+    transparent 12mm
   );
 }
 .answerWrap {
