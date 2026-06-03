@@ -2,8 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookCover, type CoverVariant } from "./BookCover";
+import { BookCover } from "./BookCover";
 import { BookPage } from "./BookPage";
+import type { CoverBg, CoverText } from "@/lib/book/cover";
 
 // react-pageflip touches `window` at construction time → must be client-only.
 // Render a same-size placeholder during hydration so the page doesn't reflow.
@@ -25,7 +26,8 @@ export interface FlipBookMemory {
 interface FlipBookProps {
   familyName: string;
   year: number;
-  variant: CoverVariant;
+  coverBg: CoverBg;
+  coverText: CoverText;
   memories: FlipBookMemory[];
 }
 
@@ -210,7 +212,7 @@ function buildLeaves(memories: FlipBookMemory[], m: Metrics): MemoryLeaf[] {
  * page count remounts the whole book — acceptable since those are deliberate
  * actions (variant switch, resize), not animation-critical.
  */
-export function FlipBook({ familyName, year, variant, memories }: FlipBookProps) {
+export function FlipBook({ familyName, year, coverBg, coverText, memories }: FlipBookProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // Mobile-first default so the pre-measure placeholder never paints
   // wider than a phone viewport. measure() upgrades to spread on >=760px.
@@ -257,7 +259,7 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
 
     list.push({
       key: "front",
-      node: <BookCover variant={variant} familyName={familyName} year={year} />,
+      node: <BookCover bg={coverBg} text={coverText} familyName={familyName} year={year} />,
     });
 
     list.push({
@@ -456,18 +458,18 @@ export function FlipBook({ familyName, year, variant, memories }: FlipBookProps)
 
     list.push({
       key: "back",
-      node: <BookCover variant={variant} familyName={familyName} year={year} back />,
+      node: <BookCover bg={coverBg} text={coverText} familyName={familyName} year={year} back />,
     });
 
     return list;
-  }, [leaves, memories, variant, familyName, year, metrics.bodyFont, metrics.qFont]);
+  }, [leaves, memories, coverBg, coverText, familyName, year, metrics.bodyFont, metrics.qFont]);
 
   return (
     <div ref={containerRef} className="w-full">
       {pages !== null ? (
         <div className="flex justify-center">
           <HTMLFlipBook
-            key={`${variant}-${size.w}-${portrait}-${pages.length}`}
+            key={`${coverBg}-${coverText}-${size.w}-${portrait}-${pages.length}`}
             width={size.w}
             height={size.h}
             size="fixed"

@@ -110,6 +110,8 @@ export type Database = {
       books: {
         Row: {
           amount_czk: number
+          cover_bg: string
+          cover_text: string
           created_at: string
           family_id: string
           id: string
@@ -126,6 +128,8 @@ export type Database = {
         }
         Insert: {
           amount_czk?: number
+          cover_bg?: string
+          cover_text?: string
           created_at?: string
           family_id: string
           id?: string
@@ -142,6 +146,8 @@ export type Database = {
         }
         Update: {
           amount_czk?: number
+          cover_bg?: string
+          cover_text?: string
           created_at?: string
           family_id?: string
           id?: string
