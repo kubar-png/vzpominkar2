@@ -14,7 +14,7 @@ Vše na branchi `refactor/audit-2026-06`. Každá fáze = samostatný commit + V
 |---|---|---|
 | 0 | Branch, baseline, tento dokument + plán | ✅ hotovo |
 | 1 | Launch-blockery + bezpečnost | ✅ hotovo (preview) |
-| 2 | Datová integrita (index, unique constraint, idempotence webhooku) | ⏳ čeká |
+| 2 | Datová integrita (index, unique constraint, idempotence webhooku) | ✅ hotovo (preview) |
 | 3 | Testy + CI | ⏳ čeká |
 | 4 | Výkon + úklid | ⏳ čeká |
 | 5 | Hloubkový DX (volitelné, po launchi) | ⏳ čeká |
@@ -30,6 +30,16 @@ Vše na branchi `refactor/audit-2026-06`. Každá fáze = samostatný commit + V
 - `PRE-LAUNCH.md` aktualizován (URL centralizace, KV launch-gate).
 
 Gate: typecheck ✅ · lint ✅ · build ✅ · test ✅ 22/22.
+
+## Fáze 2 — co se změnilo
+
+- **Index** `prompt_assignments(senior_id, scheduled_for)` — konec seq-scanů na nejteplejší per-senior cestě (domovská stránka seniora, plánování, cron, RLS policy).
+- **Unique constraint** `books(family_id, senior_id, sequence_no)` (`NULLS NOT DISTINCT`) — dvojklik / retry už nevytvoří druhý Díl. Checkout akce ošetřují kolizi (23505) použitím existujícího řádku.
+- **Idempotentní `markBookPaid`** — atomický claim `paid=false→true`; rodina se aktivuje při každém doručení (přežije částečné selhání + retry), audit log jen při první změně. Webhook zjednodušen (žádný non-atomický pre-check).
+
+Gate: typecheck ✅ · lint ✅ · build ✅ · test 22/22 ✅.
+
+> ⚠️ **Migrace Fáze 2 (index + unique) nejsou v prod DB** — Vercel je nespouští. Kód je vůči neaplikované migraci bezpečný (ochrana proti race se aktivuje, až unique index v prod vznikne). Aplikovat přes `supabase db push` / MCP, až bude vhodné (unique vyžaduje, aby v prod nebyly duplicitní knihy).
 
 ## Odloženo / poznámky
 

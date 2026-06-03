@@ -112,8 +112,22 @@ export async function startBaseCheckout(): Promise<never> {
       })
       .select("id")
       .single<{ id: string }>();
-    if (error || !created) throw new Error("Knihu se nepodařilo připravit.");
-    bookId = created.id;
+    if (error?.code === "23505") {
+      // A concurrent submit already created the base book — reuse it.
+      const { data: dup } = await admin
+        .from("books")
+        .select("id")
+        .eq("family_id", owner.familyId)
+        .is("senior_id", null)
+        .eq("sequence_no", 1)
+        .maybeSingle<{ id: string }>();
+      if (!dup) throw new Error("Knihu se nepodařilo připravit.");
+      bookId = dup.id;
+    } else if (error || !created) {
+      throw new Error("Knihu se nepodařilo připravit.");
+    } else {
+      bookId = created.id;
+    }
   }
 
   return await purchaseBook(bookId);
@@ -171,8 +185,22 @@ export async function startVolumeCheckout(seniorId: string): Promise<never> {
       })
       .select("id")
       .single<{ id: string }>();
-    if (error || !created) throw new Error("Další díl se nepodařilo připravit.");
-    bookId = created.id;
+    if (error?.code === "23505") {
+      // A concurrent submit already created this volume — reuse it.
+      const { data: dup } = await admin
+        .from("books")
+        .select("id")
+        .eq("family_id", owner.familyId)
+        .eq("senior_id", seniorId)
+        .eq("sequence_no", nextSeq)
+        .maybeSingle<{ id: string }>();
+      if (!dup) throw new Error("Další díl se nepodařilo připravit.");
+      bookId = dup.id;
+    } else if (error || !created) {
+      throw new Error("Další díl se nepodařilo připravit.");
+    } else {
+      bookId = created.id;
+    }
   }
 
   return await purchaseBook(bookId);

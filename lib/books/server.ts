@@ -5,8 +5,14 @@ type Admin = ReturnType<typeof createAdminClient>;
 
 /**
  * Mark a book as paid and grant the family LIFETIME access (one-time model —
- * no expiry). Writes an audit row. Caller is responsible for idempotency
- * (e.g. the webhook checks `book.paid` first) so this isn't double-applied.
+ * no expiry). Writes an audit row.
+ *
+ * Idempotent & safe under concurrent / retried Stripe webhook deliveries: the
+ * book is claimed with an atomic `paid = false → true` update, so only the
+ * first caller transitions it. The family grant is re-asserted on every call
+ * (idempotent — so a retry after a partial failure still activates the family
+ * even though the book is already paid), while the audit row is written only on
+ * the first transition.
  *
  * Lives outside the "use server" checkout module so both the checkout action
  * and the Stripe webhook route can call it without exposing it as an action.
@@ -21,7 +27,8 @@ export async function markBookPaid(
     paymentIntentId?: string | null;
   },
 ): Promise<void> {
-  await admin
+  // Atomically claim the book — only the first caller flips paid=false→true.
+  const { data: claimed, error } = await admin
     .from("books")
     .update({
       paid: true,
@@ -29,20 +36,34 @@ export async function markBookPaid(
       amount_czk: opts.amountCzk,
       ...(opts.paymentIntentId ? { stripe_payment_intent_id: opts.paymentIntentId } : {}),
     })
-    .eq("id", opts.bookId);
+    .eq("id", opts.bookId)
+    .eq("paid", false)
+    .select("id");
 
-  await admin
+  // 23505 = this payment_intent is already recorded (duplicate delivery) → done.
+  // Any other DB error must propagate so the webhook 500s and Stripe retries.
+  if (error && error.code !== "23505") throw error;
+
+  const newlyPaid = !error && (claimed?.length ?? 0) > 0;
+
+  // Always (re)assert the family grant — idempotent, and ensures a retry after a
+  // partial failure still activates the family even though the book is now paid.
+  const { error: famErr } = await admin
     .from("families")
     .update({ subscription_status: "active", subscription_expires_at: null })
     .eq("id", opts.familyId);
+  if (famErr) throw famErr;
 
-  await admin.from("activity_log").insert({
-    family_id: opts.familyId,
-    actor_id: opts.actorId ?? null,
-    action: "book.activated",
-    // No PII/secrets — visible to the whole family via RLS.
-    metadata: { bookId: opts.bookId },
-  });
+  // Audit only on the first transition so retries don't duplicate the row.
+  if (newlyPaid) {
+    await admin.from("activity_log").insert({
+      family_id: opts.familyId,
+      actor_id: opts.actorId ?? null,
+      action: "book.activated",
+      // No PII/secrets — visible to the whole family via RLS.
+      metadata: { bookId: opts.bookId },
+    });
+  }
 }
 
 /** How many paid books a family already has (0 → next purchase is the base). */

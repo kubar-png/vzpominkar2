@@ -10,9 +10,10 @@ export const dynamic = "force-dynamic";
 /**
  * Stripe webhook receiver — one-time payments only (no subscriptions).
  *
- * Idempotency: every state transition is keyed on the Stripe payment_intent.
- * Unique columns (books.stripe_payment_intent_id, book_orders.stripe_payment_intent_id)
- * + a pre-check make duplicate deliveries safe.
+ * Idempotency: book payments use an atomic paid=false→true claim in
+ * markBookPaid; print orders are keyed on the unique
+ * book_orders.stripe_payment_intent_id with a pre-check. Duplicate / retried
+ * deliveries are safe either way.
  *
  * Events handled (all checkout.session.completed):
  *   - productType book_base / book_addon → mark the book paid (lifetime access)
@@ -72,14 +73,8 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
     const bookId = meta.bookId;
     if (!bookId) return;
 
-    // Idempotent: skip if the book is already paid.
-    const { data: book } = await admin
-      .from("books")
-      .select("id, paid")
-      .eq("id", bookId)
-      .maybeSingle<{ id: string; paid: boolean }>();
-    if (!book || book.paid) return;
-
+    // markBookPaid is idempotent (atomic claim on paid=false) and re-asserts the
+    // family grant on every delivery, so duplicate / retried webhooks are safe.
     await markBookPaid(admin, {
       bookId,
       familyId,
