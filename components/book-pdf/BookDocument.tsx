@@ -20,6 +20,12 @@ export interface BookEntry {
   answer?: string;
   /** Image URLs (Supabase signed URLs in the app book). Empty string → slot placeholder. */
   images?: string[];
+  /**
+   * Per-memory QR as a data-URI (→ /v/{token}); rendered at the top of the
+   * answer so a reader can scan it to hear the original recording. Absent for
+   * the hand-written (blank) book and for entries without a public link.
+   */
+  qr?: string;
 }
 export interface BookSection {
   title: string;
@@ -31,7 +37,11 @@ export interface BookDocumentProps {
   dedication?: string;
   mode?: BookMode;
   sections: BookSection[];
-  /** QR image URL for the page footer; a placeholder box is shown if absent. */
+  /**
+   * QR shown in the on-screen preview footer (a placeholder box if absent).
+   * Print uses per-entry `BookEntry.qr` and Puppeteer's footerTemplate instead —
+   * the preview footer is hidden when printing.
+   */
   qr?: string;
   /** Grammatical gender of the recipient; resolves "{masc|fem}" question tokens. Omitted → slash fallback. */
   gender?: Gender;
@@ -66,6 +76,13 @@ export function BookDocument({ title, dedication, mode = "blank", sections, qr, 
               <h3 className={styles.qtext}>{resolveGender(entry.question, gender ?? null)}</h3>
               {mode === "filled" && entry.answer ? (
                 <div className={styles.answerWrap}>
+                  {entry.qr ? (
+                    <figure className={styles.qrFigure}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={entry.qr} alt="" className={styles.qrEntry} />
+                      <figcaption className={styles.qrCaption}>Naskenujte a poslechněte si vyprávění</figcaption>
+                    </figure>
+                  ) : null}
                   <p className={styles.answer}>{entry.answer}</p>
                   {entry.images && entry.images.length > 0 ? (
                     <div className={styles.photos}>
