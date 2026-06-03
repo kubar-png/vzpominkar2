@@ -1,17 +1,11 @@
-import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transcribeAudio } from "@/lib/memories/transcribe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
-
-/** Constant-time equality so a brute-force can't extract the secret byte-by-byte. */
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
-}
 
 // Bounded per run so a long Whisper queue can't blow the function budget —
 // it just drains a chunk each pass.
@@ -24,9 +18,7 @@ const BATCH = 20;
  * Idempotent: a filled transcript no longer matches the query.
  */
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get("authorization") ?? "";
-  const expected = process.env.CRON_SECRET ? `Bearer ${process.env.CRON_SECRET}` : null;
-  if (!expected || !safeEqual(auth, expected)) {
+  if (!verifyCronAuth(req)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

@@ -14,10 +14,10 @@ test("landing page renders brand and CTAs", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Založit Vzpomínkář" }).first()).toBeVisible();
 });
 
-test("pricing page shows flat 2 990 Kč", async ({ page }) => {
+test("pricing page shows flat 2 890 Kč", async ({ page }) => {
   await page.goto("/cenik");
   await expect(page.getByRole("heading", { name: /Jedna platba/i })).toBeVisible();
-  await expect(page.getByText("2 990 Kč").first()).toBeVisible();
+  await expect(page.getByText("2 890 Kč").first()).toBeVisible();
 });
 
 test("FAQ items expand", async ({ page }) => {

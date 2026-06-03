@@ -1,5 +1,5 @@
-import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send";
 import { weeklyReminderEmail } from "@/lib/email/templates";
@@ -10,12 +10,6 @@ export const dynamic = "force-dynamic";
 // Weekly batch can touch many families — take the full Vercel ceiling.
 export const maxDuration = 300;
 
-/** Constant-time equality so a brute-force can't extract the secret byte-by-byte. */
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
-}
-
 /**
  * Weekly reminder cron - scheduled in vercel.json for Mondays 10:00 (Europe/Prague).
  * Sends one email per family for the prompt scheduled in the current week
@@ -25,11 +19,7 @@ function safeEqual(a: string, b: string): boolean {
  * be picked up again in the next run.
  */
 export async function GET(req: NextRequest) {
-  // Vercel Cron sends "Authorization: Bearer ${CRON_SECRET}". Constant-time
-  // compare to avoid leaking the secret via timing differences.
-  const auth = req.headers.get("authorization") ?? "";
-  const expected = process.env.CRON_SECRET ? `Bearer ${process.env.CRON_SECRET}` : null;
-  if (!expected || !safeEqual(auth, expected)) {
+  if (!verifyCronAuth(req)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

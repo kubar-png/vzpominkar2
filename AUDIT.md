@@ -15,7 +15,7 @@ Vše na branchi `refactor/audit-2026-06`. Každá fáze = samostatný commit + V
 | 0 | Branch, baseline, tento dokument + plán | ✅ hotovo |
 | 1 | Launch-blockery + bezpečnost | ✅ hotovo (preview) |
 | 2 | Datová integrita (index, unique constraint, idempotence webhooku) | ✅ hotovo (preview) |
-| 3 | Testy + CI | ⏳ čeká |
+| 3 | Testy + CI | ✅ hotovo (preview) |
 | 4 | Výkon + úklid | ⏳ čeká |
 | 5 | Hloubkový DX (volitelné, po launchi) | ⏳ čeká |
 
@@ -40,6 +40,17 @@ Gate: typecheck ✅ · lint ✅ · build ✅ · test ✅ 22/22.
 Gate: typecheck ✅ · lint ✅ · build ✅ · test 22/22 ✅.
 
 > ⚠️ **Migrace Fáze 2 (index + unique) nejsou v prod DB** — Vercel je nespouští. Kód je vůči neaplikované migraci bezpečný (ochrana proti race se aktivuje, až unique index v prod vznikne). Aplikovat přes `supabase db push` / MCP, až bude vhodné (unique vyžaduje, aby v prod nebyly duplicitní knihy).
+
+## Fáze 3 — co se změnilo
+
+- **CI** (`.github/workflows/ci.yml`) — na každý push do `main` + PR běží `typecheck → lint → test`.
+- **48 unit testů** (z 22): idempotence `markBookPaid` (mock admin klienta — ověřuje Fázi 2), bezpečnost uploadu (`sniffImageMime`/`mimeToExt` proti magic-byte fixturám), paywall gate (`hasActiveAccess`), cron auth (`safeEqual`/`verifyCronAuth`), normalizace OpenAI JSON (`extractYear`).
+- **Sdílené helpery**: `lib/cron.ts` (`verifyCronAuth` — oba crony deduplikovány) a `lib/memories/image-sniff.ts` (čisté testovatelné sniffery mimo „use server" modul).
+- **Oprava e2e** smoke testu (cena 2 990 → 2 890 Kč).
+
+Gate: typecheck ✅ · lint ✅ · build ✅ · test 48/48 ✅.
+
+> Pozn.: přímý IDOR test `loadAuthorizedMemory` odložen — privátní helper v „use server" modulu nejde exportovat, aniž by se stal RPC. Pokrytí zatím: `hasActiveAccess` + RLS + inline kontroly.
 
 ## Odloženo / poznámky
 
