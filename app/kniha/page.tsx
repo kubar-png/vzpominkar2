@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
+import { KnihaHeroScroll } from "@/components/landing/KnihaHeroScroll";
 
 export const metadata: Metadata = {
   title: "Kniha vzpomínek — vyplňovací kniha jako dárek",
@@ -133,6 +134,7 @@ const FAQ = [
 export default function KnihaPage() {
   return (
     <Shell>
+      <KnihaHeroScroll />
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
@@ -149,9 +151,15 @@ export default function KnihaPage() {
           <PrimaryCta href="/kniha/sestavit" label="Sestavit vlastní knihu" variant="hero" />
         </div>
 
-        <div className="book-stage" aria-label="Kniha vzpomínek">
-          <div className="page-leaf leaf-photo leaf-L2" />
-          <div className="page-leaf leaf-note leaf-L3" />
+        <div className="kniha-stage" aria-label="Kniha vzpomínek">
+          {/* Ruled paper slides out to the right and fills with handwriting on scroll */}
+          <div className="kniha-paper" aria-hidden>
+            <p className="kniha-handwriting">
+              Narodila jsem se v zimě roku 1948 v malém domku na kraji vesnice.
+              Pamatuju si vůni chleba, který maminka pekla každou sobotu, a jak
+              jsme s bratrem běhali bosi po louce za stodolou…
+            </p>
+          </div>
 
           <div className="book-cover kniha-cover">
             <div className="book-spine" aria-hidden="true" />
@@ -159,9 +167,6 @@ export default function KnihaPage() {
             <div className="book-title">Příběh tvého života</div>
             <div className="book-year">Pro tebe, babičko</div>
           </div>
-
-          <div className="page-leaf leaf-text leaf-R2" />
-          <div className="page-leaf leaf-photo leaf-R3" />
         </div>
       </section>
 
@@ -233,7 +238,6 @@ export default function KnihaPage() {
           <div className="onas-values">
             {WHY.map((d) => (
               <div key={d.n} className="onas-value" data-reveal>
-                <span className="onas-value-numeral">{d.n}</span>
                 <h3>{d.h}</h3>
                 <p>{d.body}</p>
               </div>
@@ -289,7 +293,11 @@ export default function KnihaPage() {
                 Kniha s ~300 pečlivě vybranými otázkami napříč šesti životními
                 obdobími. Stačí darovat.
               </p>
-              <Link href="/kniha/sestavit" className="btn btn-outline">
+              <Link
+                href="/kniha/sestavit"
+                className="btn btn-outline"
+                style={{ width: "100%", justifyContent: "space-between" }}
+              >
                 Koupit standardní <span className="arrow">↗</span>
               </Link>
             </div>
@@ -321,7 +329,11 @@ export default function KnihaPage() {
                 Projdete šest životních fází a otázky si sami přidáte, odeberete
                 nebo přepíšete. Kniha na míru.
               </p>
-              <Link href="/kniha/sestavit" className="btn btn-gold">
+              <Link
+                href="/kniha/sestavit"
+                className="btn btn-gold"
+                style={{ width: "100%", justifyContent: "space-between" }}
+              >
                 Sestavit vlastní <span className="arrow">↗</span>
               </Link>
             </div>

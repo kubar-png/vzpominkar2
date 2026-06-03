@@ -131,16 +131,9 @@ html.lenis { scroll-behavior: auto; }
   box-shadow: 0 14px 32px -18px rgba(0, 0, 0, 0.4);
 }
 
-/* FAQ summary toggle — gold circle scales on hover */
-.editorial .faq-item summary {
-  transition: color 200ms ease;
-}
-.editorial .faq-item summary:hover::after {
-  transform: scale(1.08);
-}
-.editorial .faq-item[open] summary:hover::after {
-  transform: rotate(90deg) scale(1.08);
-}
+/* FAQ summary toggle is defined once below (navy-circle badge, rotates on
+ * open) — the earlier hover scale/rotate rules were removed; they fought the
+ * clean rotate-on-open and made the icon jump on hover. */
 
 /* Footer links — underline expands left-to-right on hover */
 .editorial .footer a,
@@ -2130,6 +2123,70 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 @media (max-width: 700px) {
   .editorial .kniha-chapters { grid-template-columns: 1fr; }
+}
+
+/* ─── /kniha hero — scroll-driven: book pans left, ruled paper slides out
+ *     right, handwriting fills in left→right. Driven by --kniha-scroll (0→1)
+ *     from KnihaHeroScroll; defaults to 0 (book centred) with no JS. ─── */
+.editorial .kniha-stage {
+  --ks: var(--kniha-scroll, 0);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: clamp(44px, 7vw, 80px); /* ~2× the old CTA→book gap */
+  padding-bottom: clamp(180px, 20vw, 280px);
+  min-height: 660px;
+}
+.editorial .kniha-stage .book-cover {
+  transform: translateX(calc(var(--ks) * -132px)) rotate(calc(var(--ks) * -2.5deg));
+  transition: transform 0.12s linear;
+}
+.editorial .kniha-paper {
+  position: absolute;
+  top: clamp(18px, 2.5vw, 34px);
+  left: 50%;
+  width: clamp(250px, 27vw, 360px);
+  aspect-ratio: 3 / 4;
+  z-index: 5; /* behind the book cover (z-index 10) */
+  padding: 30px 26px;
+  border: 1px solid var(--line);
+  border-radius: 2px 7px 7px 2px;
+  background-color: #fcf9ee;
+  /* ruled writing lines every 32px (match handwriting line-height) */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 31px,
+    rgba(14, 59, 100, 0.16) 31px 32px
+  );
+  background-position: 0 38px;
+  box-shadow:
+    1px 0 0 rgba(0, 0, 0, 0.05),
+    4px 0 12px -3px rgba(0, 0, 0, 0.08),
+    0 28px 60px -24px rgba(28, 24, 20, 0.45);
+  transform: translateX(-50%) translateX(calc(var(--ks) * 252px)) rotate(calc(var(--ks) * 2.2deg));
+  opacity: clamp(0, calc(var(--ks) * 2.4), 1);
+  transition: transform 0.12s linear, opacity 0.12s linear;
+}
+.editorial .kniha-handwriting {
+  margin: 0;
+  font-family: var(--font-script-loaded), "Segoe Script", cursive;
+  font-size: clamp(15px, 1.7vw, 19px);
+  line-height: 32px;
+  color: var(--ink);
+  /* revealed left→right as you scroll — as if being written by hand */
+  clip-path: inset(0 calc((1 - var(--ks)) * 100%) 0 0);
+}
+@media (max-width: 760px) {
+  .editorial .kniha-stage {
+    --ks: 0;
+    margin-top: 32px;
+    min-height: 0;
+  }
+  .editorial .kniha-paper {
+    display: none;
+  }
 }
 
 /* ─── /darek/certifikat — CSS-rendered certificate preview + fields ─── */
