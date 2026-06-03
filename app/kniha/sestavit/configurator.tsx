@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { BOOK_PHASES } from "@/lib/book-shop/phases";
+import { BOOK_PHASES, type BookQuestion } from "@/lib/book-shop/phases";
 
 interface Q {
   id: string;
@@ -15,9 +15,17 @@ const STORAGE_KEY = "kniha-config-v1";
 const PRICE_CUSTOM = "1 099 Kč";
 const PHASE_COUNT = BOOK_PHASES.length;
 
+function pluralQ(n: number): string {
+  if (n === 1) return "otázka";
+  if (n >= 2 && n <= 4) return "otázky";
+  return "otázek";
+}
+
 function buildDefault(): Selection {
   const out: Selection = {};
-  for (const p of BOOK_PHASES) out[p.key] = p.questions.map((q) => ({ id: q.id, text: q.text }));
+  for (const p of BOOK_PHASES) {
+    out[p.key] = p.questions.filter((q) => q.recommended).map((q) => ({ id: q.id, text: q.text }));
+  }
   return out;
 }
 
@@ -48,7 +56,7 @@ export function Configurator() {
     setHydrated(true);
   }, []);
 
-  // Persist so a refresh mid-build doesn't lose work.
+  // Persist on every change so rapid clicking never loses work.
   useEffect(() => {
     if (!hydrated) return;
     try {
@@ -65,23 +73,24 @@ export function Configurator() {
 
   const isRecap = step >= PHASE_COUNT;
   const phase = BOOK_PHASES[Math.min(step, PHASE_COUNT - 1)]!;
-  const current = selection[phase.key] ?? [];
+  const inBook = selection[phase.key] ?? [];
+  const inBookIds = new Set(inBook.map((q) => q.id));
+  const pool = phase.questions.filter((q) => !inBookIds.has(q.id));
 
-  const editQuestion = (key: string, id: string, text: string) =>
-    setSelection((p) => ({ ...p, [key]: (p[key] ?? []).map((q) => (q.id === id ? { ...q, text } : q)) }));
-  const removeQuestion = (key: string, id: string) =>
-    setSelection((p) => ({ ...p, [key]: (p[key] ?? []).filter((q) => q.id !== id) }));
-  const addQuestion = (key: string) => {
+  const addSuggestion = (q: BookQuestion) =>
+    setSelection((p) => ({ ...p, [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: q.text }] }));
+  const removeFromBook = (id: string) =>
+    setSelection((p) => ({ ...p, [phase.key]: (p[phase.key] ?? []).filter((q) => q.id !== id) }));
+  const editInBook = (id: string, text: string) =>
+    setSelection((p) => ({
+      ...p,
+      [phase.key]: (p[phase.key] ?? []).map((q) => (q.id === id ? { ...q, text } : q)),
+    }));
+  const addCustom = () => {
     customCounter += 1;
-    const id = `c-${key}-${customCounter}`;
-    setSelection((p) => ({ ...p, [key]: [...(p[key] ?? []), { id, text: "", custom: true }] }));
+    const id = `c-${phase.key}-${customCounter}`;
+    setSelection((p) => ({ ...p, [phase.key]: [...(p[phase.key] ?? []), { id, text: "", custom: true }] }));
   };
-  const restorePhase = (key: string) => {
-    const def = BOOK_PHASES.find((b) => b.key === key);
-    if (def) setSelection((p) => ({ ...p, [key]: def.questions.map((q) => ({ id: q.id, text: q.text })) }));
-  };
-  const clearPhase = (key: string) =>
-    setSelection((p) => ({ ...p, [key]: [] }));
 
   if (ordered) {
     return (
@@ -90,10 +99,9 @@ export function Configurator() {
           <span className="eyebrow">Hotovo</span>
           <h1 style={{ margin: "0 auto 20px" }}>Skvělé — kniha je sestavená.</h1>
           <p className="lede">
-            Vybrali jste <strong>{total}</strong>{" "}
-            {total === 1 ? "otázku" : total >= 2 && total <= 4 ? "otázky" : "otázek"} napříč
-            šesti životními obdobími. Platební brána se dokončuje — tady se brzy přesměrujete
-            na zaplacení (1 099 Kč, poštovné zdarma) a my knihu vysázíme a vytiskneme.
+            Vybrali jste <strong>{total}</strong> {pluralQ(total)} napříč šesti životními
+            obdobími. Platební brána se dokončuje — tady se brzy přesměrujete na zaplacení
+            (1 099 Kč, poštovné zdarma) a my knihu vysázíme a vytiskneme.
           </p>
           <Link href="/kniha" className="btn btn-outline" style={{ marginTop: 8 }}>
             Zpět na knihu <span className="arrow">↗</span>
@@ -109,16 +117,16 @@ export function Configurator() {
         <span className="eyebrow">Sestavte si knihu</span>
         <h1>Vyberte otázky do své knihy</h1>
         <p className="lede">
-          Doporučené otázky jsou předvyplněné — můžete je upravit, přidat vlastní nebo odebrat.
-          Spěcháte? Klikněte na <strong>Pokračovat k objednávce</strong> kdykoliv.
+          Doporučené otázky už ve své knize máte. Klikněte na návrh vlevo a přesune se do
+          knihy, nebo si vytvořte vlastní. Spěcháte? Klikněte na <strong>Pokračovat
+          k objednávce</strong> kdykoliv.
         </p>
       </header>
 
       {/* Always-visible order bar — never blocks the path to payment */}
       <div className="kc-bar">
         <span className="kc-bar-count">
-          {total} {total === 1 ? "otázka" : total >= 2 && total <= 4 ? "otázky" : "otázek"} ·
-          vlastní kniha {PRICE_CUSTOM}
+          {total} {pluralQ(total)} v knize · vlastní kniha {PRICE_CUSTOM}
         </span>
         {isRecap ? (
           <button type="button" className="btn btn-outline" onClick={() => setStep(0)}>
@@ -131,17 +139,31 @@ export function Configurator() {
         )}
       </div>
 
-      {/* Progress dots */}
-      <ol className="kc-steps" aria-hidden>
-        {BOOK_PHASES.map((p, i) => (
-          <li
-            key={p.key}
-            className={i === step ? "is-current" : i < step ? "is-done" : ""}
+      {/* Clickable phase pills — jump straight to any phase */}
+      <ol className="kc-steps">
+        {BOOK_PHASES.map((p, i) => {
+          const count = (selection[p.key] ?? []).length;
+          return (
+            <li key={p.key}>
+              <button
+                type="button"
+                className={i === step && !isRecap ? "is-current" : ""}
+                onClick={() => setStep(i)}
+              >
+                {p.title} <span className="kc-step-num">{count}</span>
+              </button>
+            </li>
+          );
+        })}
+        <li>
+          <button
+            type="button"
+            className={isRecap ? "is-current" : ""}
+            onClick={() => setStep(PHASE_COUNT)}
           >
-            {p.title}
-          </li>
-        ))}
-        <li className={isRecap ? "is-current" : ""}>Souhrn</li>
+            Souhrn
+          </button>
+        </li>
       </ol>
 
       {isRecap ? (
@@ -167,9 +189,7 @@ export function Configurator() {
           >
             Objednat a zaplatit <span className="arrow">↗</span>
           </button>
-          {total === 0 ? (
-            <p className="kc-hint">Vyberte aspoň jednu otázku.</p>
-          ) : null}
+          {total === 0 ? <p className="kc-hint">Vyberte aspoň jednu otázku.</p> : null}
         </section>
       ) : (
         <section className="kc-phase">
@@ -180,47 +200,65 @@ export function Configurator() {
             <h2>{phase.title}</h2>
           </div>
 
-          <div className="kc-questions">
-            {current.length === 0 ? (
-              <p className="kc-hint">
-                V této fázi nemáte žádné otázky.{" "}
-                <button type="button" className="kc-link" onClick={() => restorePhase(phase.key)}>
-                  Obnovit doporučené
-                </button>
-              </p>
-            ) : (
-              current.map((q, i) => (
-                <div key={q.id} className="kc-q">
-                  <span className="kc-q-num">{String(i + 1).padStart(2, "0")}</span>
-                  <textarea
-                    className="kc-q-text"
-                    rows={2}
-                    value={q.text}
-                    placeholder="Napište vlastní otázku…"
-                    onChange={(e) => editQuestion(phase.key, q.id, e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="kc-q-remove"
-                    aria-label="Odebrat otázku"
-                    onClick={() => removeQuestion(phase.key, q.id)}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
+          <div className="kc-cols">
+            {/* LEFT — suggestions; click to add to the book */}
+            <div className="kc-pool">
+              <h3 className="kc-col-title">Navrhované otázky</h3>
+              {pool.length === 0 ? (
+                <p className="kc-hint">Všechny návrhy už máte v knize. Můžete si přidat vlastní →</p>
+              ) : (
+                <ul className="kc-pool-list">
+                  {pool.map((q) => (
+                    <li key={q.id}>
+                      <button type="button" className="kc-pool-item" onClick={() => addSuggestion(q)}>
+                        <span className="kc-pool-plus" aria-hidden>
+                          +
+                        </span>
+                        <span>{q.text}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-          <div className="kc-phase-actions">
-            <button type="button" className="kc-link" onClick={() => addQuestion(phase.key)}>
-              + Přidat vlastní otázku
-            </button>
-            {current.length > 0 ? (
-              <button type="button" className="kc-link kc-link-muted" onClick={() => clearPhase(phase.key)}>
-                Vymazat fázi
+            {/* RIGHT — the book (dark panel); these get printed */}
+            <div className="kc-book">
+              <h3 className="kc-col-title kc-col-title-light">
+                Ve vaší knize <span className="kc-book-count">{inBook.length}</span>
+              </h3>
+              {inBook.length === 0 ? (
+                <p className="kc-book-empty">
+                  Zatím prázdné. Klikněte na otázku vlevo, nebo si vytvořte vlastní.
+                </p>
+              ) : (
+                <ul className="kc-book-list">
+                  {inBook.map((q, i) => (
+                    <li key={q.id} className="kc-book-item">
+                      <span className="kc-book-num">{String(i + 1).padStart(2, "0")}</span>
+                      <textarea
+                        className="kc-book-text"
+                        rows={2}
+                        value={q.text}
+                        placeholder="Napište vlastní otázku…"
+                        onChange={(e) => editInBook(q.id, e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="kc-book-remove"
+                        aria-label="Odebrat z knihy"
+                        onClick={() => removeFromBook(q.id)}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button type="button" className="kc-book-add" onClick={addCustom}>
+                + Vytvořit vlastní otázku
               </button>
-            ) : null}
+            </div>
           </div>
 
           <nav className="kc-nav">
