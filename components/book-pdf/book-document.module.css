@@ -1,0 +1,181 @@
+/* B5 portrait sheets. The whole book is one continuous document so it exports
+ * as a single PDF (Ctrl+P now, headless Chromium at fulfilment). */
+@page {
+  size: 176mm 250mm;
+  margin: 0;
+}
+
+.doc {
+  background: #5b5650;
+  padding: 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.page {
+  width: 176mm;
+  height: 250mm;
+  box-sizing: border-box;
+  padding: 22mm 20mm;
+  background: #fcf9ee;
+  color: #0e3b64;
+  font-family: Georgia, "Times New Roman", serif;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media print {
+  .doc {
+    background: none;
+    padding: 0;
+    gap: 0;
+  }
+  .page {
+    box-shadow: none;
+    break-after: page;
+  }
+  .page:last-child {
+    break-after: auto;
+  }
+}
+
+/* ── Cover ── */
+.cover {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.coverInner {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid rgba(168, 35, 31, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8mm;
+  padding: 24mm 14mm;
+}
+.coverEyebrow {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #a8231f;
+}
+.coverTitle {
+  margin: 0;
+  font-size: 34pt;
+  line-height: 1.12;
+  font-weight: 500;
+}
+.coverDedication {
+  margin: 0;
+  font-style: italic;
+  font-size: 14pt;
+  color: rgba(14, 59, 100, 0.7);
+}
+
+/* ── Chapter divider ── */
+.chapter {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.chapterNum {
+  font-size: 90pt;
+  line-height: 1;
+  color: #a8231f;
+}
+.chapterTitle {
+  margin: 6mm 0 0;
+  font-size: 26pt;
+  font-weight: 500;
+}
+
+/* ── Question page ── */
+.qkicker {
+  margin: 0 0 6mm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #a8231f;
+}
+.qtext {
+  margin: 0 0 8mm;
+  font-size: 17pt;
+  line-height: 1.3;
+  font-weight: 500;
+}
+.lines {
+  flex: 1;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(14, 59, 100, 0.16) 0,
+    rgba(14, 59, 100, 0.16) 1px,
+    transparent 1px,
+    transparent 9mm
+  );
+}
+.answerWrap {
+  flex: 1;
+}
+.answer {
+  margin: 0;
+  font-family: "Caveat", "Segoe Script", cursive;
+  font-size: 17pt;
+  line-height: 9mm;
+  color: #0e3b64;
+  white-space: pre-wrap;
+}
+.photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin-top: 8mm;
+}
+.photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #e8dcc0;
+  border: 1px solid rgba(168, 35, 31, 0.25);
+}
+
+/* Dev preview toolbar — hidden when printing */
+.noPrint {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.noPrint button {
+  cursor: pointer;
+  border: 1px solid #d8cdb0;
+  background: #fcf9ee;
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-size: 13px;
+}
+.noPrint button[data-active="true"] {
+  background: #0e3b64;
+  color: #fff;
+  border-color: #0e3b64;
+}
+@media print {
+  .noPrint {
+    display: none;
+  }
+}

@@ -1,0 +1,87 @@
+import { Fragment } from "react";
+import styles from "./book-document.module.css";
+
+/**
+ * Reusable book interior — one continuous, paginated B5 document (cover →
+ * chapters → one question per page). Renders the WHOLE book so it exports as a
+ * single PDF (browser Ctrl+P now; headless-Chromium render at fulfilment).
+ *
+ * Two modes from the SAME template:
+ *   - "blank"  — physical hand-written book: question + ruled writing lines.
+ *   - "filled" — book generated from the app: question + the digital answer
+ *                (+ photos). Falls back to ruled lines for unanswered entries.
+ *
+ * B5 = 176 × 250 mm portrait.
+ */
+
+export interface BookEntry {
+  question: string;
+  answer?: string;
+  /** Image URLs (Supabase signed URLs in the app book). Empty string → slot placeholder. */
+  images?: string[];
+}
+export interface BookSection {
+  title: string;
+  entries: BookEntry[];
+}
+export type BookMode = "blank" | "filled";
+export interface BookDocumentProps {
+  title: string;
+  dedication?: string;
+  mode?: BookMode;
+  sections: BookSection[];
+}
+
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+
+export function BookDocument({ title, dedication, mode = "blank", sections }: BookDocumentProps) {
+  return (
+    <div className={styles.doc}>
+      {/* ── Cover ── */}
+      <article className={`${styles.page} ${styles.cover}`}>
+        <div className={styles.coverInner}>
+          <span className={styles.coverEyebrow}>Kniha vzpomínek</span>
+          <h1 className={styles.coverTitle}>{title}</h1>
+          {dedication ? <p className={styles.coverDedication}>{dedication}</p> : null}
+        </div>
+      </article>
+
+      {sections.map((section, si) => (
+        <Fragment key={`${section.title}-${si}`}>
+          {/* ── Chapter divider ── */}
+          <article className={`${styles.page} ${styles.chapter}`}>
+            <span className={styles.chapterNum}>{ROMAN[si] ?? String(si + 1)}</span>
+            <h2 className={styles.chapterTitle}>{section.title}</h2>
+          </article>
+
+          {/* ── One page per question ── */}
+          {section.entries.map((entry, qi) => (
+            <article key={qi} className={`${styles.page} ${styles.qpage}`}>
+              <p className={styles.qkicker}>{section.title}</p>
+              <h3 className={styles.qtext}>{entry.question}</h3>
+              {mode === "filled" && entry.answer ? (
+                <div className={styles.answerWrap}>
+                  <p className={styles.answer}>{entry.answer}</p>
+                  {entry.images && entry.images.length > 0 ? (
+                    <div className={styles.photos}>
+                      {entry.images.map((src, ii) =>
+                        src ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={ii} src={src} alt="" className={styles.photo} />
+                        ) : (
+                          <div key={ii} className={styles.photo} aria-hidden />
+                        ),
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className={styles.lines} aria-hidden />
+              )}
+            </article>
+          ))}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
