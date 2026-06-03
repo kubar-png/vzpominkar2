@@ -94,7 +94,17 @@ průběžně.
 ### 12. Resend batch send v týdenním cronu (až bude doména + objem)
 - [ ] Cron `weekly-reminder` už má zbatchované DB dotazy + `maxDuration=300`. Při skutečně velkém objemu (tisíce e-mailů/běh) přepnout odesílání na **Resend batch API** (`/emails/batch`, 100/volání) místo sekvenčního `sendEmail` — jinak ~10 e-mailů/s limit prodlužuje běh. Párovat s bodem 2 (custom SMTP/doména).
 
+## 📕 Fyzická kniha (Kniha vzpomínek) — před prodejem knihy
+
+### 13. Render celé knihy do jednoho tiskového PDF (Phase 4)
+- [ ] Z HTML šablony (`components/book-pdf/BookDocument.tsx`, B5) vyrenderovat celou knihu do **jednoho PDF** přes headless Chromium (Puppeteer) — opakující se patička + skutečné číslování (`footerTemplate`) + QR kódy. Napojit na fulfilment po platbě. Použít pro ruční i z aplikace generovanou knihu.
+
+### 14. Konfigurátor dárkové knihy — dokončení
+- [ ] Volba **„Pro koho? (žena / muž)"** v konfigurátoru (`/kniha/sestavit`) → uloží se k objednávce a prožene otázky správným rodem (teď ukazuje „/a").
+- [ ] Napojit konfigurátor na reálný objednávkový flow (guest checkout + Stripe + `shop_orders`) — viz Phase 2.
+
+### 15. QR u vzpomínek → veřejné přehrání nahrávky (návrh se ladí)
+- [ ] Veřejná stránka `/v/{token}` (bez přihlášení) přehraje audio vzpomínky + metadata; QR v knize na ni odkazuje. Audio se podepisuje on-demand na serveru (bucket `memory-audio` zůstává privátní). Vyžaduje vlastní doménu (krátké, trvanlivé URL) → souvisí s bodem 1.
+
 ## ✅ Hotovo (kontext)
 - Supabase „Confirm email" (zeď před onboardingem) **vypnuto** — vlastník se po registraci přihlásí hned. *(uděláno 2026-06-01)*
-</content>
-</invoke>
