@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/app/EmptyState";
 import { plural } from "@/lib/format/czech-plural";
 import { ScheduledList } from "./scheduled-list";
 import { PromptPickers } from "./prompt-pickers";
+import { resolveGender } from "@/lib/gender";
 
 export const metadata: Metadata = { title: "Otázky" };
 
@@ -84,7 +85,7 @@ export default async function PromptsPage({
     .map((a) => ({
       id: a.id,
       scheduledFor: a.scheduled_for,
-      question: a.prompts?.question ?? "(odstraněná otázka)",
+      question: a.prompts?.question ? resolveGender(a.prompts.question, null) : "(odstraněná otázka)",
       seniorName: a.senior_id ? (seniorNameById.get(a.senior_id) ?? null) : null,
     }));
   // Newest first — the base query is scheduled_for ascending (oldest first),
@@ -99,7 +100,7 @@ export default async function PromptsPage({
   const allPrompts = promptsResult.data ?? [];
   const customPrompts = allPrompts
     .filter((p) => p.family_id === familyId)
-    .map((p) => ({ id: p.id, question: p.question }));
+    .map((p) => ({ id: p.id, question: resolveGender(p.question, null) }));
   const systemPrompts = allPrompts.filter((p) => !p.family_id);
 
   // Group system prompts by category
@@ -108,7 +109,7 @@ export default async function PromptsPage({
     label: CATEGORY_LABELS[cat] ?? cat,
     prompts: systemPrompts
       .filter((p) => p.category === cat)
-      .map((p) => ({ id: p.id, question: p.question })),
+      .map((p) => ({ id: p.id, question: resolveGender(p.question, null) })),
   })).filter((g) => g.prompts.length > 0);
 
   return (
@@ -173,7 +174,7 @@ export default async function PromptsPage({
                   className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-[var(--color-paper-50)]"
                 >
                   <span className="min-w-0 truncate text-sm text-[var(--color-text)]">
-                    {a.prompts?.question ?? "(odstraněná otázka)"}
+                    {a.prompts?.question ? resolveGender(a.prompts.question, null) : "(odstraněná otázka)"}
                   </span>
                   <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-emerald-700">
                     <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-600" />

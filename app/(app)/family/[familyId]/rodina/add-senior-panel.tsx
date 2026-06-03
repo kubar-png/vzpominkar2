@@ -9,7 +9,8 @@ import { FormSection } from "@/components/ui/form-section";
 import { createSeniorAccount } from "@/lib/auth/actions";
 import { suggestSeniorPassword } from "@/lib/auth/senior-account-actions";
 import { SITE_HOST } from "@/lib/site";
-import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
+import { SENIOR_ROLE_OPTIONS, GENDER_OPTIONS } from "@/lib/validations/auth";
+import { genderFromSeniorRole } from "@/lib/gender";
 import { cn } from "@/lib/utils";
 import { Plus, X, RefreshCw } from "lucide-react";
 
@@ -50,12 +51,16 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
   const [password, setPassword] = useState("");
   // Drives which address field shows (e-mail vs. phone).
   const [contactChannel, setContactChannel] = useState<"" | "email" | "whatsapp">("");
+  // Defaulted from the role when picked (babička → žena), still editable. Sets
+  // the Czech tykání gender in the questions the senior is asked.
+  const [gender, setGender] = useState<"" | "male" | "female">("");
 
   function open() {
     setUsername("");
     setUsernameEdited(false);
     void suggestSeniorPassword().then(setPassword);
     setContactChannel("");
+    setGender("");
     setPhase({ name: "form" });
   }
 
@@ -76,6 +81,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
     const username = String(fd.get("username") ?? "").trim().toLowerCase();
     const password = String(fd.get("password") ?? "");
     const seniorRole = (fd.get("seniorRole") as string) || null;
+    const gender = (fd.get("gender") as "male" | "female") || null;
     const birthYear = Number(fd.get("birthYear") ?? 0);
     const contactChannel = (fd.get("contactChannel") as "email" | "whatsapp") || null;
     const contactAddress = String(fd.get("contactAddress") ?? "").trim() || null;
@@ -83,7 +89,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
 
     startTransition(async () => {
       const result = await createSeniorAccount(familyId, {
-        displayName, username, password, seniorRole, birthYear,
+        displayName, username, password, seniorRole, gender, birthYear,
         contactChannel, contactAddress, promptFrequency,
       });
       if (result.ok && result.credentials) {
@@ -219,12 +225,36 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="new-seniorRole">Role v rodině</Label>
-              <Select id="new-seniorRole" name="seniorRole">
+              <Select
+                id="new-seniorRole"
+                name="seniorRole"
+                onChange={(e) => {
+                  const g = genderFromSeniorRole(e.target.value);
+                  if (g) setGender(g);
+                }}
+              >
                 <option value="">- nevybráno -</option>
                 {SENIOR_ROLE_OPTIONS.map((r) => (
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-gender">Pohlaví</Label>
+              <Select
+                id="new-gender"
+                name="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value as "" | "male" | "female")}
+              >
+                <option value="">- nevybráno -</option>
+                {GENDER_OPTIONS.map((g) => (
+                  <option key={g.value} value={g.value}>{g.label}</option>
+                ))}
+              </Select>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Podle pohlaví správně oslovíme v otázkách (vyrůstal vs. vyrůstala).
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="new-birthYear">Rok narození</Label>

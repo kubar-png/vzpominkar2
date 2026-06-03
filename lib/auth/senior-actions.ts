@@ -12,6 +12,7 @@ const ROLE_VALUES: string[] = SENIOR_ROLE_OPTIONS.map((r) => r.value);
 const updateSchema = z.object({
   displayName: z.string().min(1, "Zadejte jméno.").max(80),
   seniorRole: z.string().refine((v) => !v || ROLE_VALUES.includes(v), "Neplatná role.").optional().nullable(),
+  gender: z.enum(["male", "female"]).optional().nullable(),
   contactChannel: z.enum(["email", "whatsapp"]).optional().nullable(),
   contactAddress: z.string().max(200).optional().nullable(),
   promptFrequency: z.union([z.literal(1), z.literal(2)]).default(1),
@@ -32,6 +33,7 @@ export async function updateSeniorProfile(
   formData: {
     displayName: string;
     seniorRole: string | null;
+    gender?: "male" | "female" | null;
     contactChannel?: string | null;
     contactAddress?: string | null;
     promptFrequency?: number;
@@ -50,6 +52,7 @@ export async function updateSeniorProfile(
   const update: {
     display_name: string;
     senior_role: string | null;
+    gender: "male" | "female" | null;
     contact_channel: "email" | "whatsapp" | null;
     contact_address: string | null;
     prompt_frequency: number;
@@ -57,6 +60,7 @@ export async function updateSeniorProfile(
   } = {
     display_name: parsed.data.displayName,
     senior_role: parsed.data.seniorRole ?? null,
+    gender: parsed.data.gender ?? null,
     contact_channel: parsed.data.contactChannel ?? null,
     contact_address: parsed.data.contactAddress?.trim() || null,
     prompt_frequency: parsed.data.promptFrequency,

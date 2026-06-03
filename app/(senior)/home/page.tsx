@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentBookForSenior } from "@/lib/books/server";
+import { resolveGender } from "@/lib/gender";
 
 export const metadata: Metadata = { title: "Domů" };
 
@@ -118,7 +119,7 @@ export default async function SeniorHomePage() {
         {active?.prompts ? (
           <>
             <span className="es-eyebrow">Otázka týdne</span>
-            <h2 className="es-question">{active.prompts.question}</h2>
+            <h2 className="es-question">{resolveGender(active.prompts.question, user.gender)}</h2>
             <div className="es-rule-gold" />
             <p className="text-[18px] sm:text-[19px] text-[var(--ink-soft)] mb-7 leading-relaxed">
               Vyberte si, jak chcete odpovědět. Vyprávění nahlas je nejjednodušší —

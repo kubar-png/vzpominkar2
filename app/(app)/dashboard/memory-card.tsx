@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
 import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
 import type { MemoryItem } from "./types";
+import { resolveGender } from "@/lib/gender";
 
 function formatDuration(s: number) {
   const m = Math.floor(s / 60);
@@ -59,7 +60,7 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
               ) : null}
             </p>
             {m.question ? (
-              <p className="text-sm text-[var(--color-text-muted)]">&#8222;{m.question}&#8220;</p>
+              <p className="text-sm text-[var(--color-text-muted)]">&#8222;{resolveGender(m.question, null)}&#8220;</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">

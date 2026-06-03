@@ -9,7 +9,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input, Label, Select } from "@/components/ui/input";
 import { FormSection } from "@/components/ui/form-section";
-import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
+import { SENIOR_ROLE_OPTIONS, GENDER_OPTIONS } from "@/lib/validations/auth";
+import { genderFromSeniorRole } from "@/lib/gender";
 import { plural } from "@/lib/format/czech-plural";
 import { updateSeniorProfile, deleteSeniorAccount } from "@/lib/auth/senior-actions";
 import { startVolumeCheckout } from "@/lib/stripe/checkout";
@@ -21,6 +22,7 @@ interface SeniorCardProps {
     display_name: string | null;
     username: string | null;
     senior_role: string | null;
+    gender: string | null;
     contact_channel: string | null;
     contact_address: string | null;
     prompt_frequency: number;
@@ -49,6 +51,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
   const [phase, setPhase] = useState<Phase>("view");
   const [editName, setEditName] = useState(senior.display_name ?? "");
   const [editRole, setEditRole] = useState(senior.senior_role ?? "");
+  const [editGender, setEditGender] = useState(senior.gender ?? "");
   const [editChannel, setEditChannel] = useState(senior.contact_channel ?? "");
   const [editAddress, setEditAddress] = useState(senior.contact_address ?? "");
   const [editFrequency, setEditFrequency] = useState(senior.prompt_frequency ?? 1);
@@ -61,6 +64,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
   function resetEdit() {
     setEditName(senior.display_name ?? "");
     setEditRole(senior.senior_role ?? "");
+    setEditGender(senior.gender ?? "");
     setEditChannel(senior.contact_channel ?? "");
     setEditAddress(senior.contact_address ?? "");
     setEditFrequency(senior.prompt_frequency ?? 1);
@@ -75,6 +79,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
       const result = await updateSeniorProfile(familyId, senior.id, {
         displayName: editName.trim(),
         seniorRole: editRole || null,
+        gender: (editGender || null) as "male" | "female" | null,
         contactChannel: editChannel || null,
         contactAddress: editAddress.trim() || null,
         promptFrequency: editFrequency as 1 | 2,
@@ -128,13 +133,33 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
               <Select
                 id={`role-${senior.id}`}
                 value={editRole}
-                onChange={(e) => setEditRole(e.target.value)}
+                onChange={(e) => {
+                  setEditRole(e.target.value);
+                  const g = genderFromSeniorRole(e.target.value);
+                  if (g && !editGender) setEditGender(g);
+                }}
               >
                 <option value="">- nevybráno -</option>
                 {SENIOR_ROLE_OPTIONS.map((r) => (
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`gender-${senior.id}`}>Pohlaví</Label>
+              <Select
+                id={`gender-${senior.id}`}
+                value={editGender}
+                onChange={(e) => setEditGender(e.target.value)}
+              >
+                <option value="">- nevybráno -</option>
+                {GENDER_OPTIONS.map((g) => (
+                  <option key={g.value} value={g.value}>{g.label}</option>
+                ))}
+              </Select>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Správné oslovení v otázkách (vyrůstal vs. vyrůstala).
+              </p>
             </div>
           </FormSection>
 

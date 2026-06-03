@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { resolveGender } from "@/lib/gender";
 
 interface StatusBlockProps {
   familyId: string;
@@ -107,7 +108,7 @@ export function StatusBlock({ familyId, next, onlySeniorFirstName }: StatusBlock
       <p className="app-eyebrow text-[var(--color-gold-600)]">Tento týden</p>
       <blockquote className="mt-3">
         <p className="font-[family-name:var(--font-display)] text-[22px] font-medium leading-snug text-[var(--color-navy-900)] sm:text-2xl">
-          &bdquo;{next.question}&ldquo;
+          &bdquo;{resolveGender(next.question, null)}&ldquo;
         </p>
       </blockquote>
       <p className="mt-3 text-sm text-[var(--color-text-muted)]">{subline}</p>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAssignmentContext } from "@/lib/memories/server";
+import { resolveGender } from "@/lib/gender";
 import { MemoryWhenHint } from "@/components/senior/MemoryWhenHint";
 import { TextMemoryForm } from "./text-form";
 
@@ -49,7 +50,7 @@ export default async function NewTextMemoryPage({
         {ctx ? (
           <>
             <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{ctx.question}</h2>
+            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
           </>
         ) : (
           <h2 className="es-question">Napsat vzpomínku.</h2>

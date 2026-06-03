@@ -8,6 +8,7 @@ import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
 import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
 import type { MemoryDetailData } from "./page";
+import { resolveGender } from "@/lib/gender";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -430,7 +431,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       {/* Question quote — small, calm, not gold */}
       {m.question ? (
         <blockquote className="mt-6 border-l-2 border-[var(--color-border-strong)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
-          &bdquo;{m.question}&ldquo;
+          &bdquo;{m.question ? resolveGender(m.question, null) : ""}&ldquo;
         </blockquote>
       ) : null}
 

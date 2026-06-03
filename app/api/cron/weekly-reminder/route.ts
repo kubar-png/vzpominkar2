@@ -3,6 +3,7 @@ import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send";
 import { weeklyReminderEmail } from "@/lib/email/templates";
+import { resolveGender } from "@/lib/gender";
 import { SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -61,6 +62,7 @@ export async function GET(req: NextRequest) {
     display_name: string | null;
     contact_channel: string | null;
     contact_address: string | null;
+    gender: string | null;
   };
   const familyIds = [...new Set((rows ?? []).map((r) => r.family_id))];
   const seniorByFamily = new Map<string, Prof>();
@@ -68,7 +70,7 @@ export async function GET(req: NextRequest) {
   if (familyIds.length) {
     const { data: profs } = await admin
       .from("profiles")
-      .select("family_id, role, email, display_name, contact_channel, contact_address")
+      .select("family_id, role, email, display_name, contact_channel, contact_address, gender")
       .in("family_id", familyIds)
       .in("role", ["senior", "owner"])
       .returns<Prof[]>();
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest) {
 
     const tpl = weeklyReminderEmail({
       seniorDisplayName: seniorName,
-      question: row.prompts.question,
+      question: resolveGender(row.prompts.question, (senior?.gender as "male" | "female" | null) ?? null),
       appUrl,
     });
 

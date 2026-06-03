@@ -24,11 +24,11 @@ export default async function RodinaPage({
 
   const { data: seniors } = await admin
     .from("profiles")
-    .select("id, display_name, username, senior_role, contact_channel, contact_address, prompt_frequency, is_senior, created_at")
+    .select("id, display_name, username, senior_role, gender, contact_channel, contact_address, prompt_frequency, is_senior, created_at")
     .eq("family_id", familyId)
     .eq("role", "senior")
     .order("created_at")
-    .returns<{ id: string; display_name: string | null; username: string | null; senior_role: string | null; contact_channel: string | null; contact_address: string | null; prompt_frequency: number; is_senior: boolean; created_at: string }[]>();
+    .returns<{ id: string; display_name: string | null; username: string | null; senior_role: string | null; gender: string | null; contact_channel: string | null; contact_address: string | null; prompt_frequency: number; is_senior: boolean; created_at: string }[]>();
 
   const seniorList = seniors ?? [];
 
@@ -119,6 +119,7 @@ export default async function RodinaPage({
                 display_name: senior.display_name,
                 username: senior.username,
                 senior_role: senior.senior_role,
+                gender: senior.gender,
                 contact_channel: senior.contact_channel,
                 contact_address: senior.contact_address,
                 prompt_frequency: senior.prompt_frequency,

@@ -5,6 +5,7 @@ import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { BookPreviewClient } from "./book-preview-client";
+import { resolveGender } from "@/lib/gender";
 
 export const metadata: Metadata = { title: "Náhled knihy" };
 
@@ -39,7 +40,7 @@ export default async function BookPreviewPage({
       .select(
         `id, title, text_content, audio_transcript, status, created_at, memory_date,
          prompts(question),
-         profiles!memories_author_id_fkey(display_name)`,
+         profiles!memories_author_id_fkey(display_name, gender)`,
       )
       .eq("family_id", familyId)
       .eq("status", "published")
@@ -54,7 +55,7 @@ export default async function BookPreviewPage({
         created_at: string;
         memory_date: string | null;
         prompts: { question: string } | null;
-        profiles: { display_name: string | null } | null;
+        profiles: { display_name: string | null; gender: string | null } | null;
       }[]>(),
   ]);
 
@@ -88,7 +89,9 @@ export default async function BookPreviewPage({
     id: m.id,
     title: m.title,
     text: m.text_content || m.audio_transcript,
-    question: m.prompts?.question ?? null,
+    question: m.prompts?.question
+      ? resolveGender(m.prompts.question, (m.profiles?.gender as "male" | "female" | null) ?? null)
+      : null,
     authorName: m.profiles?.display_name ?? null,
     date: formatDate(m.memory_date ?? m.created_at),
     imageUrls: imagesByMemory.get(m.id) ?? [],

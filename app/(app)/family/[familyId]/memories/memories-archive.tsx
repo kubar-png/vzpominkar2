@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/input";
 import { EmptyState } from "@/components/app/EmptyState";
 import { FilterPill } from "@/components/app/FilterPill";
 import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
+import { resolveGender } from "@/lib/gender";
 
 export type ArchiveSenior = { id: string; displayName: string };
 
@@ -197,7 +198,7 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
               ) : null}
             </p>
             {m.question ? (
-              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{m.question}&ldquo;</p>
+              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{m.question ? resolveGender(m.question, null) : ""}&ldquo;</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">

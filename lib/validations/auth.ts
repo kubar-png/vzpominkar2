@@ -46,6 +46,13 @@ export const SENIOR_ROLE_OPTIONS = [
 
 export type SeniorRoleValue = (typeof SENIOR_ROLE_OPTIONS)[number]["value"];
 
+// Grammatical gender of the senior, for Czech tykání in the questions they're
+// asked (see lib/gender.ts). Defaulted from the role, but editable.
+export const GENDER_OPTIONS = [
+  { value: "female", label: "Žena" },
+  { value: "male", label: "Muž" },
+] as const;
+
 export const seniorAccountSchema = z
   .object({
     displayName: z.string().min(1, "Zadejte jméno seniora.").max(80),
@@ -59,6 +66,7 @@ export const seniorAccountSchema = z
       .min(8, "Heslo seniora musí mít aspoň 8 znaků.")
       .max(128),
     seniorRole: z.string().max(40).optional().nullable(),
+    gender: z.enum(["male", "female"]).optional().nullable(),
     // Year of birth only (no full date) — for usage analytics by age cohort.
     // Optional at the schema level (the onboarding senior-setup step doesn't
     // ask for it); the add-senior form makes it required client-side.

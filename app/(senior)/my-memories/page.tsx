@@ -4,6 +4,7 @@ import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { MemoryItem } from "./memory-item";
+import { resolveGender } from "@/lib/gender";
 
 export const metadata: Metadata = { title: "Moje vzpomínky" };
 
@@ -127,7 +128,7 @@ export default async function MyMemoriesPage({
                 title: m.title,
                 text: m.text_content,
                 createdAt: m.created_at,
-                question: m.prompts?.question ?? null,
+                question: m.prompts?.question ? resolveGender(m.prompts.question, senior.gender) : null,
                 audioUrl: m.audio_path ? signedAudioUrls.get(m.audio_path) ?? null : null,
                 audioTranscript: m.audio_transcript,
                 audioTranscriptPolished: m.audio_transcript_polished,

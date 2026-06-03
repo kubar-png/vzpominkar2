@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { getAssignmentContext } from "@/lib/memories/server";
+import { resolveGender } from "@/lib/gender";
 import { PhotoMemoryForm } from "./photo-form";
 
 export const metadata: Metadata = { title: "Přidat fotku" };
@@ -33,7 +34,7 @@ export default async function NewPhotoMemoryPage({
         {ctx ? (
           <>
             <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{ctx.question}</h2>
+            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
           </>
         ) : (
           <h2 className="es-question">Přidat fotku.</h2>

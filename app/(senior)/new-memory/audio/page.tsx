@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { requireSenior } from "@/lib/auth/permissions";
 import { getAssignmentContext } from "@/lib/memories/server";
+import { resolveGender } from "@/lib/gender";
 import { MemoryWhenHint } from "@/components/senior/MemoryWhenHint";
 import { AudioMemoryForm } from "./audio-form";
 
@@ -40,7 +41,7 @@ export default async function NewAudioMemoryPage({
         {ctx ? (
           <>
             <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{ctx.question}</h2>
+            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
           </>
         ) : (
           <h2 className="es-question">Vyprávějte vzpomínku nahlas.</h2>

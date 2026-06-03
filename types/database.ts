@@ -356,6 +356,7 @@ export type Database = {
           prompt_frequency: number
           role: string
           senior_role: string | null
+          gender: string | null
           is_senior: boolean
           email_verified: boolean
           updated_at: string
@@ -374,6 +375,7 @@ export type Database = {
           prompt_frequency?: number
           role: string
           senior_role?: string | null
+          gender?: string | null
           is_senior?: boolean
           email_verified?: boolean
           updated_at?: string
@@ -392,6 +394,7 @@ export type Database = {
           prompt_frequency?: number
           role?: string
           senior_role?: string | null
+          gender?: string | null
           is_senior?: boolean
           email_verified?: boolean
           updated_at?: string
