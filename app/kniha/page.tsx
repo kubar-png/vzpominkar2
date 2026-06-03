@@ -164,7 +164,7 @@ export default function KnihaPage() {
           <div className="book-cover kniha-cover">
             <div className="book-spine" aria-hidden="true" />
             <div className="kniha-eyebrow">Kniha vzpomínek</div>
-            <div className="book-title">Příběh tvého života</div>
+            <div className="book-title">Zajímá mě tvůj příběh.</div>
             <div className="book-year">Pro tebe, babičko</div>
           </div>
         </div>
