@@ -20,7 +20,6 @@
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  counter-reset: pg;
 }
 
 .page {
@@ -42,6 +41,11 @@
     background: none;
     padding: 0;
     gap: 0;
+    /* CRITICAL: forced page breaks (break-before:page) on a flex item are
+     * dropped by the print/layout engine, so all 30+ sheets collapse into a
+     * handful of scaled pages. Switch the document to block flow for print so
+     * each .page article actually starts on its own sheet. */
+    display: block;
   }
   .page {
     width: auto;
@@ -55,10 +59,17 @@
     break-before: avoid;
   }
   /* Fill the page so cover/chapter content centres vertically (content area
-   * ≈ 250 − 2×14mm). */
+   * ≈ 250 − 2×14mm). break-inside:avoid keeps each on a single sheet. */
   .cover,
   .chapter {
     min-height: 220mm;
+    break-inside: avoid;
+  }
+  /* The on-screen preview footer (placeholder page-number + QR box) is not part
+   * of the print: real page numbers come from Puppeteer's footerTemplate and the
+   * scannable QR is rendered per memory at the top of the answer. */
+  .pagefoot {
+    display: none;
   }
   /* The cover is a printed colour panel — keep its background (the .page rule
    * above blanks every other sheet so coloured paper shows through). */
@@ -138,9 +149,6 @@
 }
 
 /* ── Question page ── */
-.qpage {
-  counter-increment: pg;
-}
 .qkicker {
   margin: 0 0 5mm;
   font-family: Arial, Helvetica, sans-serif;
@@ -174,6 +182,30 @@
 .answerWrap {
   flex: 1;
 }
+/* Per-memory QR at the top of the answer — float right so the text wraps
+ * beside it. break-inside:avoid keeps the figure (image + caption) intact
+ * across the Puppeteer page break. */
+.qrFigure {
+  float: right;
+  margin: 0 0 4mm 5mm;
+  width: 22mm;
+  text-align: center;
+  break-inside: avoid;
+}
+.qrEntry {
+  width: 22mm;
+  height: 22mm;
+  object-fit: contain;
+  display: block;
+}
+.qrCaption {
+  margin-top: 1.5mm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 6pt;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: rgba(14, 59, 100, 0.55);
+}
 .answer {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
@@ -197,9 +229,10 @@
   border: 1px solid rgba(168, 35, 31, 0.25);
 }
 
-/* ── Per-page footer: page number (left) · QR (right) ──
- * In the single-PDF render the repeating footer + true page numbers come from
- * Puppeteer's footerTemplate; here it shows the intended placement. */
+/* ── On-screen preview footer (QR placeholder · spacing) ──
+ * Hidden when printing (see @media print). In the single-PDF render the
+ * repeating footer + true page numbers come from Puppeteer's footerTemplate,
+ * and the scannable QR is rendered per memory at the top of the answer. */
 .pagefoot {
   margin-top: auto;
   padding-top: 6mm;
@@ -209,9 +242,6 @@
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: rgba(14, 59, 100, 0.5);
-}
-.pagenum::before {
-  content: counter(pg);
 }
 .qr {
   width: 13mm;

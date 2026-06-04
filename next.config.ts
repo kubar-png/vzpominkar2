@@ -43,6 +43,10 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Keep the Chromium engine out of the server bundle: @sparticuz/chromium ships
+  // a brotli-compressed binary it resolves via __dirname at runtime, and
+  // puppeteer-core must not be traced/bundled or that path breaks on Vercel.
+  serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
   images: {
     remotePatterns: [
       {
