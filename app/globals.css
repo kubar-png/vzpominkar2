@@ -2200,43 +2200,108 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* ─── /kniha/sestavit — question configurator ─── */
-.editorial .kc {
-  max-width: 760px;
-  padding-top: clamp(28px, 5vw, 56px);
-  padding-bottom: 96px;
+/* ─── Configurator — full-viewport app layout (no page scroll) ─── */
+.editorial .kc-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
 }
-.editorial .kc-head {
+.editorial .kc-done {
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  margin-bottom: 26px;
+  padding: 24px;
 }
-.editorial .kc-head h1 {
-  margin: 10px 0 14px;
-}
-.editorial .kc-bar {
+
+/* Top bar */
+.editorial .kc-top {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  background: var(--ink);
-  color: var(--bg);
-  border-radius: 999px;
-  padding: 10px 12px 10px 24px;
-  margin-bottom: 26px;
-  box-shadow: 0 14px 30px -16px rgba(28, 24, 20, 0.5);
+  padding: 12px clamp(16px, 3vw, 40px);
+  border-bottom: 1px solid var(--line);
 }
-.editorial .kc-bar-count {
+.editorial .kc-top-l {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+.editorial .kc-top-back {
   font-family: var(--font-body-editorial);
   font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
 }
+.editorial .kc-top-back:hover {
+  color: var(--ink);
+}
+.editorial .kc-top-title {
+  font-family: var(--font-display-editorial);
+  font-size: 17px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.editorial .kc-top-gender {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body-editorial);
+}
+.editorial .kc-top-gender-label {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.editorial .kc-gender-btn {
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 13px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.editorial .kc-gender-btn:hover {
+  border-color: var(--ink);
+}
+.editorial .kc-gender-btn.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.editorial .kc-top-r {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.editorial .kc-top-count {
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* Steps */
 .editorial .kc-steps {
+  flex-shrink: 0;
+  padding: 10px clamp(16px, 3vw, 40px);
+  overflow-x: auto;
+}
+.editorial .kc-steps ol {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
   padding: 0;
-  margin: 0 0 30px;
-  justify-content: center;
+  margin: 0;
   font-family: var(--font-body-editorial);
   font-size: 12px;
 }
@@ -2251,6 +2316,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   transition: border-color 0.2s, background 0.2s, color 0.2s;
 }
 .editorial .kc-steps button:hover {
@@ -2273,20 +2339,39 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   place-items: center;
   font-size: 10px;
 }
-.editorial .kc-phase-head {
-  text-align: center;
-  margin-bottom: 20px;
+
+/* Main fills remaining height */
+.editorial .kc-main {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px clamp(16px, 3vw, 40px);
 }
-.editorial .kc-phase-head h2 {
-  margin: 6px 0 0;
-}
+
+/* Phase — two columns fill height, scroll internally */
 .editorial .kc-cols {
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  align-items: start;
+  gap: 20px;
+  min-height: 0;
+}
+.editorial .kc-pool,
+.editorial .kc-book {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.editorial .kc-book {
+  background:
+    radial-gradient(ellipse at 26% 14%, rgba(255, 210, 150, 0.12) 0%, transparent 55%),
+    linear-gradient(160deg, #5d3a1e 0%, #432712 55%, #2c1a09 100%);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: inset 0 0 0 1px rgba(212, 160, 23, 0.22);
 }
 .editorial .kc-col-title {
+  flex-shrink: 0;
   font-family: var(--font-body-editorial);
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -2312,8 +2397,15 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 12px;
   letter-spacing: 0;
 }
-/* LEFT — suggestions (click to add) */
-.editorial .kc-pool-list {
+.editorial .kc-pool-scroll,
+.editorial .kc-book-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.editorial .kc-pool-list,
+.editorial .kc-book-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -2357,28 +2449,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 16px;
   line-height: 1;
 }
-/* RIGHT — the book (dark leather panel); these get printed */
-.editorial .kc-book {
-  background:
-    radial-gradient(ellipse at 26% 14%, rgba(255, 210, 150, 0.12) 0%, transparent 55%),
-    linear-gradient(160deg, #5d3a1e 0%, #432712 55%, #2c1a09 100%);
-  border-radius: 10px;
-  padding: 18px;
-  box-shadow: inset 0 0 0 1px rgba(212, 160, 23, 0.22);
-}
 .editorial .kc-book-empty {
   color: rgba(247, 235, 214, 0.6);
   font-size: 14px;
   padding: 16px 4px;
   text-align: center;
-}
-.editorial .kc-book-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 .editorial .kc-book-item {
   display: flex;
@@ -2401,7 +2476,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   flex: 1;
   border: none;
   background: transparent;
-  resize: vertical;
+  resize: none;
   font-family: var(--font-display-editorial);
   font-size: 15px;
   line-height: 1.4;
@@ -2433,6 +2508,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-color: var(--oxblood);
 }
 .editorial .kc-book-add {
+  flex-shrink: 0;
   margin-top: 12px;
   width: 100%;
   cursor: pointer;
@@ -2450,33 +2526,15 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   background: rgba(232, 201, 122, 0.1);
   border-color: rgba(232, 201, 122, 0.7);
 }
-@media (max-width: 760px) {
-  .editorial .kc-cols {
-    grid-template-columns: 1fr;
-  }
-}
-.editorial .kc-link {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  font-family: var(--font-body-editorial);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink);
-  border-bottom: 1px solid var(--line);
-}
-.editorial .kc-link:hover {
-  border-bottom-color: var(--ink);
-}
-.editorial .kc-link-muted {
-  color: var(--ink-soft);
-}
+
+/* Bottom nav */
 .editorial .kc-nav {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 28px;
+  padding: 12px clamp(16px, 3vw, 40px);
+  border-top: 1px solid var(--line);
 }
 .editorial .kc-hint {
   color: var(--ink-soft);
@@ -2484,15 +2542,27 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   text-align: center;
   margin: 16px 0;
 }
+
+/* Recap — two columns; scrolls internally only if it overflows */
 .editorial .kc-recap {
-  max-width: 520px;
+  height: 100%;
+  overflow-y: auto;
+}
+.editorial .kc-recap-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  max-width: 1040px;
   margin: 0 auto;
-  text-align: center;
+}
+.editorial .kc-recap-summary h2 {
+  margin: 0 0 16px;
 }
 .editorial .kc-recap-list {
   list-style: none;
   padding: 0;
-  margin: 24px 0;
+  margin: 0 0 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2500,7 +2570,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .kc-recap-list li {
   display: flex;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -2513,9 +2583,116 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 4px 24px;
+  padding: 14px 4px 16px;
   font-size: 18px;
   font-family: var(--font-display-editorial);
+}
+.editorial .kc-cover-h {
+  margin: 0 0 14px;
+  font-family: var(--font-display-editorial);
+  font-size: 20px;
+}
+.editorial .kc-cover-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: flex-start;
+}
+.editorial .kc-cover-controls {
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+.editorial .kc-cover-label {
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.editorial .kc-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.editorial .kc-swatch {
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+.editorial .kc-swatch.is-on {
+  border: 3px solid var(--ink);
+}
+.editorial .kc-text-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.editorial .kc-text-opt {
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.editorial .kc-text-opt.is-on {
+  border: 2px solid var(--ink);
+}
+.editorial .kc-text-opt:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+.editorial .kc-cover-preview {
+  flex: 0 0 auto;
+  width: 168px;
+  height: 238px;
+  border-radius: 4px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  padding: 13px;
+}
+.editorial .kc-cover-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+}
+.editorial .kc-cover-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 12px;
+}
+.editorial .kc-cover-title {
+  font-family: var(--font-display-editorial);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+@media (max-width: 860px) {
+  .editorial .kc-cols,
+  .editorial .kc-recap-cols {
+    grid-template-columns: 1fr;
+  }
+  .editorial .kc-cols {
+    height: auto;
+  }
+  .editorial .kc-main {
+    overflow-y: auto;
+  }
+  .editorial .kc-pool-scroll,
+  .editorial .kc-book-scroll {
+    overflow: visible;
+  }
 }
 
 /* ─── /darek/certifikat — CSS-rendered certificate preview + fields ─── */

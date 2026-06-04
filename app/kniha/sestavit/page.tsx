@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Shell } from "@/components/landing/Shell";
 import { Configurator } from "./configurator";
 
 export const metadata: Metadata = {
@@ -7,10 +6,12 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
+// Standalone, app-like full-viewport flow (no marketing Shell chrome → no page
+// scroll). The .editorial class keeps the editorial color tokens the .kc styles use.
 export default function SestavitPage() {
   return (
-    <Shell>
+    <div className="editorial">
       <Configurator />
-    </Shell>
+    </div>
   );
 }
