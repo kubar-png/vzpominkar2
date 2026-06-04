@@ -523,6 +523,57 @@ export type Database = {
           },
         ]
       }
+      shop_orders: {
+        Row: {
+          amount_czk: number | null
+          buyer_email: string | null
+          buyer_name: string | null
+          cover_bg: string | null
+          cover_text: string | null
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string | null
+          questions: Json
+          recipient_gender: string | null
+          shipping_address: Json | null
+          status: string
+          stripe_session_id: string | null
+        }
+        Insert: {
+          amount_czk?: number | null
+          buyer_email?: string | null
+          buyer_name?: string | null
+          cover_bg?: string | null
+          cover_text?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          questions: Json
+          recipient_gender?: string | null
+          shipping_address?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+        }
+        Update: {
+          amount_czk?: number | null
+          buyer_email?: string | null
+          buyer_name?: string | null
+          cover_bg?: string | null
+          cover_text?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          questions?: Json
+          recipient_gender?: string | null
+          shipping_address?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

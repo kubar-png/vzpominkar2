@@ -25,22 +25,44 @@ export function getStripe(): Stripe {
 
 /**
  * One-time products (no subscriptions):
- *  - book_base   first book in a family               (e.g. 2 890 Kč)
- *  - book_addon  every further book — a new senior OR another volume
- *                ("díl") of an existing senior          (e.g. 1 790 Kč)
- *  - book_print  physical print of a finished book
+ *  - book_base         first book in a family         (e.g. 2 890 Kč)
+ *  - book_addon        every further book — a new senior OR another volume
+ *                      ("díl") of an existing senior    (e.g. 1 790 Kč)
+ *  - book_print        physical print of a finished book
+ *  - shop_book_custom  guest GIFT book from the configurator (/kniha/sestavit),
+ *                      bought without an account            (1 099 Kč)
  */
-export const SUPPORTED_PRODUCTS = ["book_base", "book_addon", "book_print"] as const;
+export const SUPPORTED_PRODUCTS = [
+  "book_base",
+  "book_addon",
+  "book_print",
+  "shop_book_custom",
+] as const;
 export type ProductType = (typeof SUPPORTED_PRODUCTS)[number];
 
-/** Read price for a product from env (CZK integer). 0 → skip Stripe (free path). */
+/** Per-product default price (CZK). Used when the env var is unset. */
+const DEFAULT_PRICE_CZK: Record<ProductType, number> = {
+  book_base: 0,
+  book_addon: 0,
+  book_print: 0,
+  // Production price for the guest gift book. Set PRICE_SHOP_BOOK_CUSTOM_CZK=0
+  // in .env.local for local dev to take the free path (no Stripe key needed).
+  shop_book_custom: 1099,
+};
+
+/**
+ * Read price for a product from env (CZK integer). 0 → skip Stripe (free path).
+ * Falls back to the product's DEFAULT_PRICE_CZK when the env var is absent.
+ */
 export function priceForProductCzk(product: ProductType): number {
   const raw =
     product === "book_base"
       ? process.env.PRICE_BOOK_BASE_CZK
       : product === "book_addon"
         ? process.env.PRICE_BOOK_ADDON_CZK
-        : process.env.PRICE_BOOK_PRINT_CZK;
-  const n = Number(raw ?? "0");
+        : product === "book_print"
+          ? process.env.PRICE_BOOK_PRINT_CZK
+          : process.env.PRICE_SHOP_BOOK_CUSTOM_CZK;
+  const n = Number(raw ?? DEFAULT_PRICE_CZK[product]);
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
 }
