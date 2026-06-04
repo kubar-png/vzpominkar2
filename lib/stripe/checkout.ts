@@ -7,11 +7,8 @@ import { requireOwner, requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid, countPaidBooks } from "@/lib/books/server";
 import { getStripe, priceForProductCzk } from "@/lib/stripe/server";
+import { SITE_URL } from "@/lib/site";
 import type { Json } from "@/types/database";
-
-function baseUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
 
 /* ────────────────────────────────────────────────────────────────────────
  * Book access — one-time purchase, lifetime. First paid book in a family is
@@ -70,8 +67,8 @@ export async function purchaseBook(bookId: string): Promise<never> {
       },
     ],
     metadata: { familyId: book.family_id, productType, bookId: book.id, ownerId: owner.id },
-    success_url: `${baseUrl()}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
-    cancel_url: `${baseUrl()}/onboarding/platba?cancelled=1`,
+    success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
+    cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,
   });
 
   if (!session.url) throw new Error("Stripe nevrátil URL pro checkout.");
@@ -260,8 +257,8 @@ export async function createPrintCheckout(input: {
       bookOrderId: input.bookOrderId,
       ownerId: owner.id,
     },
-    success_url: `${baseUrl()}/family/${input.familyId}/book?ordered=1`,
-    cancel_url: `${baseUrl()}/family/${input.familyId}/book?cancelled=1`,
+    success_url: `${SITE_URL}/family/${input.familyId}/book?ordered=1`,
+    cancel_url: `${SITE_URL}/family/${input.familyId}/book?cancelled=1`,
   });
 
   if (!session.url) throw new Error("Stripe nevrátil URL pro checkout.");

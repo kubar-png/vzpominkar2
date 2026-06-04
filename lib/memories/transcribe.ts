@@ -9,15 +9,17 @@ const PLACEHOLDER_TRANSCRIPT =
  * Transcribe an audio Blob via OpenAI Whisper. Returns null when the call
  * fails - callers should treat null as "skipped" and persist no transcript.
  *
- * When no OPENAI_API_KEY is configured we return a placeholder string so
- * the rest of the UI (book preview, detail-page transcript section) can be
- * exercised end-to-end before the real key is wired up.
+ * When no OPENAI_API_KEY is configured we return null in PRODUCTION — the
+ * transcript stays NULL so the backfill cron retries once a real key is wired
+ * up, and we never persist a placeholder into a real recording, the book, or the
+ * public QR page. In development we return a placeholder so the UI can be
+ * exercised end-to-end before the real key exists.
  *
  * Czech is hinted via `language=cs` so Whisper picks the right tokenizer.
  */
 export async function transcribeAudio(file: File): Promise<string | null> {
   const key = process.env.OPENAI_API_KEY;
-  if (!key) return PLACEHOLDER_TRANSCRIPT;
+  if (!key) return process.env.NODE_ENV === "production" ? null : PLACEHOLDER_TRANSCRIPT;
 
   const fd = new FormData();
   fd.append("file", file);
