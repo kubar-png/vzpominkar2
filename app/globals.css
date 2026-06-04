@@ -2363,6 +2363,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   min-height: 0;
 }
 .editorial .kc-book {
+  position: relative;
   background:
     radial-gradient(ellipse at 26% 14%, rgba(255, 210, 150, 0.12) 0%, transparent 55%),
     linear-gradient(160deg, #5d3a1e 0%, #432712 55%, #2c1a09 100%);
@@ -2527,6 +2528,72 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-color: rgba(232, 201, 122, 0.7);
 }
 
+/* Book card — visible scrollbar signals there's more to scroll */
+.editorial .kc-book-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232, 201, 122, 0.55) rgba(255, 255, 255, 0.06);
+}
+.editorial .kc-book-scroll::-webkit-scrollbar {
+  width: 9px;
+}
+.editorial .kc-book-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+.editorial .kc-book-scroll::-webkit-scrollbar-thumb {
+  background: rgba(232, 201, 122, 0.5);
+  border-radius: 8px;
+}
+.editorial .kc-book-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(232, 201, 122, 0.75);
+}
+
+/* Drag handle (grip) — signals the card can be reordered */
+.editorial .kc-book-grip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 6px;
+  color: rgba(232, 201, 122, 0.6);
+  cursor: grab;
+}
+.editorial .kc-book-grip:hover {
+  color: #e8c97a;
+}
+.editorial .kc-book-grip:active {
+  cursor: grabbing;
+}
+.editorial .kc-book-item.is-dragging {
+  opacity: 0.45;
+}
+.editorial .kc-book-item.is-over {
+  border-color: #e8c97a;
+  box-shadow: 0 -2px 0 #e8c97a inset;
+}
+
+/* Scroll-to-top button — appears once the list is scrolled down */
+.editorial .kc-book-totop {
+  position: absolute;
+  right: 18px;
+  bottom: 70px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 201, 122, 0.4);
+  background: rgba(44, 26, 9, 0.92);
+  color: #e8c97a;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.editorial .kc-book-totop:hover {
+  background: var(--oxblood);
+  border-color: var(--oxblood);
+  color: #fff;
+}
+
 /* Bottom nav */
 .editorial .kc-nav {
   flex-shrink: 0;
@@ -2547,14 +2614,25 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .kc-recap {
   height: 100%;
   overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
 }
-.editorial .kc-recap-cols {
+.editorial .kc-recap-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 4vw, 56px);
-  align-items: start;
-  max-width: 1040px;
+  grid-template-columns: auto 1fr;
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+  max-width: 880px;
+  width: 100%;
   margin: 0 auto;
+}
+.editorial .kc-recap-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
 }
 .editorial .kc-recap-summary h2 {
   margin: 0 0 16px;
@@ -2587,20 +2665,9 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-size: 18px;
   font-family: var(--font-display-editorial);
 }
-.editorial .kc-cover-h {
-  margin: 0 0 14px;
-  font-family: var(--font-display-editorial);
-  font-size: 20px;
-}
-.editorial .kc-cover-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 28px;
-  align-items: flex-start;
-}
 .editorial .kc-cover-controls {
-  flex: 1 1 200px;
-  min-width: 180px;
+  width: 100%;
+  max-width: 240px;
 }
 .editorial .kc-cover-label {
   font-family: var(--font-body-editorial);
@@ -2647,11 +2714,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .kc-cover-preview {
   flex: 0 0 auto;
-  width: 168px;
-  height: 238px;
-  border-radius: 4px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
-  padding: 13px;
+  width: 200px;
+  height: 284px;
+  border-radius: 5px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  padding: 15px;
 }
 .editorial .kc-cover-frame {
   width: 100%;
@@ -2680,8 +2747,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 
 @media (max-width: 860px) {
   .editorial .kc-cols,
-  .editorial .kc-recap-cols {
+  .editorial .kc-recap-card {
     grid-template-columns: 1fr;
+  }
+  .editorial .kc-recap-card {
+    justify-items: center;
+    max-width: 420px;
   }
   .editorial .kc-cols {
     height: auto;

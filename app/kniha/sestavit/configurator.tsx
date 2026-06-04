@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BOOK_PHASES, type BookQuestion } from "@/lib/book-shop/phases";
 import { resolveGender, type Gender } from "@/lib/gender";
@@ -57,6 +57,12 @@ export function Configurator() {
   const [gender, setGender] = useState<Gender | null>(null);
   const [coverBg, setCoverBg] = useState<CoverBg>(DEFAULT_COVER_BG);
   const [coverText, setCoverText] = useState<CoverText>(DEFAULT_COVER_TEXT);
+  // Book-card UX: internal scroll + scroll-to-top button, and drag-to-reorder.
+  const bookScrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [armedId, setArmedId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   function chooseCoverBg(bg: CoverBg) {
     setCoverBg(bg);
@@ -124,11 +130,15 @@ export function Configurator() {
   const inBookIds = new Set(inBook.map((q) => q.id));
   const pool = phase.questions.filter((q) => !inBookIds.has(q.id));
 
-  const addSuggestion = (q: BookQuestion) =>
+  const scrollBookTop = () => bookScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  // New questions go to the TOP of the book (newest first, in view).
+  const addSuggestion = (q: BookQuestion) => {
     setSelection((p) => ({
       ...p,
-      [phase.key]: [...(p[phase.key] ?? []), { id: q.id, text: q.text }],
+      [phase.key]: [{ id: q.id, text: q.text }, ...(p[phase.key] ?? [])],
     }));
+    scrollBookTop();
+  };
   const removeFromBook = (id: string) =>
     setSelection((p) => ({ ...p, [phase.key]: (p[phase.key] ?? []).filter((q) => q.id !== id) }));
   const editInBook = (id: string, text: string) =>
@@ -139,8 +149,23 @@ export function Configurator() {
   const addCustom = () => {
     customCounter += 1;
     const id = `c-${phase.key}-${customCounter}`;
-    setSelection((p) => ({ ...p, [phase.key]: [...(p[phase.key] ?? []), { id, text: "", custom: true }] }));
+    setSelection((p) => ({ ...p, [phase.key]: [{ id, text: "", custom: true }, ...(p[phase.key] ?? [])] }));
+    scrollBookTop();
   };
+  // Drag-to-reorder within the current phase (handle-armed; see kc-book-grip).
+  function reorder(fromId: string, toId: string) {
+    if (fromId === toId) return;
+    setSelection((p) => {
+      const arr = [...(p[phase.key] ?? [])];
+      const from = arr.findIndex((q) => q.id === fromId);
+      const to = arr.findIndex((q) => q.id === toId);
+      if (from < 0 || to < 0) return p;
+      const moved = arr.splice(from, 1)[0];
+      if (!moved) return p;
+      arr.splice(to, 0, moved);
+      return { ...p, [phase.key]: arr };
+    });
+  }
 
   if (ordered) {
     return (
@@ -236,8 +261,60 @@ export function Configurator() {
       <main className="kc-main">
         {isRecap ? (
           <section className="kc-recap">
-            <div className="kc-recap-cols">
-              {/* Left — summary + price + order */}
+            <div className="kc-recap-card">
+              {/* Cover — live preview (the visual) with the design controls beneath */}
+              <div className="kc-recap-cover">
+                <div
+                  aria-hidden
+                  className="kc-cover-preview"
+                  style={{ background: COVER_BG_HEX[coverBg] }}
+                >
+                  <div
+                    className="kc-cover-frame"
+                    style={{ borderColor: COVER_TEXT_HEX[coverText], color: COVER_TEXT_HEX[coverText] }}
+                  >
+                    <span className="kc-cover-eyebrow">Kniha vzpomínek</span>
+                    <span className="kc-cover-title">Zajímá mě tvůj příběh.</span>
+                  </div>
+                </div>
+                <div className="kc-cover-controls">
+                  <p className="kc-cover-label">Barva přebalu</p>
+                  <div className="kc-swatches">
+                    {COVER_BG.map((o) => (
+                      <button
+                        key={o.value}
+                        type="button"
+                        onClick={() => chooseCoverBg(o.value)}
+                        aria-pressed={coverBg === o.value}
+                        title={o.label}
+                        className={`kc-swatch${coverBg === o.value ? " is-on" : ""}`}
+                        style={{ background: o.hex }}
+                      />
+                    ))}
+                  </div>
+                  <p className="kc-cover-label">Barva textu</p>
+                  <div className="kc-text-opts">
+                    {COVER_TEXT.map((o) => {
+                      const ok = isLegibleCover(coverBg, o.value);
+                      return (
+                        <button
+                          key={o.value}
+                          type="button"
+                          disabled={!ok}
+                          onClick={() => setCoverText(o.value)}
+                          aria-pressed={coverText === o.value}
+                          title={ok ? o.label : `${o.label} — nečitelné na této barvě`}
+                          className={`kc-text-opt${coverText === o.value ? " is-on" : ""}`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Summary + price + order */}
               <div className="kc-recap-summary">
                 <h2>Souhrn vaší knihy</h2>
                 <ul className="kc-recap-list">
@@ -251,7 +328,7 @@ export function Configurator() {
                   ))}
                 </ul>
                 <div className="kc-recap-total">
-                  <span>Celkem {total} {pluralQ(total)} · vlastní kniha</span>
+                  <span>Celkem {total} {pluralQ(total)}</span>
                   <strong>{PRICE_CUSTOM}</strong>
                 </div>
                 <button
@@ -263,60 +340,6 @@ export function Configurator() {
                   Objednat a zaplatit <span className="arrow">↗</span>
                 </button>
                 {total === 0 ? <p className="kc-hint">Vyberte aspoň jednu otázku.</p> : null}
-              </div>
-
-              {/* Right — cover design + live preview */}
-              <div className="kc-recap-cover">
-                <h3 className="kc-cover-h">Vzhled obálky</h3>
-                <div className="kc-cover-row">
-                  <div className="kc-cover-controls">
-                    <p className="kc-cover-label">Barva přebalu</p>
-                    <div className="kc-swatches">
-                      {COVER_BG.map((o) => (
-                        <button
-                          key={o.value}
-                          type="button"
-                          onClick={() => chooseCoverBg(o.value)}
-                          aria-pressed={coverBg === o.value}
-                          title={o.label}
-                          className={`kc-swatch${coverBg === o.value ? " is-on" : ""}`}
-                          style={{ background: o.hex }}
-                        />
-                      ))}
-                    </div>
-                    <p className="kc-cover-label">Barva textu</p>
-                    <div className="kc-text-opts">
-                      {COVER_TEXT.map((o) => {
-                        const ok = isLegibleCover(coverBg, o.value);
-                        return (
-                          <button
-                            key={o.value}
-                            type="button"
-                            disabled={!ok}
-                            onClick={() => setCoverText(o.value)}
-                            aria-pressed={coverText === o.value}
-                            title={ok ? o.label : `${o.label} — nečitelné na této barvě`}
-                            className={`kc-text-opt${coverText === o.value ? " is-on" : ""}`}
-                          >
-                            {o.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Live cover preview (B5 ratio) */}
-                  <div
-                    aria-hidden
-                    className="kc-cover-preview"
-                    style={{ background: COVER_BG_HEX[coverBg] }}
-                  >
-                    <div className="kc-cover-frame" style={{ borderColor: COVER_TEXT_HEX[coverText], color: COVER_TEXT_HEX[coverText] }}>
-                      <span className="kc-cover-eyebrow">Kniha vzpomínek</span>
-                      <span className="kc-cover-title">Zajímá mě tvůj příběh.</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </section>
@@ -350,7 +373,11 @@ export function Configurator() {
               <h3 className="kc-col-title kc-col-title-light">
                 Ve vaší knize <span className="kc-book-count">{inBook.length}</span>
               </h3>
-              <div className="kc-book-scroll">
+              <div
+                className="kc-book-scroll"
+                ref={bookScrollRef}
+                onScroll={(e) => setShowScrollTop(e.currentTarget.scrollTop > 140)}
+              >
                 {inBook.length === 0 ? (
                   <p className="kc-book-empty">
                     Zatím prázdné. Klikněte na otázku vlevo, nebo si vytvořte vlastní.
@@ -358,7 +385,46 @@ export function Configurator() {
                 ) : (
                   <ul className="kc-book-list">
                     {inBook.map((q, i) => (
-                      <li key={q.id} className="kc-book-item">
+                      <li
+                        key={q.id}
+                        className={`kc-book-item${dragId === q.id ? " is-dragging" : ""}${
+                          overId === q.id && dragId && dragId !== q.id ? " is-over" : ""
+                        }`}
+                        draggable={armedId === q.id}
+                        onDragStart={(e) => {
+                          setDragId(q.id);
+                          e.dataTransfer.effectAllowed = "move";
+                        }}
+                        onDragEnter={() => setOverId(q.id)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => {
+                          if (dragId) reorder(dragId, q.id);
+                          setOverId(null);
+                        }}
+                        onDragEnd={() => {
+                          setDragId(null);
+                          setArmedId(null);
+                          setOverId(null);
+                        }}
+                      >
+                        <span
+                          className="kc-book-grip"
+                          title="Přetažením změníte pořadí"
+                          aria-label="Přesunout otázku"
+                          onMouseDown={() => setArmedId(q.id)}
+                          onMouseUp={() => setArmedId(null)}
+                        >
+                          <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden>
+                            <g fill="currentColor">
+                              <circle cx="2.5" cy="3" r="1.3" />
+                              <circle cx="7.5" cy="3" r="1.3" />
+                              <circle cx="2.5" cy="8" r="1.3" />
+                              <circle cx="7.5" cy="8" r="1.3" />
+                              <circle cx="2.5" cy="13" r="1.3" />
+                              <circle cx="7.5" cy="13" r="1.3" />
+                            </g>
+                          </svg>
+                        </span>
                         <span className="kc-book-num">{String(i + 1).padStart(2, "0")}</span>
                         <textarea
                           className="kc-book-text"
@@ -380,6 +446,11 @@ export function Configurator() {
                   </ul>
                 )}
               </div>
+              {showScrollTop ? (
+                <button type="button" className="kc-book-totop" onClick={scrollBookTop} aria-label="Nahoru">
+                  ↑
+                </button>
+              ) : null}
               <button type="button" className="kc-book-add" onClick={addCustom}>
                 + Vytvořit vlastní otázku
               </button>
