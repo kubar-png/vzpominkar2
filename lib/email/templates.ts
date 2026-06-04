@@ -464,6 +464,84 @@ export function bookOrderConfirmationEmail(input: {
 }
 
 /* -------------------------------------------------------------------------- */
+/* 5b. Gift-book order received — guest checkout (Kniha vzpomínek)              */
+/* -------------------------------------------------------------------------- */
+
+export function shopGiftOrderConfirmationEmail(input: {
+  buyerName: string;
+  questionCount: number;
+  amountCzk: number;
+  orderNumber?: string;
+  appUrl: string;
+}) {
+  const subject = "Objednávka přijata — Kniha vzpomínek";
+  const firstName = (input.buyerName.split(" ")[0] ?? input.buyerName).trim();
+  const ctaUrl = `${input.appUrl}/kniha`;
+  const orderLine = input.orderNumber
+    ? `Číslo objednávky: <strong style="font-family:'SF Mono','Menlo','Consolas',monospace;">${esc(input.orderNumber)}</strong>`
+    : "";
+  const countLine = `Vybráno otázek: <strong>${input.questionCount}</strong>`;
+  const amountLine =
+    input.amountCzk === 0
+      ? "Cena byla v rámci uvítací nabídky odpuštěna."
+      : `Zaplaceno: <strong>${input.amountCzk.toLocaleString("cs-CZ")} Kč</strong>`;
+
+  const html = shell({
+    title: subject,
+    preheader: "Vaši knihu vysázíme, vytiskneme a pošleme. Trvá to přibližně 3–4 týdny.",
+    headerEyebrow: "Objednávka knihy",
+    body: `
+      ${h1(`Děkujeme, ${firstName}.`)}
+      <p style="margin:0 0 14px 0;">
+        Vaši objednávku knihy vzpomínek jsme přijali. Teď ji vysázíme, vytiskneme a svážeme &mdash;
+        a jakmile bude hotová, pošleme ji na uvedenou adresu.
+      </p>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+        <tr><td style="padding:18px 22px;font-size:15px;line-height:1.7;">
+          ${orderLine ? `<div style="margin:0 0 6px 0;">${orderLine}</div>` : ""}
+          <div style="margin:0 0 6px 0;">${countLine}</div>
+          <div>${amountLine}</div>
+        </td></tr>
+      </table>
+
+      <p style="margin:0 0 14px 0;">
+        Tisk, vazba a doprava trvají přibližně <strong>3&ndash;4 týdny</strong>. Pokud bude potřeba
+        cokoli doladit, ozveme se vám e-mailem.
+      </p>
+      <p style="margin:0 0 8px 0;">${cta("Zpět na knihu", ctaUrl)}</p>
+      ${HR}
+      <p style="margin:0;font-size:14px;color:${INK_SOFT};">
+        Pokud byste chtěli cokoli upravit, stačí odpovědět na tento e-mail. Píše vám člověk.
+      </p>
+      ${signoff()}
+    `,
+  });
+
+  const text = [
+    `Děkujeme, ${firstName}.`,
+    "",
+    "Vaši objednávku knihy vzpomínek jsme přijali. Teď ji vysázíme, vytiskneme a svážeme — a jakmile bude hotová, pošleme ji na uvedenou adresu.",
+    "",
+    input.orderNumber ? `Číslo objednávky: ${input.orderNumber}` : "",
+    `Vybráno otázek: ${input.questionCount}`,
+    input.amountCzk === 0
+      ? "Cena byla v rámci uvítací nabídky odpuštěna."
+      : `Zaplaceno: ${input.amountCzk.toLocaleString("cs-CZ")} Kč`,
+    "",
+    "Tisk, vazba a doprava trvají přibližně 3–4 týdny. Pokud bude potřeba cokoli doladit, ozveme se vám e-mailem.",
+    "",
+    `Zpět na knihu: ${ctaUrl}`,
+    "",
+    "Kuba a tým Vzpomínkáře",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return { subject, html, text };
+}
+
+/* -------------------------------------------------------------------------- */
 /* 6. Lead notification — internal staff inbox                                 */
 /* -------------------------------------------------------------------------- */
 

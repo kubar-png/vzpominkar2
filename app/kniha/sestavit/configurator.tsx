@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BOOK_PHASES, type BookQuestion } from "@/lib/book-shop/phases";
 import { resolveGender, type Gender } from "@/lib/gender";
+import { OrderForm } from "./order-form";
 import {
   COVER_BG,
   COVER_TEXT,
@@ -51,7 +52,8 @@ export function Configurator() {
   const [selection, setSelection] = useState<Selection>(buildDefault);
   const [step, setStep] = useState(0); // 0..PHASE_COUNT-1 = phases · PHASE_COUNT = recap
   const [hydrated, setHydrated] = useState(false);
-  const [ordered, setOrdered] = useState(false);
+  // Recap → order form (guest checkout). The confirmation lives on /kniha/hotovo.
+  const [showOrder, setShowOrder] = useState(false);
   // Recipient gender drives how the questions address them; cover bg/text are
   // the buyer's cover design. Persisted with the draft (carried to the order).
   const [gender, setGender] = useState<Gender | null>(null);
@@ -169,23 +171,11 @@ export function Configurator() {
     });
   }
 
-  if (ordered) {
-    return (
-      <div className="kc-shell kc-done">
-        <div style={{ maxWidth: 560, textAlign: "center" }}>
-          <span className="eyebrow">Hotovo</span>
-          <h1 style={{ margin: "10px 0 18px" }}>Skvělé — kniha je sestavená.</h1>
-          <p className="lede">
-            Vybrali jste <strong>{total}</strong> {pluralQ(total)} napříč šesti životními
-            obdobími. Platební brána se dokončuje — tady se brzy přesměrujete na zaplacení
-            (1 099 Kč, poštovné zdarma) a my knihu vysázíme a vytiskneme.
-          </p>
-          <Link href="/kniha" className="btn btn-outline" style={{ marginTop: 8 }}>
-            Zpět na knihu <span className="arrow">↗</span>
-          </Link>
-        </div>
-      </div>
-    );
+  // All navigation goes through here so leaving the order step always clears it
+  // (otherwise returning to "Souhrn" would re-open the form).
+  function goToStep(s: number) {
+    setShowOrder(false);
+    setStep(s);
   }
 
   return (
@@ -219,11 +209,11 @@ export function Configurator() {
             {total} {pluralQ(total)} · {PRICE_CUSTOM}
           </span>
           {isRecap ? (
-            <button type="button" className="btn btn-outline" onClick={() => setStep(0)}>
+            <button type="button" className="btn btn-outline" onClick={() => goToStep(0)}>
               Upravit otázky
             </button>
           ) : (
-            <button type="button" className="btn btn-gold" onClick={() => setStep(PHASE_COUNT)}>
+            <button type="button" className="btn btn-gold" onClick={() => goToStep(PHASE_COUNT)}>
               K objednávce <span className="arrow">↗</span>
             </button>
           )}
@@ -240,7 +230,7 @@ export function Configurator() {
                 <button
                   type="button"
                   className={i === step && !isRecap ? "is-current" : ""}
-                  onClick={() => setStep(i)}
+                  onClick={() => goToStep(i)}
                 >
                   {p.title} <span className="kc-step-num">{count}</span>
                 </button>
@@ -251,7 +241,7 @@ export function Configurator() {
             <button
               type="button"
               className={isRecap ? "is-current" : ""}
-              onClick={() => setStep(PHASE_COUNT)}
+              onClick={() => goToStep(PHASE_COUNT)}
             >
               Souhrn
             </button>
@@ -261,7 +251,14 @@ export function Configurator() {
 
       {/* ── Main (fills remaining height) ── */}
       <main className="kc-main">
-        {isRecap ? (
+        {isRecap && showOrder ? (
+          <OrderForm
+            total={total}
+            pluralQ={pluralQ}
+            price={PRICE_CUSTOM}
+            onBack={() => setShowOrder(false)}
+          />
+        ) : isRecap ? (
           <section className="kc-recap">
             <div className="kc-recap-card">
               {/* Cover — live preview (the visual) with the design controls beneath */}
@@ -336,10 +333,10 @@ export function Configurator() {
                 <button
                   type="button"
                   className="btn btn-gold btn-gold-full"
-                  onClick={() => setOrdered(true)}
+                  onClick={() => setShowOrder(true)}
                   disabled={total === 0}
                 >
-                  Objednat a zaplatit <span className="arrow">↗</span>
+                  Pokračovat k objednávce <span className="arrow">↗</span>
                 </button>
                 {total === 0 ? <p className="kc-hint">Vyberte aspoň jednu otázku.</p> : null}
               </div>

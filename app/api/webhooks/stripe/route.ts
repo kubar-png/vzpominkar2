@@ -3,6 +3,9 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid } from "@/lib/books/server";
+import { SITE_URL } from "@/lib/site";
+import { sendEmail } from "@/lib/email/send";
+import { shopGiftOrderConfirmationEmail } from "@/lib/email/templates";
 
 export const runtime = "nodejs"; // need Node crypto for signature verification
 export const dynamic = "force-dynamic";
@@ -18,6 +21,7 @@ export const dynamic = "force-dynamic";
  * Events handled (all checkout.session.completed):
  *   - productType book_base / book_addon → mark the book paid (lifetime access)
  *   - productType book_print             → mark the print order paid
+ *   - productType shop_book              → mark the guest gift order paid + email
  */
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
@@ -60,13 +64,22 @@ function paymentIntentId(session: Stripe.Checkout.Session): string | null {
 /* -------------------------------------------------------------------------- */
 async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
   const meta = session.metadata ?? {};
-  const familyId = meta.familyId;
   const productType = meta.productType;
-  if (!familyId || !productType) return;
+  if (!productType) return;
 
   const admin = createAdminClient();
   const pi = paymentIntentId(session);
   const amountCzk = Math.round((session.amount_total ?? 0) / 100);
+
+  // ── Guest gift book (no account, no family) ───────────────────────────
+  // Handled before the familyId guard below — these orders have no family.
+  if (productType === "shop_book") {
+    await onShopBookCompleted(session, amountCzk);
+    return;
+  }
+
+  const familyId = meta.familyId;
+  if (!familyId) return;
 
   // ── Book access (base or add-on) ──────────────────────────────────────
   if (productType === "book_base" || productType === "book_addon") {
@@ -109,6 +122,64 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
       family_id: familyId,
       action: "book_order.paid",
       metadata: { orderId },
+    });
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/**
+ * Guest gift-book order (createGiftOrder). Resolve by stripe_session_id, else
+ * by metadata.shopOrderId. Idempotent: the draft→paid update is an atomic claim
+ * (eq status 'draft'), and the confirmation e-mail is sent only when this
+ * delivery is the one that flipped the row — so retries don't double-send.
+ */
+async function onShopBookCompleted(session: Stripe.Checkout.Session, amountCzk: number) {
+  const admin = createAdminClient();
+  const meta = session.metadata ?? {};
+  const shopOrderId = meta.shopOrderId ?? null;
+
+  let query = admin
+    .from("shop_orders")
+    .update({ status: "paid", amount_czk: amountCzk, paid_at: new Date().toISOString() })
+    .eq("status", "draft"); // atomic claim — only the first delivery transitions
+
+  if (session.id) {
+    query = query.eq("stripe_session_id", session.id);
+  } else if (shopOrderId) {
+    query = query.eq("id", shopOrderId);
+  } else {
+    return;
+  }
+
+  const { data: updated } = await query.select(
+    "id, buyer_name, buyer_email, questions",
+  );
+
+  // No row transitioned → already paid (duplicate delivery) or not found. Either
+  // way, nothing more to do — this keeps the handler idempotent.
+  const order = updated?.[0];
+  if (!order) return;
+
+  const questions = (order.questions ?? {}) as Record<string, unknown[]>;
+  const questionCount = Object.values(questions).reduce(
+    (n, arr) => n + (Array.isArray(arr) ? arr.length : 0),
+    0,
+  );
+
+  if (order.buyer_email) {
+    const mail = shopGiftOrderConfirmationEmail({
+      buyerName: order.buyer_name ?? "",
+      questionCount,
+      amountCzk,
+      orderNumber: order.id.slice(0, 8),
+      appUrl: SITE_URL,
+    });
+    await sendEmail({
+      to: order.buyer_email,
+      subject: mail.subject,
+      html: mail.html,
+      text: mail.text,
+      tag: "shop_gift_order",
     });
   }
 }
