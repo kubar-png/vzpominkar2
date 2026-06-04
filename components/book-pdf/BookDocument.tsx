@@ -1,5 +1,13 @@
 import { Fragment } from "react";
 import { resolveGender, type Gender } from "@/lib/gender";
+import {
+  COVER_BG_HEX,
+  COVER_TEXT_HEX,
+  DEFAULT_COVER_BG,
+  DEFAULT_COVER_TEXT,
+  type CoverBg,
+  type CoverText,
+} from "@/lib/book/cover";
 import styles from "./book-document.module.css";
 
 /**
@@ -35,15 +43,34 @@ export interface BookDocumentProps {
   qr?: string;
   /** Grammatical gender of the recipient; resolves "{masc|fem}" question tokens. Omitted → slash fallback. */
   gender?: Gender;
+  /** Cover background colour (shared options, lib/book/cover.ts). Defaults to navy. */
+  coverBg?: CoverBg;
+  /** Cover foil/ink colour. Defaults to gold. */
+  coverText?: CoverText;
 }
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
 
-export function BookDocument({ title, dedication, mode = "blank", sections, qr, gender }: BookDocumentProps) {
+export function BookDocument({
+  title,
+  dedication,
+  mode = "blank",
+  sections,
+  qr,
+  gender,
+  coverBg,
+  coverText,
+}: BookDocumentProps) {
   return (
     <div className={styles.doc}>
       {/* ── Cover ── */}
-      <article className={`${styles.page} ${styles.cover}`}>
+      <article
+        className={`${styles.page} ${styles.cover}`}
+        style={{
+          ["--cover-bg" as string]: COVER_BG_HEX[coverBg ?? DEFAULT_COVER_BG],
+          ["--cover-ink" as string]: COVER_TEXT_HEX[coverText ?? DEFAULT_COVER_TEXT],
+        }}
+      >
         <div className={styles.coverInner}>
           <span className={styles.coverEyebrow}>Kniha vzpomínek</span>
           <h1 className={styles.coverTitle}>{title}</h1>

@@ -60,18 +60,34 @@
   .chapter {
     min-height: 220mm;
   }
+  /* The cover is a printed colour panel — keep its background (the .page rule
+   * above blanks every other sheet so coloured paper shows through). */
+  .cover {
+    background: var(--cover-bg, #0e3b64);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
-/* ── Cover ── */
+/* ── Cover ──
+ * Background + ink come from CSS custom properties set on the .cover article
+ * (lib/book/cover.ts hex values, shared with the dashboard preview). Unlike
+ * interior pages — which stay blank so coloured paper shows through — the cover
+ * is a printed colour panel, so its background must render on screen AND print
+ * (print-color-adjust forces the chosen colour through Chromium's print path). */
 .cover {
   align-items: center;
   justify-content: center;
   text-align: center;
+  background: var(--cover-bg, #0e3b64);
+  color: var(--cover-ink, #e8c66a);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 .coverInner {
   width: 100%;
   flex: 1;
-  border: 1.5px solid rgba(168, 35, 31, 0.5);
+  border: 1.5px solid var(--cover-ink, #e8c66a);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -84,7 +100,7 @@
   font-size: 10pt;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: #a8231f;
+  color: var(--cover-ink, #e8c66a);
 }
 .coverTitle {
   margin: 0;
@@ -92,12 +108,14 @@
   font-size: 34pt;
   line-height: 1.12;
   font-weight: 500;
+  color: var(--cover-ink, #e8c66a);
 }
 .coverDedication {
   margin: 0;
   font-style: italic;
   font-size: 13pt;
-  color: rgba(14, 59, 100, 0.7);
+  color: var(--cover-ink, #e8c66a);
+  opacity: 0.85;
 }
 
 /* ── Chapter divider ── */

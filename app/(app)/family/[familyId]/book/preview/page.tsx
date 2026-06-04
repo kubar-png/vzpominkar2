@@ -6,6 +6,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { BookPreviewClient } from "./book-preview-client";
 import { resolveGender } from "@/lib/gender";
+import {
+  DEFAULT_COVER_BG,
+  DEFAULT_COVER_TEXT,
+  type CoverBg,
+  type CoverText,
+} from "@/lib/book/cover";
 
 export const metadata: Metadata = { title: "Náhled knihy" };
 
@@ -29,12 +35,21 @@ export default async function BookPreviewPage({
 
   const admin = createAdminClient();
 
-  const [{ data: family }, { data: rawMemories }] = await Promise.all([
+  const [{ data: family }, { data: book }, { data: rawMemories }] = await Promise.all([
     admin
       .from("families")
       .select("display_name, senior_display_name")
       .eq("id", familyId)
       .maybeSingle<{ display_name: string | null; senior_display_name: string | null }>(),
+    // Seed the cover picker from the family's primary volume (Díl 1). The
+    // preview is family-scoped, so one cover represents the whole book.
+    admin
+      .from("books")
+      .select("cover_bg, cover_text")
+      .eq("family_id", familyId)
+      .order("sequence_no", { ascending: true })
+      .limit(1)
+      .maybeSingle<{ cover_bg: string | null; cover_text: string | null }>(),
     admin
       .from("memories")
       .select(
@@ -99,6 +114,8 @@ export default async function BookPreviewPage({
 
   const familyName = family?.display_name ?? family?.senior_display_name ?? "Vzpomínky";
   const currentYear = new Date().getFullYear();
+  const coverBg = (book?.cover_bg as CoverBg | null) ?? DEFAULT_COVER_BG;
+  const coverText = (book?.cover_text as CoverText | null) ?? DEFAULT_COVER_TEXT;
 
   return (
     <div className="space-y-6">
@@ -125,8 +142,11 @@ export default async function BookPreviewPage({
 
       {/* Interactive flip book + cover picker */}
       <BookPreviewClient
+        familyId={familyId}
         familyName={familyName}
         year={currentYear}
+        initialCoverBg={coverBg}
+        initialCoverText={coverText}
         memories={spreads}
       />
     </div>
