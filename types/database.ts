@@ -209,6 +209,27 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          id: string
+          email: string
+          source: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          source?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          source?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       memories: {
         Row: {
           audio_duration_seconds: number | null

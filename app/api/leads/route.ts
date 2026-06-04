@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getEmailProvider } from "@/lib/email/provider";
 import { leadNotificationEmail } from "@/lib/email/templates";
 import { checkRateLimitWithHeaders } from "@/lib/rate-limit";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * POST /api/leads
@@ -12,9 +13,8 @@ import { checkRateLimitWithHeaders } from "@/lib/rate-limit";
  * back to `/?signup=success` so the static form-action flow shows a
  * "thanks" state without needing JS.
  *
- * TODO: when a `leads` table is added to Supabase, persist there.
- *       For now we just log + email-notify the team — the user always
- *       lands on the success state, no 404.
+ * Persists to the `leads` table (service-role) AND best-effort notifies the team
+ * via Resend. The user always lands on the success state, no 404.
  */
 
 const leadSchema = z.object({
@@ -43,6 +43,17 @@ export async function POST(request: Request) {
     }
   } catch {
     return NextResponse.redirect(new URL(ERROR_URL, request.url), 303);
+  }
+
+  // Persist the lead first (best-effort) — the durable record, independent of
+  // whether the notification email is configured or up. Service-role insert on
+  // an RLS-protected table; re-submits (same email) are ignored.
+  try {
+    await createAdminClient()
+      .from("leads")
+      .upsert({ email, source: "homepage" }, { onConflict: "email", ignoreDuplicates: true });
+  } catch (err) {
+    console.error("[leads] store failed (non-fatal):", err);
   }
 
   // Best-effort notification email; failure doesn't block the success
