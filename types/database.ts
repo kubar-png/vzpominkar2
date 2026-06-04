@@ -92,17 +92,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "book_orders_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "book_orders_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_orders_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
             referencedColumns: ["id"]
           },
         ]
@@ -217,22 +217,22 @@ export type Database = {
       }
       leads: {
         Row: {
-          id: string
-          email: string
-          source: string | null
           created_at: string
+          email: string
+          id: string
+          source: string | null
         }
         Insert: {
-          id?: string
-          email: string
-          source?: string | null
           created_at?: string
+          email: string
+          id?: string
+          source?: string | null
         }
         Update: {
-          id?: string
-          email?: string
-          source?: string | null
           created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
         }
         Relationships: []
       }
@@ -242,13 +242,12 @@ export type Database = {
           audio_path: string | null
           audio_transcript: string | null
           audio_transcript_polished: string | null
-          transcript_edited_at: string | null
           author_id: string
           book_id: string | null
           created_at: string
           extracted_year: number | null
-          extracted_year_label: string | null
           extracted_year_confidence: string | null
+          extracted_year_label: string | null
           family_id: string
           id: string
           is_favorite: boolean
@@ -258,6 +257,7 @@ export type Database = {
           status: string
           text_content: string | null
           title: string | null
+          transcript_edited_at: string | null
           updated_at: string
         }
         Insert: {
@@ -265,13 +265,12 @@ export type Database = {
           audio_path?: string | null
           audio_transcript?: string | null
           audio_transcript_polished?: string | null
-          transcript_edited_at?: string | null
           author_id: string
           book_id?: string | null
           created_at?: string
           extracted_year?: number | null
-          extracted_year_label?: string | null
           extracted_year_confidence?: string | null
+          extracted_year_label?: string | null
           family_id: string
           id?: string
           is_favorite?: boolean
@@ -281,6 +280,7 @@ export type Database = {
           status?: string
           text_content?: string | null
           title?: string | null
+          transcript_edited_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -288,13 +288,12 @@ export type Database = {
           audio_path?: string | null
           audio_transcript?: string | null
           audio_transcript_polished?: string | null
-          transcript_edited_at?: string | null
           author_id?: string
           book_id?: string | null
           created_at?: string
           extracted_year?: number | null
-          extracted_year_label?: string | null
           extracted_year_confidence?: string | null
+          extracted_year_label?: string | null
           family_id?: string
           id?: string
           is_favorite?: boolean
@@ -304,6 +303,7 @@ export type Database = {
           status?: string
           text_content?: string | null
           title?: string | null
+          transcript_edited_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -315,17 +315,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "memories_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "memories_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memories_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
             referencedColumns: ["id"]
           },
           {
@@ -381,14 +381,14 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
+          email_verified: boolean
           family_id: string | null
+          gender: string | null
           id: string
+          is_senior: boolean
           prompt_frequency: number
           role: string
           senior_role: string | null
-          gender: string | null
-          is_senior: boolean
-          email_verified: boolean
           updated_at: string
           username: string | null
         }
@@ -400,14 +400,14 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          email_verified?: boolean
           family_id?: string | null
+          gender?: string | null
           id: string
+          is_senior?: boolean
           prompt_frequency?: number
           role: string
           senior_role?: string | null
-          gender?: string | null
-          is_senior?: boolean
-          email_verified?: boolean
           updated_at?: string
           username?: string | null
         }
@@ -419,14 +419,14 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          email_verified?: boolean
           family_id?: string | null
+          gender?: string | null
           id?: string
+          is_senior?: boolean
           prompt_frequency?: number
           role?: string
           senior_role?: string | null
-          gender?: string | null
-          is_senior?: boolean
-          email_verified?: boolean
           updated_at?: string
           username?: string | null
         }
@@ -483,17 +483,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "prompt_assignments_family_id_fkey"
-            columns: ["family_id"]
-            isOneToOne: false
-            referencedRelation: "families"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "prompt_assignments_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_assignments_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
             referencedColumns: ["id"]
           },
           {

@@ -97,11 +97,14 @@ průběžně.
 ## 📕 Fyzická kniha (Kniha vzpomínek) — před prodejem knihy
 
 ### 13. Render celé knihy do jednoho tiskového PDF (Phase 4)
-- [ ] Z HTML šablony (`components/book-pdf/BookDocument.tsx`, B5) vyrenderovat celou knihu do **jednoho PDF** přes headless Chromium (Puppeteer) — opakující se patička + skutečné číslování (`footerTemplate`) + QR kódy. Napojit na fulfilment po platbě. Použít pro ruční i z aplikace generovanou knihu.
+- [x] ~~Render route + Puppeteer pipeline~~ — **postaveno + na main** (`app/api/print/book`, `app/print/book/[token]`, `lib/book/{load,sample}.ts`, `lib/print/token.ts`; `footerTemplate` čísla, per-vzpomínka QR inline, embed fontů). Ověřeno lokálně (37stránkové B5 PDF).
+- [ ] **Vercel → Node 24** (vyžaduje `@sparticuz/chromium@149`) + otestovat reálný render na deploji.
+- [ ] Napojit na fulfilment **po platbě** (zatím není u Stripe). Tisk QR jen na finální doméně (viz #15).
 
-### 14. Konfigurátor dárkové knihy — dokončení
-- [ ] Volba **„Pro koho? (žena / muž)"** v konfigurátoru (`/kniha/sestavit`) → uloží se k objednávce a prožene otázky správným rodem (teď ukazuje „/a").
-- [ ] Napojit konfigurátor na reálný objednávkový flow (guest checkout + Stripe + `shop_orders`) — viz Phase 2.
+### 14. Konfigurátor dárkové knihy — ✅ HOTOVO (na main)
+- [x] ~~Volba „Pro koho? (žena/muž)" + výběr přebalu (barvy + text) + živý náhled~~ — hotovo (`/kniha/sestavit`, app layout, drag-reorder).
+- [x] ~~Napojení na objednávkový flow~~ — **Phase 2 hotová**: guest checkout + `shop_orders` (migrace v prod) + Stripe + webhook + potvrzovací e-mail + `/kniha/hotovo`. Funguje přes **free-path**; Stripe naostro = #4.
+- Pozn.: #4 níže nově pokrývá i dárkovou knihu — `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` + endpoint `/api/webhooks/stripe` + env `PRICE_SHOP_BOOK_CUSTOM_CZK` (default 1099).
 
 ### 15. QR u vzpomínek → veřejné přehrání nahrávky — ⚠️ POVINNÉ při přechodu na doménu
 Návrh odsouhlasen (2026-06-03): privátní bucket + **signed URL on-demand** · sdílení **trvalé** (token navždy, žádný vypínač) · trvanlivost = závazek služby + **nepřímost** (QR → náš `/v/{token}` → aktuální úložiště, takže úložiště lze migrovat bez přetisku QR). Veřejná stránka `/v/{token}` + tokeny se staví teď na `vercel.app`; audio se podepisuje on-demand (bucket `memory-audio` zůstává privátní).
