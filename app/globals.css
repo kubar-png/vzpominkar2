@@ -2457,6 +2457,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   text-align: center;
 }
 .editorial .kc-book-item {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -2564,11 +2565,25 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   cursor: grabbing;
 }
 .editorial .kc-book-item.is-dragging {
-  opacity: 0.45;
+  opacity: 0.4;
 }
-.editorial .kc-book-item.is-over {
-  border-color: #e8c97a;
-  box-shadow: 0 -2px 0 #e8c97a inset;
+/* Gold drop-line in the GAP between cards — shows where the question will land */
+.editorial .kc-book-item.kc-drop-above::before,
+.editorial .kc-book-item.kc-drop-below::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: #e8c97a;
+  box-shadow: 0 0 6px rgba(232, 201, 122, 0.7);
+}
+.editorial .kc-book-item.kc-drop-above::before {
+  top: -6px;
+}
+.editorial .kc-book-item.kc-drop-below::after {
+  bottom: -6px;
 }
 
 /* Scroll-to-top button — appears once the list is scrolled down */

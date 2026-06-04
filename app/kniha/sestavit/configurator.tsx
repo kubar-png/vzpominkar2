@@ -62,7 +62,7 @@ export function Configurator() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [armedId, setArmedId] = useState<string | null>(null);
-  const [overId, setOverId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ id: string; below: boolean } | null>(null);
 
   function chooseCoverBg(bg: CoverBg) {
     setCoverBg(bg);
@@ -153,16 +153,18 @@ export function Configurator() {
     scrollBookTop();
   };
   // Drag-to-reorder within the current phase (handle-armed; see kc-book-grip).
-  function reorder(fromId: string, toId: string) {
+  function reorder(fromId: string, toId: string, below: boolean) {
     if (fromId === toId) return;
     setSelection((p) => {
       const arr = [...(p[phase.key] ?? [])];
       const from = arr.findIndex((q) => q.id === fromId);
-      const to = arr.findIndex((q) => q.id === toId);
-      if (from < 0 || to < 0) return p;
+      const toIdx = arr.findIndex((q) => q.id === toId);
+      if (from < 0 || toIdx < 0) return p;
+      let target = below ? toIdx + 1 : toIdx;
       const moved = arr.splice(from, 1)[0];
       if (!moved) return p;
-      arr.splice(to, 0, moved);
+      if (from < target) target -= 1; // removal shifted indices after `from`
+      arr.splice(target, 0, moved);
       return { ...p, [phase.key]: arr };
     });
   }
@@ -388,23 +390,34 @@ export function Configurator() {
                       <li
                         key={q.id}
                         className={`kc-book-item${dragId === q.id ? " is-dragging" : ""}${
-                          overId === q.id && dragId && dragId !== q.id ? " is-over" : ""
+                          dropTarget && dropTarget.id === q.id && dragId !== q.id
+                            ? dropTarget.below
+                              ? " kc-drop-below"
+                              : " kc-drop-above"
+                            : ""
                         }`}
                         draggable={armedId === q.id}
                         onDragStart={(e) => {
                           setDragId(q.id);
                           e.dataTransfer.effectAllowed = "move";
                         }}
-                        onDragEnter={() => setOverId(q.id)}
-                        onDragOver={(e) => e.preventDefault()}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          if (!dragId || dragId === q.id) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const below = e.clientY > rect.top + rect.height / 2;
+                          setDropTarget((d) =>
+                            d && d.id === q.id && d.below === below ? d : { id: q.id, below },
+                          );
+                        }}
                         onDrop={() => {
-                          if (dragId) reorder(dragId, q.id);
-                          setOverId(null);
+                          if (dragId) reorder(dragId, q.id, dropTarget?.below ?? false);
+                          setDropTarget(null);
                         }}
                         onDragEnd={() => {
                           setDragId(null);
                           setArmedId(null);
-                          setOverId(null);
+                          setDropTarget(null);
                         }}
                       >
                         <span
