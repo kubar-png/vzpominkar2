@@ -220,3 +220,23 @@ export async function addCustomPromptAndSchedule(
   revalidatePath("/dashboard");
   return { ok: true };
 }
+
+/**
+ * Toggle the family's auto-scheduling safety net. When ON (default), the weekly
+ * cron tops up an empty queue with the next prepared library question; when OFF
+ * the owner keeps full manual control. See lib/prompts/schedule.ts planWeeklyQueue.
+ */
+export async function setAutoSchedule(
+  familyId: string,
+  enabled: boolean,
+): Promise<PromptResult> {
+  await requireOwnerOfFamily(familyId);
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("families")
+    .update({ auto_schedule_prompts: enabled })
+    .eq("id", familyId);
+  if (error) return { ok: false, error: "Nastavení se nepodařilo uložit." };
+  revalidatePath("/settings");
+  return { ok: true };
+}

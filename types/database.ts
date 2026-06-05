@@ -190,6 +190,7 @@ export type Database = {
       }
       families: {
         Row: {
+          auto_schedule_prompts: boolean
           created_at: string
           created_by: string
           id: string
@@ -201,6 +202,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_schedule_prompts?: boolean
           created_at?: string
           created_by: string
           id?: string
@@ -212,6 +214,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_schedule_prompts?: boolean
           created_at?: string
           created_by?: string
           id?: string

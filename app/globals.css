@@ -5883,3 +5883,35 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 @keyframes vzp-modal-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes vzp-modal-rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .vzp-modal-overlay, .vzp-modal { animation: none; } }
+
+/* ═══════ Apple-style toggle switch (components/app/AutoScheduleToggle.tsx) ═══════ */
+.vzp-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 52px;
+  height: 31px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-paper-300, #d8cfb8);
+  cursor: pointer;
+  transition: background 0.22s ease;
+}
+.vzp-switch.is-on { background: var(--gold, #d4a017); }
+.vzp-switch:disabled { opacity: 0.6; cursor: default; }
+.vzp-switch:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.4); }
+.vzp-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28), 0 0 1px rgba(0, 0, 0, 0.2);
+  transition: transform 0.22s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.vzp-switch.is-on .vzp-switch-knob { transform: translateX(21px); }
+@media (prefers-reduced-motion: reduce) {
+  .vzp-switch, .vzp-switch-knob { transition: none; }
+}

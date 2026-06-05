@@ -90,6 +90,19 @@ export async function planWeeklyQueue(admin: Admin): Promise<{ planned: number; 
     set.add(r.prompt_id);
   }
 
+  // Respect the per-family auto-schedule toggle (default ON). Families that
+  // opted out keep full manual control — the planner skips their seniors.
+  const familyIds = [...new Set(started.values())];
+  const autoOff = new Set<string>();
+  if (familyIds.length) {
+    const { data: fams } = await admin
+      .from("families")
+      .select("id, auto_schedule_prompts")
+      .in("id", familyIds)
+      .returns<{ id: string; auto_schedule_prompts: boolean }[]>();
+    for (const f of fams ?? []) if (!f.auto_schedule_prompts) autoOff.add(f.id);
+  }
+
   const library = await loadLibrary(admin);
   let planned = 0;
   let skipped = 0;
@@ -102,6 +115,10 @@ export async function planWeeklyQueue(admin: Admin): Promise<{ planned: number; 
   }[] = [];
 
   for (const [seniorId, familyId] of started) {
+    if (autoOff.has(familyId)) {
+      skipped++; // owner turned auto-scheduling off — full manual control
+      continue;
+    }
     if (pending.has(seniorId)) {
       skipped++; // still has an open question — remind, don't pile up
       continue;

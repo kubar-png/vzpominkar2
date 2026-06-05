@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, MessageSquare, Compass } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { FormSection } from "@/components/ui/form-section";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
+import { AutoScheduleToggle } from "@/components/app/AutoScheduleToggle";
 import { DisplayNameForm } from "./display-name-form";
 import { PasswordForm } from "./password-form";
 import { EmailForm } from "./email-form";
@@ -12,6 +14,16 @@ export const metadata: Metadata = { title: "Nastavení" };
 
 export default async function SettingsPage() {
   const owner = await requireOwner();
+
+  let autoSchedule = true;
+  if (owner.familyId) {
+    const { data: fam } = await createAdminClient()
+      .from("families")
+      .select("auto_schedule_prompts")
+      .eq("id", owner.familyId)
+      .maybeSingle<{ auto_schedule_prompts: boolean }>();
+    autoSchedule = fam?.auto_schedule_prompts ?? true;
+  }
 
   return (
     <div className="space-y-8">
@@ -69,6 +81,10 @@ export default async function SettingsPage() {
           aria-hidden
         />
       </Link>
+
+      {owner.familyId ? (
+        <AutoScheduleToggle familyId={owner.familyId} initial={autoSchedule} />
+      ) : null}
 
       <section className="space-y-6 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-5 md:p-6">
         <FormSection
