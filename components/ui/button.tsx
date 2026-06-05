@@ -19,8 +19,8 @@ const buttonVariants = cva(
       variant: {
         primary:
           "bg-[var(--gold-soft)] border-[var(--gold-soft)] text-[var(--ink)] " +
-          "hover:bg-[var(--gold)] hover:border-[var(--gold)] hover:text-[var(--color-navy-900)] hover:-translate-y-px " +
-          "active:translate-y-0 active:bg-[var(--gold)]",
+          "hover:bg-[var(--gold-hover)] hover:border-[var(--gold-hover)] hover:text-[var(--color-navy-900)] hover:-translate-y-px " +
+          "active:translate-y-0 active:bg-[var(--gold-hover)]",
         accent:
           "bg-[var(--oxblood,#a8231f)] border-[var(--oxblood,#a8231f)] text-[var(--color-paper-50)] " +
           "hover:bg-[var(--color-red-800)] hover:border-[var(--color-red-800)] active:bg-[var(--color-red-900)]",

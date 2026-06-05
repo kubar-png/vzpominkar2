@@ -24,6 +24,11 @@ const pangaia = localFont({
   ],
   variable: "--font-display-loaded",
   display: "swap",
+  // Generate a size-adjusted fallback (@font-face with ascent/descent/size-adjust
+  // overrides) so the Georgia→PP Pangaia swap does not reflow display headings —
+  // most visibly the shared footer h2. Without this, next/font emits no metric
+  // fallback for a local font and the swap shifts surrounding chrome.
+  adjustFontFallback: "Times New Roman",
 });
 
 const instrumentSans = Instrument_Sans({

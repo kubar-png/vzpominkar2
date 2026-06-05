@@ -215,6 +215,10 @@ html.lenis { scroll-behavior: auto; }
   --ink-mute:  #5a6e85;
   --gold:      #d4a017;
   --gold-soft: #e8b53d;
+  /* Primary-button hover. Sits ~15% from --gold toward the bright resting
+   * --gold-soft so the gold CTA no longer darkens so much on hover. Scoped to
+   * button hover only — the brand --gold (logo, text, arrows) stays unchanged. */
+  --gold-hover: #d7a31d;
   /* --gold-50 is also used by the older Tailwind scale below; the editorial
    * use of "gold-50" is the parchment-card surface (#f7e9c0). The Tailwind
    * scale sets --color-gold-50 (faf6ec) which is what `bg-gold-50` resolves
@@ -426,6 +430,20 @@ html, body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* Reserve the vertical-scrollbar gutter at all times so content does NOT shift
+ * horizontally when navigating between a scrolling page (marketing/legal, which
+ * always overflows) and a non-scrolling one (auth, or any short page). On
+ * classic non-overlay scrollbars (Windows, macOS "always show") a missing
+ * scrollbar would widen the viewport by ~15px and visibly jump the centred
+ * .container / header logo. `both-edges` keeps centred layouts symmetric.
+ * No-op on overlay scrollbars (mobile, headless), so nothing breaks there.
+ *
+ * Full-viewport 100dvh surfaces (.kc-shell, .senior-auth) handle their own
+ * overflow in inner containers and never overflow <html>; we opt them out so
+ * they don't show a permanent empty gutter track. */
+html { scrollbar-gutter: stable both-edges; }
+html:has(.kc-shell), html:has(.senior-auth) { scrollbar-gutter: auto; }
 
 body {
   background-color: var(--color-bg);
@@ -690,8 +708,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--ink);
 }
 .editorial .btn-gold:hover {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--gold-hover);
+  border-color: var(--gold-hover);
   color: var(--color-navy-900);
   transform: translateY(-1px);
 }

@@ -5,6 +5,7 @@ import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { Promo } from "@/components/landing/Promo";
 import { SITE_URL, canonical } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -99,6 +100,11 @@ export default async function HomePage({
         }}
       />
       <HeroScrollDriver />
+
+      {/* Promo strip — kept identical to the Shell-based marketing pages so the
+       * 41px navy band is present on every marketing route. Without it here the
+       * shared header + content jumped ~41px when navigating / ↔ /cenik etc. */}
+      <Promo />
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="editorial-header">
