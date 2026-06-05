@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { requireOwner, hasActiveAccess } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { startBaseCheckout } from "@/lib/stripe/checkout";
-import { priceForProductCzk } from "@/lib/stripe/server";
+import { priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,18 @@ const INCLUDED = [
   "Automatický přepis a korektura odpovědí",
 ];
 
-export default async function ActivationPage() {
+// The real one-time price the buyer is committing to. Shown for trust even on
+// the free path (dev / launch promo), where priceForProductCzk returns 0.
+const BASE_PRICE_TRUST_CZK = 2890;
+
+export default async function ActivationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cancelled?: string }>;
+}) {
+  const sp = await searchParams;
+  const cancelled = sp.cancelled === "1";
+
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
   // Already paid → no paywall, straight on.
@@ -36,9 +47,29 @@ export default async function ActivationPage() {
   const seniorName = family?.senior_display_name?.trim() || null;
 
   const priceCzk = priceForProductCzk("book_base");
+  // Display price: the real amount on a paid setup, the trust price on free path.
+  const displayPriceCzk = priceCzk > 0 ? priceCzk : BASE_PRICE_TRUST_CZK;
+
+  // Order bump — a second printed copy at the launch discount. Hidden entirely
+  // when the env price is unset (would render a meaningless "0 Kč").
+  const extraCopyCzk = discountedExtraCopyCzk();
+  const showExtraCopyBump = extraCopyCzk > 0;
 
   return (
     <div className="space-y-10">
+      {/* Calm reassurance after an abandoned Stripe checkout — no alarm, no
+          exclamation. The book is held, nothing is lost. */}
+      {cancelled ? (
+        <p
+          role="status"
+          className="rounded-[var(--radius-md)] border border-[var(--color-navy-200)] bg-[var(--color-navy-50)] px-4 py-3 text-sm leading-relaxed text-[var(--color-navy-800)]"
+        >
+          {seniorName
+            ? `Platbu jste nedokončili — kniha ${seniorName} na vás počká.`
+            : "Platbu jste nedokončili — vaše kniha na vás počká."}
+        </p>
+      ) : null}
+
       {/* Progress strip — step two of two */}
       <div className="flex items-center gap-4">
         <span className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--color-red-700)]">
@@ -82,13 +113,11 @@ export default async function ActivationPage() {
               </span>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="font-[family-name:var(--font-display)] text-5xl font-medium leading-none text-[var(--color-gold-400)] sm:text-6xl">
-                  {priceCzk > 0 ? priceCzk.toLocaleString("cs-CZ") : "Zdarma"}
+                  {displayPriceCzk.toLocaleString("cs-CZ")}
                 </span>
-                {priceCzk > 0 ? (
-                  <span className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper-200)]">
-                    Kč
-                  </span>
-                ) : null}
+                <span className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper-200)]">
+                  Kč
+                </span>
               </div>
             </div>
 
@@ -102,7 +131,26 @@ export default async function ActivationPage() {
             </ul>
 
             <div className="flex flex-col gap-4 md:items-end">
-              <form action={startBaseCheckout} className="w-full md:w-auto">
+              <form action={startBaseCheckout} className="w-full md:w-auto md:flex md:flex-col md:items-end">
+                {/* Order bump — second printed copy at the launch discount.
+                    Rendered only when the env price is set (extraCopyCzk > 0),
+                    so we never show a "0 Kč" upsell. */}
+                {showExtraCopyBump ? (
+                  <label className="mb-4 flex w-full cursor-pointer items-start gap-3 rounded-[12px] border border-[var(--color-gold-400)]/35 bg-white/[0.06] px-4 py-3 md:max-w-[20rem]">
+                    <input
+                      type="checkbox"
+                      name="extra_copy"
+                      value="1"
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-gold-400)]"
+                    />
+                    <span className="text-[13px] leading-snug text-[var(--color-paper-100)]">
+                      Přidat druhý výtisk se slevou 30&nbsp;% — jen teď
+                      <span className="mt-0.5 block text-[var(--color-gold-300)]">
+                        {extraCopyCzk.toLocaleString("cs-CZ")}&nbsp;Kč za druhý výtisk
+                      </span>
+                    </span>
+                  </label>
+                ) : null}
                 <button
                   type="submit"
                   className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full md:w-auto")}

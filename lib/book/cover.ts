@@ -27,8 +27,21 @@ export const COVER_TEXT: { value: CoverText; label: string; hex: string }[] = [
 export const COVER_BG_HEX = Object.fromEntries(COVER_BG.map((o) => [o.value, o.hex])) as Record<CoverBg, string>;
 export const COVER_TEXT_HEX = Object.fromEntries(COVER_TEXT.map((o) => [o.value, o.hex])) as Record<CoverText, string>;
 
-export const DEFAULT_COVER_BG: CoverBg = "navy";
+// The included (free) cover is brown + gold; any other colour is a paid upgrade.
+export const DEFAULT_COVER_BG: CoverBg = "brown";
 export const DEFAULT_COVER_TEXT: CoverText = "gold";
+
+/**
+ * Any background colour other than the included brown is a paid premium upgrade
+ * (pure margin — same binding, different stamping). The server is authoritative
+ * on the surcharge via priceForProductCzk("book_cover_premium"); COVER_PREMIUM_CZK
+ * mirrors it for client-side display (keep the two in sync).
+ */
+export function isPremiumCover(bg: CoverBg): boolean {
+  return bg !== DEFAULT_COVER_BG;
+}
+
+export const COVER_PREMIUM_CZK = 99;
 
 /**
  * Legibility guard: dark backgrounds (brown/navy/red) need light text

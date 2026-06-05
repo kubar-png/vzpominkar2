@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/site";
 import { Shell } from "@/components/landing/Shell";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 
@@ -6,6 +7,7 @@ export const metadata: Metadata = {
   title: "Náš příběh",
   description:
     "Vzpomínkář založila parta lidí v Praze, kteří přišli o svoje babičky dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to znovu potkalo jinou rodinu.",
+  alternates: { canonical: canonical("/o-nas") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────

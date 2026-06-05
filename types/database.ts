@@ -60,8 +60,11 @@ export type Database = {
         Row: {
           amount_czk: number
           book_id: string | null
+          copies: number
           created_at: string
+          dedication: string | null
           family_id: string
+          giftwrap: boolean
           id: string
           shipping_address: Json | null
           status: string
@@ -71,8 +74,11 @@ export type Database = {
         Insert: {
           amount_czk?: number
           book_id?: string | null
+          copies?: number
           created_at?: string
+          dedication?: string | null
           family_id: string
+          giftwrap?: boolean
           id?: string
           shipping_address?: Json | null
           status?: string
@@ -82,8 +88,11 @@ export type Database = {
         Update: {
           amount_czk?: number
           book_id?: string | null
+          copies?: number
           created_at?: string
+          dedication?: string | null
           family_id?: string
+          giftwrap?: boolean
           id?: string
           shipping_address?: Json | null
           status?: string
@@ -386,6 +395,7 @@ export type Database = {
           gender: string | null
           id: string
           is_senior: boolean
+          magic_token: string | null
           prompt_frequency: number
           role: string
           senior_role: string | null
@@ -405,6 +415,7 @@ export type Database = {
           gender?: string | null
           id: string
           is_senior?: boolean
+          magic_token?: string | null
           prompt_frequency?: number
           role: string
           senior_role?: string | null
@@ -424,6 +435,7 @@ export type Database = {
           gender?: string | null
           id?: string
           is_senior?: boolean
+          magic_token?: string | null
           prompt_frequency?: number
           role?: string
           senior_role?: string | null
@@ -555,10 +567,13 @@ export type Database = {
           amount_czk: number | null
           buyer_email: string | null
           buyer_name: string | null
+          copies: number
           cover_bg: string | null
           cover_text: string | null
           created_at: string
           currency: string
+          dedication: string | null
+          giftwrap: boolean
           id: string
           paid_at: string | null
           questions: Json
@@ -571,10 +586,13 @@ export type Database = {
           amount_czk?: number | null
           buyer_email?: string | null
           buyer_name?: string | null
+          copies?: number
           cover_bg?: string | null
           cover_text?: string | null
           created_at?: string
           currency?: string
+          dedication?: string | null
+          giftwrap?: boolean
           id?: string
           paid_at?: string | null
           questions: Json
@@ -587,10 +605,13 @@ export type Database = {
           amount_czk?: number | null
           buyer_email?: string | null
           buyer_name?: string | null
+          copies?: number
           cover_bg?: string | null
           cover_text?: string | null
           created_at?: string
           currency?: string
+          dedication?: string | null
+          giftwrap?: boolean
           id?: string
           paid_at?: string | null
           questions?: Json

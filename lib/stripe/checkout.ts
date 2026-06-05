@@ -6,8 +6,9 @@ import { revalidatePath } from "next/cache";
 import { requireOwner, requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid, countPaidBooks } from "@/lib/books/server";
-import { getStripe, priceForProductCzk } from "@/lib/stripe/server";
+import { getStripe, priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
 import { SITE_URL } from "@/lib/site";
+import type Stripe from "stripe";
 import type { Json } from "@/types/database";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -15,7 +16,13 @@ import type { Json } from "@/types/database";
  * the base price; every further book (new senior OR another volume of an
  * existing senior) is the add-on price. Free path (price 0) activates instantly.
  * ──────────────────────────────────────────────────────────────────────── */
-export async function purchaseBook(bookId: string): Promise<never> {
+export async function purchaseBook(
+  bookId: string,
+  // Order bump: the buyer opted into a second printed copy at the launch
+  // discount. Only honoured on the FIRST (base) purchase — that's where the
+  // bump is offered. Computed price always comes from the server.
+  opts: { extraCopy?: boolean } = {},
+): Promise<never> {
   const admin = createAdminClient();
   const { data: book } = await admin
     .from("books")
@@ -37,36 +44,94 @@ export async function purchaseBook(bookId: string): Promise<never> {
   const productType = isFirst ? "book_base" : "book_addon";
   const priceCzk = priceForProductCzk(productType);
 
-  if (priceCzk === 0) {
+  // Extra printed copy (the launch-discounted order bump). Only on the base
+  // purchase, and only when the env-configured price is non-zero — otherwise it
+  // adds nothing and we never record copies=2 for a phantom upsell.
+  const extraCopyCzk = isFirst && opts.extraCopy ? discountedExtraCopyCzk() : 0;
+  const wantsExtraCopy = extraCopyCzk > 0;
+  const copies = wantsExtraCopy ? 2 : 1;
+  const totalCzk = priceCzk + extraCopyCzk;
+
+  // Record the extra-copy intent as a print order so fulfilment knows to print
+  // a second copy. Status mirrors the payment outcome (free path → paid, Stripe
+  // path → draft until the webhook flips it). book_id ties it to the volume.
+  // TODO(followups): the Stripe webhook currently marks the book paid but does
+  // not promote this book_orders row to "paid" / attach the payment intent —
+  // wire that up in the webhook (foreign file) so the extra copy is fulfilled.
+  async function recordExtraCopyOrder(status: "draft" | "paid"): Promise<void> {
+    if (!wantsExtraCopy || !book) return;
+    await admin.from("book_orders").insert({
+      family_id: book.family_id,
+      book_id: book.id,
+      status,
+      copies: 2,
+      amount_czk: status === "paid" ? extraCopyCzk : 0,
+    });
+  }
+
+  if (totalCzk === 0) {
     await markBookPaid(admin, {
       bookId: book.id,
       familyId: book.family_id,
       actorId: owner.id,
       amountCzk: 0,
     });
+    await recordExtraCopyOrder("paid");
     revalidatePath("/dashboard");
     // After the first (base) purchase, ask the acquisition-attribution
     // question; further volumes go straight back to the app.
     redirect(isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1");
   }
 
+  // Record the pending extra-copy order before redirecting to Stripe so it's not
+  // lost if the buyer never returns. The webhook reconciles it (see TODO above).
+  await recordExtraCopyOrder("draft");
+
+  const baseLineName = isFirst
+    ? "Vzpomínkář — přístup ke knize"
+    : "Vzpomínkář — další kniha";
+  // Derive the line-item type from the create params themselves. The Stripe SDK
+  // re-exports `SessionCreateParams` as a plain type alias on the top-level
+  // `Stripe.Checkout` namespace (not a namespace), so the nested
+  // `SessionCreateParams.LineItem` path isn't reachable there — indexing the
+  // `line_items` array element is the version-stable way to name it.
+  type CheckoutLineItem = NonNullable<
+    Stripe.Checkout.SessionCreateParams["line_items"]
+  >[number];
+  const lineItems: CheckoutLineItem[] = [];
+  if (priceCzk > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "czk",
+        unit_amount: priceCzk * 100, // CZK is 0-decimal; Stripe wants minor units
+        product_data: { name: baseLineName },
+      },
+      quantity: 1,
+    });
+  }
+  if (extraCopyCzk > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "czk",
+        unit_amount: extraCopyCzk * 100,
+        product_data: { name: "Vzpomínkář — druhý výtisk (sleva 30 %)" },
+      },
+      quantity: 1,
+    });
+  }
+
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "czk",
-          unit_amount: priceCzk * 100, // CZK is 0-decimal; Stripe wants minor units
-          product_data: {
-            name: isFirst ? "Vzpomínkář — přístup ke knize" : "Vzpomínkář — další kniha",
-          },
-        },
-        quantity: 1,
-      },
-    ],
-    metadata: { familyId: book.family_id, productType, bookId: book.id, ownerId: owner.id },
+    line_items: lineItems,
+    metadata: {
+      familyId: book.family_id,
+      productType,
+      bookId: book.id,
+      ownerId: owner.id,
+      copies: String(copies),
+    },
     success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
     cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,
   });
@@ -80,7 +145,12 @@ export async function purchaseBook(bookId: string): Promise<never> {
  * (unpaid) book — onboarding creates one — or makes a first one, then runs the
  * purchase. Derives the family from the authed owner (never trusts client ids).
  */
-export async function startBaseCheckout(): Promise<never> {
+export async function startBaseCheckout(formData?: FormData): Promise<never> {
+  // Order bump: the paywall offers a second printed copy at the launch discount.
+  // The checkbox is named "extra_copy"; honour it only when truthy. The price is
+  // never read from the client — purchaseBook recomputes it server-side.
+  const extraCopy = formData?.get("extra_copy") != null;
+
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
   // NB: email verification is intentionally NOT gated here. It must not block
@@ -127,7 +197,7 @@ export async function startBaseCheckout(): Promise<never> {
     }
   }
 
-  return await purchaseBook(bookId);
+  return await purchaseBook(bookId, { extraCopy });
 }
 
 /**

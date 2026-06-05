@@ -25,17 +25,29 @@ export function getStripe(): Stripe {
 
 /**
  * One-time products (no subscriptions):
- *  - book_base         first book in a family         (e.g. 2 890 Kč)
- *  - book_addon        every further book — a new senior OR another volume
- *                      ("díl") of an existing senior    (e.g. 1 790 Kč)
- *  - book_print        physical print of a finished book
- *  - shop_book_custom  guest GIFT book from the configurator (/kniha/sestavit),
- *                      bought without an account            (1 099 Kč)
+ *  - book_base          first book in a family   (e.g. 2 890 Kč; INCLUDES the 1st print)
+ *  - book_addon         every further book — a new senior OR another volume
+ *                       ("díl") of an existing senior            (e.g. 1 790 Kč)
+ *  - book_print         physical print of a finished book — the FIRST copy is
+ *                       included in book_base, so this stays 0 (kept for completeness)
+ *  - book_print_extra   each ADDITIONAL printed copy (e.g. for a sibling). Owner sets
+ *                       the price once the printer quote is known; a launch-only
+ *                       discount (EXTRA_COPY_LAUNCH_DISCOUNT_PCT) applies at purchase.
+ *  - book_cover_premium surcharge for a non-default cover colour — pure margin (≈99 Kč)
+ *  - book_giftwrap      gift wrapping + embossed dedication               (≈290 Kč)
+ *  - shop_book_standard guest GIFT book with our curated questions (/kniha/sestavit) (599 Kč)
+ *  - shop_book_custom   guest GIFT book once the buyer adds their OWN questions (899 Kč).
+ *                       The configurator switches the tier on whether the selection
+ *                       contains a custom question (see lib/shop/order-actions.ts).
  */
 export const SUPPORTED_PRODUCTS = [
   "book_base",
   "book_addon",
   "book_print",
+  "book_print_extra",
+  "book_cover_premium",
+  "book_giftwrap",
+  "shop_book_standard",
   "shop_book_custom",
 ] as const;
 export type ProductType = (typeof SUPPORTED_PRODUCTS)[number];
@@ -45,9 +57,28 @@ const DEFAULT_PRICE_CZK: Record<ProductType, number> = {
   book_base: 0,
   book_addon: 0,
   book_print: 0,
-  // Production price for the guest gift book. Set PRICE_SHOP_BOOK_CUSTOM_CZK=0
-  // in .env.local for local dev to take the free path (no Stripe key needed).
-  shop_book_custom: 1099,
+  // Owner fills the real price once the printer quote is known (env override).
+  book_print_extra: 0,
+  // Pure-margin add-ons. Code defaults stand in until the owner sets env values.
+  book_cover_premium: 99,
+  book_giftwrap: 290,
+  // Tiered guest gift book: curated questions vs the buyer's own questions.
+  // Set PRICE_SHOP_BOOK_*_CZK=0 in .env.local for local dev to take the free
+  // path (no Stripe key needed).
+  shop_book_standard: 599,
+  shop_book_custom: 899,
+};
+
+/** Env var that overrides each product's price (CZK integer). */
+const PRICE_ENV: Record<ProductType, string> = {
+  book_base: "PRICE_BOOK_BASE_CZK",
+  book_addon: "PRICE_BOOK_ADDON_CZK",
+  book_print: "PRICE_BOOK_PRINT_CZK",
+  book_print_extra: "PRICE_BOOK_PRINT_EXTRA_CZK",
+  book_cover_premium: "PRICE_BOOK_COVER_PREMIUM_CZK",
+  book_giftwrap: "PRICE_BOOK_GIFTWRAP_CZK",
+  shop_book_standard: "PRICE_SHOP_BOOK_STANDARD_CZK",
+  shop_book_custom: "PRICE_SHOP_BOOK_CUSTOM_CZK",
 };
 
 /**
@@ -55,14 +86,19 @@ const DEFAULT_PRICE_CZK: Record<ProductType, number> = {
  * Falls back to the product's DEFAULT_PRICE_CZK when the env var is absent.
  */
 export function priceForProductCzk(product: ProductType): number {
-  const raw =
-    product === "book_base"
-      ? process.env.PRICE_BOOK_BASE_CZK
-      : product === "book_addon"
-        ? process.env.PRICE_BOOK_ADDON_CZK
-        : product === "book_print"
-          ? process.env.PRICE_BOOK_PRINT_CZK
-          : process.env.PRICE_SHOP_BOOK_CUSTOM_CZK;
+  const raw = process.env[PRICE_ENV[product]];
   const n = Number(raw ?? DEFAULT_PRICE_CZK[product]);
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+}
+
+/**
+ * Launch-only discount on an EXTRA printed copy bought at the moment of purchase
+ * (the in-app paywall / gift checkout), to capture the buying-mood impulse.
+ */
+export const EXTRA_COPY_LAUNCH_DISCOUNT_PCT = 30;
+
+/** Price of one extra printed copy after the launch discount (CZK, floored). */
+export function discountedExtraCopyCzk(): number {
+  const base = priceForProductCzk("book_print_extra");
+  return Math.floor((base * (100 - EXTRA_COPY_LAUNCH_DISCOUNT_PCT)) / 100);
 }

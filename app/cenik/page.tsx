@@ -3,11 +3,13 @@ import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
+import { canonical } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "Přístup ke knize jednorázově, napořád. Tištěnou knihu si objednáte, až bude vzpomínek dost.",
+    "Přístup ke knize jednorázově, napořád. První tištěná kniha je v ceně. Tištěnou knihu si objednáte, až bude vzpomínek dost.",
+  alternates: { canonical: canonical("/cenik") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
 
 const PRICE_BASE = Number(process.env.PRICE_BOOK_BASE_CZK ?? "2890");
 const PRICE_ADDON = Number(process.env.PRICE_BOOK_ADDON_CZK ?? "1790");
-const PRICE_BOOK = Number(process.env.PRICE_BOOK_PRINT_CZK ?? "0");
+const PRICE_COVER_PREMIUM = Number(process.env.PRICE_BOOK_COVER_PREMIUM_CZK ?? "99");
+const PRICE_GIFTWRAP = Number(process.env.PRICE_BOOK_GIFTWRAP_CZK ?? "290");
 
 function formatCzk(n: number): string {
   return `${n.toLocaleString("cs-CZ")} Kč`;
@@ -32,13 +35,13 @@ const INCLUDED = [
   "Automatický přepis a korektura",
   "Online knihovna pro celou rodinu",
   "Sourozenci a vnoučata se mohou připojit",
+  "První tištěná kniha v ceně — objednáte, až bude hotová",
 ];
 
 const ADDONS: ReadonlyArray<readonly [string, string]> = [
-  ["Druhý výtisk pro sourozence", "od 1 290 Kč"],
-  ["Kožená edice — ručně vázaná", "+ 1 800 Kč"],
-  ["Dárkové balení s certifikátem", "+ 290 Kč"],
-  ["Doručení mimo ČR", "od 350 Kč"],
+  ["Jiná barva přebalu (hnědá a zlatá je v ceně)", `+ ${formatCzk(PRICE_COVER_PREMIUM)}`],
+  ["Dárkové balení s raženým věnováním", `+ ${formatCzk(PRICE_GIFTWRAP)}`],
+  ["Další výtisk pro sourozence", "cena dle objednávky"],
 ];
 
 const FAQ_EXCERPT = [
@@ -88,9 +91,8 @@ export default function PricingPage() {
             </div>
             <p className="cenik-price-note">
               Jedna platba, kniha je vaše napořád — žádné předplatné. Zahrnuje
-              jednoho blízkého a až 52 otázek. Další blízký nebo další díl{" "}
-              {formatCzk(PRICE_ADDON)}. Cena tisku se přičítá, až knihu budete
-              chtít vyrobit.
+              jednoho blízkého, až 52 otázek a první tištěnou knihu v ceně.
+              Další blízký nebo další díl řešíme samostatně níže.
             </p>
 
             <ul className="feature-list" style={{ margin: "32px 0 32px" }}>
@@ -107,6 +109,29 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* ═══════════ ADD-ON: další blízký / další díl ═══════════ */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="cenik-card" data-reveal>
+            <div className="cenik-card-head">
+              <span className="eyebrow">Další blízký nebo další díl</span>
+            </div>
+            <div className="cenik-price">
+              <span className="cenik-price-amount">{formatCzk(PRICE_ADDON)}</span>
+              <span className="cenik-price-sub">jednorázově · za každý další</span>
+            </div>
+            <p className="cenik-price-note">
+              Chcete vyprávění od druhého rodiče, nebo druhý díl pro stejného
+              blízkého? Přidáte si jeho vlastní sadu otázek a jeho vlastní
+              knihu — za každého dalšího blízkého nebo každý další díl
+              {" "}
+              {formatCzk(PRICE_ADDON)}.
+            </p>
+            <PrimaryCta className="btn-gold-full" />
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════ PRINT + ADD-ONS (warm dark belt) ═══════════ */}
       <section className="feature-quote dark" style={{ textAlign: "left" }}>
         <div className="container">
@@ -114,14 +139,13 @@ export default function PricingPage() {
             <div data-reveal>
               <span className="eyebrow">Tisk a doplňky</span>
               <h2 style={{ margin: "12px 0 20px" }}>
-                {PRICE_BOOK > 0
-                  ? <>Tištěná kniha {formatCzk(PRICE_BOOK)}.</>
-                  : "Tištěnou knihu objednáte, až bude hotová."}
+                První tištěná kniha je v ceně.
               </h2>
               <p style={{ maxWidth: "44ch", marginBottom: 28 }}>
                 Tvrdé desky, šitá vazba, papír v krémové barvě. U každé kapitoly
-                QR kód s původním hlasem. Cenu tisku uvidíte před objednávkou —
-                počítá se podle počtu stran a typu vazby.
+                QR kód s původním hlasem. Přebal v hnědé a zlaté patří k základu.
+                Doplňky níže jsou volitelné — vyberete si je až při objednávce
+                tisku.
               </p>
               <Link href="/signup" className="btn btn-dark">
                 Založit Vzpomínkář <span className="arrow">↗</span>

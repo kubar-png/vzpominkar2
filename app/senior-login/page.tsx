@@ -8,7 +8,20 @@ export const metadata: Metadata = {
     "Přihlášení vyprávějícího. Otevřete týdenní otázku a začněte vyprávět.",
 };
 
-export default function SeniorLoginPage() {
+export default async function SeniorLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ odkaz?: string }>;
+}) {
+  const { odkaz } = await searchParams;
+  // Friendly note when a magic link (/q/{token}) couldn't sign them in.
+  const linkNote =
+    odkaz === "neplatny"
+      ? "Odkaz z e-mailu se nepodařilo otevřít. Přihlaste se prosím jménem a heslem, které vám připravila rodina."
+      : odkaz === "limit"
+        ? "Zkuste to prosím za chvíli znovu, nebo se přihlaste jménem a heslem od rodiny."
+        : null;
+
   return (
     <div className="editorial">
       {/* Mobile-only top bar with logo */}
@@ -46,6 +59,12 @@ export default function SeniorLoginPage() {
               Zadejte uživatelské jméno a&nbsp;heslo, které vám rodina
               připravila.
             </p>
+
+            {linkNote ? (
+              <p className="auth-alert" style={{ marginBottom: 20 }} role="status">
+                {linkNote}
+              </p>
+            ) : null}
 
             <SeniorLoginForm />
 

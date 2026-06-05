@@ -7,6 +7,8 @@ import { requireOwner } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { StatusBlock } from "@/components/app/StatusBlock";
+import { DashboardTour } from "@/components/app/DashboardTour";
+import { FirstPromptPopup } from "@/components/app/FirstPromptPopup";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,31 +27,61 @@ export default async function DashboardPage() {
   // next prompt for the status row). The heavy memory feed + signed URLs
   // stream in below via <Suspense> so the shell paints immediately.
   const supabase = createAdminClient();
-  const [{ data: rawSeniors }, { data: rawNext }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, display_name")
-      .eq("family_id", owner.familyId)
-      .eq("role", "senior")
-      .returns<{ id: string; display_name: string | null }[]>(),
-    supabase
-      .from("prompt_assignments")
-      .select("scheduled_for, senior_id, prompts(question)")
-      .eq("family_id", owner.familyId)
-      .is("answered_memory_id", null)
-      .order("scheduled_for", { ascending: true })
-      .limit(1)
-      .returns<{
-        scheduled_for: string;
-        senior_id: string | null;
-        prompts: { question: string } | null;
-      }[]>(),
-  ]);
+  const [{ data: rawSeniors }, { data: rawNext }, { count: assignmentCount }, { data: rawStarters }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id, display_name, gender")
+        .eq("family_id", owner.familyId)
+        .eq("role", "senior")
+        .returns<{ id: string; display_name: string | null; gender: string | null }[]>(),
+      supabase
+        .from("prompt_assignments")
+        .select("scheduled_for, senior_id, prompts(question)")
+        .eq("family_id", owner.familyId)
+        .is("answered_memory_id", null)
+        .order("scheduled_for", { ascending: true })
+        .limit(1)
+        .returns<{
+          scheduled_for: string;
+          senior_id: string | null;
+          prompts: { question: string } | null;
+        }[]>(),
+      supabase
+        .from("prompt_assignments")
+        .select("id", { count: "exact", head: true })
+        .eq("family_id", owner.familyId),
+      supabase
+        .from("prompts")
+        .select("id, question, category, order_index")
+        .is("family_id", null)
+        .eq("is_active", true)
+        .returns<{ id: string; question: string; category: string | null; order_index: number }[]>(),
+    ]);
 
   const seniors: SeniorOption[] = (rawSeniors ?? []).map((s) => ({
     id: s.id,
     displayName: s.display_name ?? "Blízký",
   }));
+
+  // First-question popup inputs: one ready-made opener per life phase (up to 6),
+  // and the (single, just-added) senior to schedule it for.
+  const FIRST_PROMPT_PHASES = ["detstvi", "skola", "mladi", "laska", "rodina", "prace"];
+  const starters: { id: string; question: string }[] = [];
+  for (const ph of FIRST_PROMPT_PHASES) {
+    const inPhase = (rawStarters ?? [])
+      .filter((p) => p.category === ph)
+      .sort((a, b) => a.order_index - b.order_index);
+    if (inPhase[0]) starters.push({ id: inPhase[0].id, question: inPhase[0].question });
+  }
+  const firstSenior = seniors[0] ?? null;
+  const firstSeniorGender = (rawSeniors?.[0]?.gender as "male" | "female" | null) ?? null;
+  // Show the nudge once a senior exists but the family has never scheduled a
+  // question. After the first is scheduled, the weekly cron keeps the queue going.
+  const showFirstPrompt = firstSenior !== null && (assignmentCount ?? 0) === 0 && starters.length > 0;
+  const popupSeniorName = firstSenior
+    ? firstSenior.displayName.split(/\s+/)[0] || firstSenior.displayName
+    : "";
   const seniorNameById = new Map(seniors.map((s) => [s.id, s.displayName]));
 
   const onlySenior = seniors.length === 1 ? seniors[0] : null;
@@ -80,17 +112,30 @@ export default async function DashboardPage() {
   if (!hasSenior) {
     return (
       <div className="space-y-10">
+        <DashboardTour />
         <AppPageHeader
           title="Vítejte ve vašem Vzpomínkáři."
           description="Zbývá jediný krok — přidat vypravěče, jehož příběhy budete sbírat."
         />
-        <AddStorytellerCard familyId={owner.familyId} />
+        <div data-tour="add-storyteller">
+          <AddStorytellerCard familyId={owner.familyId} />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-10">
+      <DashboardTour />
+      {showFirstPrompt && firstSenior ? (
+        <FirstPromptPopup
+          familyId={owner.familyId}
+          seniorId={firstSenior.id}
+          seniorName={popupSeniorName}
+          seniorGender={firstSeniorGender}
+          starters={starters}
+        />
+      ) : null}
       <AppPageHeader
         title="Vítejte zpět ve vašem Vzpomínkáři."
         description={description}

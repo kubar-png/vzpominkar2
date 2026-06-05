@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { resolveGender, type Gender } from "@/lib/gender";
@@ -125,7 +126,6 @@ export default async function PublicMemoryPage({ params }: { params: Promise<{ t
         </p>
 
         {audioUrl ? (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
           <audio controls preload="metadata" src={audioUrl} style={{ width: "100%", marginBottom: 24 }} />
         ) : (
           <p style={{ fontSize: 15, color: INK_SOFT, marginBottom: 24 }}>
@@ -161,6 +161,14 @@ export default async function PublicMemoryPage({ params }: { params: Promise<{ t
         <footer style={{ borderTop: "1px solid rgba(14,59,100,0.15)", paddingTop: 16, textAlign: "center" }}>
           <p style={{ fontSize: 13, color: INK_SOFT, margin: 0 }}>
             Uchováno ve <strong style={{ color: NAVY }}>Vzpomínkáři</strong> — knize vzpomínek vašich blízkých.
+          </p>
+          <p style={{ fontSize: 13, color: INK_SOFT, margin: "10px 0 0" }}>
+            <Link
+              href="/darek"
+              style={{ color: OXBLOOD, textDecoration: "underline", textUnderlineOffset: 4 }}
+            >
+              Vytvořte podobnou knihu pro svého blízkého
+            </Link>
           </p>
         </footer>
       </article>

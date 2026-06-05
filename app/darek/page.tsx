@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { Shell } from "@/components/landing/Shell";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
+import { canonical } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Vzpomínkář jako dárek",
   description:
     "Nejhezčí dárek pro maminku, tatínka nebo prarodiče — rok týdenních otázek a kniha plná jejich příběhů. Tištěný certifikát, čtyři pole, žádný formulář na pět stránek.",
+  alternates: { canonical: canonical("/darek") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────

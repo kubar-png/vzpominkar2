@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Browser } from "puppeteer-core";
 import { createPrintToken } from "@/lib/print/token";
 import { SITE_URL } from "@/lib/site";
+import { currentUser } from "@/lib/auth/permissions";
+import { checkRateLimitWithHeaders } from "@/lib/rate-limit";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Render the whole B5 book into ONE print-ready PDF via headless Chromium.
@@ -11,6 +14,17 @@ import { SITE_URL } from "@/lib/site";
  * signed into a short-lived HMAC token, Puppeteer is pointed at the internal
  * print page (/print/book/[token] — reachable without an auth cookie), and the
  * resulting PDF is streamed straight back.
+ *
+ * AUTHORIZATION (the print token alone is a *capability* — minting one must be
+ * gated, or anyone could request a PDF of another family's private book):
+ *   - The caller MUST be a signed-in owner.
+ *   - For a real bookId, `books.family_id` must equal the owner's family — a
+ *     mismatch is 403. The ownership comparison is the gate; we read the book
+ *     with the admin client only to *fetch* family_id, never to skip the check.
+ *   - The "sample" preview book is non-production only (it carries no private
+ *     data, but in prod there is no legitimate caller for it → 403).
+ *   - Rate-limited to a few renders/hour per owner+IP (cold-starting Chromium
+ *     is expensive); fail-open so a KV outage can't block a paying owner.
  *
  * Engine: puppeteer-core + @sparticuz/chromium on Vercel; the full `puppeteer`
  * (optionalDependency) with its bundled Chromium when running locally. Node 22.17+
@@ -65,6 +79,24 @@ async function launchBrowser(): Promise<Browser> {
 }
 
 export async function POST(req: NextRequest) {
+  // 1) Authentication — only a signed-in owner may mint a print token. Anyone
+  // else (anonymous, or a senior) is rejected before any work happens.
+  const user = await currentUser();
+  if (!user || user.role !== "owner") {
+    return NextResponse.json({ error: "Přihlaste se prosím." }, { status: 401 });
+  }
+
+  // 2) Rate-limit per owner+IP. Render is a cold Chromium boot (tens of
+  // seconds, 300s budget) — a tight cap stops a script from pinning the
+  // function. Fail-open: a KV outage must never block a paying owner.
+  const rl = await checkRateLimitWithHeaders("print", req.headers, user.id);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "Příliš mnoho žádostí o tisk. Zkuste to prosím za chvíli." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+    );
+  }
+
   let body: Body = {};
   try {
     body = (await req.json()) as Body;
@@ -72,6 +104,36 @@ export async function POST(req: NextRequest) {
     // Empty/invalid body → default to the sample book.
   }
   const bookId = body.bookId?.trim() || "sample";
+
+  // 3) Authorization for the named book.
+  if (bookId === "sample") {
+    // The dev-preview book exists only to test the pipeline. There is no
+    // legitimate production caller for it, so deny it outside dev/preview.
+    if (process.env.VERCEL_ENV === "production") {
+      return NextResponse.json({ error: "Kniha nenalezena." }, { status: 404 });
+    }
+  } else {
+    // Real book: it must belong to the caller's family. We read it with the
+    // admin client to *get* family_id, then enforce the ownership comparison
+    // here — service-role is never used to skip the check.
+    if (!user.familyId) {
+      return NextResponse.json({ error: "Tato kniha vám nepatří." }, { status: 403 });
+    }
+    const { data: book, error } = await createAdminClient()
+      .from("books")
+      .select("family_id")
+      .eq("id", bookId)
+      .maybeSingle<{ family_id: string }>();
+    if (error) {
+      console.error("[print/book] book lookup failed", { bookId, error });
+      return NextResponse.json({ error: "Knihu se nepodařilo načíst." }, { status: 500 });
+    }
+    if (!book || book.family_id !== user.familyId) {
+      // Same 403 whether the book is missing or owned by another family — don't
+      // leak which book IDs exist.
+      return NextResponse.json({ error: "Tato kniha vám nepatří." }, { status: 403 });
+    }
+  }
 
   // Fail fast with a clear message if the signing secret is missing, rather
   // than letting the print page 404 mysteriously.

@@ -11,6 +11,7 @@ import {
   COVER_BG,
   COVER_TEXT,
   isLegibleCover,
+  isPremiumCover,
   type CoverBg,
   type CoverText,
 } from "@/lib/book/cover";
@@ -42,15 +43,15 @@ const QuestionSchema = z.object({
 // Record<phaseKey, Question[]> — the assembled selection from the configurator.
 const QuestionsSchema = z.record(z.string(), z.array(QuestionSchema));
 
-const ShippingAddressSchema = z
-  .object({
-    name: z.string().trim().max(160).optional(),
-    street: z.string().trim().max(200).optional(),
-    city: z.string().trim().max(120).optional(),
-    zip: z.string().trim().max(20).optional(),
-    note: z.string().trim().max(500).optional(),
-  })
-  .partial();
+// A paid book has to go somewhere — name + full address are required.
+// Only the order note stays optional.
+const ShippingAddressSchema = z.object({
+  name: z.string().trim().min(2, "Vyplňte prosím jméno a příjmení.").max(160),
+  street: z.string().trim().min(2, "Vyplňte prosím ulici a číslo popisné.").max(200),
+  city: z.string().trim().min(2, "Vyplňte prosím město.").max(120),
+  zip: z.string().trim().min(3, "Vyplňte prosím PSČ.").max(20),
+  note: z.string().trim().max(500).optional(),
+});
 
 const InputSchema = z.object({
   buyerName: z.string().trim().min(2, "Vyplňte prosím jméno.").max(160),
@@ -58,8 +59,14 @@ const InputSchema = z.object({
   recipientGender: z.enum(["male", "female"]).nullable().optional(),
   coverBg: z.enum(coverBgValues).optional(),
   coverText: z.enum(coverTextValues).optional(),
+  giftwrap: z.boolean().optional(),
+  dedication: z.string().trim().max(500).optional(),
+  copies: z.coerce.number().int().min(1).max(10).optional(),
+  // Which gift-book product this is. The configurator (/kniha/sestavit) sends
+  // "custom" (899); the simple standard checkout sends "standard" (599).
+  tier: z.enum(["standard", "custom"]).optional(),
   questions: QuestionsSchema,
-  shippingAddress: ShippingAddressSchema.optional(),
+  shippingAddress: ShippingAddressSchema,
 });
 
 export type CreateGiftOrderInput = z.input<typeof InputSchema>;
@@ -82,7 +89,15 @@ export async function createGiftOrder(
   }
   const input = parsed.data;
 
-  const total = countQuestions(input.questions);
+  // Drop blank questions (an unfilled custom box) so they aren't counted, priced,
+  // or printed as empty lines.
+  const questions: typeof input.questions = {};
+  for (const [phaseKey, arr] of Object.entries(input.questions)) {
+    const kept = arr.filter((q) => q.text.trim().length > 0);
+    if (kept.length > 0) questions[phaseKey] = kept;
+  }
+
+  const total = countQuestions(questions);
   if (total === 0) {
     return { ok: false, error: "Vyberte aspoň jednu otázku." };
   }
@@ -95,7 +110,23 @@ export async function createGiftOrder(
       ? input.coverText
       : null;
 
-  const priceCzk = priceForProductCzk("shop_book_custom");
+  // Server is authoritative on price — never trust a client-supplied amount.
+  // Tiered base declared by the flow: standard (599, curated questions, simple
+  // checkout) vs custom (899, the configurator). Then add premium cover (+99),
+  // giftwrap (+290) and each extra printed copy (the first is included).
+  const baseProduct = input.tier === "standard" ? "shop_book_standard" : "shop_book_custom";
+
+  const giftwrap = input.giftwrap ?? false;
+  const copies = input.copies ?? 1;
+  const dedication =
+    giftwrap && input.dedication && input.dedication.length > 0 ? input.dedication : null;
+
+  const priceCzk =
+    priceForProductCzk(baseProduct) +
+    (coverBg && isPremiumCover(coverBg) ? priceForProductCzk("book_cover_premium") : 0) +
+    (giftwrap ? priceForProductCzk("book_giftwrap") : 0) +
+    (copies > 1 ? (copies - 1) * priceForProductCzk("book_print_extra") : 0);
+
   const admin = createAdminClient();
 
   // 1) Insert the draft. We own this row end-to-end (service-role).
@@ -108,8 +139,11 @@ export async function createGiftOrder(
       recipient_gender: input.recipientGender ?? null,
       cover_bg: coverBg,
       cover_text: coverText,
-      questions: input.questions as Json,
-      shipping_address: (input.shippingAddress ?? null) as Json,
+      giftwrap,
+      dedication,
+      copies,
+      questions: questions as Json,
+      shipping_address: input.shippingAddress as Json,
       amount_czk: priceCzk,
       currency: "czk",
     })

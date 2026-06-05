@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonical } from "@/lib/site";
 import { Shell } from "@/components/landing/Shell";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   title: "Jak to funguje",
   description:
     "Čtyři kroky od přihlášení k tištěné knize. Týdenní otázka, jednoduchá odpověď hlasem nebo textem, automatický přepis a rodinná knihovna.",
+  alternates: { canonical: canonical("/jak-to-funguje") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -48,7 +50,7 @@ const STEPS = [
     eyebrow: "Když je vzpomínek dost",
     title: "Vytisknete knihu",
     body: "Online náhled vám ukáže přesné rozložení stránek, sazbu i fotky. Když je vše tak, jak chcete, kliknete na „Objednat tisk“. Kniha přijde za 2–3 týdny — tvrdé desky, šitá vazba, krémový papír.",
-    aside: "Tisk se účtuje až ve chvíli objednávky. Online přístup do knihovny vám zůstává navždy, i kdyby k tisku nikdy nedošlo.",
+    aside: "První tištěná kniha je v ceně — objednáte ji, až bude hotová. Online přístup do knihovny vám zůstává navždy, i kdyby k tisku nikdy nedošlo.",
   },
 ] as const;
 

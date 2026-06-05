@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { currentBookForSenior } from "@/lib/books/server";
+import { nextMondayUtc, addDays } from "@/lib/prompts/schedule";
 
 export type PromptResult = { ok: true } | { ok: false; error: string };
 
@@ -61,6 +62,7 @@ export async function scheduleNextMonday(
   if (error) return { ok: false, error: "Nepodařilo se naplánovat." };
 
   revalidatePath(`/family/${familyId}/prompts`);
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -122,6 +124,7 @@ export async function scheduleToday(
   if (error) return { ok: false, error: "Nepodařilo se naplánovat." };
 
   revalidatePath(`/family/${familyId}/prompts`);
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -214,21 +217,6 @@ export async function addCustomPromptAndSchedule(
   if (schedErr) return { ok: false, error: "Nepodařilo se naplánovat." };
 
   revalidatePath(`/family/${familyId}/prompts`);
+  revalidatePath("/dashboard");
   return { ok: true };
-}
-
-/* -------------------------------------------------------------------------- */
-function nextMondayUtc(d: Date): Date {
-  const out = new Date(d);
-  const day = out.getUTCDay();
-  const offset = day === 1 ? 7 : (8 - day) % 7;
-  out.setUTCDate(out.getUTCDate() + offset);
-  out.setUTCHours(10, 0, 0, 0);
-  return out;
-}
-
-function addDays(d: Date, n: number): Date {
-  const out = new Date(d);
-  out.setUTCDate(out.getUTCDate() + n);
-  return out;
 }

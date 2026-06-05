@@ -4,12 +4,22 @@ import { Shell } from "@/components/landing/Shell";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 import { KnihaHeroScroll } from "@/components/landing/KnihaHeroScroll";
+import { canonical } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Kniha vzpomínek — vyplňovací kniha jako dárek",
   description:
     "Klasická tištěná kniha s otázkami napříč šesti životními obdobími. Darujete ji blízkému, on ji vlastní rukou vyplní — a vznikne rodinná kronika jeho slovy. Otázky si můžete sami sestavit.",
+  alternates: { canonical: canonical("/kniha") },
 };
+
+// Tiered gift-book price (display). Mirrors priceForProductCzk on the server;
+// `|| fallback` so an unset/0 env (free-path dev/preview) still shows the real price.
+const PRICE_STANDARD = Number(process.env.PRICE_SHOP_BOOK_STANDARD_CZK) || 599;
+const PRICE_CUSTOM = Number(process.env.PRICE_SHOP_BOOK_CUSTOM_CZK) || 899;
+function formatCzk(n: number): string {
+  return `${n.toLocaleString("cs-CZ")} Kč`;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
  * /kniha — fyzická vyplňovací kniha (doplněk k appce)
@@ -252,7 +262,7 @@ export default function KnihaPage() {
         <div className="container">
           <div className="section-head">
             <span className="eyebrow">Cena</span>
-            <h2>Jedna kniha, dvě varianty.</h2>
+            <h2>Dvě varianty, jedna kniha.</h2>
             <p className="lede">
               Jednorázová platba, poštovné zdarma (ČR i SK). Žádné předplatné.
             </p>
@@ -261,11 +271,12 @@ export default function KnihaPage() {
             style={{
               display: "grid",
               gap: "20px",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               maxWidth: "760px",
               margin: "48px auto 0",
             }}
           >
+            {/* Standard tier — our curated questions */}
             <div
               data-reveal
               style={{
@@ -278,7 +289,7 @@ export default function KnihaPage() {
                 gap: "12px",
               }}
             >
-              <span className="eyebrow">Standardní</span>
+              <span className="eyebrow">Doporučené otázky</span>
               <div
                 style={{
                   fontFamily: "var(--font-display-editorial)",
@@ -287,23 +298,24 @@ export default function KnihaPage() {
                   color: "var(--ink)",
                 }}
               >
-                599 Kč
+                {formatCzk(PRICE_STANDARD)}
               </div>
               <p style={{ flex: 1 }}>
-                Kniha s ~300 pečlivě vybranými otázkami napříč šesti životními
-                obdobími. Stačí darovat.
+                Naše otázky napříč šesti životními obdobími. Stačí vybrat, komu
+                knihu věnujete, a objednat — bez sestavování.
               </p>
               <Link
-                href="/kniha/sestavit"
+                href="/kniha/objednat"
                 className="btn btn-outline"
                 style={{ width: "100%", justifyContent: "space-between" }}
               >
-                Koupit standardní <span className="arrow">↗</span>
+                Objednat knihu <span className="arrow">↗</span>
               </Link>
             </div>
+
+            {/* Custom tier — the buyer adds their own questions */}
             <div
               data-reveal
-              data-reveal-delay-100
               style={{
                 border: "2px solid var(--gold)",
                 borderRadius: "12px",
@@ -323,18 +335,18 @@ export default function KnihaPage() {
                   color: "var(--ink)",
                 }}
               >
-                1 099 Kč
+                {formatCzk(PRICE_CUSTOM)}
               </div>
               <p style={{ flex: 1 }}>
-                Projdete šest životních fází a otázky si sami přidáte, odeberete
-                nebo přepíšete. Kniha na míru.
+                Otázky si sami přidáte, odeberete nebo přepíšete. Kniha přesně
+                o tom, co vás u vašeho blízkého zajímá.
               </p>
               <Link
                 href="/kniha/sestavit"
                 className="btn btn-gold"
                 style={{ width: "100%", justifyContent: "space-between" }}
               >
-                Sestavit vlastní <span className="arrow">↗</span>
+                Sestavit vlastní knihu <span className="arrow">↗</span>
               </Link>
             </div>
           </div>

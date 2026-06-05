@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, MessageSquare } from "lucide-react";
+import { ChevronRight, MessageSquare, Compass } from "lucide-react";
 import { requireOwner } from "@/lib/auth/permissions";
 import { FormSection } from "@/components/ui/form-section";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
@@ -35,6 +35,31 @@ export default async function SettingsPage() {
             </p>
             <p className="text-xs text-[var(--color-text-muted)]">
               Kam a jak často posílat otázky blízkému.
+            </p>
+          </div>
+        </div>
+        <ChevronRight
+          size={16}
+          className="text-[var(--color-text-subtle)] transition-transform group-hover:translate-x-0.5"
+          aria-hidden
+        />
+      </Link>
+
+      {/* Replay the first-run dashboard tour (?tour=1 force-shows it). */}
+      <Link
+        href="/dashboard?tour=1"
+        className="group flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white px-5 py-4 transition-colors hover:border-[var(--color-paper-300)]"
+      >
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-paper-100)] text-[var(--color-navy-700)]">
+            <Compass size={16} aria-hidden />
+          </span>
+          <div>
+            <p className="text-[15px] font-semibold text-[var(--color-navy-900)]">
+              Spustit prohlídku znovu
+            </p>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Krátké provedení dashboardem, kde co najdete.
             </p>
           </div>
         </div>

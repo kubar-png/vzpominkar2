@@ -6,6 +6,14 @@ import { batchSignUrls } from "@/lib/family/server";
 import { genderFromSeniorRole, type Gender } from "@/lib/gender";
 import { SITE_URL } from "@/lib/site";
 import { buildSampleBook } from "@/lib/book/sample";
+import {
+  COVER_BG_HEX,
+  COVER_TEXT_HEX,
+  DEFAULT_COVER_BG,
+  DEFAULT_COVER_TEXT,
+  type CoverBg,
+  type CoverText,
+} from "@/lib/book/cover";
 
 /**
  * Resolve a print job's `id` into the props BookDocument needs.
@@ -73,7 +81,7 @@ async function loadRealBook(bookId: string): Promise<BookDocumentProps | null> {
 
   const { data: book } = await admin
     .from("books")
-    .select("id, title, family_id, senior_id, senior_display_name")
+    .select("id, title, family_id, senior_id, senior_display_name, cover_bg, cover_text")
     .eq("id", bookId)
     .maybeSingle<{
       id: string;
@@ -81,9 +89,21 @@ async function loadRealBook(bookId: string): Promise<BookDocumentProps | null> {
       family_id: string;
       senior_id: string | null;
       senior_display_name: string | null;
+      cover_bg: string | null;
+      cover_text: string | null;
     }>();
 
   if (!book) return null;
+
+  // `cover_bg`/`cover_text` are stored as free-form strings; narrow them to the
+  // shared cover unions and fall back to the included brown+gold cover for any
+  // unknown value so the PDF cover always renders a valid hex.
+  const coverBg: CoverBg =
+    book.cover_bg && book.cover_bg in COVER_BG_HEX ? (book.cover_bg as CoverBg) : DEFAULT_COVER_BG;
+  const coverText: CoverText =
+    book.cover_text && book.cover_text in COVER_TEXT_HEX
+      ? (book.cover_text as CoverText)
+      : DEFAULT_COVER_TEXT;
 
   // Recipient gender → resolves "{masc|fem}" tokens in question text.
   let gender: Gender | null = null;
@@ -187,5 +207,7 @@ async function loadRealBook(bookId: string): Promise<BookDocumentProps | null> {
     mode: "filled",
     sections,
     gender: gender ?? undefined,
+    coverBg,
+    coverText,
   };
 }

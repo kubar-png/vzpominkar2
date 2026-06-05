@@ -10,9 +10,11 @@ import {
   COVER_TEXT,
   COVER_BG_HEX,
   COVER_TEXT_HEX,
+  COVER_PREMIUM_CZK,
   DEFAULT_COVER_BG,
   DEFAULT_COVER_TEXT,
   isLegibleCover,
+  isPremiumCover,
   defaultTextFor,
   type CoverBg,
   type CoverText,
@@ -27,13 +29,23 @@ type Selection = Record<string, Q[]>;
 
 const STORAGE_KEY = "kniha-config-v1";
 const META_KEY = "kniha-config-meta-v1";
-const PRICE_CUSTOM = "1 099 Kč";
+// The configurator ALWAYS builds the custom book (the buyer reorders / adds /
+// removes / writes their own questions), so it's always the custom price. The
+// cheaper standard book (curated questions, no editing) is bought via its own
+// simple checkout at /kniha/objednat. Mirrors priceForProductCzk("shop_book_custom")
+// on the server, which stays authoritative. Cover/packaging surcharges add on top.
+const PRICE_BASE_CZK = 899;
 const PHASE_COUNT = BOOK_PHASES.length;
 
 function pluralQ(n: number): string {
   if (n === 1) return "otázka";
   if (n >= 2 && n <= 4) return "otázky";
   return "otázek";
+}
+
+/** Czech price formatting: thin-space thousands + " Kč" (e.g. 1 198 Kč). */
+function formatCzk(n: number): string {
+  return `${n.toLocaleString("cs-CZ")} Kč`;
 }
 
 function buildDefault(): Selection {
@@ -126,6 +138,14 @@ export function Configurator() {
     [selection],
   );
 
+  // Display price = base (always the custom book) + premium-cover surcharge.
+  // Gift wrapping (+290) is chosen in the order form, so it's added to the total
+  // there; here we show the book + cover. The server recomposes the authoritative
+  // amount at checkout.
+  const basePriceCzk = PRICE_BASE_CZK;
+  const coverSurcharge = isPremiumCover(coverBg) ? COVER_PREMIUM_CZK : 0;
+  const priceLabel = formatCzk(basePriceCzk + coverSurcharge);
+
   const isRecap = step >= PHASE_COUNT;
   const phase = BOOK_PHASES[Math.min(step, PHASE_COUNT - 1)]!;
   const inBook = selection[phase.key] ?? [];
@@ -205,15 +225,16 @@ export function Configurator() {
         </div>
 
         <div className="kc-top-r">
-          <span className="kc-top-count">
-            {total} {pluralQ(total)} · {PRICE_CUSTOM}
-          </span>
+          <div className="kc-top-price">
+            <span className="kc-top-price-count">{total} {pluralQ(total)}</span>
+            <span className="kc-top-price-amount">{priceLabel}</span>
+          </div>
           {isRecap ? (
-            <button type="button" className="btn btn-outline" onClick={() => goToStep(0)}>
-              Upravit otázky
+            <button type="button" className="btn btn-outline kc-top-cta" onClick={() => goToStep(0)}>
+              Upravit otázky <span className="arrow">↗</span>
             </button>
           ) : (
-            <button type="button" className="btn btn-gold" onClick={() => goToStep(PHASE_COUNT)}>
+            <button type="button" className="btn btn-gold kc-top-cta" onClick={() => goToStep(PHASE_COUNT)}>
               K objednávce <span className="arrow">↗</span>
             </button>
           )}
@@ -223,20 +244,18 @@ export function Configurator() {
       {/* ── Phase pills ── */}
       <nav className="kc-steps" aria-label="Životní fáze">
         <ol>
-          {BOOK_PHASES.map((p, i) => {
-            const count = (selection[p.key] ?? []).length;
-            return (
-              <li key={p.key}>
-                <button
-                  type="button"
-                  className={i === step && !isRecap ? "is-current" : ""}
-                  onClick={() => goToStep(i)}
-                >
-                  {p.title} <span className="kc-step-num">{count}</span>
-                </button>
-              </li>
-            );
-          })}
+          {BOOK_PHASES.map((p, i) => (
+            <li key={p.key}>
+              <button
+                type="button"
+                className={i === step && !isRecap ? "is-current" : ""}
+                onClick={() => goToStep(i)}
+              >
+                {/* Sequential life-phase number (the badge is the order, not a count). */}
+                <span className="kc-step-num">{i + 1}</span> {p.title}
+              </button>
+            </li>
+          ))}
           <li>
             <button
               type="button"
@@ -255,7 +274,9 @@ export function Configurator() {
           <OrderForm
             total={total}
             pluralQ={pluralQ}
-            price={PRICE_CUSTOM}
+            basePriceCzk={basePriceCzk}
+            coverSurchargeCzk={coverSurcharge}
+            formatCzk={formatCzk}
             onBack={() => setShowOrder(false)}
           />
         ) : isRecap ? (
@@ -279,17 +300,24 @@ export function Configurator() {
                 <div className="kc-cover-controls">
                   <p className="kc-cover-label">Barva přebalu</p>
                   <div className="kc-swatches">
-                    {COVER_BG.map((o) => (
-                      <button
-                        key={o.value}
-                        type="button"
-                        onClick={() => chooseCoverBg(o.value)}
-                        aria-pressed={coverBg === o.value}
-                        title={o.label}
-                        className={`kc-swatch${coverBg === o.value ? " is-on" : ""}`}
-                        style={{ background: o.hex }}
-                      />
-                    ))}
+                    {COVER_BG.map((o) => {
+                      const premium = isPremiumCover(o.value);
+                      return (
+                        <button
+                          key={o.value}
+                          type="button"
+                          onClick={() => chooseCoverBg(o.value)}
+                          aria-pressed={coverBg === o.value}
+                          title={premium ? `${o.label} — příplatek ${COVER_PREMIUM_CZK} Kč` : `${o.label} — v ceně`}
+                          className={`kc-swatch${coverBg === o.value ? " is-on" : ""}`}
+                          style={{ background: o.hex }}
+                        >
+                          {premium ? (
+                            <span className="kc-swatch-price">+{COVER_PREMIUM_CZK} Kč</span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
                   </div>
                   <p className="kc-cover-label">Barva textu</p>
                   <div className="kc-text-opts">
@@ -326,9 +354,23 @@ export function Configurator() {
                     </li>
                   ))}
                 </ul>
+                <div className="kc-recap-prices">
+                  <div className="kc-recap-priceline">
+                    <span>Kniha na míru</span>
+                    <span>{formatCzk(basePriceCzk)}</span>
+                  </div>
+                  {/* Always rendered so picking a colour fills the value in
+                      place instead of inserting a row and shifting the layout. */}
+                  <div className="kc-recap-priceline">
+                    <span>Barevný přebal</span>
+                    <span className={coverSurcharge > 0 ? undefined : "kc-recap-muted"}>
+                      {coverSurcharge > 0 ? `+${formatCzk(coverSurcharge)}` : "v ceně"}
+                    </span>
+                  </div>
+                </div>
                 <div className="kc-recap-total">
                   <span>Celkem {total} {pluralQ(total)}</span>
-                  <strong>{PRICE_CUSTOM}</strong>
+                  <strong>{priceLabel}</strong>
                 </div>
                 <button
                   type="button"
@@ -355,10 +397,17 @@ export function Configurator() {
                     {pool.map((q) => (
                       <li key={q.id}>
                         <button type="button" className="kc-pool-item" onClick={() => addSuggestion(q)}>
+                          <span className="kc-pool-text">{resolveGender(q.text, gender)}</span>
                           <span className="kc-pool-plus" aria-hidden>
-                            +
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                              <path
+                                d="M8 2.6V13.4M2.6 8H13.4"
+                                stroke="currentColor"
+                                strokeWidth="2.4"
+                                strokeLinecap="round"
+                              />
+                            </svg>
                           </span>
-                          <span>{resolveGender(q.text, gender)}</span>
                         </button>
                       </li>
                     ))}

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonical } from "@/lib/site";
 import { LegalLayout } from "@/components/marketing/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Cookies",
   description:
     "Jaké cookies Vzpomínkář používá, k čemu jsou potřeba a jak je můžete vypnout.",
+  alternates: { canonical: canonical("/cookies") },
 };
 
 export default function CookiesPage() {

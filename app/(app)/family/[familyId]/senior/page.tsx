@@ -7,7 +7,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
 import { SeniorPasswordReset } from "./senior-password-reset";
-import { SITE_HOST } from "@/lib/site";
+import { SeniorMagicLink } from "./senior-magic-link";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Blízký" };
 
@@ -25,7 +26,7 @@ export default async function SeniorAdminPage({
   const supabase = createAdminClient();
   let query = supabase
     .from("profiles")
-    .select("id, display_name, username, created_at")
+    .select("id, display_name, username, created_at, magic_token")
     .eq("family_id", familyId)
     .eq("role", "senior");
 
@@ -38,6 +39,7 @@ export default async function SeniorAdminPage({
     display_name: string | null;
     username: string | null;
     created_at: string;
+    magic_token: string | null;
   }>();
 
   if (!senior) {
@@ -93,6 +95,22 @@ export default async function SeniorAdminPage({
           </dl>
         </CardContent>
       </Card>
+
+      {senior.magic_token ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Odkaz pro vyprávějícího</CardTitle>
+            <CardDescription>
+              Tímto odkazem se váš blízký dostane rovnou ke svým otázkám — bez
+              přihlašování. Pošlete mu ho v SMS nebo přes WhatsApp. Platí trvale;
+              nepředávejte ho nikomu cizímu.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SeniorMagicLink url={`${SITE_URL}/q/${senior.magic_token}`} />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <SeniorPasswordReset familyId={familyId} seniorId={senior.id} username={senior.username ?? ""} />
     </div>

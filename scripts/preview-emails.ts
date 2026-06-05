@@ -63,7 +63,6 @@ async function main() {
         question:
           "Jaký byl váš nejoblíbenější rituál v dětství — něco, co se opakovalo a na co se vždy těšila celá rodina?",
         appUrl: APP_URL,
-        token: "demo-magic-token",
       }),
     },
     {

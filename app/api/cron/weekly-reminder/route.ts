@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { planWeeklyQueue } from "@/lib/prompts/schedule";
 import { sendEmail } from "@/lib/email/send";
-import { weeklyReminderEmail } from "@/lib/email/templates";
+import { weeklyReminderEmail, bookFullEmail } from "@/lib/email/templates";
 import { resolveGender } from "@/lib/gender";
 import { SITE_URL } from "@/lib/site";
+import { priceForProductCzk } from "@/lib/stripe/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,16 +27,31 @@ export async function GET(req: NextRequest) {
   }
 
   const admin = createAdminClient();
+
+  // ── Auto-plan pass (runs BEFORE the send pass) ──────────────────────────────
+  // Top up each active senior's queue with the next library question (scheduled
+  // for today = the send day), so the same run delivers it. Keeps the weekly
+  // loop self-sustaining once the owner has scheduled the first question. A
+  // failure here must never block the reminder pass below.
+  let planned = 0;
+  try {
+    const res = await planWeeklyQueue(admin);
+    planned = res.planned;
+  } catch (err) {
+    console.error("[weekly-reminder] auto-plan pass failed", err);
+  }
+
   const today = new Date();
-  const isoToday = today.toISOString().slice(0, 10);
   const isoWeekEnd = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
-  // Pull due, unanswered, un-reminded assignments for the current week.
+  // Pull due, unanswered, un-reminded assignments through the end of this week.
+  // No lower bound on scheduled_for: a question that slipped past its date with
+  // no answer still deserves a nudge (it was previously skipped — a silent
+  // drop-off). `reminded_at` guarantees we only nudge each one once.
   const { data: rows, error } = await admin
     .from("prompt_assignments")
     .select("id, family_id, scheduled_for, prompts(question), families(senior_display_name), books(status)")
     .lte("scheduled_for", isoWeekEnd)
-    .gte("scheduled_for", isoToday)
     .is("answered_memory_id", null)
     .is("reminded_at", null)
     .returns<
@@ -63,6 +80,7 @@ export async function GET(req: NextRequest) {
     contact_channel: string | null;
     contact_address: string | null;
     gender: string | null;
+    magic_token: string | null;
   };
   const familyIds = [...new Set((rows ?? []).map((r) => r.family_id))];
   const seniorByFamily = new Map<string, Prof>();
@@ -70,7 +88,7 @@ export async function GET(req: NextRequest) {
   if (familyIds.length) {
     const { data: profs } = await admin
       .from("profiles")
-      .select("family_id, role, email, display_name, contact_channel, contact_address, gender")
+      .select("family_id, role, email, display_name, contact_channel, contact_address, gender, magic_token")
       .in("family_id", familyIds)
       .in("role", ["senior", "owner"])
       .returns<Prof[]>();
@@ -113,13 +131,19 @@ export async function GET(req: NextRequest) {
     const seniorName =
       senior?.display_name ?? row.families?.senior_display_name ?? "Vzpomínkář";
 
-    const tpl = weeklyReminderEmail({
-      seniorDisplayName: seniorName,
-      question: resolveGender(row.prompts.question, (senior?.gender as "male" | "female" | null) ?? null),
-      appUrl,
-    });
+    const question = resolveGender(
+      row.prompts.question,
+      (senior?.gender as "male" | "female" | null) ?? null,
+    );
 
     if (seniorEmail) {
+      // Magic link: one click signs the senior in (no password) and lands them
+      // on this week's question. Falls back to /senior-login if the token is
+      // somehow missing. Goes ONLY to the senior's own inbox.
+      const actionUrl = senior?.magic_token
+        ? `${appUrl}/q/${senior.magic_token}`
+        : `${appUrl}/senior-login`;
+      const tpl = weeklyReminderEmail({ seniorDisplayName: seniorName, question, appUrl, actionUrl });
       await sendEmail({
         to: seniorEmail,
         bcc: ownerEmail ? [ownerEmail] : undefined,
@@ -129,7 +153,10 @@ export async function GET(req: NextRequest) {
         tag: "weekly_reminder",
       });
     } else if (ownerEmail) {
-      // No senior email - still notify the owner so they can prompt verbally.
+      // No senior email — notify the owner so they can prompt verbally. The owner
+      // copy must NOT carry the senior's personal magic link, so it points at the
+      // generic /senior-login instead.
+      const tpl = weeklyReminderEmail({ seniorDisplayName: seniorName, question, appUrl });
       await sendEmail({
         to: ownerEmail,
         subject: `Připomínka pro ${seniorName}`,
@@ -150,5 +177,112 @@ export async function GET(req: NextRequest) {
     sent++;
   }
 
-  return NextResponse.json({ ok: true, sent, skipped, total: rows?.length ?? 0 });
+  // ---------------------------------------------------------------------------
+  // Milestone: a book just reached 52/52 → invite the owner to order the next
+  // díl. Best-effort and idempotent: we never send twice for the same book, and
+  // a failure here must not affect the reminder result above.
+  //
+  // refreshBookFullness() (called when a memory is answered) flips a book to
+  // 'full' once it hits its prompt_cap, so "full" books are exactly the ones
+  // that hit the milestone. The activity_log 'book.full_notified' marker is the
+  // correctness boundary — we look full books up against it and only email +
+  // mark the ones not yet notified. The 30-day updated_at window just keeps the
+  // weekly scan bounded; the marker prevents any duplicate even outside it.
+  // ---------------------------------------------------------------------------
+  let milestoneSent = 0;
+  try {
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: fullBooks } = await admin
+      .from("books")
+      .select("id, family_id, senior_id, sequence_no, senior_display_name")
+      .eq("status", "full")
+      .eq("paid", true)
+      .gte("updated_at", thirtyDaysAgo)
+      .returns<
+        {
+          id: string;
+          family_id: string;
+          senior_id: string | null;
+          sequence_no: number;
+          senior_display_name: string | null;
+        }[]
+      >();
+
+    for (const book of fullBooks ?? []) {
+      // Idempotency guard — skip if we've already notified for this book.
+      const { count: alreadyNotified } = await admin
+        .from("activity_log")
+        .select("id", { count: "exact", head: true })
+        .eq("family_id", book.family_id)
+        .eq("action", "book.full_notified")
+        .contains("metadata", { bookId: book.id });
+      if ((alreadyNotified ?? 0) > 0) continue;
+
+      // Owner inbox for this family.
+      const { data: ownerProf } = await admin
+        .from("profiles")
+        .select("email, display_name")
+        .eq("family_id", book.family_id)
+        .eq("role", "owner")
+        .limit(1)
+        .maybeSingle<{ email: string | null; display_name: string | null }>();
+
+      const ownerEmail = ownerProf?.email ?? null;
+      if (!ownerEmail) continue;
+
+      // Senior display name: prefer the book's snapshot, fall back to the
+      // senior profile, then a gentle default.
+      let seniorName = book.senior_display_name ?? null;
+      if (!seniorName && book.senior_id) {
+        const { data: seniorProf } = await admin
+          .from("profiles")
+          .select("display_name")
+          .eq("id", book.senior_id)
+          .maybeSingle<{ display_name: string | null }>();
+        seniorName = seniorProf?.display_name ?? null;
+      }
+
+      const tpl = bookFullEmail({
+        ownerDisplayName: ownerProf?.display_name ?? "",
+        seniorDisplayName: seniorName ?? "váš blízký",
+        volumeNo: book.sequence_no,
+        // Server-priced — never trust a client. The next díl is a book_addon SKU.
+        nextVolumeCzk: priceForProductCzk("book_addon"),
+        appUrl,
+        familyId: book.family_id,
+      });
+
+      const res = await sendEmail({
+        to: ownerEmail,
+        subject: tpl.subject,
+        html: tpl.html,
+        text: tpl.text,
+        tag: "book_full_milestone",
+      });
+
+      // Only stamp the idempotency marker once delivery was accepted, so a
+      // transient send failure is retried next week instead of silently lost.
+      if (res) {
+        await admin.from("activity_log").insert({
+          family_id: book.family_id,
+          actor_id: null,
+          action: "book.full_notified",
+          metadata: { bookId: book.id },
+        });
+        milestoneSent++;
+      }
+    }
+  } catch (err) {
+    // A milestone failure must never fail the weekly reminder cron.
+    console.error("[weekly-reminder] milestone pass failed", err);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    planned,
+    sent,
+    skipped,
+    milestoneSent,
+    total: rows?.length ?? 0,
+  });
 }

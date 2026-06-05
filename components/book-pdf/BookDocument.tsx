@@ -53,7 +53,7 @@ export interface BookDocumentProps {
   qr?: string;
   /** Grammatical gender of the recipient; resolves "{masc|fem}" question tokens. Omitted → slash fallback. */
   gender?: Gender;
-  /** Cover background colour (shared options, lib/book/cover.ts). Defaults to navy. */
+  /** Cover background colour (shared options, lib/book/cover.ts). Defaults to the included brown. */
   coverBg?: CoverBg;
   /** Cover foil/ink colour. Defaults to gold. */
   coverText?: CoverText;
@@ -132,9 +132,7 @@ export function BookDocument({
                 {qr ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={qr} alt="" className={styles.qr} />
-                ) : (
-                  <span className={styles.qr}>QR</span>
-                )}
+                ) : null}
               </footer>
             </article>
           ))}

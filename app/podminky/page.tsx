@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonical } from "@/lib/site";
 import { LegalLayout } from "@/components/marketing/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Obchodní podmínky",
   description:
     "Pravidla, za kterých Vzpomínkář poskytuje službu sběru rodinných vzpomínek a tisku rodinné kroniky.",
+  alternates: { canonical: canonical("/podminky") },
 };
 
 export default function PodminkyPage() {

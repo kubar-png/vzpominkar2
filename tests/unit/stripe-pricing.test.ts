@@ -5,34 +5,52 @@ describe("priceForProductCzk", () => {
   const originalBase = process.env.PRICE_BOOK_BASE_CZK;
   const originalAddon = process.env.PRICE_BOOK_ADDON_CZK;
   const originalPrint = process.env.PRICE_BOOK_PRINT_CZK;
+  const originalStandard = process.env.PRICE_SHOP_BOOK_STANDARD_CZK;
   const originalShop = process.env.PRICE_SHOP_BOOK_CUSTOM_CZK;
+  const originalCover = process.env.PRICE_BOOK_COVER_PREMIUM_CZK;
+  const originalGiftwrap = process.env.PRICE_BOOK_GIFTWRAP_CZK;
 
   beforeEach(() => {
     delete process.env.PRICE_BOOK_BASE_CZK;
     delete process.env.PRICE_BOOK_ADDON_CZK;
     delete process.env.PRICE_BOOK_PRINT_CZK;
+    delete process.env.PRICE_SHOP_BOOK_STANDARD_CZK;
     delete process.env.PRICE_SHOP_BOOK_CUSTOM_CZK;
+    delete process.env.PRICE_BOOK_COVER_PREMIUM_CZK;
+    delete process.env.PRICE_BOOK_GIFTWRAP_CZK;
   });
 
   afterEach(() => {
     process.env.PRICE_BOOK_BASE_CZK = originalBase;
     process.env.PRICE_BOOK_ADDON_CZK = originalAddon;
     process.env.PRICE_BOOK_PRINT_CZK = originalPrint;
+    process.env.PRICE_SHOP_BOOK_STANDARD_CZK = originalStandard;
     process.env.PRICE_SHOP_BOOK_CUSTOM_CZK = originalShop;
+    process.env.PRICE_BOOK_COVER_PREMIUM_CZK = originalCover;
+    process.env.PRICE_BOOK_GIFTWRAP_CZK = originalGiftwrap;
   });
 
   it("defaults to 0 when env unset", () => {
     expect(priceForProductCzk("book_base")).toBe(0);
     expect(priceForProductCzk("book_addon")).toBe(0);
     expect(priceForProductCzk("book_print")).toBe(0);
+    expect(priceForProductCzk("book_print_extra")).toBe(0);
   });
 
-  it("gift book (shop_book_custom) defaults to 1099, but an explicit 0 takes the free path", () => {
-    expect(priceForProductCzk("shop_book_custom")).toBe(1099);
+  it("gift book is tiered: standard 599, custom 899; explicit 0 takes the free path", () => {
+    expect(priceForProductCzk("shop_book_standard")).toBe(599);
+    expect(priceForProductCzk("shop_book_custom")).toBe(899);
     process.env.PRICE_SHOP_BOOK_CUSTOM_CZK = "0";
     expect(priceForProductCzk("shop_book_custom")).toBe(0);
-    process.env.PRICE_SHOP_BOOK_CUSTOM_CZK = "1290";
-    expect(priceForProductCzk("shop_book_custom")).toBe(1290);
+    process.env.PRICE_SHOP_BOOK_STANDARD_CZK = "699";
+    expect(priceForProductCzk("shop_book_standard")).toBe(699);
+  });
+
+  it("pure-margin add-ons default to their code price (cover +99, giftwrap +290)", () => {
+    expect(priceForProductCzk("book_cover_premium")).toBe(99);
+    expect(priceForProductCzk("book_giftwrap")).toBe(290);
+    process.env.PRICE_BOOK_COVER_PREMIUM_CZK = "149";
+    expect(priceForProductCzk("book_cover_premium")).toBe(149);
   });
 
   it("reads positive integer prices", () => {

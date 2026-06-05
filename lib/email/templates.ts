@@ -278,13 +278,16 @@ export function weeklyReminderEmail(input: {
   seniorDisplayName: string;
   question: string;
   appUrl: string;
-  /** Optional secure-link token so the senior doesn't have to log in. */
-  token?: string;
+  /**
+   * The senior's magic link (/q/{token}) — one click signs them in (no password)
+   * and lands them on this week's question. Falls back to /senior-login when a
+   * token isn't available (or for the owner-fallback copy, which must not carry
+   * the senior's personal magic link).
+   */
+  actionUrl?: string;
 }) {
   const subject = "Tento týden vám rodina poslala otázku";
-  const primaryUrl = input.token
-    ? `${input.appUrl}/q/${input.token}`
-    : `${input.appUrl}/senior-login`;
+  const primaryUrl = input.actionUrl ?? `${input.appUrl}/senior-login`;
 
   const html = shell({
     title: subject,
@@ -542,6 +545,75 @@ export function shopGiftOrderConfirmationEmail(input: {
   ]
     .filter(Boolean)
     .join("\n");
+
+  return { subject, html, text };
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5c. Book full — milestone, invite owner to order the next volume (díl)      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Sent to the OWNER once the senior's book reaches its full count (52/52).
+ * Celebratory but quiet: the work is done, and the next díl is offered as a
+ * gentle continuation, never a hard sell. Drives to the in-app order page.
+ */
+export function bookFullEmail(input: {
+  ownerDisplayName: string;
+  seniorDisplayName: string;
+  /** Sequence number of the volume that just filled (Díl 1, Díl 2, …). */
+  volumeNo: number;
+  /** Price of the next volume in CZK (server-supplied). */
+  nextVolumeCzk: number;
+  appUrl: string;
+  familyId: string;
+}) {
+  const firstName = (input.ownerDisplayName.split(" ")[0] ?? input.ownerDisplayName).trim();
+  const subject = `Kniha pro ${input.seniorDisplayName} je plná`;
+  const ctaUrl = `${input.appUrl}/family/${input.familyId}/book`;
+  const nextVolumeNo = input.volumeNo + 1;
+  const priceLine =
+    input.nextVolumeCzk > 0
+      ? `Další díl pořídíte za zvýhodněnou cenu ${input.nextVolumeCzk.toLocaleString("cs-CZ")} Kč.`
+      : "Další díl pro vás máme připravený.";
+
+  const html = shell({
+    title: subject,
+    preheader: `Všech 52 otázek je zodpovězeno. Pokud chcete, můžete pokračovat dílem ${nextVolumeNo}.`,
+    headerEyebrow: "Kniha je plná",
+    body: `
+      ${h1(`Hotovo, ${firstName}.`)}
+      <p style="margin:0 0 14px 0;">
+        Kniha pro ${esc(input.seniorDisplayName)} je plná &mdash; všech 52 otázek je zodpovězeno.
+        Vzpomínky jsou uložené a připravené k tisku.
+      </p>
+      <p style="margin:0 0 24px 0;">
+        Vyprávění ale nemusí končit. Pokud má ${esc(input.seniorDisplayName)} chuť pokračovat,
+        můžete plynule otevřít Díl ${nextVolumeNo} a sbírat dál o stejném blízkém.
+        ${esc(priceLine)}
+      </p>
+      <p style="margin:0 0 8px 0;">${cta(`Otevřít Díl ${nextVolumeNo}`, ctaUrl)}</p>
+      ${HR}
+      <p style="margin:0;font-size:14px;color:${INK_SOFT};">
+        Nemusíte spěchat &mdash; první díl je v bezpečí. Kdykoli budete chtít, jsme tady.
+      </p>
+      ${signoff()}
+    `,
+  });
+
+  const text = [
+    `Hotovo, ${firstName}.`,
+    "",
+    `Kniha pro ${input.seniorDisplayName} je plná — všech 52 otázek je zodpovězeno. Vzpomínky jsou uložené a připravené k tisku.`,
+    "",
+    `Vyprávění ale nemusí končit. Pokud má ${input.seniorDisplayName} chuť pokračovat, můžete plynule otevřít Díl ${nextVolumeNo} a sbírat dál o stejném blízkém. ${priceLine}`,
+    "",
+    `Otevřít Díl ${nextVolumeNo}: ${ctaUrl}`,
+    "",
+    "Nemusíte spěchat — první díl je v bezpečí. Kdykoli budete chtít, jsme tady.",
+    "",
+    "Kuba a tým Vzpomínkáře",
+  ].join("\n");
 
   return { subject, html, text };
 }

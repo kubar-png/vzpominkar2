@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonical } from "@/lib/site";
 import { Shell } from "@/components/landing/Shell";
 import { FinalCta } from "@/components/landing/FinalCta";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   title: "Kontakt",
   description:
     "Napište nám e-mailem na ahoj@vzpominkar.cz. Odpovídá člověk, ne robot. Telefonní podporu připravujeme.",
+  alternates: { canonical: canonical("/kontakt") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────

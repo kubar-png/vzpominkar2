@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonical } from "@/lib/site";
 import { LegalLayout } from "@/components/marketing/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Ochrana soukromí",
   description:
     "Jak ve Vzpomínkáři zacházíme s vašimi daty, vzpomínkami a fotkami — bez právnického jazyka.",
+  alternates: { canonical: canonical("/soukromi") },
 };
 
 export default function SoukromiPage() {

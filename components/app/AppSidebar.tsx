@@ -136,7 +136,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
       </div>
 
       {/* Main nav */}
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto py-1">
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto py-1" data-tour="nav">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.numeral} item={item} />
         ))}

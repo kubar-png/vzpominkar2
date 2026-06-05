@@ -1,10 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroScrollDriver } from "@/components/landing/HeroScrollDriver";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, canonical } from "@/lib/site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: canonical("/") },
+};
 
 const FORBES_TESTIMONIALS = [
   {
@@ -59,7 +64,7 @@ const ORG_JSON_LD = {
   "@type": "Organization",
   name: "Vzpomínkář",
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
+  logo: `${SITE_URL}/brand/logo.png`,
   description:
     "Vzpomínkář — kniha rodinné paměti. Rok týdenních otázek pro rodiče a prarodiče; z jejich hlasů uděláme tištěnou knihu pro vnoučata.",
   contactPoint: [
@@ -73,7 +78,15 @@ const ORG_JSON_LD = {
   ],
 } as const;
 
-export default function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ signup?: string }>;
+}) {
+  const { signup } = await searchParams;
+  const signupStatus =
+    signup === "success" ? "success" : signup === "error" ? "error" : null;
+
   return (
     <div className="editorial">
       <script
@@ -670,22 +683,44 @@ export default function HomePage() {
                * lead-magnet form — a Server Action will be wired in by the
                * Marketing-flows agent. For now it submits to /api/leads with
                * a graceful HTML fallback if that endpoint doesn't exist yet. */}
-              <form className="signup-form" action="/api/leads" method="post">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="vase@email.cz"
-                  required
-                  aria-label="E-mailová adresa"
-                />
-                <button type="submit" className="btn btn-gold">
-                  Poslat ukázku <span className="arrow">↗</span>
-                </button>
-              </form>
-              <p className="signup-disclaimer">
-                Odesláním souhlasíte se zpracováním e-mailu. Odhlásit se
-                můžete jedním klikem.
-              </p>
+              {signupStatus === "success" ? (
+                <p className="signup-status signup-status-success" role="status">
+                  Děkujeme, ozveme se vám. První e-mail s ukázkou knihy
+                  dorazí do vaší schránky během chvíle.
+                </p>
+              ) : (
+                <>
+                  {signupStatus === "error" && (
+                    <p
+                      className="signup-status signup-status-error"
+                      role="status"
+                    >
+                      E-mail se nepodařilo odeslat. Zkuste to prosím ještě
+                      jednou.
+                    </p>
+                  )}
+                  <form
+                    className="signup-form"
+                    action="/api/leads"
+                    method="post"
+                  >
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="vase@email.cz"
+                      required
+                      aria-label="E-mailová adresa"
+                    />
+                    <button type="submit" className="btn btn-gold">
+                      Poslat ukázku <span className="arrow">↗</span>
+                    </button>
+                  </form>
+                  <p className="signup-disclaimer">
+                    Odesláním souhlasíte se zpracováním e-mailu. Odhlásit se
+                    můžete jedním klikem.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </section>

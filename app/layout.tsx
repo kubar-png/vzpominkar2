@@ -49,7 +49,9 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
+  // No global `alternates.canonical` here — a layout-level canonical would make
+  // every marketing subpage canonicalise to "/", so Google would treat them as
+  // duplicates of the homepage. Each page sets its own `canonical(...)` instead.
   title: {
     default: "Vzpomínkář — Než zapomenete, jak zněli",
     template: "%s · Vzpomínkář",
@@ -60,11 +62,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "cs_CZ",
     siteName: "Vzpomínkář",
-    images: ["/brand/logo.png"],
+    // OG/Twitter images come from app/opengraph-image.tsx (file-based
+    // convention) — the generated 1200×630 brand card, applied to all routes.
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/brand/logo.png"],
   },
   // Icons are auto-detected from app/icon.svg + app/apple-icon.svg (file-based
   // convention from Next.js App Router). Gold book on a warm brown gradient,

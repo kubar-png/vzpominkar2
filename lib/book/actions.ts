@@ -3,8 +3,14 @@
 import "server-only";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createPrintCheckout } from "@/lib/stripe/checkout";
+
+// A book can only be ordered once it holds at least this many published
+// memories. The dashboard/book page gates the button on the same number
+// (BOOK_MIN); this is the authoritative server-side check.
+const ORDER_MIN_MEMORIES = 30;
 
 const addressSchema = z.object({
   fullName: z.string().min(2).max(120),
@@ -32,6 +38,25 @@ export async function placeBookOrder(
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Neplatná adresa." };
+  }
+
+  // Server-side minimum: the book must hold at least ORDER_MIN_MEMORIES
+  // published memories before it can be ordered. Until now only the UI hid the
+  // form; this rejects a forged/early submit without writing an order. Counted
+  // with the admin client so RLS can't undercount (ownership is already
+  // verified above).
+  const admin = createAdminClient();
+  const { count: publishedCount } = await admin
+    .from("memories")
+    .select("id", { count: "exact", head: true })
+    .eq("family_id", familyId)
+    .eq("status", "published");
+
+  if ((publishedCount ?? 0) < ORDER_MIN_MEMORIES) {
+    return {
+      ok: false,
+      error: `Knihu lze objednat až po dosažení ${ORDER_MIN_MEMORIES} vzpomínek.`,
+    };
   }
 
   const supabase = await createClient();

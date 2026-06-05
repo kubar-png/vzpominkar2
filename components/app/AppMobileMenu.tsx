@@ -83,6 +83,7 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
         <button
           type="button"
           onClick={() => setOpen(true)}
+          data-tour="mobile-menu"
           className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-paper-200)]"
           aria-label="Otevřít menu"
         >

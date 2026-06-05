@@ -15,11 +15,20 @@ interface Q {
 }
 type Selection = Record<string, Q[]>;
 
+// Gift wrapping + embossed dedication surcharge (CZK). Mirrors
+// priceForProductCzk("book_giftwrap") on the server, which stays authoritative.
+const GIFTWRAP_CZK = 290;
+
 interface OrderFormProps {
   /** Total selected questions — for the summary line + empty-cart guard. */
   total: number;
   pluralQ: (n: number) => string;
-  price: string;
+  /** Base book price (CZK) — without any surcharges. */
+  basePriceCzk: number;
+  /** Premium-cover surcharge (CZK), already resolved from the chosen cover. */
+  coverSurchargeCzk: number;
+  /** Czech price formatter shared with the configurator. */
+  formatCzk: (n: number) => string;
   /** Go back to the recap (edit questions / cover). */
   onBack: () => void;
 }
@@ -64,15 +73,29 @@ function readDraft(): {
   return { questions, gender, coverBg, coverText };
 }
 
-export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
+export function OrderForm({
+  total,
+  pluralQ,
+  basePriceCzk,
+  coverSurchargeCzk,
+  formatCzk,
+  onBack,
+}: OrderFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [note, setNote] = useState("");
+  const [giftwrap, setGiftwrap] = useState(false);
+  const [dedication, setDedication] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Displayed total = base + premium cover + gift wrapping (if chosen). The
+  // server recomposes the authoritative amount, so this is for display only.
+  const giftwrapSurcharge = giftwrap ? GIFTWRAP_CZK : 0;
+  const priceLabel = formatCzk(basePriceCzk + coverSurchargeCzk + giftwrapSurcharge);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,6 +109,9 @@ export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
       recipientGender: draft.gender,
       coverBg: draft.coverBg,
       coverText: draft.coverText,
+      giftwrap,
+      dedication: giftwrap ? dedication : undefined,
+      tier: "custom",
       questions: draft.questions,
       shippingAddress: { name, street, city, zip, note },
     };
@@ -149,6 +175,7 @@ export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
             id="kc-street"
             type="text"
             autoComplete="street-address"
+            required
             value={street}
             onChange={(e) => setStreet(e.target.value)}
             placeholder="Dlouhá 12"
@@ -162,6 +189,7 @@ export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
               id="kc-city"
               type="text"
               autoComplete="address-level2"
+              required
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Praha"
@@ -174,6 +202,7 @@ export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
               type="text"
               inputMode="numeric"
               autoComplete="postal-code"
+              required
               value={zip}
               onChange={(e) => setZip(e.target.value)}
               placeholder="110 00"
@@ -192,11 +221,40 @@ export function OrderForm({ total, pluralQ, price, onBack }: OrderFormProps) {
           />
         </div>
 
+        <div className="kc-field kc-field-giftwrap">
+          <label className="kc-checkbox">
+            <input
+              type="checkbox"
+              checked={giftwrap}
+              onChange={(e) => setGiftwrap(e.target.checked)}
+            />
+            <span>Dárkové balení s raženým věnováním (+{formatCzk(GIFTWRAP_CZK)})</span>
+          </label>
+          <span className="kc-field-hint">
+            Knihu zabalíme jako dárek a na desky vyrazíme krátké věnování.
+          </span>
+        </div>
+
+        {giftwrap ? (
+          <div className="kc-field">
+            <label htmlFor="kc-dedication">Text věnování</label>
+            <textarea
+              id="kc-dedication"
+              rows={2}
+              maxLength={500}
+              value={dedication}
+              onChange={(e) => setDedication(e.target.value)}
+              placeholder="Pro maminku, s láskou…"
+            />
+            <span className="kc-field-hint">Krátký text, který vyrazíme na desky.</span>
+          </div>
+        ) : null}
+
         <div className="kc-order-total">
           <span>
             {total} {pluralQ(total)} · poštovné zdarma
           </span>
-          <strong>{price}</strong>
+          <strong>{priceLabel}</strong>
         </div>
 
         {error ? (

@@ -74,6 +74,16 @@ function makeLimiter(opts: {
 
 const authLimiter = makeLimiter({ prefix: "auth", limit: 5, windowSec: 15 * 60 });
 const leadsLimiter = makeLimiter({ prefix: "leads", limit: 30, windowSec: 60 * 60 });
+/* Book-PDF render is expensive (cold-starts a headless Chromium, ~tens of
+ * seconds, 300s budget). Cap one owner/IP to 5 renders per hour so a script
+ * can't pin the function and burn the compute budget. Fail-OPEN like `leads`:
+ * a missing/flaky KV must never block a paying owner from printing their book. */
+const printLimiter = makeLimiter({ prefix: "print", limit: 5, windowSec: 60 * 60 });
+/* Senior magic link (/q/{token}). The token itself is the real defence (32 bytes,
+ * unguessable); this just caps abuse of the admin generateLink path per IP. A
+ * family share one IP and click weekly, so 20/h is generous. Fail-OPEN — a senior
+ * must never be locked out of answering. */
+const magicLimiter = makeLimiter({ prefix: "magic", limit: 20, windowSec: 60 * 60 });
 
 /* ── AI-cost protection limiters ────────────────────────────────────────────
  * Two-tier defence: per-user hourly cap stops one compromised account from
@@ -91,7 +101,21 @@ const aiPolishUserLimiter = makeLimiter({ prefix: "ai-polish-u", limit: 30, wind
 const aiPolishFamilyLimiter = makeLimiter({ prefix: "ai-polish-f", limit: 100, windowSec: 24 * 60 * 60 });
 const aiTextUserLimiter = makeLimiter({ prefix: "ai-text-u", limit: 20, windowSec: 60 * 60 });
 
-export type RateLimitKind = "auth" | "leads";
+export type RateLimitKind = "auth" | "leads" | "print" | "magic";
+
+/** Pick the limiter for a non-auth kind (`leads`/`print`/`magic`); all fail-open. */
+function limiterFor(kind: RateLimitKind): Ratelimit | null {
+  switch (kind) {
+    case "auth":
+      return authLimiter;
+    case "leads":
+      return leadsLimiter;
+    case "print":
+      return printLimiter;
+    case "magic":
+      return magicLimiter;
+  }
+}
 
 /** Pulled out so route handlers can pass `request.headers` directly. */
 export function getClientIp(h: Headers): string {
@@ -105,10 +129,10 @@ export async function checkRateLimit(
   kind: RateLimitKind,
   scope?: string,
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
-  const limiter = kind === "auth" ? authLimiter : leadsLimiter;
+  const limiter = limiterFor(kind);
   if (!limiter) {
-    // No limiter built → KV unconfigured. `auth` fails closed in prod; `leads`
-    // stays fail-open.
+    // No limiter built → KV unconfigured. `auth` fails closed in prod;
+    // `leads`/`print` stay fail-open.
     return kind === "auth"
       ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")
       : { ok: true };
@@ -139,7 +163,7 @@ export async function checkRateLimitWithHeaders(
   reqHeaders: Headers,
   scope?: string,
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
-  const limiter = kind === "auth" ? authLimiter : leadsLimiter;
+  const limiter = limiterFor(kind);
   if (!limiter) {
     return kind === "auth"
       ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")

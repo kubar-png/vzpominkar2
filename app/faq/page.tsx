@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { canonical } from "@/lib/site";
 import { Shell } from "@/components/landing/Shell";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 import { FaqList, type Category } from "./faq-list";
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   title: "Časté otázky",
   description:
     "Vše, co potřebujete vědět, než s Vzpomínkářem začnete — od přihlášení seniora po tisk knihy a soukromí dat.",
+  alternates: { canonical: canonical("/faq") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -106,7 +108,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Můžu si objednat víc výtisků?",
-        a: "Samozřejmě. Většina rodin dělá kopie pro každé dospělé dítě. Druhý výtisk je o 35 % levnější, další pak ještě méně.",
+        a: "Samozřejmě. První tištěná kniha je v ceně. Většina rodin pak dělá kopie pro každé dospělé dítě — další výtisky pořídíte za zvýhodněnou cenu, kterou uvidíte při objednávce.",
       },
       {
         q: "Co když chci knihu předtím vidět?",
@@ -122,7 +124,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Kdy a kolik se platí?",
-        a: "Jednorázových 2 890 Kč za přístup k jedné knize — jeden blízký a až 52 otázek, napořád. Žádné předplatné, nic se neobnovuje. Další blízký nebo další díl stojí 1 790 Kč. Tisk knihy se platí zvlášť, až ji budete chtít vytisknout.",
+        a: "Jednorázových 2 890 Kč za přístup k jedné knize — jeden blízký a až 52 otázek, napořád, včetně první tištěné knihy. Žádné předplatné, nic se neobnovuje. Další blízký nebo další díl stojí 1 790 Kč.",
       },
       {
         q: "Co se stane, když vyčerpám 52 otázek?",
@@ -150,7 +152,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Můžu Vzpomínkář používat ze zahraničí?",
-        a: "Ano. Otázky chodí stejně, knihovna funguje odkudkoliv. Tisk a doručení mimo ČR účtujeme zvlášť (od 350 Kč podle země).",
+        a: "Ano. Otázky chodí stejně, knihovna funguje odkudkoliv. Poštovné po Česku i Slovensku je v ceně; doručení do jiných zemí domluvíme individuálně — napište nám.",
       },
     ],
   },
