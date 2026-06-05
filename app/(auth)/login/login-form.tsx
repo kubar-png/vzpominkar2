@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { signInOwner, type ActionResult } from "@/lib/auth/actions";
 
 export function LoginForm() {
@@ -8,6 +8,9 @@ export function LoginForm() {
     signInOwner,
     null,
   );
+  // Controlled so a failed login keeps the e-mail (the form would otherwise be
+  // reset by the server action — re-typing the address is needlessly annoying).
+  const [email, setEmail] = useState("");
 
   return (
     <form action={formAction} className="auth-form">
@@ -20,6 +23,8 @@ export function LoginForm() {
           autoComplete="email"
           placeholder="vy@email.cz"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="auth-field">
@@ -32,6 +37,11 @@ export function LoginForm() {
           required
         />
       </div>
+
+      <label className="auth-remember">
+        <input type="checkbox" name="remember" defaultChecked />
+        <span>Zůstat přihlášen</span>
+      </label>
 
       {state?.ok === false ? (
         <p role="alert" className="auth-alert">

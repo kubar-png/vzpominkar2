@@ -31,9 +31,12 @@ export default function SoukromiPage() {
       <p>
         Audio nahrávky, fotky a texty vašich rodičů ukládáme do soukromého
         úložiště, ke kterému má přístup jen vaše rodina. My data zpracováváme
-        proto, abychom službu mohli provozovat &mdash; nikomu je neprodáváme,
-        nesdílíme s reklamními sítěmi a&nbsp;nepoužíváme je k trénování
-        umělé inteligence třetích stran.
+        proto, abychom službu mohli provozovat &mdash; nikomu je neprodáváme
+        a&nbsp;nepoužíváme je k trénování umělé inteligence třetích stran.
+        Měřicí a&nbsp;marketingové nástroje (Google Analytics, Meta Pixel)
+        zapínáme jen tehdy, když nám k&nbsp;tomu dáte souhlas v&nbsp;cookie
+        liště &mdash; a&nbsp;obsah vašich vzpomínek (nahrávky, přepisy, fotky)
+        jim nepředáváme nikdy.
       </p>
       <p>
         Můžete si všechna data kdykoliv stáhnout nebo nás požádat o&nbsp;jejich
@@ -118,10 +121,29 @@ export default function SoukromiPage() {
           Rozesílání transakčních e-mailů (potvrzení registrace, týdenní
           otázky).
         </dd>
+        <dt>OpenAI (USA)</dt>
+        <dd>
+          Přepis hlasových nahrávek (Whisper) a&nbsp;korektura textu
+          (GPT-4o&nbsp;mini). Data se nepoužívají k&nbsp;trénování modelů; OpenAI
+          je uchovává nejdéle 30&nbsp;dnů kvůli prevenci zneužití. Přenos
+          do&nbsp;USA na&nbsp;základě standardních smluvních doložek.
+        </dd>
         <dt>Tiskárna v&nbsp;ČR</dt>
         <dd>
           Po objednávce knihy předáváme tiskárně PDF s&nbsp;obsahem a&nbsp;adresu
           pro doručení. Tiskárna data po vyrobení knihy maže.
+        </dd>
+        <dt>Google (Google Analytics)</dt>
+        <dd>
+          Anonymizovaná statistika návštěvnosti webu &mdash; jen pokud k&nbsp;tomu
+          dáte souhlas v&nbsp;cookie liště. Viz „Analytika a&nbsp;marketingové
+          nástroje“ níže.
+        </dd>
+        <dt>Meta (Meta Pixel)</dt>
+        <dd>
+          Měření účinnosti naší reklamy na Facebooku a&nbsp;Instagramu &mdash;
+          jen s&nbsp;vaším souhlasem. Viz „Analytika a&nbsp;marketingové
+          nástroje“ níže.
         </dd>
       </dl>
 
@@ -188,13 +210,51 @@ export default function SoukromiPage() {
         v&nbsp;samostatném dokumentu <Link href="/cookies">cookies</Link>.
       </p>
 
+      <h2>Analytika a&nbsp;marketingové nástroje</h2>
+      <p>
+        Abychom rozuměli tomu, jak se web používá, a&nbsp;mohli ho zlepšovat,
+        využíváme měřicí a&nbsp;marketingové nástroje třetích stran. Spouštíme je
+        výhradně tehdy, když k&nbsp;tomu dáte souhlas v&nbsp;cookie liště (volba
+        „Souhlasím se vším“). Pokud zvolíte „Pouze nezbytné“, vůbec se nenačtou.
+      </p>
+      <dl>
+        <dt>Google Analytics 4 (Google Ireland Ltd.)</dt>
+        <dd>
+          Anonymizovaná statistika návštěvnosti &mdash; které stránky si lidé
+          prohlížejí, odkud přicházejí a&nbsp;jak se po webu pohybují. IP adresu
+          zkracujeme. Google může část údajů zpracovávat i&nbsp;mimo EU (USA)
+          na&nbsp;základě standardních smluvních doložek. Právní základ: váš
+          souhlas.
+        </dd>
+        <dt>Meta Pixel (Meta Platforms Ireland Ltd.)</dt>
+        <dd>
+          Měření účinnosti naší reklamy na&nbsp;Facebooku a&nbsp;Instagramu
+          (například že jste přišli z&nbsp;reklamy a&nbsp;dokončili objednávku)
+          a&nbsp;sestavování reklamních publik. Meta přitom zpracovává údaje
+          ve&nbsp;svých systémech, případně i&nbsp;mimo EU (USA) na&nbsp;základě
+          standardních smluvních doložek. Právní základ: váš souhlas.
+        </dd>
+      </dl>
+      <p>
+        Souhlas můžete kdykoliv odvolat &mdash; smažte cookies ve&nbsp;svém
+        prohlížeči nebo nám napište. Měřicím ani reklamním nástrojům nikdy
+        nepředáváme obsah vašich vzpomínek (nahrávky, přepisy ani fotky).
+      </p>
+
       <h2>AI a&nbsp;přepisy</h2>
       <p>
-        Hlasové nahrávky převádíme do textu pomocí přepisovacího modelu
-        provozovaného v&nbsp;EU. Audio se posílá ke zpracování zašifrovaně
-        a&nbsp;model si data neukládá &mdash; používají se pouze k&nbsp;vytvoření
-        přepisu a&nbsp;okamžitě se vyhazují. Vaše vzpomínky neslouží
-        k&nbsp;trénování žádného AI modelu.
+        Hlasové nahrávky převádíme do textu a&nbsp;lehce upravujeme pomocí
+        služeb <strong>OpenAI</strong> (model Whisper pro přepis a&nbsp;GPT-4o&nbsp;mini
+        pro korekturu a&nbsp;doplnění roku). Audio i&nbsp;text se k&nbsp;OpenAI
+        posílají zabezpečeně přes šifrované spojení.
+      </p>
+      <p>
+        OpenAI je americká společnost, data se proto zpracovávají i&nbsp;mimo
+        EU (USA) na&nbsp;základě standardních smluvních doložek. Podle podmínek
+        OpenAI API se vaše data <strong>nepoužívají k&nbsp;trénování</strong>
+        jejich modelů; OpenAI je smí dočasně uchovat (nejdéle 30&nbsp;dnů)
+        výhradně kvůli prevenci zneužití, poté je maže. Přepis je jádrem naší
+        služby, takže právním základem je plnění smlouvy.
       </p>
 
       <hr />

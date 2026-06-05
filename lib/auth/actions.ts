@@ -2,7 +2,9 @@
 
 import "server-only";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { REMEMBER_COOKIE } from "@/lib/supabase/cookies";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   ownerSignupSchema,
@@ -182,9 +184,23 @@ export async function signInOwner(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
-  const supabase = await createClient();
+  // "Zůstat přihlášen" checkbox — present only when checked (default in the UI).
+  const remember = formData.get("remember") !== null;
+
+  const supabase = await createClient({ remember });
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { ok: false, error: humanizeAuthError(error.message) };
+
+  // Persist the preference so middleware refreshes use the same lifetime. When
+  // not remembering, the flag itself is a session cookie too (fresh start next time).
+  const cookieStore = await cookies();
+  cookieStore.set(REMEMBER_COOKIE, remember ? "1" : "0", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    ...(remember ? { maxAge: 60 * 60 * 24 * 60 } : {}),
+  });
 
   redirect("/dashboard");
 }

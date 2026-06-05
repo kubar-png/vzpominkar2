@@ -4584,6 +4584,23 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   line-height: 1.5;
 }
 
+.editorial .auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  color: var(--ink-soft);
+  user-select: none;
+}
+.editorial .auth-remember input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
 .editorial .auth-submit {
   display: inline-flex;
   align-items: center;
@@ -5601,16 +5618,19 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 200;
-  background: rgba(244, 235, 214, 0.97);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(14, 59, 100, 0.12);
-  padding: 14px clamp(16px, 4vw, 36px) calc(14px + env(safe-area-inset-bottom));
-  box-shadow: 0 -10px 40px -16px rgba(28, 24, 20, 0.18);
+  background: rgba(246, 238, 219, 0.985);
+  backdrop-filter: blur(12px);
+  border-top: 2px solid var(--gold);
+  padding: 18px clamp(16px, 4vw, 36px) calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -16px 50px -18px rgba(28, 24, 20, 0.28);
   animation: cookie-bar-in 0.34s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes cookie-bar-in {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cookie-bar { animation: none; }
 }
 .cookie-bar-inner {
   max-width: 1080px;
@@ -5622,17 +5642,24 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .cookie-bar-copy { flex: 1; min-width: 260px; }
 .cookie-bar-title {
-  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 5px;
   font-family: "PP Pangaia", "Fraunces", "Palatino Linotype", Georgia, serif;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 500;
   color: #0e3b64;
+}
+.cookie-bar-icon {
+  font-size: 17px;
+  line-height: 1;
 }
 .cookie-bar-body {
   margin: 0;
   font-family: var(--font-sans-loaded), "Instrument Sans", system-ui, sans-serif;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.55;
   color: #335478;
 }
 .cookie-bar-link {
@@ -5645,26 +5672,36 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 
 .cookie-bar-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
   flex-wrap: wrap;
 }
+/* Both buttons share identical box metrics so neither choice is visually
+ * demoted (ePrivacy / ÚOOÚ: reject must be as easy as accept). The only
+ * difference is fill vs. outline — same size, same prominence. */
 .cookie-bar-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 10px 16px 10px 20px;
+  min-width: 150px;
+  padding: 12px 22px;
   border-radius: 999px;
   font-family: var(--font-sans-loaded), "Instrument Sans", system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 14.5px;
+  font-weight: 600;
   line-height: 1;
   border: 1.5px solid transparent;
   cursor: pointer;
-  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s,
+    box-shadow 0.18s;
+}
+.cookie-bar-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 .cookie-bar-btn-outline {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.55);
   border-color: #0e3b64;
   color: #0e3b64;
 }
@@ -5676,12 +5713,17 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   background: var(--gold-soft);
   border-color: var(--gold-soft);
   color: var(--ink);
-  padding-right: 12px;
+  padding-right: 14px;
+  box-shadow: 0 8px 22px -10px rgba(212, 160, 23, 0.7);
 }
 .cookie-bar-btn-gold:hover {
   background: var(--gold);
   border-color: var(--gold);
   transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(212, 160, 23, 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cookie-bar-btn-gold:hover { transform: none; }
 }
 .cookie-bar-arrow {
   display: inline-grid;
@@ -5698,7 +5740,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 @media (max-width: 720px) {
   .cookie-bar-inner { flex-direction: column; align-items: stretch; }
   .cookie-bar-actions { width: 100%; }
-  .cookie-bar-btn { flex: 1; justify-content: center; }
+  /* Equal-weight, full-width, comfortably tappable on mobile. */
+  .cookie-bar-btn { flex: 1; min-width: 0; padding: 14px 22px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

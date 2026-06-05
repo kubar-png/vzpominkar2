@@ -48,11 +48,14 @@ export function CookieConsent() {
     <div className="cookie-bar" role="dialog" aria-label="Souhlas s cookies" aria-live="polite">
       <div className="cookie-bar-inner">
         <div className="cookie-bar-copy">
-          <p className="cookie-bar-title">Pár drobečků v paměti</p>
+          <p className="cookie-bar-title">
+            <span className="cookie-bar-icon" aria-hidden>🍪</span>
+            Drobečky v paměti
+          </p>
           <p className="cookie-bar-body">
-            Používáme jen technické cookies, které drží přihlášení a hladký
-            chod aplikace. Pokud chcete, můžete povolit i ty, které nám
-            pomáhají vylepšovat web. Více najdete v{" "}
+            Nezbytné cookies drží vaše přihlášení a hladký chod aplikace. S vaším
+            svolením přidáme i ty, díky kterým web vylepšujeme a ukážeme vám ho
+            lépe — nikomu nic neprodáváme. Vše popisujeme v{" "}
             <Link href="/cookies" className="cookie-bar-link">zásadách cookies</Link>.
           </p>
         </div>
@@ -62,14 +65,14 @@ export function CookieConsent() {
             onClick={() => decide("essential")}
             className="cookie-bar-btn cookie-bar-btn-outline"
           >
-            Pouze nezbytné
+            Jen nezbytné
           </button>
           <button
             type="button"
             onClick={() => decide("all")}
             className="cookie-bar-btn cookie-bar-btn-gold"
           >
-            Souhlasím se vším <span className="cookie-bar-arrow" aria-hidden>↗</span>
+            Přijmout vše <span className="cookie-bar-arrow" aria-hidden>↗</span>
           </button>
         </div>
       </div>

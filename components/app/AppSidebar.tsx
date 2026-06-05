@@ -148,9 +148,12 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
 
       {/* User strip */}
       <div className="border-t border-[var(--color-paper-200)]/12 px-6 py-6">
-        <p className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-200)]">
+        <Link
+          href="/settings"
+          className="font-[family-name:var(--font-display)] text-[17px] text-[var(--color-paper-200)] transition-colors hover:text-[var(--color-gold-400)]"
+        >
           {displayName ?? email ?? ""}
-        </p>
+        </Link>
         <form action={signOut} className="mt-2.5">
           <button
             type="submit"

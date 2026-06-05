@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { rememberFrom, withRemember } from "@/lib/supabase/cookies";
 
 /**
  * Middleware responsibilities (kept tight; page-level requireOwner/requireSenior
@@ -21,6 +22,7 @@ function startsWithAny(pathname: string, prefixes: string[]) {
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const remember = rememberFrom((name) => request.cookies.get(name));
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,7 +36,7 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, withRemember(name, options, remember)),
           );
         },
       },
