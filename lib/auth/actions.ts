@@ -11,6 +11,7 @@ import {
   ownerLoginSchema,
   seniorLoginSchema,
   seniorAccountSchema,
+  channelNeedsAttestation,
   type SeniorAccountInput,
 } from "@/lib/validations/auth";
 import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
@@ -325,10 +326,32 @@ export async function createSeniorAccount(
     birthYear: input.birthYear,
     contactChannel: input.contactChannel ?? null,
     contactAddress: input.contactAddress?.trim() || null,
+    phoneE164: input.phoneE164?.trim() || null,
+    channelAttestation: input.channelAttestation ?? false,
+    channelAttestationText: input.channelAttestationText?.trim() || null,
     promptFrequency: input.promptFrequency ?? 1,
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Neplatné údaje." };
+  }
+
+  // SMS/WhatsApp require a phone + the owner attestation (the client blocks this
+  // too, but never trust the client). Lawful basis = GDPR Art. 6(1)(f); the
+  // owner makes a truthful attestation, NOT consent on the senior's behalf.
+  // Mirrors §7.
+  const attestationChannel = channelNeedsAttestation(parsed.data.contactChannel)
+    ? parsed.data.contactChannel
+    : null;
+  if (attestationChannel) {
+    if (!parsed.data.phoneE164) {
+      return { ok: false, error: "Pro SMS i WhatsApp je potřeba platné telefonní číslo." };
+    }
+    if (!parsed.data.channelAttestation || !parsed.data.channelAttestationText) {
+      return {
+        ok: false,
+        error: "Bez potvrzení nelze otázky posílat přes SMS ani WhatsApp.",
+      };
+    }
   }
 
   const admin = createAdminClient();
@@ -367,7 +390,13 @@ export async function createSeniorAccount(
     return { ok: false, error: "Nepodařilo se vytvořit účet seniora." };
   }
 
-  // Insert the profile row (RLS bypassed via admin client).
+  // Insert the profile row (RLS bypassed via admin client). Phone + attestation
+  // are written atomically with the channel: phone_e164 + channel_attestation_text
+  // + the matching {sms|whatsapp}_attested_at = now() only when that channel is
+  // chosen with a fresh attestation; otherwise they stay null (no stale
+  // attestation). corr-03: a fresh attestation also clears that channel's
+  // *_opt_out_at so the new number isn't masked by a prior opt-out.
+  const now = new Date().toISOString();
   const { error: profileErr } = await admin.from("profiles").insert({
     id: created.user.id,
     role: "senior",
@@ -379,6 +408,12 @@ export async function createSeniorAccount(
     birth_year: parsed.data.birthYear ?? null,
     contact_channel: parsed.data.contactChannel ?? null,
     contact_address: parsed.data.contactAddress ?? null,
+    phone_e164: attestationChannel ? parsed.data.phoneE164 : null,
+    channel_attestation_text: attestationChannel ? parsed.data.channelAttestationText : null,
+    sms_attested_at: attestationChannel === "sms" ? now : null,
+    whatsapp_attested_at: attestationChannel === "whatsapp" ? now : null,
+    sms_opt_out_at: attestationChannel === "sms" ? null : undefined,
+    whatsapp_opt_out_at: attestationChannel === "whatsapp" ? null : undefined,
     prompt_frequency: parsed.data.promptFrequency,
   });
 

@@ -121,6 +121,20 @@ export default function SoukromiPage() {
           Rozesílání transakčních e-mailů (potvrzení registrace, týdenní
           otázky).
         </dd>
+        <dt>SMS brána (smsbrana s.&nbsp;r.&nbsp;o., ČR)</dt>
+        <dd>
+          Rozesílání týdenních otázek formou SMS &mdash; jen pokud si rodina
+          zvolí doručování přes SMS. Předáváme jen telefonní číslo a&nbsp;text
+          otázky. Viz „Otázky přes SMS a&nbsp;WhatsApp&ldquo; níže.
+        </dd>
+        <dt>Meta (WhatsApp &mdash; Meta Platforms Ireland Ltd.)</dt>
+        <dd>
+          Doručení týdenních otázek přes WhatsApp &mdash; jen pokud si rodina
+          zvolí tento kanál. Předáváme jen telefonní číslo a&nbsp;text otázky.
+          Meta může část údajů zpracovávat i&nbsp;mimo EU (USA) na&nbsp;základě
+          standardních smluvních doložek. Viz „Otázky přes SMS a&nbsp;WhatsApp&ldquo;
+          níže.
+        </dd>
         <dt>OpenAI (USA)</dt>
         <dd>
           Přepis hlasových nahrávek (Whisper) a&nbsp;korektura textu
@@ -255,6 +269,69 @@ export default function SoukromiPage() {
         jejich modelů; OpenAI je smí dočasně uchovat (nejdéle 30&nbsp;dnů)
         výhradně kvůli prevenci zneužití, poté je maže. Přepis je jádrem naší
         služby, takže právním základem je plnění smlouvy.
+      </p>
+
+      <h2>Otázky přes SMS a&nbsp;WhatsApp</h2>
+      <p>
+        Tato část je určena <strong>vyprávějícímu (seniorovi)</strong>, kterému
+        posíláme týdenní otázky na&nbsp;jeho telefonní číslo. Slouží zároveň jako
+        informace podle čl.&nbsp;14 GDPR &mdash; protože telefonní číslo jsme
+        nezískali přímo od&nbsp;něj.
+      </p>
+      <dl>
+        <dt>Kdo údaje zpracovává</dt>
+        <dd>
+          Správcem je <strong>Vzpomínkář, s.&nbsp;r.&nbsp;o.</strong> Kontakt
+          najdete na stránce <Link href="/kontakt">kontakt</Link>.
+        </dd>
+        <dt>Odkud máme telefonní číslo (zdroj údajů)</dt>
+        <dd>
+          Telefonní číslo nám <strong>neposkytl sám senior</strong>, ale člen
+          jeho rodiny, který ho do Vzpomínkáře přidal a&nbsp;potvrdil, že seniora
+          osobně zná, má souhlas k&nbsp;uvedení jeho čísla a&nbsp;že seniora
+          informoval, že mu na toto číslo budeme posílat týdenní otázky.
+        </dd>
+        <dt>Jaké údaje a&nbsp;proč (účel)</dt>
+        <dd>
+          Zpracováváme pouze <strong>jméno a&nbsp;jedno telefonní číslo</strong>
+          seniora. Účelem je doručit jednou týdně jednu otázku k&nbsp;zavzpomínání,
+          aby si rodina mohla uložit vyprávění svého blízkého. Nejde
+          o&nbsp;reklamu &mdash; je to provozní (servisní) zpráva, kterou si rodina
+          objednala. Zprávy neobsahují žádné nabídky ani odkazy na&nbsp;objednání.
+        </dd>
+        <dt>Právní základ</dt>
+        <dd>
+          <strong>Oprávněný zájem</strong> rodiny zaznamenat vzpomínky svého
+          blízkého a&nbsp;náš oprávněný zájem službu poskytnout (čl.&nbsp;6
+          odst.&nbsp;1 písm.&nbsp;f) GDPR). Posouzení vyváženosti (LIA) máme
+          zdokumentované a&nbsp;na&nbsp;vyžádání ho poskytneme.
+        </dd>
+        <dt>Komu číslo předáváme (příjemci)</dt>
+        <dd>
+          Podle zvoleného kanálu buď <strong>smsbrana s.&nbsp;r.&nbsp;o.</strong>{" "}
+          (SMS, ČR), nebo <strong>Meta Platforms Ireland Ltd.</strong> (WhatsApp).
+          Předáváme jen telefonní číslo a&nbsp;text otázky, výhradně kvůli doručení
+          zprávy.
+        </dd>
+        <dt>Jak dlouho údaje uchováváme (doba uložení)</dt>
+        <dd>
+          Po dobu, kdy rodina službu používá. Po odhlášení odběru nebo zrušení
+          účtu telefonní číslo z&nbsp;rozesílání odstraníme; provozní záznam
+          o&nbsp;odhlášení si ponecháme jen po nezbytně nutnou dobu jako doklad,
+          že už zprávy neposíláme.
+        </dd>
+        <dt>Vaše právo se kdykoliv odhlásit</dt>
+        <dd>
+          V&nbsp;každé zprávě je odkaz <em>„Proč vám píšeme a&nbsp;jak se
+          odhlásit&ldquo;</em>. Jedním klepnutím na&nbsp;něj posílání okamžitě
+          zastavíte &mdash; bez přihlašování a&nbsp;bez vysvětlování. Máte také
+          právo vznést námitku proti zpracování a&nbsp;všechna ostatní práva
+          uvedená výše v&nbsp;části „Vaše práva&ldquo;.
+        </dd>
+      </dl>
+      <p>
+        Odpovědět na&nbsp;SMS slovem „STOP&ldquo; bohužel nestačí &mdash; číslo
+        odesílatele je jednosměrné, proto se odhlašuje vždy odkazem ve&nbsp;zprávě.
       </p>
 
       <hr />

@@ -15,6 +15,7 @@ type Senior = {
   senior_role: string | null;
   contact_channel: string | null;
   contact_address: string | null;
+  phone_e164: string | null;
   prompt_frequency: number;
 };
 
@@ -27,7 +28,7 @@ export default async function OtazkySettingsPage() {
     const admin = createAdminClient();
     const { data } = await admin
       .from("profiles")
-      .select("id, display_name, senior_role, contact_channel, contact_address, prompt_frequency")
+      .select("id, display_name, senior_role, contact_channel, contact_address, phone_e164, prompt_frequency")
       .eq("family_id", owner.familyId)
       .eq("role", "senior")
       .order("created_at")

@@ -52,7 +52,11 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
   const [editName, setEditName] = useState(senior.display_name ?? "");
   const [editRole, setEditRole] = useState(senior.senior_role ?? "");
   const [editGender, setEditGender] = useState(senior.gender ?? "");
-  const [editChannel, setEditChannel] = useState(senior.contact_channel ?? "");
+  // corr-02: this editor is email-only. A senior delivered via SMS/WhatsApp (set
+  // through the attestation-aware delivery form) shows as "unset" here so the
+  // owner can't silently re-save a phone channel without a fresh attestation.
+  const initialChannel = senior.contact_channel === "email" ? "email" : "";
+  const [editChannel, setEditChannel] = useState(initialChannel);
   const [editAddress, setEditAddress] = useState(senior.contact_address ?? "");
   const [editFrequency, setEditFrequency] = useState(senior.prompt_frequency ?? 1);
   const [editIsSenior, setEditIsSenior] = useState(senior.is_senior ?? true);
@@ -65,7 +69,7 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
     setEditName(senior.display_name ?? "");
     setEditRole(senior.senior_role ?? "");
     setEditGender(senior.gender ?? "");
-    setEditChannel(senior.contact_channel ?? "");
+    setEditChannel(initialChannel);
     setEditAddress(senior.contact_address ?? "");
     setEditFrequency(senior.prompt_frequency ?? 1);
     setEditIsSenior(senior.is_senior ?? true);
@@ -75,13 +79,21 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
 
   function handleSave() {
     setError(null);
+    // corr-02: if the senior is delivered via SMS/WhatsApp (managed in Otázky),
+    // this email-only editor leaves the delivery channel + address untouched so
+    // an unrelated profile edit can neither wipe nor re-enable a phone channel.
+    const editsDelivery = senior.contact_channel == null || senior.contact_channel === "email";
     start(async () => {
       const result = await updateSeniorProfile(familyId, senior.id, {
         displayName: editName.trim(),
         seniorRole: editRole || null,
         gender: (editGender || null) as "male" | "female" | null,
-        contactChannel: editChannel || null,
-        contactAddress: editAddress.trim() || null,
+        ...(editsDelivery
+          ? {
+              contactChannel: editChannel || null,
+              contactAddress: editAddress.trim() || null,
+            }
+          : {}),
         promptFrequency: editFrequency as 1 | 2,
         isSenior: editIsSenior,
       });
@@ -173,17 +185,21 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
               >
                 <option value="">- nevybráno -</option>
                 <option value="email">E-mail</option>
-                <option value="whatsapp">WhatsApp</option>
               </Select>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Posílání přes SMS nebo WhatsApp nastavíte v sekci Otázky — vyžaduje
+                potvrzení telefonního čísla.
+              </p>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`address-${senior.id}`}>E-mail nebo telefon (WhatsApp)</Label>
+              <Label htmlFor={`address-${senior.id}`}>E-mailová adresa</Label>
               <Input
                 id={`address-${senior.id}`}
+                type="email"
                 value={editAddress}
                 onChange={(e) => setEditAddress(e.target.value)}
                 maxLength={200}
-                placeholder="jana@email.cz nebo +420 777 123 456"
+                placeholder="jana@email.cz"
               />
             </div>
             <div className="space-y-1.5">

@@ -3,7 +3,8 @@ import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planWeeklyQueue } from "@/lib/prompts/schedule";
 import { sendEmail } from "@/lib/email/send";
-import { weeklyReminderEmail, bookFullEmail } from "@/lib/email/templates";
+import { bookFullEmail } from "@/lib/email/templates";
+import { dispatchPrompt } from "@/lib/messaging/dispatch";
 import { resolveGender } from "@/lib/gender";
 import { SITE_URL } from "@/lib/site";
 import { priceForProductCzk } from "@/lib/stripe/server";
@@ -81,6 +82,11 @@ export async function GET(req: NextRequest) {
     contact_address: string | null;
     gender: string | null;
     magic_token: string | null;
+    phone_e164: string | null;
+    sms_attested_at: string | null;
+    whatsapp_attested_at: string | null;
+    sms_opt_out_at: string | null;
+    whatsapp_opt_out_at: string | null;
   };
   const familyIds = [...new Set((rows ?? []).map((r) => r.family_id))];
   const seniorByFamily = new Map<string, Prof>();
@@ -88,7 +94,9 @@ export async function GET(req: NextRequest) {
   if (familyIds.length) {
     const { data: profs } = await admin
       .from("profiles")
-      .select("family_id, role, email, display_name, contact_channel, contact_address, gender, magic_token")
+      .select(
+        "family_id, role, email, display_name, contact_channel, contact_address, gender, magic_token, phone_e164, sms_attested_at, whatsapp_attested_at, sms_opt_out_at, whatsapp_opt_out_at",
+      )
       .in("family_id", familyIds)
       .in("role", ["senior", "owner"])
       .returns<Prof[]>();
@@ -118,63 +126,90 @@ export async function GET(req: NextRequest) {
     const senior = seniorByFamily.get(row.family_id) ?? null;
     const owner = ownerByFamily.get(row.family_id) ?? null;
 
-    // Delivery priority:
-    // 1. contact_address when channel is email (owner-configured real address)
-    // 2. senior.email if it's a real inbox (not the synthetic @vzpominkar.internal)
-    // 3. Fall back to owner-only notification
-    const seniorEmail =
-      (senior?.contact_channel === "email" && senior?.contact_address)
-        ? senior.contact_address
-        : (senior?.email && !senior.email.endsWith("@vzpominkar.internal") ? senior.email : null);
-    const ownerEmail = owner?.email ?? null;
-
     const seniorName =
       senior?.display_name ?? row.families?.senior_display_name ?? "Vzpomínkář";
 
+    // Gender-resolve the question for this senior before handing it to the
+    // multi-channel dispatcher (renderers must NOT alter it further).
     const question = resolveGender(
       row.prompts.question,
       (senior?.gender as "male" | "female" | null) ?? null,
     );
 
-    if (seniorEmail) {
-      // Magic link: one click signs the senior in (no password) and lands them
-      // on this week's question. Falls back to /senior-login if the token is
-      // somehow missing. Goes ONLY to the senior's own inbox.
-      const actionUrl = senior?.magic_token
-        ? `${appUrl}/q/${senior.magic_token}`
-        : `${appUrl}/senior-login`;
-      const tpl = weeklyReminderEmail({ seniorDisplayName: seniorName, question, appUrl, actionUrl });
-      await sendEmail({
-        to: seniorEmail,
-        bcc: ownerEmail ? [ownerEmail] : undefined,
-        subject: tpl.subject,
-        html: tpl.html,
-        text: tpl.text,
-        tag: "weekly_reminder",
+    // Per-row isolation: one senior's delivery failure must NEVER abort the rest
+    // of the batch. dispatchPrompt resolves the channel (email/sms/whatsapp),
+    // enforces idempotency via prompt_delivery_log, sends, and returns a status.
+    let status: "sent" | "skipped" | "failed";
+    try {
+      const result = await dispatchPrompt(admin, {
+        assignmentId: row.id,
+        familyId: row.family_id,
+        senior: senior
+          ? {
+              display_name: seniorName,
+              email: senior.email,
+              contact_channel: senior.contact_channel,
+              contact_address: senior.contact_address,
+              magic_token: senior.magic_token,
+              phone_e164: senior.phone_e164,
+              sms_attested_at: senior.sms_attested_at,
+              whatsapp_attested_at: senior.whatsapp_attested_at,
+              sms_opt_out_at: senior.sms_opt_out_at,
+              whatsapp_opt_out_at: senior.whatsapp_opt_out_at,
+            }
+          : null,
+        owner: owner ? { email: owner.email, display_name: owner.display_name } : null,
+        question,
+        appUrl,
       });
-    } else if (ownerEmail) {
-      // No senior email — notify the owner so they can prompt verbally. The owner
-      // copy must NOT carry the senior's personal magic link, so it points at the
-      // generic /senior-login instead.
-      const tpl = weeklyReminderEmail({ seniorDisplayName: seniorName, question, appUrl });
-      await sendEmail({
-        to: ownerEmail,
-        subject: `Připomínka pro ${seniorName}`,
-        html: tpl.html,
-        text: tpl.text,
-        tag: "weekly_reminder_owner_fallback",
-      });
-    } else {
+      status = result.status;
+    } catch (err) {
+      // Defensive: dispatchPrompt already catches provider throws, but a bug in
+      // the dispatch path itself must still not take down the batch.
+      console.error("[weekly-reminder] dispatch threw for assignment", row.id, err);
+      status = "failed";
+    }
+
+    if (status === "skipped") {
       skipped++;
       continue;
     }
 
-    await admin
-      .from("prompt_assignments")
-      .update({ reminded_at: new Date().toISOString() })
-      .eq("id", row.id);
-
-    sent++;
+    if (status === "sent") {
+      // Stamp reminded_at ONLY on an accepted send (attempted-and-accepted).
+      // On 'failed' we leave it NULL so the row is retried next run; its
+      // prompt_delivery_log row is reused (status='failed'), never duplicated.
+      //
+      // This await is wrapped + its { error } checked: supabase-js never throws on
+      // a DB error (it resolves { error }), and a transport-layer rejection here
+      // would otherwise abort the WHOLE remaining batch. On any failure we log and
+      // `continue` — the message already went out (dispatch returned 'sent'), so
+      // leaving reminded_at NULL only risks a single resend next run, never a lost
+      // nudge. We deliberately do NOT count it as 'sent' when the stamp failed.
+      try {
+        const { error: stampErr } = await admin
+          .from("prompt_assignments")
+          .update({ reminded_at: new Date().toISOString() })
+          .eq("id", row.id);
+        if (stampErr) {
+          console.error(
+            "[weekly-reminder] reminded_at stamp errored for assignment",
+            row.id,
+            stampErr,
+          );
+          continue;
+        }
+      } catch (err) {
+        console.error(
+          "[weekly-reminder] reminded_at stamp threw for assignment",
+          row.id,
+          err,
+        );
+        continue;
+      }
+      sent++;
+    }
+    // status === "failed": counted in neither sent nor skipped; retried next run.
   }
 
   // ---------------------------------------------------------------------------

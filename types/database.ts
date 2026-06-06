@@ -388,6 +388,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           birth_year: number | null
+          channel_attestation_text: string | null
           contact_address: string | null
           contact_channel: string | null
           created_at: string
@@ -399,15 +400,21 @@ export type Database = {
           id: string
           is_senior: boolean
           magic_token: string | null
+          phone_e164: string | null
           prompt_frequency: number
           role: string
           senior_role: string | null
+          sms_attested_at: string | null
+          sms_opt_out_at: string | null
           updated_at: string
           username: string | null
+          whatsapp_attested_at: string | null
+          whatsapp_opt_out_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           birth_year?: number | null
+          channel_attestation_text?: string | null
           contact_address?: string | null
           contact_channel?: string | null
           created_at?: string
@@ -419,15 +426,21 @@ export type Database = {
           id: string
           is_senior?: boolean
           magic_token?: string | null
+          phone_e164?: string | null
           prompt_frequency?: number
           role: string
           senior_role?: string | null
+          sms_attested_at?: string | null
+          sms_opt_out_at?: string | null
           updated_at?: string
           username?: string | null
+          whatsapp_attested_at?: string | null
+          whatsapp_opt_out_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           birth_year?: number | null
+          channel_attestation_text?: string | null
           contact_address?: string | null
           contact_channel?: string | null
           created_at?: string
@@ -439,11 +452,16 @@ export type Database = {
           id?: string
           is_senior?: boolean
           magic_token?: string | null
+          phone_e164?: string | null
           prompt_frequency?: number
           role?: string
           senior_role?: string | null
+          sms_attested_at?: string | null
+          sms_opt_out_at?: string | null
           updated_at?: string
           username?: string | null
+          whatsapp_attested_at?: string | null
+          whatsapp_opt_out_at?: string | null
         }
         Relationships: [
           {
@@ -523,6 +541,69 @@ export type Database = {
             columns: ["senior_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prompt_delivery_log: {
+        Row: {
+          channel: string
+          created_at: string
+          family_id: string
+          id: string
+          last_error: string | null
+          price: number | null
+          prompt_assignment_id: string
+          provider: string | null
+          provider_message_id: string | null
+          recipient_address: string | null
+          segments: number | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          family_id: string
+          id?: string
+          last_error?: string | null
+          price?: number | null
+          prompt_assignment_id: string
+          provider?: string | null
+          provider_message_id?: string | null
+          recipient_address?: string | null
+          segments?: number | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          family_id?: string
+          id?: string
+          last_error?: string | null
+          price?: number | null
+          prompt_assignment_id?: string
+          provider?: string | null
+          provider_message_id?: string | null
+          recipient_address?: string | null
+          segments?: number | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_delivery_log_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_delivery_log_prompt_assignment_id_fkey"
+            columns: ["prompt_assignment_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_assignments"
             referencedColumns: ["id"]
           },
         ]

@@ -9,7 +9,12 @@ import { FormSection } from "@/components/ui/form-section";
 import { createSeniorAccount } from "@/lib/auth/actions";
 import { suggestSeniorPassword } from "@/lib/auth/senior-account-actions";
 import { SITE_HOST } from "@/lib/site";
-import { SENIOR_ROLE_OPTIONS, GENDER_OPTIONS } from "@/lib/validations/auth";
+import {
+  SENIOR_ROLE_OPTIONS,
+  GENDER_OPTIONS,
+  channelNeedsAttestation,
+  attestationText,
+} from "@/lib/validations/auth";
 import { genderFromSeniorRole } from "@/lib/gender";
 import { cn } from "@/lib/utils";
 import { Plus, X, RefreshCw } from "lucide-react";
@@ -25,6 +30,18 @@ function deriveUsername(name: string): string {
     .replace(/[^a-z0-9]+/g, ".")
     .replace(/^\.+|\.+$/g, "")
     .slice(0, 32);
+}
+
+// Normalize a typed phone to E.164 (matches phoneE164Schema's ^\+[1-9]\d{1,14}$).
+// Strips spaces/dashes/parens; a leading 00 becomes +; a bare CZ-style 9-digit
+// number is assumed +420. Returns null when it can't produce a valid E.164.
+// "+420 777 123 456" → "+420777123456", "777123456" → "+420777123456".
+function normalizePhoneE164(raw: string): string | null {
+  let v = raw.trim().replace(/[\s().\-/]/g, "");
+  if (!v) return null;
+  if (v.startsWith("00")) v = "+" + v.slice(2);
+  if (!v.startsWith("+") && /^\d{9}$/.test(v)) v = "+420" + v; // bare CZ number
+  return /^\+[1-9]\d{1,14}$/.test(v) ? v : null;
 }
 
 interface AddSeniorPanelProps {
@@ -50,16 +67,27 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
   const [usernameEdited, setUsernameEdited] = useState(false);
   const [password, setPassword] = useState("");
   // Drives which address field shows (e-mail vs. phone).
-  const [contactChannel, setContactChannel] = useState<"" | "email" | "whatsapp">("");
+  const [contactChannel, setContactChannel] = useState<"" | "email" | "sms" | "whatsapp">("");
+  // Phone (sms/whatsapp) + the owner attestation checkbox.
+  const [phone, setPhone] = useState("");
+  const [attestation, setAttestation] = useState(false);
+  // Mirrored so the attestation wording can substitute the senior's name live.
+  const [displayName, setDisplayName] = useState("");
   // Defaulted from the role when picked (babička → žena), still editable. Sets
   // the Czech tykání gender in the questions the senior is asked.
   const [gender, setGender] = useState<"" | "male" | "female">("");
+
+  const needsAttestation = channelNeedsAttestation(contactChannel);
+  const attestationLabel = needsAttestation ? attestationText(displayName, contactChannel) : "";
 
   function open() {
     setUsername("");
     setUsernameEdited(false);
     void suggestSeniorPassword().then(setPassword);
     setContactChannel("");
+    setPhone("");
+    setAttestation(false);
+    setDisplayName("");
     setGender("");
     setPhase({ name: "form" });
   }
@@ -83,14 +111,46 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
     const seniorRole = (fd.get("seniorRole") as string) || null;
     const gender = (fd.get("gender") as "male" | "female") || null;
     const birthYear = Number(fd.get("birthYear") ?? 0);
-    const contactChannel = (fd.get("contactChannel") as "email" | "whatsapp") || null;
-    const contactAddress = String(fd.get("contactAddress") ?? "").trim() || null;
+    const contactChannel = (fd.get("contactChannel") as "email" | "sms" | "whatsapp") || null;
     const promptFrequency = Number(fd.get("promptFrequency") ?? 1) as 1 | 2;
+
+    // SMS/WhatsApp carry a phone (normalized to E.164) + the owner attestation;
+    // e-mail keeps its address in contact_address. Build the channel-appropriate
+    // payload. The exact attestation text shown is passed through verbatim so the
+    // server stores precisely what the owner saw (no re-derivation).
+    let contactAddress: string | null = null;
+    let phoneE164: string | null = null;
+    let channelAttestation = false;
+    let channelAttestationText: string | null = null;
+
+    if (contactChannel === "email") {
+      contactAddress = String(fd.get("contactAddress") ?? "").trim() || null;
+    } else if (contactChannel === "sms" || contactChannel === "whatsapp") {
+      phoneE164 = normalizePhoneE164(String(fd.get("phone") ?? ""));
+      channelAttestation = fd.get("channelAttestation") != null;
+      channelAttestationText = attestationText(displayName, contactChannel);
+
+      if (!phoneE164) {
+        setPhase({
+          name: "form",
+          error: "Zadejte telefonní číslo v mezinárodním formátu, např. +420777123456.",
+        });
+        return;
+      }
+      if (!channelAttestation) {
+        setPhase({
+          name: "form",
+          error: "Bez potvrzení nelze otázky posílat přes SMS ani WhatsApp.",
+        });
+        return;
+      }
+    }
 
     startTransition(async () => {
       const result = await createSeniorAccount(familyId, {
         displayName, username, password, seniorRole, gender, birthYear,
-        contactChannel, contactAddress, promptFrequency,
+        contactChannel, contactAddress, phoneE164,
+        channelAttestation, channelAttestationText, promptFrequency,
       });
       if (result.ok && result.credentials) {
         setPhase({ name: "done", credentials: result.credentials });
@@ -219,6 +279,7 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
                 placeholder="Jana Nováková"
                 autoComplete="off"
                 onChange={(e) => {
+                  setDisplayName(e.target.value);
                   if (!usernameEdited) setUsername(deriveUsername(e.target.value));
                 }}
               />
@@ -279,10 +340,14 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
                 id="new-contactChannel"
                 name="contactChannel"
                 value={contactChannel}
-                onChange={(e) => setContactChannel(e.target.value as "" | "email" | "whatsapp")}
+                onChange={(e) => {
+                  setContactChannel(e.target.value as "" | "email" | "sms" | "whatsapp");
+                  setAttestation(false); // re-attest whenever the channel changes
+                }}
               >
                 <option value="">- nevybráno -</option>
                 <option value="email">E-mail</option>
+                <option value="sms">SMS</option>
                 <option value="whatsapp">WhatsApp</option>
               </Select>
             </div>
@@ -299,19 +364,43 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
                   autoComplete="off"
                 />
               </div>
-            ) : contactChannel === "whatsapp" ? (
-              <div className="space-y-1.5">
-                <Label htmlFor="new-contactAddress">Telefonní číslo (WhatsApp)</Label>
-                <Input
-                  id="new-contactAddress"
-                  name="contactAddress"
-                  type="tel"
-                  inputMode="tel"
-                  maxLength={200}
-                  placeholder="+420 777 123 456"
-                  autoComplete="off"
-                />
-              </div>
+            ) : needsAttestation ? (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="new-phone">
+                    Telefonní číslo ({contactChannel === "sms" ? "SMS" : "WhatsApp"})
+                  </Label>
+                  <Input
+                    id="new-phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    maxLength={32}
+                    placeholder="+420 777 123 456"
+                    autoComplete="off"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    Mezinárodní formát, např.&nbsp;+420&nbsp;777&nbsp;123&nbsp;456.
+                  </p>
+                </div>
+                {/* GDPR Art. 6(1)(f): the owner makes a truthful attestation (NOT
+                    "the senior consents"). Stored verbatim as accountability
+                    evidence. */}
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-3">
+                  <input
+                    type="checkbox"
+                    name="channelAttestation"
+                    checked={attestation}
+                    onChange={(e) => setAttestation(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-navy-700)]"
+                  />
+                  <span className="text-sm leading-relaxed text-[var(--color-text)]">
+                    {attestationLabel}
+                  </span>
+                </label>
+              </>
             ) : null}
             <div className="space-y-1.5">
               <Label htmlFor="new-promptFrequency">Jak často posílat otázky</Label>
