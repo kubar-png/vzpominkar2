@@ -143,7 +143,11 @@ const FAQ = [
 
 export default function KnihaPage() {
   return (
-    <Shell>
+    <Shell
+      stickyCtaHref="/kniha/sestavit"
+      stickyCtaLabel="Sestavit vlastní knihu"
+      stickyCtaNote="Jednorázově, poštovné zdarma."
+    >
       <KnihaHeroScroll />
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">

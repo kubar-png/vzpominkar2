@@ -193,7 +193,13 @@ export async function createGiftOrder(
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
+      // Express wallets (Apple Pay / Google Pay): we intentionally do NOT pin
+      // `payment_method_types: ["card"]` here. On Stripe-hosted Checkout, leaving
+      // it unset surfaces every method enabled in the Stripe Dashboard — and the
+      // card wallets (Apple Pay / Google Pay) render automatically on supported
+      // devices/browsers, with NO Apple Pay domain verification needed (Stripe
+      // hosts the page). They only become visible once Stripe is live (real
+      // STRIPE_SECRET_KEY + the wallets toggled on in the Dashboard).
       customer_email: input.buyerEmail,
       line_items: [
         {
@@ -205,6 +211,15 @@ export async function createGiftOrder(
           quantity: 1,
         },
       ],
+      // Abandoned-cart recovery: enable Stripe's native after-expiration recovery
+      // so an unfinished session gets a recovery URL and Stripe can re-engage the
+      // buyer by e-mail (Checkout recovery e-mails are toggled on in the Stripe
+      // Dashboard). `expires_at` defaults to 24h in the future, which satisfies
+      // recovery's "must expire" requirement — no extra param needed. We already
+      // persist the draft `shop_orders` row + buyer_email pre-redirect, so a
+      // custom recovery e-mail remains a possible upgrade later; the native
+      // toggle is the lightest effective option for this pass.
+      after_expiration: { recovery: { enabled: true } },
       metadata: { productType: "shop_book", shopOrderId: order.id },
       success_url: `${SITE_URL}/kniha/hotovo?order=${order.id}`,
       cancel_url: `${SITE_URL}/kniha/sestavit?cancelled=1`,

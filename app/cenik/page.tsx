@@ -39,7 +39,7 @@ const INCLUDED = [
 ];
 
 const ADDONS: ReadonlyArray<readonly [string, string]> = [
-  ["Jiná barva přebalu (hnědá a zlatá je v ceně)", `+ ${formatCzk(PRICE_COVER_PREMIUM)}`],
+  ["Jiná barva desek — hnědá se zlatým písmem je v ceně", `+ ${formatCzk(PRICE_COVER_PREMIUM)}`],
   ["Dárkové balení s raženým věnováním", `+ ${formatCzk(PRICE_GIFTWRAP)}`],
   ["Další výtisk pro sourozence", "cena dle objednávky"],
 ];
@@ -143,9 +143,9 @@ export default function PricingPage() {
               </h2>
               <p style={{ maxWidth: "44ch", marginBottom: 28 }}>
                 Tvrdé desky, šitá vazba, papír v krémové barvě. U každé kapitoly
-                QR kód s původním hlasem. Přebal v hnědé a zlaté patří k základu.
-                Doplňky níže jsou volitelné — vyberete si je až při objednávce
-                tisku.
+                QR kód s původním hlasem. Hnědé desky se zlatým písmem patří
+                k základu. Doplňky níže jsou volitelné — vyberete si je až při
+                objednávce tisku.
               </p>
               <Link href="/signup" className="btn btn-dark">
                 Založit Vzpomínkář <span className="arrow">↗</span>

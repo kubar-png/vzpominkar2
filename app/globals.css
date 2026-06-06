@@ -2578,13 +2578,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .kc-book-remove {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid rgba(232, 201, 122, 0.3);
   background: transparent;
   color: rgba(251, 245, 227, 0.7);
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
@@ -2634,13 +2634,46 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   background: rgba(232, 201, 122, 0.75);
 }
 
-/* Drag handle (grip) — signals the card can be reordered */
+/* Reorder controls — ▲▼ buttons (touch-first) wrapped around the drag grip. */
+.editorial .kc-book-move {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding-top: 2px;
+}
+.editorial .kc-book-move-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: rgba(232, 201, 122, 0.72);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.editorial .kc-book-move-btn:hover:not(:disabled) {
+  background: rgba(232, 201, 122, 0.14);
+  color: #e8c97a;
+}
+.editorial .kc-book-move-btn:active:not(:disabled) {
+  background: rgba(232, 201, 122, 0.22);
+}
+.editorial .kc-book-move-btn:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+/* Drag handle (grip) — desktop-only reorder enhancement. Hidden on coarse
+   pointers so no dead affordance remains (the ▲▼ buttons drive touch). */
 .editorial .kc-book-grip {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding-top: 6px;
-  color: rgba(232, 201, 122, 0.6);
+  color: rgba(232, 201, 122, 0.45);
   cursor: grab;
 }
 .editorial .kc-book-grip:hover {
@@ -2648,6 +2681,16 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .kc-book-grip:active {
   cursor: grabbing;
+}
+@media (pointer: coarse) {
+  .editorial .kc-book-grip {
+    display: none;
+  }
+  /* Bigger ▲▼ hit area on touch so reorder is comfortable one-handed. */
+  .editorial .kc-book-move-btn {
+    width: 38px;
+    height: 34px;
+  }
 }
 .editorial .kc-book-item.is-dragging {
   opacity: 0.4;
@@ -2838,6 +2881,18 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .kc-text-opt:disabled {
   cursor: not-allowed;
   opacity: 0.3;
+}
+/* Touch tap targets — pickers reach the 44px guideline on coarse pointers
+   (the visible swatch/pill stays the same; the hit area grows). */
+@media (pointer: coarse) {
+  .editorial .kc-swatch {
+    width: 44px;
+    height: 44px;
+  }
+  .editorial .kc-text-opt {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
 }
 .editorial .kc-cover-preview {
   flex: 0 0 auto;
@@ -3090,6 +3145,13 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .co-textopt:disabled { opacity: 0.35; cursor: not-allowed; }
 .editorial .co-textopt.is-on { border-color: var(--ink); font-weight: 500; }
+/* Touch tap targets on the gift checkout — reach the 44px guideline on coarse
+   pointers without changing desktop sizing. */
+@media (pointer: coarse) {
+  .editorial .co-swatch { width: 44px; height: 44px; }
+  .editorial .co-textopt { min-height: 44px; padding: 11px 14px; }
+  .editorial .co-textopts { margin-left: 0; }
+}
 
 .editorial .co-row { display: grid; grid-template-columns: 1fr 0.55fr; gap: 14px; }
 
@@ -3144,6 +3206,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   }
   .editorial .kc-cols {
     height: auto;
+  }
+  /* Book first on the single-column stack so tapping a suggestion lands a
+     visible card right above the picker (the "pick → see it land" loop is
+     otherwise off-screen). The picker (.kc-pool) follows. */
+  .editorial .kc-cols .kc-book {
+    order: -1;
   }
   .editorial .kc-main {
     overflow-y: auto;

@@ -333,15 +333,55 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           </div>
 
           <button type="submit" className="auth-submit" disabled={submitting}>
-            {submitting ? "Odesíláme…" : "Pokračovat k platbě"}
+            {submitting
+              ? "Odesíláme…"
+              : totalCzk === 0
+                ? "Objednat knihu"
+                : "Pokračovat k platbě"}
             <span className="arrow" aria-hidden>
               ↗
             </span>
           </button>
 
+          {/* Reassurance row — honest, paper-product claims only (no app /
+              "přístup napořád" promises; this book has no account or app).
+              Inline-styled to stay inside the owned checkout file (globals.css
+              .co-* classes are owned by the gift-funnel agent). */}
+          <ul
+            aria-label="Co máte jisté"
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "14px 0 0",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "6px 14px",
+              fontFamily: "var(--font-body-editorial)",
+              fontSize: "12.5px",
+              lineHeight: 1.4,
+              color: "var(--ink-soft)",
+            }}
+          >
+            {[
+              "Poštovné zdarma (ČR i SK)",
+              "Doručení obvykle do 3–4 týdnů",
+              "Zabezpečená platba",
+              "Píše a pomáhá vám člověk",
+            ].map((t) => (
+              <li
+                key={t}
+                style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
+              >
+                <span aria-hidden style={{ color: "var(--gold)", fontWeight: 600 }}>
+                  ✓
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+
           <p className="auth-fineprint">
-            Zabezpečená platba · Poštovné zdarma po ČR i SK · Bez vytvoření účtu. Chcete otázky
-            upravit nebo přidat vlastní?{" "}
+            Bez vytvoření účtu. Chcete otázky upravit nebo přidat vlastní?{" "}
             <Link href="/kniha/sestavit" className="auth-link">
               Sestavte si knihu na míru
             </Link>

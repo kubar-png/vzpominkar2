@@ -41,7 +41,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <aside className="senior-auth-side">
           <GoldWordmark className="senior-auth-logo" height={30} />
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Nový Vzpomínkář</span>
+            <span className="eyebrow">Krok 1 ze 3 · pak uvidíte cenu</span>
             <h2>
               Začněte
               <br />
@@ -51,6 +51,23 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
               Pár minut a&nbsp;první otázka může vyrazit za vaším blízkým.
               Přepis, sazbu i&nbsp;vazbu do krásné knihy obstaráme my.
             </p>
+            {basePriceCzk > 0 ? (
+              <p
+                style={{
+                  marginTop: "4px",
+                  fontFamily: "var(--font-body-editorial)",
+                  fontSize: "15px",
+                  lineHeight: 1.5,
+                  color: "rgba(237, 228, 207, 0.78)",
+                }}
+              >
+                <strong style={{ color: "var(--gold)", fontWeight: 600 }}>
+                  {basePriceCzk.toLocaleString("cs-CZ")} Kč jednorázově
+                </strong>
+                <br />
+                Přístup napořád, bez předplatného. První tištěná kniha v&nbsp;ceně.
+              </p>
+            ) : null}
           </div>
           <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>
         </aside>
@@ -60,6 +77,27 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           <div style={{ width: "100%", maxWidth: 460 }}>
             <span className="auth-eyebrow">Registrace</span>
             <h1 className="auth-title">Vytvořte si účet.</h1>
+
+            {/* Mobile-only step + price sub-label — on desktop the navy aside
+                carries this, but the aside is hidden below 960px (the dominant
+                paid-Meta traffic), so surface "Krok 1 ze 3" + the price here. */}
+            <p
+              className="min-[960px]:hidden"
+              style={{
+                margin: "10px 0 4px",
+                fontFamily: "var(--font-body-editorial)",
+                fontSize: "12px",
+                fontWeight: 500,
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "var(--ink-soft)",
+              }}
+            >
+              {basePriceCzk > 0
+                ? `Krok 1 ze 3 · pak uvidíte cenu (${basePriceCzk.toLocaleString("cs-CZ")} Kč, jednorázově)`
+                : "Krok 1 ze 3 · poslední krok je platba"}
+            </p>
+
             <p className="auth-lede">
               Stačí vaše jméno, e-mail a&nbsp;heslo. Pak řeknete, kdo bude
               vyprávět — přístup pro něj připravíte za chvíli v&nbsp;aplikaci.

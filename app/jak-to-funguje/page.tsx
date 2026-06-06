@@ -35,7 +35,7 @@ const STEPS = [
     n: "II",
     eyebrow: "Každé pondělí",
     title: "Rodič dostane jednu otázku",
-    body: "Otázka přijde SMSkou nebo e-mailem. Jedno kliknutí spustí nahrávání. Pokud rodič raději píše, odpoví textem. Funguje i z tlačítkového telefonu — stačí prozvonit naše číslo.",
+    body: "Otázka přijde e-mailem. Jedno kliknutí spustí nahrávání. Pokud rodič raději píše, odpoví textem.",
     aside: "Žádné účty, žádné aplikace, žádné stahování. Cílem je, aby maminka u sedmdesátky neřešila techniku — jen vyprávěla.",
   },
   {
@@ -109,8 +109,8 @@ export default function JakToFungujePage() {
             <span className="eyebrow">Čtyři kroky</span>
             <h2>Od první otázky po hotovou knihu.</h2>
             <p className="lede">
-              Vy řešíte jen výběr otázek a předání certifikátu. Posílání,
-              přepis, sazba i tisk jsou na nás.
+              Vy řešíte jen výběr otázek. Posílání, přepis, sazba i tisk
+              jsou na nás.
             </p>
           </div>
 

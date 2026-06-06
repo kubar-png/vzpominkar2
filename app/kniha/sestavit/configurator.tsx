@@ -73,6 +73,7 @@ export function Configurator() {
   const [coverText, setCoverText] = useState<CoverText>(DEFAULT_COVER_TEXT);
   // Book-card UX: internal scroll + scroll-to-top button, and drag-to-reorder.
   const bookScrollRef = useRef<HTMLDivElement>(null);
+  const bookPanelRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [armedId, setArmedId] = useState<string | null>(null);
@@ -152,7 +153,16 @@ export function Configurator() {
   const inBookIds = new Set(inBook.map((q) => q.id));
   const pool = phase.questions.filter((q) => !inBookIds.has(q.id));
 
-  const scrollBookTop = () => bookScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  // Bring the newly-added card into view. On desktop the book has its own
+  // inner scroll (scroll the list to top); on mobile the panel is laid out
+  // above the picker, so scroll the whole book panel into view — otherwise a
+  // tap on a suggestion lands a card the buyer can't see (no feedback).
+  const scrollBookTop = () => {
+    bookScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 860px)").matches) {
+      bookPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
   // New questions go to the TOP of the book (newest first, in view).
   const addSuggestion = (q: BookQuestion) => {
     setSelection((p) => ({
@@ -186,6 +196,22 @@ export function Configurator() {
       const moved = arr.splice(from, 1)[0];
       if (!moved) return p;
       if (from < target) target -= 1; // removal shifted indices after `from`
+      arr.splice(target, 0, moved);
+      return { ...p, [phase.key]: arr };
+    });
+  }
+  // Touch-first reorder: ▲▼ buttons on every card call this. The HTML5 drag
+  // above is a mouse-only enhancement; this is the primary path on mobile,
+  // where this product is mostly bought.
+  function moveBy(id: string, delta: number) {
+    setSelection((p) => {
+      const arr = [...(p[phase.key] ?? [])];
+      const from = arr.findIndex((q) => q.id === id);
+      if (from < 0) return p;
+      const target = from + delta;
+      if (target < 0 || target >= arr.length) return p;
+      const [moved] = arr.splice(from, 1);
+      if (!moved) return p;
       arr.splice(target, 0, moved);
       return { ...p, [phase.key]: arr };
     });
@@ -417,7 +443,7 @@ export function Configurator() {
             </div>
 
             {/* RIGHT — the book (dark panel); these get printed */}
-            <div className="kc-book">
+            <div className="kc-book" ref={bookPanelRef}>
               <h3 className="kc-col-title kc-col-title-light">
                 Ve vaší knize <span className="kc-book-count">{inBook.length}</span>
               </h3>
@@ -466,23 +492,65 @@ export function Configurator() {
                           setDropTarget(null);
                         }}
                       >
-                        <span
-                          className="kc-book-grip"
-                          title="Přetažením změníte pořadí"
-                          aria-label="Přesunout otázku"
-                          onMouseDown={() => setArmedId(q.id)}
-                          onMouseUp={() => setArmedId(null)}
-                        >
-                          <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden>
-                            <g fill="currentColor">
-                              <circle cx="2.5" cy="3" r="1.3" />
-                              <circle cx="7.5" cy="3" r="1.3" />
-                              <circle cx="2.5" cy="8" r="1.3" />
-                              <circle cx="7.5" cy="8" r="1.3" />
-                              <circle cx="2.5" cy="13" r="1.3" />
-                              <circle cx="7.5" cy="13" r="1.3" />
-                            </g>
-                          </svg>
+                        {/* Reorder controls. The ▲▼ buttons are the primary,
+                            touch-friendly path (this product is bought mostly on
+                            mobile); the dotted grip stays as a desktop
+                            drag-to-reorder enhancement. */}
+                        <span className="kc-book-move">
+                          <button
+                            type="button"
+                            className="kc-book-move-btn"
+                            aria-label="Posunout otázku nahoru"
+                            disabled={i === 0}
+                            onClick={() => moveBy(q.id, -1)}
+                          >
+                            <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden>
+                              <path
+                                d="M4 10l4-4 4 4"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          </button>
+                          <span
+                            className="kc-book-grip"
+                            title="Přetažením změníte pořadí"
+                            aria-hidden
+                            onMouseDown={() => setArmedId(q.id)}
+                            onMouseUp={() => setArmedId(null)}
+                          >
+                            <svg width="9" height="14" viewBox="0 0 10 16" aria-hidden>
+                              <g fill="currentColor">
+                                <circle cx="2.5" cy="3" r="1.3" />
+                                <circle cx="7.5" cy="3" r="1.3" />
+                                <circle cx="2.5" cy="8" r="1.3" />
+                                <circle cx="7.5" cy="8" r="1.3" />
+                                <circle cx="2.5" cy="13" r="1.3" />
+                                <circle cx="7.5" cy="13" r="1.3" />
+                              </g>
+                            </svg>
+                          </span>
+                          <button
+                            type="button"
+                            className="kc-book-move-btn"
+                            aria-label="Posunout otázku dolů"
+                            disabled={i === inBook.length - 1}
+                            onClick={() => moveBy(q.id, 1)}
+                          >
+                            <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden>
+                              <path
+                                d="M4 6l4 4 4-4"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          </button>
                         </span>
                         <span className="kc-book-num">{String(i + 1).padStart(2, "0")}</span>
                         <textarea

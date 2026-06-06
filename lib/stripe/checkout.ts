@@ -123,8 +123,17 @@ export async function purchaseBook(
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card"],
+    // Express wallets: omit `payment_method_types` so Stripe-hosted Checkout
+    // shows every Dashboard-enabled method and renders Apple Pay / Google Pay
+    // automatically on supported devices (no Apple Pay domain verification —
+    // Stripe hosts the page). Visible once Stripe is live (real key + wallets
+    // enabled in the Dashboard).
     line_items: lineItems,
+    // Abandoned-cart recovery: Stripe's native after-expiration recovery gives
+    // the abandoned session a recovery URL and lets Stripe re-engage the buyer
+    // by e-mail (toggled on in the Dashboard). `expires_at` defaults to 24h, so
+    // the "session must expire" requirement is met without extra params.
+    after_expiration: { recovery: { enabled: true } },
     metadata: {
       familyId: book.family_id,
       productType,
@@ -310,7 +319,9 @@ export async function createPrintCheckout(input: {
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card"],
+    // Express wallets: omit `payment_method_types` so Stripe-hosted Checkout
+    // renders Apple Pay / Google Pay automatically on supported devices (no
+    // domain verification needed). Visible once Stripe is live.
     line_items: [
       {
         price_data: {
@@ -321,6 +332,9 @@ export async function createPrintCheckout(input: {
         quantity: 1,
       },
     ],
+    // Abandoned-cart recovery: Stripe-native after-expiration recovery (24h
+    // default expiry) so an abandoned print order can be re-engaged by e-mail.
+    after_expiration: { recovery: { enabled: true } },
     metadata: {
       familyId: input.familyId,
       productType: "book_print",

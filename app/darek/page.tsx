@@ -7,19 +7,23 @@ import { canonical } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Vzpomínkář jako dárek",
   description:
-    "Nejhezčí dárek pro maminku, tatínka nebo prarodiče — rok týdenních otázek a kniha plná jejich příběhů. Tištěný certifikát, čtyři pole, žádný formulář na pět stránek.",
+    "Nejhezčí dárek pro maminku, tatínka nebo prarodiče — rok týdenních otázek a kniha plná jejich příběhů. Připravíte za pár minut, první otázka odejde e-mailem v pondělí.",
   alternates: { canonical: canonical("/darek") },
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
  * /darek — unified gifting page
  *
- * Merges former /darek + /darek/certifikat into one strong funnel:
- * Hero → 4 reasons → certificate preview → 3-step "jak na to" →
- * 4 fields → occasions belt → testimonial → final CTA card.
+ * Hero → 4 reasons → 3-step "jak na to" → what you set up → occasions belt →
+ * final CTA card.
  *
  * Single CTA verb across the page: "Darovat Vzpomínkář ↗" → /signup?gift=1.
- * Mid-page outline CTA replaced with in-page anchor (no outline buttons).
+ *
+ * HONESTY: today the gift CTA routes to the ordinary signup, which sets up the
+ * e-mail-based weekly question flow. The page must NOT promise a chosen
+ * send-date, SMS delivery, or a printed/PDF certificate — none of that ships
+ * yet. Keep copy to what is true today. (A dedicated gift branch is a later
+ * build; restore certificate/date copy only once it actually delivers.)
  * ─────────────────────────────────────────────────────────────────────── */
 
 const REASONS = [
@@ -48,52 +52,47 @@ const REASONS = [
 const STEPS = [
   {
     n: "I",
-    h: "Vyberete den a vzkaz",
-    body: "Online za pár minut. Kdy má první otázka odejít, co má v certifikátu být napsané, od koho dárek je.",
+    h: "Připravíte to za pár minut",
+    body: "Online a v klidu z gauče. Zadáte, komu vyprávění patří a jak ho doma oslovují, a vyberete první otázky, na které se chcete zeptat.",
   },
   {
     n: "II",
-    h: "Doručíme certifikát",
-    body: "PDF ke stažení a vytištění doma. Nebo vám tištěnou verzi na ručním papíře pošleme v krémové obálce do tří pracovních dnů.",
+    h: "V pondělí přijde první otázka",
+    body: "První otázka odejde v pondělí ráno e-mailem. Stačí kliknout, otevře se jedna stránka s velkým tlačítkem — bez aplikace, bez hesla.",
   },
   {
     n: "III",
-    h: "V pondělí přijde první otázka",
-    body: "V den, který jste vybrali, odejde první otázka SMSkou nebo e-mailem. Babička stiskne tlačítko a její příběh začíná vznikat.",
+    h: "Z roku vyprávění vznikne kniha",
+    body: "Každý týden přibude jedna vzpomínka. Odpovědi se průběžně ukládají do online knihovny a na konci si je necháte vytisknout jako knihu.",
   },
 ];
 
 const FIELDS = [
   {
     n: "01",
-    h: "Komu certifikát patří",
-    body: "Jméno a křestní oslovení obdarovaného. To, jak ho oslovují vnoučata. „Babi Marie“, „dědo Karle“, „mami“ — jak je vám blízké.",
+    h: "Komu vyprávění patří",
+    body: "Jméno a oslovení obdarovaného — to, jak ho doma oslovují. „Babi Marie“, „dědo Karle“, „mami“, jak je vám blízké. Podle toho se otázky ptají.",
   },
   {
     n: "02",
-    h: "Datum, kdy první otázka odejde",
-    body: "Den, který chcete. Vánoce, narozeniny, výročí — nebo libovolná středa. První otázka odchází v pondělí ráno v 10:00.",
+    h: "Na co se chcete zeptat",
+    body: "Vyberete první otázky z osmi témat — dětství, láska, práce, životní moudro. Nebo přidáte vlastní. Měnit a doplňovat je můžete kdykoliv.",
   },
   {
     n: "03",
-    h: "Krátký vzkaz",
-    body: "Pár vět, které se otisknou do certifikátu pod obrázek. Větu z dětství, oblíbenou pasáž z písničky, vlastní slib.",
-  },
-  {
-    n: "04",
-    h: "Kdo dárek dává",
-    body: "Vaše jméno (nebo „od celé rodiny“). Otiskne se rukou na certifikát — písmem, které vypadá jako pero, ne tisk.",
+    h: "Váš e-mail pro správu",
+    body: "Sem chodí přepisy odpovědí a do online knihovny vidíte vy i celá rodina. Obdarovaný nemusí nic instalovat ani se nikam přihlašovat.",
   },
 ];
 
 const OCCASIONS = [
   {
     h: "K Vánocům",
-    body: "Otevřete pod stromečkem certifikát s jeho jménem. První otázka odejde 6. ledna ráno — krásně v klidu po svátcích.",
+    body: "Pod stromeček oznámíte, že vyprávění začíná. První otázka přijde hned v nejbližší pondělí e-mailem — krásně v klidu po svátcích.",
   },
   {
     h: "K narozeninám",
-    body: "První otázka přijde přesně v den narozenin (nebo den po, jak chcete). Stačí přidat foto z dětství a krátký vzkaz.",
+    body: "Místo dalšího předmětu rok společných vzpomínek. Vyberete první otázky, přidáte vlastní — a v pondělí to celé začne.",
   },
   {
     h: "Ke zlaté svatbě",
@@ -101,7 +100,7 @@ const OCCASIONS = [
   },
   {
     h: "Po nemoci",
-    body: "Pomalá, jemná aktivita. Vyprávění jako rehabilitace. Pošlete v klidu, žádný tlak — kdykoliv může pauznout.",
+    body: "Pomalá, jemná aktivita. Vyprávění jako rehabilitace. Žádný tlak — odpovídá se vlastním tempem a kdykoliv může pauznout.",
   },
 ];
 
@@ -148,56 +147,6 @@ export default function DarekPage() {
         </div>
       </section>
 
-      {/* ═══════════ CERTIFICATE PREVIEW — CSS render ═══════════ */}
-      <div className="divider" aria-hidden />
-      <section
-        id="certifikat"
-        className="section"
-        style={{ paddingTop: 0 }}
-      >
-        <div className="container">
-          <div className="section-head">
-            <span className="eyebrow">Co dostane do ruky</span>
-            <h2>
-              Tištěný certifikát
-              <br />
-              na ručním papíře.
-            </h2>
-            <p className="lede">
-              Karta v krémové obálce s jeho jménem, vaším vzkazem a datem,
-              kdy první otázka odejde. Vy si vyberete PDF k tisku doma —
-              nebo vám pošleme hotový kus poštou.
-            </p>
-          </div>
-
-          <div className="cert-preview-wrap" data-reveal>
-            <div className="cert-preview" aria-label="Náhled dárkového certifikátu">
-              <div className="cert-fleuron" aria-hidden>⁂</div>
-              <p className="cert-eyebrow">Vzpomínkář — dárkový certifikát</p>
-              <p className="cert-personal">Pro Marii</p>
-              <p className="cert-title">Rok vyprávění,</p>
-              <p className="cert-title-2">který se proměníš v knihu.</p>
-              <p className="cert-message">
-                „Mami, vyprávěj. A my si vzpomeneme.“
-                <br />
-                První otázka odejde 6. ledna ráno.
-              </p>
-              <div className="cert-sign">
-                <span className="cert-sign-name">Od Kláry a Honzíka</span>
-                <span className="cert-sign-date">Brno · prosinec 2026</span>
-              </div>
-              <div className="cert-corner cert-corner-tl" aria-hidden />
-              <div className="cert-corner cert-corner-tr" aria-hidden />
-              <div className="cert-corner cert-corner-bl" aria-hidden />
-              <div className="cert-corner cert-corner-br" aria-hidden />
-            </div>
-            <p className="cert-preview-caption">
-              Ukázka — vaše jméno, datum a vzkaz nahradíte při objednávce.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* ═══════════ HOW GIFTING WORKS — three numbered steps ═══════════ */}
       <div className="divider" aria-hidden />
       <section className="section" style={{ paddingTop: 0 }}>
@@ -210,8 +159,8 @@ export default function DarekPage() {
               Pět minut vašeho času.
             </h2>
             <p className="lede">
-              Od „chci darovat“ k „v pondělí přijde první otázka“. Vy
-              zařizujete pět minut a den. Zbytek je na nás a na obdarovaném.
+              Od „chci darovat“ k „v pondělí přijde první otázka“. Vy to
+              připravíte za pár minut. Zbytek je na nás a na obdarovaném.
             </p>
           </div>
 
@@ -232,10 +181,10 @@ export default function DarekPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Co po vás chceme</span>
-            <h2>Čtyři pole. Žádný formulář na pět stránek.</h2>
+            <span className="eyebrow">Co u nás nastavíte</span>
+            <h2>Pár polí. Žádný formulář na pět stránek.</h2>
             <p className="lede">
-              Vyplníte za pět minut z gauče. Ostatní vyřešíme my.
+              Vyplníte za pár minut z gauče. Ostatní vyřešíme my.
             </p>
           </div>
           <div className="cert-fields">
@@ -252,15 +201,16 @@ export default function DarekPage() {
         </div>
       </section>
 
-      {/* ═══════════ TESTIMONIAL ═══════════ */}
+      {/* ═══════════ REASSURANCE — honest, no fabricated proof ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
-          <span className="eyebrow">Z dopisů, které nám chodí</span>
+          <span className="eyebrow">Klid na duši</span>
           <blockquote>
-            „Babička otevřela obálku, přečetla certifikát a dala se do
-            pláče. Asi takhle si představuju dárek, který se nezapomene.&ldquo;
+            Píše a pomáhá vám člověk, ne robot. Vzpomínky i přístup ke knize
+            zůstávají vaší rodině napořád. A když si nebudete vědět rady,
+            ozvěte se nám — jsme tu.
           </blockquote>
-          <div className="feature-attr">— Klára, Brno · darovala k 75. narozeninám</div>
+          <div className="feature-attr">— tým Vzpomínkáře</div>
         </div>
       </section>
 
@@ -276,8 +226,8 @@ export default function DarekPage() {
               kdy se to nejvíc hodí.
             </h2>
             <p className="lede">
-              Můžete pro každou jinou. Den, kdy první otázka odejde, si
-              vybíráte vy.
+              Hodí se k nim ke všem. První otázka vždy odejde v nejbližší
+              pondělí ráno e-mailem.
             </p>
           </div>
           <div className="darek-occasions">
@@ -293,7 +243,7 @@ export default function DarekPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Vyberte den, napište vzkaz"
+        eyebrow="Připravíte za pár minut"
         heading="Darujte Vzpomínkář."
         lede="Jednorázově, přístup napořád — bez předplatného."
         ctaHref="/signup?gift=1"

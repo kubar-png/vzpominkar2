@@ -74,7 +74,11 @@ export function SignupForm({
         label="E-mail"
         name="email"
         type="email"
+        inputMode="email"
         autoComplete="email"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
         placeholder="vy@email.cz"
         required
         error={fieldError("email")}
@@ -111,11 +115,22 @@ function Field({
   error,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
+  const errorId = error ? `${props.name}-error` : undefined;
   return (
     <div className="auth-field">
       <label htmlFor={props.name}>{label}</label>
-      <input id={props.name} {...props} />
-      {error ? <p className="error">{error}</p> : null}
+      <input
+        id={props.name}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
+        style={error ? { borderColor: "var(--oxblood)" } : undefined}
+        {...props}
+      />
+      {error ? (
+        <p id={errorId} className="error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

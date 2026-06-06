@@ -101,6 +101,30 @@ export default async function HomePage({
       />
       <HeroScrollDriver />
 
+      {/* Scoped homepage CSS — lives here (not globals.css) so this owned file
+       * carries its own mobile-hero fixes. Only targets .hero on this page.
+       *   · hero H1 mobile clamp: the global clamp floors at 48px, which
+       *     overflows 360–390px phones — re-clamp to a phone-friendly floor.
+       *   · .hero-trust: the above-the-fold price/value reassurance line.
+       * If these ever need to move to globals.css, the snippet is self-contained. */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .editorial .hero-trust{
+              margin:0 auto;max-width:480px;
+              font-family:var(--font-body-editorial);
+              font-size:13px;line-height:1.5;letter-spacing:.01em;
+              color:var(--ink-soft);position:relative;z-index:5;
+            }
+            @media (max-width:600px){
+              .editorial .hero h1{font-size:clamp(30px,8.4vw,52px);}
+              .editorial .hero .lede{font-size:16px;}
+              .editorial .hero-trust{font-size:12px;}
+            }
+          `,
+        }}
+      />
+
       {/* Promo strip — kept identical to the Shell-based marketing pages so the
        * 41px navy band is present on every marketing route. Without it here the
        * shared header + content jumped ~41px when navigating / ↔ /cenik etc. */}
@@ -126,23 +150,29 @@ export default async function HomePage({
         </div>
       </header>
 
-      <main>
+      <main className="pb-20 md:pb-0">
         {/* ═══════════ 1. HERO ═══════════ */}
         <section className="hero">
           <div className="container">
             <span className="eyebrow">Vzpomínkář — kniha rodinné paměti</span>
-            <h1>
-              Kolik příběhů vašeho blízkého
-              <br />
-              zatím nikdo nezapsal?
+            {/* No hard <br>: lets the headline wrap by itself + text-wrap:balance
+             * so it never overflows narrow phones. Mobile font-size is tamed by
+             * the scoped <style> below (the global clamp floors at 48px). */}
+            <h1 style={{ textWrap: "balance" }}>
+              Kolik příběhů vašeho blízkého zatím nikdo nezapsal?
             </h1>
             <p className="lede">
-              Životní příběhy mizí dřív, než si jich všimneme. Týden po týdnu
-              položíme vašemu blízkému jednu otázku — odpoví, jak mu je
-              nejpřirozenější. Za rok mu vyrobíme vázanou knihu pro budoucí
-              generace.
+              Týden po týdnu položíme vašemu blízkému jednu otázku. On odpoví
+              hlasem — a my z toho za rok vyrobíme vázanou knihu, kterou
+              otevřou i vnoučata.
             </p>
             <PrimaryCta label="Začít sbírat vzpomínky" variant="hero" />
+            {/* Reassurance row — true claims only (no guarantee, no SMS promise).
+             * Gives a cold visitor the price + the gist in one glance above the fold. */}
+            <p className="hero-trust">
+              2&nbsp;890&nbsp;Kč jednorázově · první tištěná kniha v ceně ·
+              přístup k nahrávkám napořád
+            </p>
           </div>
 
           <div className="bg-wordmark" aria-hidden="true">
@@ -208,7 +238,7 @@ export default async function HomePage({
                 <div className="step-label">II.</div>
                 <h3>Blízký odpoví</h3>
                 <p>
-                  Každou sobotu mu přijde SMS s jednou otázkou. Stiskne velké
+                  Každé pondělí mu přijde e-mail s jednou otázkou. Stiskne velké
                   tlačítko a vypráví — svým tempem, svými slovy. Žádné aplikace,
                   žádná hesla.
                 </p>
@@ -419,7 +449,7 @@ export default async function HomePage({
                 <div className="story-body">
                   <blockquote>
                     „Máma poprvé v životě něco používá sama. A těší se na
-                    sobotu.&rdquo;
+                    pondělí.&rdquo;
                   </blockquote>
                   <cite>Jana M., dcera, Brno</cite>
                 </div>
@@ -611,7 +641,7 @@ export default async function HomePage({
                   Zvládne to babička, která nikdy nepoužívala chytrý telefon?
                 </summary>
                 <div className="faq-body">
-                  Ano. SMS přijde s odkazem, který otevře jednu obrazovku
+                  Ano. E-mail přijde s odkazem, který otevře jednu obrazovku
                   s velkým červeným tlačítkem. Stisknout, mluvit, pustit.
                   Žádné aplikace, žádná hesla, žádné instalace. Otestovali
                   jsme to v zařízeních pro seniory v Třebíči a v Brně —
@@ -809,6 +839,21 @@ export default async function HomePage({
           </div>
         </div>
       </footer>
+
+      {/* Sticky mobile CTA — the homepage is the canonical Meta-ad landing page
+       * but (unlike Shell-based routes) had no persistent mobile CTA. Reuses the
+       * shared .sticky-mobile-cta chrome (shows ≤900px, hidden on md+ where the
+       * header CTA stays in view). Points at the main funnel /signup. */}
+      <div
+        className="sticky-mobile-cta"
+        role="region"
+        aria-label="Začít sbírat vzpomínky"
+      >
+        <PrimaryCta label="Začít sbírat vzpomínky" />
+        <p className="sticky-mobile-cta-note">
+          2 890 Kč jednorázově · první kniha v ceně
+        </p>
+      </div>
     </div>
   );
 }

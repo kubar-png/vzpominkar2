@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 const INCLUDED = [
   "Jeden blízký a jeho kniha — až 52 otázek",
+  "První tištěná kniha v ceně — žádný další poplatek za tisk",
   "Doživotní přístup, žádné předplatné",
   "Online knihovna pro celou rodinu",
   "Automatický přepis a korektura odpovědí",
@@ -164,9 +165,29 @@ export default async function ActivationPage({
                   </span>
                 </button>
               </form>
+
+              {/* Reassurance stack — true claims only (no money-back guarantee
+                  by design). Sits directly under the CTA, where the money is
+                  committed. */}
+              <ul className="flex flex-col gap-2 md:items-end" aria-label="Co máte jisté">
+                {[
+                  "Píše a pomáhá vám člověk",
+                  "Přístup ke knize máte napořád",
+                  "Zabezpečená platba přes Stripe",
+                ].map((line) => (
+                  <li
+                    key={line}
+                    className="flex items-start gap-2 text-[13px] leading-snug text-[var(--color-paper-200)] md:flex-row-reverse md:text-right"
+                  >
+                    <Check size={15} className="mt-0.5 shrink-0 text-[var(--color-gold-400)]" aria-hidden />
+                    {line}
+                  </li>
+                ))}
+              </ul>
+
               {priceCzk > 0 ? (
                 <p className="text-xs text-[var(--color-paper-300)] md:text-right">
-                  Bez předplatného · přístup napořád · platba přes zabezpečenou bránu
+                  Bez předplatného · přístup napořád
                 </p>
               ) : null}
             </div>
@@ -174,22 +195,50 @@ export default async function ActivationPage({
         </div>
       </div>
 
-      {/* Social proof — borrowed from the homepage, kept compact. */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2.5">
-          <span aria-hidden className="text-[var(--color-gold-500)] tracking-[0.15em]">
-            ★★★★★
-          </span>
-          <span className="text-sm text-[var(--color-text-muted)]">
-            <strong className="font-semibold text-[var(--color-ink-900)]">Stovky rodin</strong>{" "}
-            po celé republice
-          </span>
-        </div>
-        <blockquote className="border-l-2 border-[var(--color-gold-400)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
-          „Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny
-          — a&nbsp;knihu, kterou děti otevřou kdykoliv.&rdquo;
-        </blockquote>
+      {/* Honest expectation-setter instead of unverified social proof — what
+          actually happens once the payment goes through. */}
+      <div className="space-y-4">
+        <h2 className="text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
+          Co se stane po zaplacení
+        </h2>
+        <ol className="space-y-3">
+          {[
+            "Vyberete první otázku — vašemu blízkému dorazí e-mailem (zatím každé pondělí).",
+            "On odpoví vlastními slovy nebo hlasem, my zařídíme přepis i korekturu.",
+            "Až bude kniha hotová, objednáte první výtisk — tisk je v ceně.",
+          ].map((line, i) => (
+            <li key={line} className="flex items-start gap-3 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
+              <span
+                aria-hidden
+                className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-navy-50)] font-[family-name:var(--font-display)] text-[13px] text-[var(--color-navy-800)]"
+              >
+                {i + 1}
+              </span>
+              {line}
+            </li>
+          ))}
+        </ol>
       </div>
+
+      {/* Quiet consent line — the onboarding chrome has no SiteFooter, so this
+          is the only reachable Podmínky/Soukromí link on the pay screen. */}
+      <p className="text-xs leading-relaxed text-[var(--color-text-muted)]">
+        Kliknutím na tlačítko souhlasíte s{" "}
+        <a
+          href="/podminky"
+          className="underline decoration-[var(--color-navy-200)] underline-offset-2 transition-colors hover:text-[var(--color-ink-900)]"
+        >
+          obchodními podmínkami
+        </a>{" "}
+        a{" "}
+        <a
+          href="/soukromi"
+          className="underline decoration-[var(--color-navy-200)] underline-offset-2 transition-colors hover:text-[var(--color-ink-900)]"
+        >
+          zpracováním osobních údajů
+        </a>
+        .
+      </p>
     </div>
   );
 }

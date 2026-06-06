@@ -18,6 +18,17 @@ interface ShellProps {
   motion?: boolean;
   /** Show the sticky mobile CTA bar at the bottom. Off on auth/onboarding. */
   stickyMobileCta?: boolean;
+  /**
+   * Where the sticky mobile CTA points. Defaults to /signup (the 2 890 Kč main
+   * product). Gift pages MUST override this — e.g. /kniha passes the gift
+   * checkout — so cold mobile shoppers aren't pushed into the wrong, pricier
+   * funnel.
+   */
+  stickyCtaHref?: string;
+  /** Label for the sticky mobile CTA. Defaults to "Založit Vzpomínkář". */
+  stickyCtaLabel?: string;
+  /** Sub-note under the sticky CTA. Defaults to the main-product app line. */
+  stickyCtaNote?: string;
 }
 
 /**
@@ -32,6 +43,9 @@ export function Shell({
   footerVariant = "full",
   motion = true,
   stickyMobileCta = true,
+  stickyCtaHref,
+  stickyCtaLabel,
+  stickyCtaNote = "Jednorázově, přístup napořád.",
 }: ShellProps) {
   return (
     <div className="editorial min-h-screen">
@@ -49,11 +63,13 @@ export function Shell({
       {/* Sticky mobile CTA - catches long-scroll readers on small viewports.
        * Desktop has the header CTA always in view, so this hides on md+. */}
       {stickyMobileCta ? (
-        <div className="sticky-mobile-cta" role="region" aria-label="Založit Vzpomínkář">
-          <PrimaryCta />
-          <p className="sticky-mobile-cta-note">
-            Jednorázově, přístup napořád.
-          </p>
+        <div
+          className="sticky-mobile-cta"
+          role="region"
+          aria-label={stickyCtaLabel ?? "Založit Vzpomínkář"}
+        >
+          <PrimaryCta href={stickyCtaHref} label={stickyCtaLabel} />
+          <p className="sticky-mobile-cta-note">{stickyCtaNote}</p>
         </div>
       ) : null}
     </div>

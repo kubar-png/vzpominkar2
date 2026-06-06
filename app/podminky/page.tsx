@@ -76,9 +76,10 @@ export default function PodminkyPage() {
         přístupu nelze sbírat vzpomínky ani vytvářet knihu.
       </p>
       <p>
-        Tisk fyzické knihy se účtuje zvlášť, ve chvíli kdy si knihu objednáte.
-        Cenu uvidíte na stránce <Link href="/cenik">ceník</Link> a v okamžiku
-        objednávky před potvrzením platby.
+        První tištěná kniha je součástí jednorázové ceny — objednáte ji, až
+        bude obsah hotový. Případné další výtisky (pro sourozence) jsou
+        volitelný příplatek; cenu uvidíte na stránce{" "}
+        <Link href="/cenik">ceník</Link> a před potvrzením objednávky.
       </p>
 
       <h2>5. Vrácení peněz</h2>

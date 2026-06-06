@@ -40,7 +40,7 @@ const CATEGORIES: Category[] = [
       },
       {
         q: "Můžu Vzpomínkář dát jako dárek?",
-        a: "Ano. Buď koupíte dárkový certifikát, který vytisknete a předáte, nebo si zvolíte konkrétní datum doručení (narozeniny, Vánoce, výročí) a my v ten den pošleme první otázku přímo obdarovanému.",
+        a: "Ano, je to oblíbený dárek. Založíte přístup, nastavíte otázky a první z nich odejde obdarovanému v nejbližší pondělí ráno e-mailem. Vzpomínky i hotová kniha pak zůstávají rodině napořád.",
       },
     ],
   },
@@ -52,7 +52,7 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Musí umět senior s počítačem?",
-        a: "Nemusí. Stačí jednoduchý telefon nebo tablet. Otázku dostane SMSkou nebo e-mailem, jedno kliknutí spustí nahrávání. Žádné účty, žádná aplikace, žádné stahování.",
+        a: "Nemusí. Stačí jednoduchý telefon nebo tablet. Otázku dostane e-mailem, jedno kliknutí spustí nahrávání. Žádné účty, žádná aplikace, žádné stahování.",
       },
       {
         q: "Co když senior nezvládne psát?",
