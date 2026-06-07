@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 const STORAGE_KEY = "vzp-cookie-consent";
@@ -18,6 +19,7 @@ type Choice = "essential" | "all";
 export function CookieConsent() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -42,7 +44,8 @@ export function CookieConsent() {
     setOpen(false);
   }
 
-  if (!mounted || !open) return null;
+  // The cookie bar is for the public marketing surface — never the internal admin.
+  if (!mounted || !open || pathname.startsWith("/admin")) return null;
 
   return (
     <div className="cookie-bar" role="dialog" aria-label="Souhlas s cookies" aria-live="polite">

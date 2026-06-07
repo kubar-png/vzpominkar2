@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
+import { formatCzk } from "@/lib/utils";
 import { getStats } from "@/lib/admin/stats";
-import { parsePeriod } from "./_period";
-import { AdminPageHeader } from "./_components/AdminPageHeader";
-import { StatCard } from "./_components/StatCard";
-import { RecentTable } from "./_components/RecentTable";
-import { orderColumns } from "./_components/recent";
+import { parsePeriod } from "../_period";
+import { AdminPageHeader } from "../_components/AdminPageHeader";
+import { StatCard } from "../_components/StatCard";
+import { RecentTable } from "../_components/RecentTable";
+import { orderColumns } from "../_components/recent";
 
 export const metadata: Metadata = {
-  title: "Admin · přehled",
+  title: "Admin · obchod",
   robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOverviewPage({
+export default async function AdminObchodPage({
   searchParams,
 }: {
   searchParams: Promise<{ period?: string | string[] }>;
@@ -23,7 +24,7 @@ export default async function AdminOverviewPage({
 
   return (
     <div>
-      <AdminPageHeader title="Přehled" period={period} />
+      <AdminPageHeader title="Obchod" period={period} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
@@ -42,17 +43,20 @@ export default async function AdminOverviewPage({
           chartVariant="bar"
         />
         <StatCard
-          label="Nové rodiny"
-          value={stats.owners.value}
-          deltaPct={stats.owners.deltaPct}
-          hint={`Celkem ${stats.owners.allTime.toLocaleString("cs-CZ")}`}
+          label="Prodané dárkové knihy"
+          value={stats.giftOrders.value}
+          deltaPct={stats.giftOrders.deltaPct}
         />
         <StatCard
-          label="Nové vzpomínky"
-          value={stats.memories.value}
-          deltaPct={stats.memories.deltaPct}
-          series={stats.memories.series}
-          chartVariant="bar"
+          label="Doobjednané výtisky"
+          value={stats.reprints.value}
+          deltaPct={stats.reprints.deltaPct}
+        />
+        <StatCard
+          label="Uplatněné kupóny"
+          value={stats.couponsRedeemed.value}
+          deltaPct={stats.couponsRedeemed.deltaPct}
+          hint={`Sleva celkem ${formatCzk(stats.couponDiscountCzk.value)}`}
         />
       </div>
 

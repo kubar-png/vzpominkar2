@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { ADMIN_COOKIE } from "@/lib/admin/constants";
 import { verifyAdminSession } from "@/lib/admin/session";
-import { logoutAdmin } from "@/lib/admin/actions";
+import { AdminNav } from "./_components/AdminNav";
 
 /**
  * Admin chrome + defense-in-depth guard. Middleware already verifies the
@@ -12,8 +12,10 @@ import { logoutAdmin } from "@/lib/admin/actions";
  * Supabase auth.
  *
  * The login page lives under this layout, so we detect it via the
- * `x-admin-pathname` header set by middleware and render it bare (no guard, no
- * chrome) to avoid a redirect loop.
+ * `x-admin-pathname` header set by middleware and render it bare (no nav, no
+ * guard) to avoid a redirect loop.
+ *
+ * Layout: a dark monochrome left nav (AdminNav) + a light content canvas.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const hdrs = await headers();
@@ -31,25 +33,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-zinc-900">Vzpomínkář</span>
-            <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
-              Admin
-            </span>
-          </div>
-          <form action={logoutAdmin}>
-            <button
-              type="submit"
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 transition hover:bg-zinc-50"
-            >
-              Odhlásit se
-            </button>
-          </form>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">{children}</main>
+      <AdminNav />
+      <main className="md:pl-60">
+        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-10">{children}</div>
+      </main>
     </div>
   );
 }
