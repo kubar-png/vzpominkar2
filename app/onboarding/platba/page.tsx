@@ -4,7 +4,11 @@ import { Check } from "lucide-react";
 import { requireOwner, hasActiveAccess } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { startBaseCheckout } from "@/lib/stripe/checkout";
-import { priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
+import {
+  priceForProductCzk,
+  discountedExtraCopyCzk,
+  assertDisplayPriceMatchesCharged,
+} from "@/lib/stripe/server";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +53,20 @@ export default async function ActivationPage({
 
   const priceCzk = priceForProductCzk("book_base");
   // Display price: the real amount on a paid setup, the trust price on free path.
+  // This page is the ONE sanctioned exception to "display === charged": on the
+  // free path we deliberately show BASE_PRICE_TRUST_CZK next to a *non-payment*
+  // CTA ("Začít sbírat vzpomínky"), so the buyer is never told they're being
+  // charged. So when a real charged price IS configured we still assert it
+  // equals what we show; when it's 0 we pass the charged 0 as the display, which
+  // is correct — the trust price isn't a charge.
   const displayPriceCzk = priceCzk > 0 ? priceCzk : BASE_PRICE_TRUST_CZK;
+  // Guard the only failure mode we can't tolerate here: a configured charged
+  // price that silently disagrees with the displayed one.
+  assertDisplayPriceMatchesCharged(
+    priceCzk > 0 ? displayPriceCzk : 0,
+    priceCzk,
+    "onboarding/platba book_base",
+  );
 
   // Order bump — a second printed copy at the launch discount. Hidden entirely
   // when the env price is unset (would render a meaningless "0 Kč").

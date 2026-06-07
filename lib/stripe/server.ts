@@ -92,6 +92,36 @@ export function priceForProductCzk(product: ProductType): number {
 }
 
 /**
+ * Honesty guard: the DISPLAY/trust price shown on a purchase screen must never
+ * be non-zero while the CHARGED price is 0 — otherwise we'd show e.g. "2 890 Kč"
+ * next to a free-path CTA, breaking the brand rule that the price shown equals
+ * the price charged. A misconfigured env (display price set, charged price
+ * resolving to 0) must fail loudly, not silently mislead the buyer.
+ *
+ * Dev: throw (catch it in CI / local before it ships).
+ * Prod: console.error (never hard-crash a live checkout) and let the caller
+ * decide what to render — callers should fall back to the charged (0) price.
+ *
+ * Call this wherever BOTH the charged price and the display price are known.
+ */
+export function assertDisplayPriceMatchesCharged(
+  displayCzk: number,
+  chargedCzk: number,
+  context: string,
+): void {
+  if (chargedCzk === 0 && displayCzk > 0) {
+    const msg =
+      `[price-trap] ${context}: charged price is 0 (free path) but display price ` +
+      `is ${displayCzk} Kč. A free CTA must never sit next to a non-zero price. ` +
+      `Set the PRICE_*_CZK env (charged) to match, or drop the trust price.`;
+    if (process.env.NODE_ENV !== "production") {
+      throw new Error(msg);
+    }
+    console.error(msg);
+  }
+}
+
+/**
  * Launch-only discount on an EXTRA printed copy bought at the moment of purchase
  * (the in-app paywall / gift checkout), to capture the buying-mood impulse.
  */

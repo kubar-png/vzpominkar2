@@ -45,7 +45,14 @@ function formatCzk(n: number): string {
   return `${n.toLocaleString("cs-CZ")} Kč`;
 }
 
-export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
+export function StandardOrder({
+  basePriceCzk,
+  isFree,
+}: {
+  basePriceCzk: number;
+  /** Server-resolved: the charged base price is 0 (free path → no Stripe). */
+  isFree: boolean;
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender | null>(null);
@@ -68,6 +75,12 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
   const giftwrapSurcharge = giftwrap ? GIFTWRAP_CZK : 0;
   const totalCzk = basePriceCzk + coverSurcharge + giftwrapSurcharge;
   const hasSurcharge = coverSurcharge > 0 || giftwrapSurcharge > 0;
+
+  // CTA label mirrors /onboarding/platba: "Objednat knihu" on the free path,
+  // "Pokračovat k platbě" when there's a charge. `isFree` is the server-resolved
+  // base (priceCzk === 0); the order only stays free when no priced surcharge is
+  // added, so a free base + giftwrap (+290) truthfully reverts to the pay label.
+  const ordersFree = isFree && totalCzk === 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -335,7 +348,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           <button type="submit" className="auth-submit" disabled={submitting}>
             {submitting
               ? "Odesíláme…"
-              : totalCzk === 0
+              : ordersFree
                 ? "Objednat knihu"
                 : "Pokračovat k platbě"}
             <span className="arrow" aria-hidden>

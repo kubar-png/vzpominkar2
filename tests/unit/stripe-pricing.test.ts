@@ -1,5 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { priceForProductCzk } from "@/lib/stripe/server";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import {
+  priceForProductCzk,
+  assertDisplayPriceMatchesCharged,
+} from "@/lib/stripe/server";
 
 describe("priceForProductCzk", () => {
   const originalBase = process.env.PRICE_BOOK_BASE_CZK;
@@ -75,5 +78,49 @@ describe("priceForProductCzk", () => {
   it("floors fractional prices (CZK is integer)", () => {
     process.env.PRICE_BOOK_BASE_CZK = "499.9";
     expect(priceForProductCzk("book_base")).toBe(499);
+  });
+});
+
+describe("assertDisplayPriceMatchesCharged", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  function setNodeEnv(value: string) {
+    vi.stubEnv("NODE_ENV", value);
+  }
+
+  it("does not fire when display equals charged", () => {
+    expect(() => assertDisplayPriceMatchesCharged(599, 599, "t")).not.toThrow();
+    expect(() => assertDisplayPriceMatchesCharged(0, 0, "t")).not.toThrow();
+  });
+
+  it("does not fire when charged is non-zero (paid path)", () => {
+    // A higher display next to a real charge is a different problem; this guard
+    // only protects the free path (charged 0 must not show a non-zero price).
+    expect(() => assertDisplayPriceMatchesCharged(2890, 2890, "t")).not.toThrow();
+  });
+
+  it("throws in development when a non-zero price sits next to a free charge", () => {
+    setNodeEnv("development");
+    expect(() => assertDisplayPriceMatchesCharged(2890, 0, "platba")).toThrow(
+      /price-trap/,
+    );
+  });
+
+  it("throws in test env (anything non-production) on the price trap", () => {
+    setNodeEnv("test");
+    expect(() => assertDisplayPriceMatchesCharged(599, 0, "objednat")).toThrow();
+  });
+
+  it("logs (never throws) in production so a live checkout cannot crash", () => {
+    setNodeEnv("production");
+    const spy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    expect(() => assertDisplayPriceMatchesCharged(2890, 0, "platba")).not.toThrow();
+    expect(spy).toHaveBeenCalledOnce();
+    expect(spy.mock.calls[0]?.[0]).toMatch(/price-trap/);
+    spy.mockRestore();
   });
 });
