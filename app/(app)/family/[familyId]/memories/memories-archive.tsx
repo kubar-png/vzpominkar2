@@ -24,6 +24,8 @@ export type ArchiveMemory = {
   question: string | null;
   authorId: string | null;
   authorName: string | null;
+  /** Author (senior) gender for the {masc|fem} tokens in `question`. */
+  authorGender: "male" | "female" | null;
   images: { storage_path: string; signedUrl: string; caption: string | null }[];
 };
 
@@ -198,7 +200,7 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
               ) : null}
             </p>
             {m.question ? (
-              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{m.question ? resolveGender(m.question, null) : ""}&ldquo;</p>
+              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{resolveGender(m.question, m.authorGender)}&ldquo;</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">

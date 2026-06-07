@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { resolveGender } from "@/lib/gender";
+import { resolveGender, type Gender } from "@/lib/gender";
 
 interface StatusBlockProps {
   familyId: string;
@@ -10,6 +10,8 @@ interface StatusBlockProps {
     question: string;
     scheduledFor: string; // ISO date (YYYY-MM-DD)
     seniorName: string | null;
+    /** Senior's gender for the {masc|fem} tokens; null → slash fallback. */
+    gender: Gender | null;
   } | null;
   /** Name used when there is exactly one senior in the family. */
   onlySeniorFirstName: string | null;
@@ -108,7 +110,7 @@ export function StatusBlock({ familyId, next, onlySeniorFirstName }: StatusBlock
       <p className="app-eyebrow text-[var(--color-gold-600)]">Tento týden</p>
       <blockquote className="mt-3">
         <p className="font-[family-name:var(--font-display)] text-[22px] font-medium leading-snug text-[var(--color-navy-900)] sm:text-2xl">
-          &bdquo;{resolveGender(next.question, null)}&ldquo;
+          &bdquo;{resolveGender(next.question, next.gender)}&ldquo;
         </p>
       </blockquote>
       <p className="mt-3 text-sm text-[var(--color-text-muted)]">{subline}</p>

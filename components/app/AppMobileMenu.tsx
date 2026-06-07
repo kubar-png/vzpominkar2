@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
@@ -32,19 +33,30 @@ const NAV_ITEMS: NavItem[] = [
 
 export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuProps) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close drawer on route change
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  // Prevent body scroll when open - preserve any prior overflow value
-  // so we don't clobber styles set by other code.
+  // While open: lock body scroll (preserving any prior overflow value so we
+  // don't clobber styles set by other code) and close on Escape so the drawer
+  // behaves as an accessible modal dialog.
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
@@ -86,27 +98,30 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
           data-tour="mobile-menu"
           className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-paper-200)]"
           aria-label="Otevřít menu"
+          aria-expanded={open}
         >
           <Menu size={22} />
         </button>
       </header>
 
+      {/* Drawer + backdrop — rendered only while open (and after mount) so the
+          menu is not in the DOM, and therefore not tab-focusable, when closed.
+          Portaled to <body> and marked as a modal dialog for assistive tech. */}
+      {open && mounted && createPortal(
+        <div className="md:hidden">
       {/* Backdrop */}
       <div
         aria-hidden
-        className={cn(
-          "fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300 md:hidden",
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
-        )}
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
         onClick={() => setOpen(false)}
       />
 
       {/* Drawer - slides from right. Warm dark-brown matches desktop sidebar. */}
       <div
-        className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-[280px] flex-col bg-[#1c1814] transition-transform duration-300 ease-[var(--ease-out-quart)] md:hidden",
-          open ? "translate-x-0" : "translate-x-full",
-        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigace"
+        className="fixed inset-y-0 right-0 z-50 flex w-[280px] flex-col bg-[#1c1814]"
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 pb-4 pt-6">
@@ -187,7 +202,14 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
                 {content}
               </span>
             ) : (
-              <Link key={item.numeral} href={href} className={classes}>{content}</Link>
+              <Link
+                key={item.numeral}
+                href={href}
+                className={classes}
+                aria-current={active ? "page" : undefined}
+              >
+                {content}
+              </Link>
             );
           })}
         </nav>
@@ -211,6 +233,9 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
           </form>
         </div>
       </div>
+        </div>,
+        document.body,
+      )}
     </>
   );
 }

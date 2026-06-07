@@ -3996,6 +3996,12 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
+  /* AAA contrast for 65+ eyes. The shared --ink-mute (#5a6e85) only clears
+   * ~4.4:1 on the cream senior canvas — below the AAA intent for normal text.
+   * Darken it (toward --ink-soft) within the senior scope ONLY so action
+   * subtitles, memory dates, status pills, etc. clear ≈7:1 on both the page
+   * bg and the parchment card. Marketing/app scopes keep the lighter mute. */
+  --ink-mute: #2f4f72;
 }
 .editorial-senior a { color: inherit; text-decoration: none; }
 .editorial-senior img, .editorial-senior svg { display: block; max-width: 100%; }
