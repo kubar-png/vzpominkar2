@@ -19,7 +19,7 @@
 
 **ENV (operator sets in Vercel, all environments):**
 - `ADMIN_USERNAME` — the admin username (plaintext is fine; it's a second factor of obscurity).
-- `ADMIN_PASSWORD_HASH` — scrypt hash of the password, format `scrypt$<N>$<r>$<p>$<saltHex>$<hashHex>` (N=16384, r=8, p=1, keylen=64, salt 16 random bytes).
+- `ADMIN_PASSWORD` — the admin password, PLAINTEXT (env only, for operator simplicity — no hashing step; owner decision 2026-06-07). Use a password not reused elsewhere, since an env leak would expose it as-is. Verified constant-time.
 - `ADMIN_SESSION_SECRET` — random 32-byte hex; HMAC key for signing the session cookie.
 
 **`lib/admin/auth.ts`** (`"server-only"`):
@@ -87,7 +87,7 @@ Server component reads `?period=` (default `week`), fetches `getStats(period)`, 
 ## 4. File layout
 ```
 middleware.ts                      (+ /admin early-guard branch, matcher entry)
-lib/admin/auth.ts                  (scrypt verify, cookie consts)
+lib/admin/auth.ts                  (constant-time credential verify, cookie consts)
 lib/admin/session.ts               (Web Crypto sign/verify)
 lib/admin/actions.ts               (loginAdmin, logoutAdmin)
 lib/admin/stats.ts                 (getStats(period) → StatsBundle)
@@ -100,23 +100,21 @@ app/admin/_components/StatCard.tsx
 app/admin/_components/PeriodToggle.tsx
 app/admin/_components/TrendChart.tsx ("use client", recharts)
 app/admin/_components/RecentTable.tsx
-scripts/hash-admin-password.mjs
 tests/unit/admin-session.test.ts   (sign/verify: valid, tampered, expired)
-tests/unit/admin-auth.test.ts      (scrypt verify: correct/incorrect, timing-safe)
+tests/unit/admin-auth.test.ts      (credential verify: correct/incorrect, timing-safe)
 ```
 
 ## 5. Security checklist
 - Credentials only in ENV; never logged, never returned to the client, never in the DB.
-- Password stored as scrypt hash; verified constant-time.
+- Password kept plaintext in ENV (operator choice 2026-06-07); verified constant-time. Use a password not reused elsewhere. No hash needed.
 - Session cookie signed (HMAC), httpOnly + secure + sameSite=strict + path=/admin + 12h exp; signature + exp checked on every request (middleware) and in the layout.
 - Login rate-limited (per-IP + per-username), fail-closed in prod.
 - No account creation / reset / signup surface anywhere.
 - `/admin` never touches Supabase auth; stats read via service-role admin client (server-only).
 
 ## 6. Operator steps (after merge)
-1. `node scripts/hash-admin-password.mjs <your-password>` → copy the printed `ADMIN_PASSWORD_HASH`.
-2. In Vercel → Project → Environment Variables (Production + Preview): set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET` (`openssl rand -hex 32`).
-3. Redeploy. Visit `/admin/login`.
+1. In Vercel → Project → Environment Variables (Production + Preview): set `ADMIN_USERNAME`, `ADMIN_PASSWORD` (your chosen password, plaintext), and `ADMIN_SESSION_SECRET` (`openssl rand -hex 32`).
+2. Redeploy. Visit `/admin/login`.
 
 ## 7. Out of scope (later)
 - Mutating app settings from the admin (this spec is read-only stats + auth). Settings-write comes next.
