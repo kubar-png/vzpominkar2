@@ -4685,6 +4685,28 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border-color: var(--ink);
   box-shadow: 0 0 0 3px rgba(14, 59, 100, 0.12);
 }
+/* Show/hide password — eye toggle anchored to the right of the field. */
+.editorial .auth-password-wrap { position: relative; }
+.editorial .auth-password-wrap input { padding-right: 46px; }
+.editorial .auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-mute);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.editorial .auth-password-toggle:hover { color: var(--ink); background: rgba(14, 59, 100, 0.06); }
+.editorial .auth-password-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; color: var(--ink); }
 .editorial .auth-field .error {
   font-family: var(--font-body-editorial);
   font-size: 13px;

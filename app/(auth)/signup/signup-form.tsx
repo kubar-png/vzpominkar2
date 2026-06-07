@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { signUpOwner, type ActionResult } from "@/lib/auth/actions";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export function SignupForm({
   product,
@@ -113,19 +114,25 @@ export function SignupForm({
 function Field({
   label,
   error,
+  type,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
   const errorId = error ? `${props.name}-error` : undefined;
+  const common = {
+    id: props.name,
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": errorId,
+    style: error ? { borderColor: "var(--oxblood)" } : undefined,
+    ...props,
+  };
   return (
     <div className="auth-field">
       <label htmlFor={props.name}>{label}</label>
-      <input
-        id={props.name}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={errorId}
-        style={error ? { borderColor: "var(--oxblood)" } : undefined}
-        {...props}
-      />
+      {type === "password" ? (
+        <PasswordInput {...common} />
+      ) : (
+        <input type={type} {...common} />
+      )}
       {error ? (
         <p id={errorId} className="error" role="alert">
           {error}

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { signInOwner, type ActionResult } from "@/lib/auth/actions";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState<ActionResult | null, FormData>(
@@ -29,10 +30,9 @@ export function LoginForm() {
       </div>
       <div className="auth-field">
         <label htmlFor="password">Heslo</label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
         />
