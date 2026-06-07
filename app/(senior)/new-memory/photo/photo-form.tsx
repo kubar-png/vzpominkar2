@@ -97,7 +97,6 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
         name="photo"
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={onPickFile}
         className="sr-only"
       />

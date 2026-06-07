@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { PrimaryCta } from "./PrimaryCta";
-
-const NAV: ReadonlyArray<{ label: string; href: string }> = [
-  { label: "Jak to funguje", href: "#jak" },
-  { label: "Produkt", href: "#produkt" },
-  { label: "Ceník", href: "/cenik" },
-  { label: "Otázky", href: "#faq" },
-  { label: "Náš příběh", href: "/o-nas" },
-] as const;
+import { MARKETING_NAV } from "./nav";
 
 export function HomeMobileMenu() {
   const [open, setOpen] = useState(false);
@@ -81,14 +74,14 @@ export function HomeMobileMenu() {
 
           <span className="mobile-menu-eyebrow">Navigace</span>
           <nav className="mobile-menu-links" aria-label="Hlavní navigace">
-            {NAV.map((item) => (
-              <a
+            {MARKETING_NAV.map((item) => (
+              <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
