@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Palette, Gift } from "lucide-react";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AppPageHeader } from "@/components/app/AppPageHeader";
@@ -9,7 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BookOrderForm } from "./book-form";
+import { ExtraCopiesForm } from "./extra-copies-form";
 import { startVolumeCheckout } from "@/lib/stripe/checkout";
+import { discountedExtraCopyCzk } from "@/lib/stripe/server";
+import { COVER_BG, COVER_BG_HEX, DEFAULT_COVER_BG } from "@/lib/book/cover";
 
 export const metadata: Metadata = { title: "Kniha" };
 
@@ -63,6 +66,12 @@ export default async function BookPage({
   const ready = memories >= BOOK_MIN;
   const recentOrder = (orders ?? [])[0] ?? null;
   const pct = Math.min(100, Math.round((memories / BOOK_FULL) * 100));
+
+  // Extra-copies upsell. Charged price per additional printed copy (env-driven).
+  // When 0 (env unset) the upsell shows a "připravujeme" placeholder instead of a
+  // live CTA, so we never render a "0 Kč" order button — price shown = charged.
+  const extraCopyCzk = discountedExtraCopyCzk();
+  const extraCopiesLive = extraCopyCzk > 0;
 
   // Current volume — drives the "next díl" offer as it nears/reaches the 52 cap.
   const { data: currentBook } = await supabase
@@ -183,6 +192,87 @@ export default async function BookPage({
         </section>
       )}
 
+      {/* Customize the cover — sold as a feature, not a buried link. The book
+          ships with a leather-look binding; the owner picks the binding colour
+          and the foil (zlatá / stříbrná / černá) and sees it live on the book. */}
+      {memories > 0 ? (
+        <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
+          <div className="grid items-center gap-6 p-6 md:grid-cols-[1fr_auto] md:gap-10 md:p-8">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
+                <Palette size={14} aria-hidden />
+                Vzhled knihy
+              </span>
+              <h2 className="text-[20px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+                Upravte si vzhled knihy
+              </h2>
+              <p className="max-w-[52ch] text-sm leading-relaxed text-[var(--color-text-muted)]">
+                Vyberte barvu vazby a ražby (zlatá, stříbrná nebo černá). Změnu
+                uvidíte hned na živém náhledu — kniha se ihned převlékne.
+              </p>
+              <div className="flex items-center gap-2 pt-1" aria-hidden>
+                {COVER_BG.map((c) => (
+                  <span
+                    key={c.value}
+                    title={c.label}
+                    className="h-7 w-7 rounded-full border border-black/10 shadow-sm"
+                    style={{ backgroundColor: c.hex }}
+                  />
+                ))}
+              </div>
+              <div className="pt-2">
+                <Link
+                  href={`/family/${familyId}/book/preview`}
+                  className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
+                >
+                  Upravit vzhled knihy
+                  <span aria-hidden>↗</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Compact recolourable book mock keyed to the default cover. */}
+            <div className="hidden md:block">
+              <CoverSwatchBook />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Extra copies — the key upsell. One copy ships with the book; order more
+          for the rest of the family. Lights up once the env price is set. */}
+      {memories > 0 ? (
+        <section className="space-y-4 rounded-[var(--radius-xl)] border border-[var(--color-gold-200)] bg-[var(--color-gold-50)]/40 p-6 md:p-8">
+          <div className="flex items-start gap-3">
+            <span
+              className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-gold-100)] text-[var(--color-gold-700)]"
+              aria-hidden
+            >
+              <Gift size={18} />
+            </span>
+            <div className="space-y-1">
+              <h2 className="text-[20px] font-semibold tracking-tight text-[var(--color-navy-900)]">
+                Další výtisky pro celou rodinu
+              </h2>
+              <p className="max-w-[58ch] text-sm leading-relaxed text-[var(--color-text-muted)]">
+                Jeden výtisk máte v ceně knihy. Stejné vzpomínky můžete nechat
+                vytisknout znovu — pro sourozence, vnoučata nebo jako dárek.
+                Stejná kniha, stejná vazba, vaše adresa.
+              </p>
+            </div>
+          </div>
+
+          {extraCopiesLive ? (
+            <ExtraCopiesForm familyId={familyId} unitCzk={extraCopyCzk} />
+          ) : (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Objednávku dalších výtisků právě připravujeme — ozveme se, jakmile
+              bude možnost spuštěná.
+            </p>
+          )}
+        </section>
+      ) : null}
+
       {nextVolumeSeniorId ? (
         <section className="space-y-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-5 md:p-6">
           <h2 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
@@ -291,6 +381,29 @@ function BookMock({ memories, ready }: { memories: number; ready: boolean }) {
           <BookOpen size={24} className="text-[var(--color-paper-400)]" aria-hidden />
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Small decorative book showing the included brown + gold binding, used beside
+ * the "Upravte si vzhled knihy" feature copy. Purely illustrative — the live,
+ * recolourable preview lives on the /book/preview page.
+ */
+function CoverSwatchBook() {
+  const hex = COVER_BG_HEX[DEFAULT_COVER_BG]; // brown — the included default
+  return (
+    <div className="relative h-44 w-32" aria-hidden>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[4px] shadow-[0_16px_36px_-16px_rgba(8,35,61,0.4)]"
+        style={{
+          background: `linear-gradient(135deg, ${hex}, color-mix(in srgb, ${hex} 78%, black))`,
+        }}
+      >
+        <span className="absolute inset-y-3 left-2 w-0.5 rounded-full bg-[var(--color-gold-500)]/70" />
+        <BookOpen size={26} className="text-[var(--color-gold-400)]/90" />
+        <span className="mt-1 h-px w-12 bg-[var(--color-gold-400)]/50" />
+      </div>
     </div>
   );
 }

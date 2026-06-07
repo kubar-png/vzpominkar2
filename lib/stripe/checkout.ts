@@ -6,7 +6,11 @@ import { revalidatePath } from "next/cache";
 import { requireOwner, requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid, countPaidBooks } from "@/lib/books/server";
-import { getStripe, priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
+import {
+  getStripe,
+  priceForProductCzk,
+  discountedExtraCopyCzk,
+} from "@/lib/stripe/server";
 import { validateCoupon, recordRedemptionOnce } from "@/lib/coupons/server";
 import { SITE_URL } from "@/lib/site";
 import type Stripe from "stripe";
@@ -170,7 +174,7 @@ export async function purchaseBook(
       price_data: {
         currency: "czk",
         unit_amount: extraCopyCzk * 100,
-        product_data: { name: "Vzpomínkář — druhý výtisk (sleva 30 %)" },
+        product_data: { name: "Vzpomínkář — druhý výtisk" },
       },
       quantity: 1,
     });
@@ -233,6 +237,72 @@ export async function purchaseBook(
     },
     success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
     cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,
+  });
+
+  if (!session.url) throw new Error("Stripe nevrátil URL pro checkout.");
+  redirect(session.url);
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+ * Extra printed copies of a FINISHED book (the Kniha-page upsell). The first
+ * copy ships with book_base; this orders N *additional* copies (e.g. for a
+ * sister) at the extra-copy price. Reuses the print-order machinery: a draft
+ * book_orders row, the same Stripe checkout shape, and the same
+ * productType: "book_print" webhook path that flips the order draft→paid using
+ * the session's actual amount_total. The price is recomputed server-side from
+ * discountedExtraCopyCzk() (the env value) × copies — never trusted from the
+ * client. When the env price is 0 the upsell isn't offered, so this is reached
+ * only with a real charged price; a forged 0-price submit is rejected.
+ * ──────────────────────────────────────────────────────────────────────── */
+export async function createExtraCopiesCheckout(input: {
+  familyId: string;
+  bookOrderId: string;
+  copies: number;
+  shippingAddress?: Json | null;
+}): Promise<never> {
+  const owner = await requireOwnerOfFamily(input.familyId);
+  const unitCzk = discountedExtraCopyCzk();
+  // Clamp to a sane range so a forged quantity can't run away. The upsell UI
+  // offers 1–5; the server is authoritative.
+  const copies = Math.min(5, Math.max(1, Math.floor(input.copies)));
+  const totalCzk = unitCzk * copies;
+  const admin = createAdminClient();
+
+  // The extra copy is a paid product; if the env price is unset (0) there is
+  // nothing to charge and we must not silently "deliver" a phantom free order.
+  if (totalCzk === 0) {
+    await admin
+      .from("book_orders")
+      .update({ status: "cancelled" })
+      .eq("id", input.bookOrderId);
+    redirect(`/family/${input.familyId}/book`);
+  }
+
+  const stripe = getStripe();
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [
+      {
+        price_data: {
+          currency: "czk",
+          unit_amount: unitCzk * 100,
+          product_data: { name: "Vzpomínkář — další tištěný výtisk" },
+        },
+        quantity: copies,
+      },
+    ],
+    after_expiration: { recovery: { enabled: true } },
+    metadata: {
+      familyId: input.familyId,
+      // Reuse the print-order webhook path — it flips this book_orders row
+      // draft→paid using the session's amount_total.
+      productType: "book_print",
+      bookOrderId: input.bookOrderId,
+      ownerId: owner.id,
+      copies: String(copies),
+    },
+    success_url: `${SITE_URL}/family/${input.familyId}/book?ordered=1`,
+    cancel_url: `${SITE_URL}/family/${input.familyId}/book?cancelled=1`,
   });
 
   if (!session.url) throw new Error("Stripe nevrátil URL pro checkout.");
