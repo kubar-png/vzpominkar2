@@ -47,6 +47,21 @@ const nextConfig: NextConfig = {
   // a brotli-compressed binary it resolves via __dirname at runtime, and
   // puppeteer-core must not be traced/bundled or that path breaks on Vercel.
   serverExternalPackages: ["puppeteer-core", "@sparticuz/chromium"],
+  // Externalizing the package keeps Next from RELOCATING it, but Vercel's file
+  // tracer still won't pull the brotli binary (bin/*.br) into the function — it's
+  // resolved by runtime path, not `require`d, so nft can't see it. Without this
+  // the print routes 500 with: input directory ".../@sparticuz/chromium/bin"
+  // does not exist. Force-include the bin/ payload for the two routes that launch
+  // Chromium. Glob is relative to the project root; the pnpm-store path is
+  // version-stamped, so the wildcard survives a @sparticuz/chromium bump.
+  outputFileTracingIncludes: {
+    "/api/print/voucher": [
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**",
+    ],
+    "/api/print/book": [
+      "./node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**",
+    ],
+  },
   images: {
     remotePatterns: [
       {
