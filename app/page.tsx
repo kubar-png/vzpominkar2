@@ -576,13 +576,13 @@ export default async function HomePage({
                     Tak vznikl Vzpomínkář. Stará tradice, jen s pojistkou
                     proti ohni a povodni. A s hlasem u každé kapitoly.
                   </p>
-                  <div className="signature">Jakub</div>
+                  <div className="signature">Jakub a Tomáš</div>
                   <div className="author-row">
                     <div className="avatar" />
                     <div>
-                      <strong>Jakub Š.</strong>
+                      <strong>Jakub a Tomáš</strong>
                       <br />
-                      <span>Zakladatel, Vzpomínkář</span>
+                      <span>Zakladatelé, Vzpomínkář</span>
                     </div>
                   </div>
                   <div style={{ marginTop: "24px" }}>

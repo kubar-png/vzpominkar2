@@ -114,7 +114,7 @@ export default function KontaktPage() {
             „Když napíšete, odpovíme do druhého rána. Když pošlete dopis,
             přečteme ho a napíšeme zpátky — rukou, na kartě.&ldquo;
           </blockquote>
-          <div className="feature-attr">— Jakub Š., zakladatel</div>
+          <div className="feature-attr">— Jakub a Tomáš, zakladatelé</div>
         </div>
       </section>
 
