@@ -6,7 +6,7 @@ import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 export const metadata: Metadata = {
   title: "Náš příběh",
   description:
-    "Vzpomínkář založila parta lidí v Praze, kteří přišli o svoje babičky dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to znovu potkalo jinou rodinu.",
+    "Vzpomínkář děláme dva — Jakub a Tomáš. Oba jsme přišli o babičku dřív, než jsme stihli zaznamenat její příběhy. Nechceme, aby to potkalo jinou rodinu.",
   alternates: { canonical: canonical("/o-nas") },
 };
 
@@ -47,10 +47,10 @@ const VALUES = [
 
 const PEOPLE = [
   {
-    name: "Jakub Š.",
-    role: "Zakladatel · produkt",
+    name: "Jakub a Tomáš",
+    role: "Zakladatelé",
     quote:
-      "Když mi v devadesáti zemřela babička, zůstaly nám tři fotky a krabice s pohlednicemi. Vzpomínkář jsme stvořili, abychom neopakovali stejnou chybu u svých rodičů.",
+      "Oběma nám doma po prarodičích zůstaly jen fotky a krabice pohlednic. Vzpomínkář jsme stvořili, abychom stejnou chybu neopakovali u svých rodičů.",
   },
   {
     name: "Tereza M.",
@@ -77,8 +77,8 @@ export default function ONasPage() {
             Pomalá kniha jednoho života.
           </h1>
           <p className="lede">
-            Vzpomínkář dělá v Praze parta lidí, kteří přišli o svoje babičky
-            dřív, než stihli zaznamenat jejich příběhy. Nechceme, aby to
+            Vzpomínkář děláme dva — Jakub a Tomáš. Oba jsme přišli o babičku
+            dřív, než jsme stihli zaznamenat její příběhy. Nechceme, aby to
             znovu potkalo jinou rodinu.
           </p>
         </div>
@@ -96,18 +96,19 @@ export default function ONasPage() {
                 Proč jsme to vůbec začali dělat.
               </h2>
               <p>
-                Babička Anna mi v devíti vyprávěla, jak ve čtyřicátém pátém
-                přešla pěšky z Berouna do Plzně. Ve dvanácti to vyprávěla
-                znovu, jen jinak. V sedmnácti už mě to nezajímalo — pak jsem
-                odjel studovat a vrátil se za třináct let. Tehdy mě poprosila,
-                ať si zapamatuju, jak se jmenovala kočka, kterou měla jako
-                holka. Slíbil jsem to. Jenže jsem si nezapamatoval ani jméno
+                Jednomu z nás babička Anna v devíti vyprávěla, jak ve
+                čtyřicátém pátém přešla pěšky z Berouna do Plzně. Ve dvanácti
+                to vyprávěla znovu, jen jinak. V sedmnácti už ho to nezajímalo
+                — pak odešel studovat a vrátil se za třináct let. Tehdy ho
+                poprosila, ať si zapamatuje, jak se jmenovala kočka, kterou
+                měla jako holka. Slíbil to. A nezapamatoval si ani jméno
                 kočky, ani cestu z Berouna.
               </p>
               <p>
-                Když umřela, zůstaly nám tři fotky a krabice s pohlednicemi
+                Když umřela, zůstaly po ní tři fotky a krabice s pohlednicemi
                 od příbuzných, které nikdo neznal. Žádné nahrávky. Žádný
-                rukopis. Žádný způsob, jak její vyprávění vrátit.
+                rukopis. Žádný způsob, jak její vyprávění vrátit. Tu samou
+                prázdnotu zná i ten druhý z nás.
               </p>
               <p>
                 Vzpomínkář jsme rozjeli proto, aby ostatním rodinám nezůstaly
