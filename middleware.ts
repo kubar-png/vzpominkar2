@@ -91,6 +91,7 @@ export const config = {
      * so a bad Supabase env can never 500 the front door. Add more paths
      * here as the app grows.
      */
+    "/admin",
     "/admin/:path*",
     "/login/:path*",
     "/signup/:path*",
