@@ -86,6 +86,22 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
     const bookId = meta.bookId;
     if (!bookId) return;
 
+    // Defense-in-depth: bookId + familyId both come from metadata we set at
+    // checkout creation, but verify they actually belong together before
+    // granting — a mismatched pair must never activate the wrong family.
+    const { data: book } = await admin
+      .from("books")
+      .select("family_id")
+      .eq("id", bookId)
+      .maybeSingle();
+    if (!book || book.family_id !== familyId) {
+      console.error("[stripe webhook] book/family mismatch — refusing to grant", {
+        bookId,
+        familyId,
+      });
+      return;
+    }
+
     // markBookPaid is idempotent (atomic claim on paid=false) and re-asserts the
     // family grant on every delivery, so duplicate / retried webhooks are safe.
     await markBookPaid(admin, {

@@ -18,7 +18,12 @@ import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
 import { requireOwner, currentUser } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail } from "@/lib/email/templates";
-import { checkRateLimit, checkSeniorUsernameLimit, rateLimitMessage } from "@/lib/rate-limit";
+import {
+  checkRateLimit,
+  checkSeniorUsernameLimit,
+  checkAuthAccountLimit,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -185,6 +190,11 @@ export async function signInOwner(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
+  // Per-account ceiling (keyed on e-mail) so a rotating-IP attacker can't hammer
+  // one known account past the per-IP limit.
+  const accountRl = await checkAuthAccountLimit(parsed.data.email);
+  if (!accountRl.ok) return { ok: false, error: rateLimitMessage(accountRl.retryAfterSec) };
+
   // "Zůstat přihlášen" checkbox — present only when checked (default in the UI).
   const remember = formData.get("remember") !== null;
 
@@ -232,6 +242,11 @@ export async function requestPasswordReset(
   if (!email || !email.includes("@")) {
     return { ok: false, error: "Zadejte platný e-mail.", field: "email" };
   }
+
+  // Per-account ceiling (keyed on e-mail) — caps reset-mail spam to one address
+  // even from rotating IPs. Generic message; doesn't leak account presence.
+  const accountRl = await checkAuthAccountLimit(email);
+  if (!accountRl.ok) return { ok: false, error: rateLimitMessage(accountRl.retryAfterSec) };
 
   const appUrl = SITE_URL;
   const supabase = await createClient();
