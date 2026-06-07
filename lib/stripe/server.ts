@@ -64,10 +64,12 @@ const DEFAULT_PRICE_CZK: Record<ProductType, number> = {
   book_cover_premium: 99,
   book_giftwrap: 290,
   // Tiered guest gift book: curated questions vs the buyer's own questions.
-  // Set PRICE_SHOP_BOOK_*_CZK=0 in .env.local for local dev to take the free
-  // path (no Stripe key needed).
-  shop_book_standard: 599,
-  shop_book_custom: 899,
+  // Default 0 (free path) like book_base/book_addon, so the gift checkout works
+  // and is testable WITHOUT Stripe configured. The owner sets the real prices
+  // (PRICE_SHOP_BOOK_STANDARD_CZK=599 / PRICE_SHOP_BOOK_CUSTOM_CZK=899) in prod
+  // env alongside Stripe live keys; until then every order takes the free path.
+  shop_book_standard: 0,
+  shop_book_custom: 0,
 };
 
 /** Env var that overrides each product's price (CZK integer). */
