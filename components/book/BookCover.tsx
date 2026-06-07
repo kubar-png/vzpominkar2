@@ -35,10 +35,16 @@ export const BookCover = forwardRef<HTMLDivElement, BookCoverProps>(function Boo
   { bg, text, familyName, year, back = false, className },
   ref,
 ) {
-  const base = COVER_BG_HEX[bg];
-  const ink = COVER_TEXT_HEX[text];
-  const inkMute = withAlpha(ink, 0.55);
-  const frame = withAlpha(ink, 0.35);
+  // Read the live colours from CSS variables set on a stable ancestor (the
+  // FlipBook container), falling back to the prop-derived hex. react-pageflip
+  // never re-renders its children once mounted, so a colour change can't flow
+  // through props — it cascades through these vars into the frozen cover DOM,
+  // recolouring it instantly with no remount. Derived tints use color-mix so
+  // the muted ink + hairline frame track the live --cover-ink too.
+  const base = `var(--cover-bg, ${COVER_BG_HEX[bg]})`;
+  const ink = `var(--cover-ink, ${COVER_TEXT_HEX[text]})`;
+  const inkMute = `color-mix(in srgb, ${ink} 55%, transparent)`;
+  const frame = `color-mix(in srgb, ${ink} 35%, transparent)`;
   const texture = bgTexture[bg];
 
   return (
