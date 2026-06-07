@@ -82,6 +82,11 @@ function makeLimiter(opts: {
 }
 
 const authLimiter = makeLimiter({ prefix: "auth", limit: 5, windowSec: 15 * 60 });
+/* Internal admin login (/admin/login). Single operator, so a low per-IP ceiling
+ * is plenty; like `auth` it fails CLOSED in prod via authFailDecision so a
+ * misconfigured/flaky KV can never silently disable brute-force protection on
+ * the most sensitive surface in the app. */
+const adminLimiter = makeLimiter({ prefix: "admin", limit: 5, windowSec: 15 * 60 });
 const leadsLimiter = makeLimiter({ prefix: "leads", limit: 30, windowSec: 60 * 60 });
 /* Book-PDF render is expensive (cold-starts a headless Chromium, ~tens of
  * seconds, 300s budget). Cap one owner/IP to 5 renders per hour so a script
@@ -110,13 +115,19 @@ const aiPolishUserLimiter = makeLimiter({ prefix: "ai-polish-u", limit: 30, wind
 const aiPolishFamilyLimiter = makeLimiter({ prefix: "ai-polish-f", limit: 100, windowSec: 24 * 60 * 60 });
 const aiTextUserLimiter = makeLimiter({ prefix: "ai-text-u", limit: 20, windowSec: 60 * 60 });
 
-export type RateLimitKind = "auth" | "leads" | "print" | "magic";
+export type RateLimitKind = "auth" | "admin" | "leads" | "print" | "magic";
 
-/** Pick the limiter for a non-auth kind (`leads`/`print`/`magic`); all fail-open. */
+/** True for kinds that must fail CLOSED in prod (auth surfaces). */
+function isAuthKind(kind: RateLimitKind): boolean {
+  return kind === "auth" || kind === "admin";
+}
+
 function limiterFor(kind: RateLimitKind): Ratelimit | null {
   switch (kind) {
     case "auth":
       return authLimiter;
+    case "admin":
+      return adminLimiter;
     case "leads":
       return leadsLimiter;
     case "print":
@@ -150,9 +161,9 @@ export async function checkRateLimit(
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
   const limiter = limiterFor(kind);
   if (!limiter) {
-    // No limiter built → KV unconfigured. `auth` fails closed in prod;
-    // `leads`/`print` stay fail-open.
-    return kind === "auth"
+    // No limiter built → KV unconfigured. `auth`/`admin` fail closed in prod;
+    // `leads`/`print`/`magic` stay fail-open.
+    return isAuthKind(kind)
       ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")
       : { ok: true };
   }
@@ -167,8 +178,8 @@ export async function checkRateLimit(
     const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
     return { ok: false, retryAfterSec };
   } catch (err) {
-    if (kind === "auth") {
-      console.error(`[rate-limit:auth] redis error (fail-closed in prod):`, err);
+    if (isAuthKind(kind)) {
+      console.error(`[rate-limit:${kind}] redis error (fail-closed in prod):`, err);
       return authFailDecision("error");
     }
     console.error(`[rate-limit:${kind}] redis error (fail-open):`, err);
@@ -184,7 +195,7 @@ export async function checkRateLimitWithHeaders(
 ): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
   const limiter = limiterFor(kind);
   if (!limiter) {
-    return kind === "auth"
+    return isAuthKind(kind)
       ? authFailDecision(isKvConfigured() ? "error" : "unconfigured")
       : { ok: true };
   }
@@ -198,8 +209,8 @@ export async function checkRateLimitWithHeaders(
     const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
     return { ok: false, retryAfterSec };
   } catch (err) {
-    if (kind === "auth") {
-      console.error(`[rate-limit:auth] redis error (fail-closed in prod):`, err);
+    if (isAuthKind(kind)) {
+      console.error(`[rate-limit:${kind}] redis error (fail-closed in prod):`, err);
       return authFailDecision("error");
     }
     console.error(`[rate-limit:${kind}] redis error (fail-open):`, err);
@@ -246,6 +257,40 @@ export async function checkSeniorUsernameLimit(
     return { ok: false, retryAfterSec };
   } catch (err) {
     console.error(`[rate-limit:senior-login-u] redis error (fail-closed in prod):`, err);
+    return authFailDecision("error");
+  }
+}
+
+/* ── Admin-login per-username throttle ────────────────────────────────────────
+ * Layered on top of the per-IP `checkRateLimit("admin", "login")`. The admin
+ * username is a single fixed value, so this keyed-by-username ceiling blocks a
+ * rotating-IP brute force against the one known account. Fail behaviour matches
+ * the auth limiters: closed on a live error in prod, open only when KV is
+ * entirely unprovisioned (so a missing integration can't lock the operator out).
+ * Low ceiling — the operator logs in occasionally, not in bursts. */
+const adminLoginUserLimiter = makeLimiter({
+  prefix: "admin-login-u",
+  limit: 5,
+  windowSec: 15 * 60,
+});
+
+/**
+ * Extra throttle for admin login, keyed on the submitted username (not IP).
+ * Layered on top of `checkRateLimit("admin", "login")`.
+ */
+export async function checkAdminUsernameLimit(
+  username: string,
+): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  if (!adminLoginUserLimiter) {
+    return authFailDecision(isKvConfigured() ? "error" : "unconfigured");
+  }
+  try {
+    const res = await adminLoginUserLimiter.limit(`admin-login:${username}`);
+    if (res.success) return { ok: true };
+    const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
+    return { ok: false, retryAfterSec };
+  } catch (err) {
+    console.error(`[rate-limit:admin-login-u] redis error (fail-closed in prod):`, err);
     return authFailDecision("error");
   }
 }
