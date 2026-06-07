@@ -4,7 +4,12 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BookCover } from "./BookCover";
 import { BookPage } from "./BookPage";
-import type { CoverBg, CoverText } from "@/lib/book/cover";
+import {
+  COVER_BG_HEX,
+  COVER_TEXT_HEX,
+  type CoverBg,
+  type CoverText,
+} from "@/lib/book/cover";
 
 // react-pageflip touches `window` at construction time → must be client-only.
 // Render a same-size placeholder during hydration so the page doesn't reflow.
@@ -208,9 +213,14 @@ function buildLeaves(memories: FlipBookMemory[], m: Metrics): MemoryLeaf[] {
  *
  * react-pageflip handles the actual flip choreography (mouse drag, click on
  * corner, swipe). We provide the page DOM and pages are mounted once; the
- * library never re-renders children, so changing the cover variant or the
- * page count remounts the whole book — acceptable since those are deliberate
- * actions (variant switch, resize), not animation-critical.
+ * library never re-renders children. A page-count change or a resize still
+ * remounts the book (those alter the page geometry), but a cover *colour*
+ * change must NOT remount — a remount visibly flips the book back to the cover
+ * and feels like a reload. So the cover colours are driven through CSS custom
+ * properties (--cover-bg / --cover-ink) set on the stable containerRef wrapper
+ * (which never remounts); they cascade into the frozen cover DOM, recolouring
+ * both BookCover instances live with zero remount. The colours are therefore
+ * deliberately absent from the HTMLFlipBook key below.
  */
 export function FlipBook({ familyName, year, coverBg, coverText, memories }: FlipBookProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -465,11 +475,25 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
   }, [leaves, memories, coverBg, coverText, familyName, year, metrics.bodyFont, metrics.qFont]);
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div
+      ref={containerRef}
+      className="w-full"
+      // Live cover colours. react-pageflip freezes its children at mount, so
+      // changing coverBg/coverText can't flow through props — instead we set
+      // CSS vars on this stable wrapper (it never remounts on colour change),
+      // and they cascade into the frozen front + back BookCover DOM. Updated
+      // every render, so picking a colour recolours instantly with no remount.
+      style={
+        {
+          "--cover-bg": COVER_BG_HEX[coverBg],
+          "--cover-ink": COVER_TEXT_HEX[coverText],
+        } as React.CSSProperties
+      }
+    >
       {pages !== null ? (
         <div className="flex justify-center">
           <HTMLFlipBook
-            key={`${coverBg}-${coverText}-${size.w}-${portrait}-${pages.length}`}
+            key={`${size.w}-${portrait}-${pages.length}`}
             width={size.w}
             height={size.h}
             size="fixed"

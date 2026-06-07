@@ -222,9 +222,9 @@ export default async function ActivationPage({
                     <VoucherConfigurator fieldPrefix="voucher" />
                   </div>
                 ) : null}
-                {/* Order bump — second printed copy at the launch discount.
+                {/* Order bump — a second printed copy added to this purchase.
                     Rendered only when the env price is set (extraCopyCzk > 0),
-                    so we never show a "0 Kč" upsell. */}
+                    so we never show a "0 Kč" upsell. Price shown = charged. */}
                 {showExtraCopyBump ? (
                   <label className="mb-4 flex w-full cursor-pointer items-start gap-3 rounded-[12px] border border-[var(--color-gold-400)]/35 bg-white/[0.06] px-4 py-3 md:max-w-[20rem]">
                     <input
@@ -234,7 +234,7 @@ export default async function ActivationPage({
                       className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-gold-400)]"
                     />
                     <span className="text-[13px] leading-snug text-[var(--color-paper-100)]">
-                      Přidat druhý výtisk se slevou 30&nbsp;% — jen teď
+                      Přidat druhý výtisk — třeba pro sourozence
                       <span className="mt-0.5 block text-[var(--color-gold-300)]">
                         {extraCopyCzk.toLocaleString("cs-CZ")}&nbsp;Kč za druhý výtisk
                       </span>

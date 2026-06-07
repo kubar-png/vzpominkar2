@@ -22,10 +22,14 @@ interface BookPreviewClientProps {
 
 /**
  * Client-side orchestrator for the flipping book preview. Owns the cover
- * background + foil/ink state (seeded from the persisted book) and remounts the
- * FlipBook on change (react-pageflip does not re-render children once mounted).
- * Each change is applied optimistically and persisted via a server action;
- * a failed save reverts to the last-known-good combo.
+ * background + foil/ink state (seeded from the persisted book). The cover
+ * recolours live via CSS variables inside FlipBook (no remount). Each change is
+ * applied optimistically and persisted via a server action; a failed save
+ * reverts to the last-known-good combo.
+ *
+ * Layout: on desktop the book sits in a constrained column beside the picker so
+ * everything fits the viewport without page scroll; on mobile they stack (book
+ * first, picker below).
  */
 export function BookPreviewClient({
   familyId,
@@ -69,23 +73,26 @@ export function BookPreviewClient({
   }
 
   return (
-    <div className="space-y-8">
-      {/* Stage with the actual flipping book */}
-      <div className="rounded-[var(--radius-xl)] bg-[var(--color-paper-100,#f1e8d0)]/40 p-4 md:p-8">
-        <FlipBook
-          familyName={familyName}
-          year={year}
-          coverBg={bg}
-          coverText={text}
-          memories={memories}
-        />
-        <p className="mt-6 text-center text-[12px] text-[var(--color-text-subtle)]">
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+      {/* Stage with the actual flipping book — constrained so it sizes down and
+          leaves room for the picker beside it on desktop. */}
+      <div className="rounded-[var(--radius-xl)] bg-[var(--color-paper-100,#f1e8d0)]/40 p-4 md:p-6 lg:min-w-0 lg:flex-1">
+        <div className="mx-auto w-full max-w-[420px]">
+          <FlipBook
+            familyName={familyName}
+            year={year}
+            coverBg={bg}
+            coverText={text}
+            memories={memories}
+          />
+        </div>
+        <p className="mt-5 text-center text-[12px] text-[var(--color-text-subtle)]">
           Pro otočení listu táhněte za roh, klikněte na okraj knihy, nebo na mobilu swipněte.
         </p>
       </div>
 
-      {/* Cover picker */}
-      <div className="space-y-3">
+      {/* Cover picker — sits beside the book on desktop, below it on mobile. */}
+      <div className="space-y-3 lg:w-[300px] lg:flex-shrink-0">
         <CoverPicker bg={bg} text={text} onChangeBg={handleBg} onChangeText={handleText} />
         {error ? (
           <p className="text-[13px] text-[var(--color-danger,#a8231f)]">{error}</p>

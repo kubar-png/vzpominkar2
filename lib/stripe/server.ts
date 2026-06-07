@@ -31,8 +31,9 @@ export function getStripe(): Stripe {
  *  - book_print         physical print of a finished book — the FIRST copy is
  *                       included in book_base, so this stays 0 (kept for completeness)
  *  - book_print_extra   each ADDITIONAL printed copy (e.g. for a sibling). Owner sets
- *                       the price once the printer quote is known; a launch-only
- *                       discount (EXTRA_COPY_LAUNCH_DISCOUNT_PCT) applies at purchase.
+ *                       the price once the printer quote is known. The charged price
+ *                       equals the env value exactly (no further discount — see
+ *                       EXTRA_COPY_LAUNCH_DISCOUNT_PCT, currently 0).
  *  - book_cover_premium surcharge for a non-default cover colour — pure margin (≈99 Kč)
  *  - book_giftwrap      gift wrapping + embossed dedication               (≈290 Kč)
  *  - shop_book_standard guest GIFT book with our curated questions (/kniha/sestavit) (599 Kč)
@@ -122,12 +123,17 @@ export function assertDisplayPriceMatchesCharged(
 }
 
 /**
- * Launch-only discount on an EXTRA printed copy bought at the moment of purchase
- * (the in-app paywall / gift checkout), to capture the buying-mood impulse.
+ * Discount applied on an EXTRA printed copy at the moment of purchase (the in-app
+ * paywall order bump / the Kniha upsell). Set to 0: the owner wants the extra copy
+ * to cost exactly the configured env price (PRICE_BOOK_PRINT_EXTRA_CZK), with no
+ * further discount layered on top, so the price shown equals the price charged.
  */
-export const EXTRA_COPY_LAUNCH_DISCOUNT_PCT = 30;
+export const EXTRA_COPY_LAUNCH_DISCOUNT_PCT = 0;
 
-/** Price of one extra printed copy after the launch discount (CZK, floored). */
+/**
+ * Price of one extra printed copy as charged (CZK, floored). With the discount at
+ * 0 this equals priceForProductCzk("book_print_extra") — i.e. the env value.
+ */
 export function discountedExtraCopyCzk(): number {
   const base = priceForProductCzk("book_print_extra");
   return Math.floor((base * (100 - EXTRA_COPY_LAUNCH_DISCOUNT_PCT)) / 100);
