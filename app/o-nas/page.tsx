@@ -91,7 +91,7 @@ export default function ONasPage() {
           <div className="story-block dark" data-reveal>
             <div className="story-video" aria-hidden />
             <div>
-              <span className="eyebrow">Slovo zakladatele</span>
+              <span className="eyebrow">Slovo zakladatelů</span>
               <h2 style={{ margin: "8px 0 20px" }}>
                 Proč jsme to vůbec začali dělat.
               </h2>
@@ -114,13 +114,13 @@ export default function ONasPage() {
                 jen tři fotky. Aby vzpomínky, které dnes večer otec vypráví
                 u stolu, byly za rok napsané. A za deset let pořád slyšitelné.
               </p>
-              <div className="signature">Jakub</div>
+              <div className="signature">Jakub a Tomáš</div>
               <div className="author-row">
                 <div className="avatar" />
                 <div>
-                  <strong>Jakub Š.</strong>
+                  <strong>Jakub a Tomáš</strong>
                   <br />
-                  <span>Zakladatel, Vzpomínkář</span>
+                  <span>Zakladatelé, Vzpomínkář</span>
                 </div>
               </div>
             </div>
