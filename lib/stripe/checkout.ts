@@ -55,18 +55,23 @@ export async function purchaseBook(
   // Record the extra-copy intent as a print order so fulfilment knows to print
   // a second copy. Status mirrors the payment outcome (free path → paid, Stripe
   // path → draft until the webhook flips it). book_id ties it to the volume.
-  // TODO(followups): the Stripe webhook currently marks the book paid but does
-  // not promote this book_orders row to "paid" / attach the payment intent —
-  // wire that up in the webhook (foreign file) so the extra copy is fulfilled.
-  async function recordExtraCopyOrder(status: "draft" | "paid"): Promise<void> {
-    if (!wantsExtraCopy || !book) return;
-    await admin.from("book_orders").insert({
-      family_id: book.family_id,
-      book_id: book.id,
-      status,
-      copies: 2,
-      amount_czk: status === "paid" ? extraCopyCzk : 0,
-    });
+  // Returns the inserted row id (null when no extra copy) so the Stripe path can
+  // thread it through session metadata and the webhook can reconcile draft→paid.
+  async function recordExtraCopyOrder(status: "draft" | "paid"): Promise<string | null> {
+    if (!wantsExtraCopy || !book) return null;
+    const { data, error } = await admin
+      .from("book_orders")
+      .insert({
+        family_id: book.family_id,
+        book_id: book.id,
+        status,
+        copies: 2,
+        amount_czk: status === "paid" ? extraCopyCzk : 0,
+      })
+      .select("id")
+      .single<{ id: string }>();
+    if (error) throw new Error("Objednávku druhého výtisku se nepodařilo vytvořit.");
+    return data.id;
   }
 
   if (totalCzk === 0) {
@@ -84,8 +89,9 @@ export async function purchaseBook(
   }
 
   // Record the pending extra-copy order before redirecting to Stripe so it's not
-  // lost if the buyer never returns. The webhook reconciles it (see TODO above).
-  await recordExtraCopyOrder("draft");
+  // lost if the buyer never returns. Its id is threaded through session metadata
+  // (bookOrderId) so the webhook can promote it draft→paid once payment lands.
+  const extraCopyOrderId = await recordExtraCopyOrder("draft");
 
   const baseLineName = isFirst
     ? "Vzpomínkář — přístup ke knize"
@@ -140,6 +146,9 @@ export async function purchaseBook(
       bookId: book.id,
       ownerId: owner.id,
       copies: String(copies),
+      // Present only when a second printed copy was bought — lets the webhook
+      // reconcile the extra-copy book_orders row (draft→paid) after payment.
+      ...(extraCopyOrderId ? { bookOrderId: extraCopyOrderId } : {}),
     },
     success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
     cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,

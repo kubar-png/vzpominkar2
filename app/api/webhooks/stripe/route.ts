@@ -111,6 +111,19 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
       amountCzk,
       paymentIntentId: pi,
     });
+
+    // Order bump: a second printed copy was bought alongside base access. The
+    // checkout action inserted a draft book_orders row and threaded its id here.
+    // markBookPaid only grants access — without this the paid copy stays "draft"
+    // and never gets printed. Reconcile it now (paid = delivered).
+    if (meta.bookOrderId) {
+      await reconcileExtraCopyOrder(admin, {
+        orderId: meta.bookOrderId,
+        familyId,
+        amountCzk,
+        paymentIntentId: pi,
+      });
+    }
     return;
   }
 
@@ -138,6 +151,46 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
       family_id: familyId,
       action: "book_order.paid",
       metadata: { orderId },
+    });
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/**
+ * Promote a second-printed-copy order (the base/add-on order bump) from draft to
+ * paid and attach the payment intent so fulfilment prints it.
+ *
+ * Idempotent under duplicate / retried deliveries — mirrors markBookPaid: the
+ * row is claimed with an atomic `status = 'draft' → 'paid'` update, so only the
+ * delivery that actually transitions the row writes the audit log. A retried
+ * webhook (row already 'paid') claims 0 rows and is a silent no-op.
+ */
+export async function reconcileExtraCopyOrder(
+  admin: ReturnType<typeof createAdminClient>,
+  opts: {
+    orderId: string;
+    familyId: string;
+    amountCzk: number;
+    paymentIntentId: string | null;
+  },
+): Promise<void> {
+  const { data: claimed } = await admin
+    .from("book_orders")
+    .update({
+      status: "paid",
+      amount_czk: opts.amountCzk,
+      stripe_payment_intent_id: opts.paymentIntentId,
+    })
+    .eq("id", opts.orderId)
+    .eq("status", "draft") // atomic claim — only the first delivery transitions
+    .select("id");
+
+  // Audit only on the actual transition so retries don't duplicate the row.
+  if ((claimed?.length ?? 0) > 0) {
+    await admin.from("activity_log").insert({
+      family_id: opts.familyId,
+      action: "book_order.paid",
+      metadata: { orderId: opts.orderId, reason: "extra_copy" },
     });
   }
 }
