@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid } from "@/lib/books/server";
 import { recordRedemptionOnce } from "@/lib/coupons/server";
+import { markVoucherPaid } from "@/lib/gift/voucher";
 import { SITE_URL } from "@/lib/site";
 import { sendEmail } from "@/lib/email/send";
 import { shopGiftOrderConfirmationEmail } from "@/lib/email/templates";
@@ -141,6 +142,18 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
         productType,
       });
     }
+
+    // Gift voucher (app path) — threaded from purchaseBook's metadata. Mark it
+    // paid so the PDF download unlocks on /onboarding/zdroj. Best-effort:
+    // markVoucherPaid is idempotent (a flat update), so a retried delivery is
+    // harmless and a failure must never fail the webhook.
+    if (meta.voucherToken) {
+      try {
+        await markVoucherPaid(meta.voucherToken, bookId);
+      } catch (err) {
+        console.error("[stripe webhook] book_base markVoucherPaid failed (non-fatal)", err);
+      }
+    }
     return;
   }
 
@@ -252,6 +265,20 @@ async function onShopBookCompleted(session: Stripe.Checkout.Session, amountCzk: 
     0,
   );
 
+  // Gift voucher (dárkový poukaz) — threaded from createGiftOrder's metadata.
+  // Mark it paid here so the PDF download unlocks (the render route gates on
+  // paid). Only runs on the delivery that actually transitioned the order to
+  // paid above, so duplicates don't re-fire. Best-effort: never fail the
+  // webhook over a voucher write.
+  const voucherToken = meta.voucherToken ?? null;
+  if (voucherToken) {
+    try {
+      await markVoucherPaid(voucherToken, order.id);
+    } catch (err) {
+      console.error("[stripe webhook] markVoucherPaid failed (non-fatal)", err);
+    }
+  }
+
   if (order.buyer_email) {
     const mail = shopGiftOrderConfirmationEmail({
       buyerName: order.buyer_name ?? "",
@@ -259,6 +286,7 @@ async function onShopBookCompleted(session: Stripe.Checkout.Session, amountCzk: 
       amountCzk,
       orderNumber: order.id.slice(0, 8),
       appUrl: SITE_URL,
+      voucherToken,
     });
     await sendEmail({
       to: order.buyer_email,

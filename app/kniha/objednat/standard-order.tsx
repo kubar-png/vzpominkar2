@@ -7,6 +7,11 @@ import { BOOK_PHASES } from "@/lib/book-shop/phases";
 import { type Gender } from "@/lib/gender";
 import { createGiftOrder, type CreateGiftOrderInput } from "@/lib/shop/order-actions";
 import {
+  VoucherConfigurator,
+  DEFAULT_VOUCHER_COLOR,
+  type VoucherConfig,
+} from "@/app/darovat/_components/VoucherConfigurator";
+import {
   COVER_BG,
   COVER_TEXT,
   COVER_BG_HEX,
@@ -63,6 +68,12 @@ export function StandardOrder({
   const [zip, setZip] = useState("");
   const [giftwrap, setGiftwrap] = useState(false);
   const [dedication, setDedication] = useState("");
+  const [voucher, setVoucher] = useState<VoucherConfig>({
+    color: DEFAULT_VOUCHER_COLOR,
+    recipient: null,
+    message: null,
+    signedBy: null,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,6 +109,7 @@ export function StandardOrder({
       tier: "standard",
       questions: buildStandardQuestions(),
       shippingAddress: { name, street, city, zip },
+      voucher,
     };
 
     setSubmitting(true);
@@ -310,6 +322,19 @@ export function StandardOrder({
                 />
               </div>
             ) : null}
+          </div>
+
+          {/* Dárkový poukaz — personalize a printable card to hand over while the
+              book is in the post. Downloadable as PDF on the confirmation page
+              after payment (no free vouchers). */}
+          <div className="co-voucher">
+            <div className="co-voucher-head">
+              <strong>Dárkový poukaz k vytištění</strong>
+              <span>
+                Kniha dorazí za 3–4 týdny — poukaz si po zaplacení stáhnete jako PDF a předáte hned.
+              </span>
+            </div>
+            <VoucherConfigurator initialColor={voucher.color} onChange={setVoucher} />
           </div>
 
           {error ? (

@@ -307,6 +307,45 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_vouchers: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          message: string | null
+          order_ref: string | null
+          paid: boolean
+          product_type: string
+          recipient: string | null
+          signed_by: string | null
+          token: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          order_ref?: string | null
+          paid?: boolean
+          product_type: string
+          recipient?: string | null
+          signed_by?: string | null
+          token?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          order_ref?: string | null
+          paid?: boolean
+          product_type?: string
+          recipient?: string | null
+          signed_by?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           consent_at: string | null

@@ -12,6 +12,8 @@ import {
 } from "@/lib/stripe/server";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { readGiftState } from "@/lib/gift/cookie";
+import { VoucherConfigurator } from "@/app/darovat/_components/VoucherConfigurator";
 import { CouponField } from "./coupon-field";
 
 export const metadata: Metadata = { title: "Aktivace přístupu" };
@@ -100,6 +102,13 @@ export default async function ActivationPage({
   // The amount the buyer will actually be charged for the base book (clamped).
   const chargedAfterCouponCzk = Math.max(0, priceCzk - couponDiscountCzk);
   const hasAppliedDiscount = couponDiscountCzk > 0;
+
+  // Gift flow (from /darovat → /signup?gift=1, marked through onboarding): show
+  // the dárkový poukaz configurator inside the paywall form so the buyer pays
+  // ASAP and walks away with a printable card. Its fields (voucher_*) ride the
+  // same submit — startBaseCheckout reads them, mints the voucher, and threads
+  // its token into the payment so the confirmation screen can offer the PDF.
+  const { isGift } = await readGiftState();
 
   return (
     <div className="space-y-10">
@@ -196,6 +205,23 @@ export default async function ActivationPage({
 
             <div className="flex flex-col gap-4 md:items-end">
               <form action={startBaseCheckout} className="w-full md:w-auto md:flex md:flex-col md:items-end">
+                {/* Dárkový poukaz — only in the gift flow. The configurator's
+                    hidden fields (voucher_*) submit with this form; the live A5
+                    preview sits on a light card so it reads on the navy panel.
+                    startBaseCheckout reads these fields, mints the voucher, and
+                    threads its token into the payment. */}
+                {isGift ? (
+                  <div className="editorial mb-5 w-full rounded-[14px] bg-[var(--color-paper-100)] p-5 text-[var(--color-ink-900)] md:max-w-[26rem]">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-text-muted)]">
+                      Dárkový poukaz k vytištění
+                    </p>
+                    <p className="mb-4 text-[13px] leading-snug text-[var(--color-text-muted)]">
+                      Po zaplacení si poukaz stáhnete jako PDF a předáte — i&nbsp;než stihnete
+                      Vzpomínkář nastavit.
+                    </p>
+                    <VoucherConfigurator fieldPrefix="voucher" />
+                  </div>
+                ) : null}
                 {/* Order bump — second printed copy at the launch discount.
                     Rendered only when the env price is set (extraCopyCzk > 0),
                     so we never show a "0 Kč" upsell. */}

@@ -17,7 +17,8 @@ export const metadata: Metadata = {
  * Hero → 4 reasons → 3-step "jak na to" → what you set up → occasions belt →
  * final CTA card.
  *
- * Single CTA verb across the page: "Darovat Vzpomínkář ↗" → /signup?gift=1.
+ * Single CTA verb across the page: "Darovat Vzpomínkář ↗" → /darovat (the
+ * 3-card product chooser, Krok 1 of the gift flow).
  *
  * HONESTY: today the gift CTA routes to the ordinary signup, which sets up the
  * e-mail-based weekly question flow. The page must NOT promise a chosen
@@ -119,7 +120,7 @@ export default function DarekPage() {
             A na konci kniha, kterou si budou číst i ti, kteří se ještě
             nenarodili.
           </p>
-          <PrimaryCta href="/signup?gift=1" label="Darovat Vzpomínkář" variant="hero" />
+          <PrimaryCta href="/darovat" label="Darovat Vzpomínkář" variant="hero" />
         </div>
       </section>
 
@@ -246,7 +247,7 @@ export default function DarekPage() {
         eyebrow="Připravíte za pár minut"
         heading="Darujte Vzpomínkář."
         lede="Jednorázově, přístup napořád — bez předplatného."
-        ctaHref="/signup?gift=1"
+        ctaHref="/darovat"
         ctaLabel="Darovat Vzpomínkář"
         footer={
           <>

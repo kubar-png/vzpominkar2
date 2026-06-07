@@ -482,10 +482,20 @@ export function shopGiftOrderConfirmationEmail(input: {
   amountCzk: number;
   orderNumber?: string;
   appUrl: string;
+  /**
+   * The dárkový poukaz token, when the buyer personalized one in the gift flow.
+   * Adds a "stáhnout poukaz" CTA → /poukaz/{token}, where the PDF can be
+   * downloaded (gated on the voucher being paid). Honest framing: the book is on
+   * its way (3–4 weeks), the voucher is what they print + hand over today.
+   */
+  voucherToken?: string | null;
 }) {
   const subject = "Objednávka přijata — Kniha vzpomínek";
   const firstName = (input.buyerName.split(" ")[0] ?? input.buyerName).trim();
   const ctaUrl = `${input.appUrl}/kniha`;
+  const voucherUrl = input.voucherToken
+    ? `${input.appUrl}/poukaz/${encodeURIComponent(input.voucherToken)}`
+    : null;
   const orderLine = input.orderNumber
     ? `Číslo objednávky: <strong style="font-family:'SF Mono','Menlo','Consolas',monospace;">${esc(input.orderNumber)}</strong>`
     : "";
@@ -495,9 +505,22 @@ export function shopGiftOrderConfirmationEmail(input: {
       ? "Cena byla v rámci uvítací nabídky odpuštěna."
       : `Zaplaceno: <strong>${input.amountCzk.toLocaleString("cs-CZ")} Kč</strong>`;
 
+  // Voucher block — only when a poukaz was created. Honest expectation-setter:
+  // the book is on its way, the voucher is the thing to print + give today.
+  const voucherBlock = voucherUrl
+    ? `
+      <p style="margin:0 0 14px 0;">
+        Dárkový poukaz, který jste si připravili, je hotový. Stáhněte si ho jako PDF, vytiskněte
+        a předejte &mdash; kniha je na cestě (3&ndash;4 týdny), poukaz dáte hned.
+      </p>
+      <p style="margin:0 0 24px 0;">${cta("Stáhnout dárkový poukaz", voucherUrl)}</p>`
+    : "";
+
   const html = shell({
     title: subject,
-    preheader: "Vaši knihu vysázíme, vytiskneme a pošleme. Trvá to přibližně 3–4 týdny.",
+    preheader: voucherUrl
+      ? "Dárkový poukaz je ke stažení. Kniha dorazí do 3–4 týdnů."
+      : "Vaši knihu vysázíme, vytiskneme a pošleme. Trvá to přibližně 3–4 týdny.",
     headerEyebrow: "Objednávka knihy",
     body: `
       ${h1(`Děkujeme, ${firstName}.`)}
@@ -514,6 +537,7 @@ export function shopGiftOrderConfirmationEmail(input: {
         </td></tr>
       </table>
 
+      ${voucherBlock}
       <p style="margin:0 0 14px 0;">
         Tisk, vazba a doprava trvají přibližně <strong>3&ndash;4 týdny</strong>. Pokud bude potřeba
         cokoli doladit, ozveme se vám e-mailem.
@@ -538,6 +562,9 @@ export function shopGiftOrderConfirmationEmail(input: {
       ? "Cena byla v rámci uvítací nabídky odpuštěna."
       : `Zaplaceno: ${input.amountCzk.toLocaleString("cs-CZ")} Kč`,
     "",
+    voucherUrl
+      ? `Dárkový poukaz ke stažení (PDF): ${voucherUrl} — kniha je na cestě (3–4 týdny), poukaz dáte hned.`
+      : "",
     "Tisk, vazba a doprava trvají přibližně 3–4 týdny. Pokud bude potřeba cokoli doladit, ozveme se vám e-mailem.",
     "",
     `Zpět na knihu: ${ctaUrl}`,

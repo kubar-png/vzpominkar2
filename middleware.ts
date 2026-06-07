@@ -77,6 +77,14 @@ export async function middleware(request: NextRequest) {
   // Authed user landing on an auth page: bounce to dashboard.
   // (Page-level guards handle further role-based routing.)
   if (user && startsWithAny(pathname, AUTH_PATHS) && !pathname.startsWith("/login/check-email")) {
+    // Gift exception: a logged-in buyer who clicked "Darovat Vzpomínkář"
+    // (/signup?gift=1) must NOT dead-end on /dashboard — they came to gift the
+    // app, which (for an already-signed-in owner) means starting a fresh gift
+    // order. Route them through /darovat/app, which sets the gift marker and
+    // sends them into onboarding/platba (or onboarding if no family yet).
+    if (pathname === "/signup" && request.nextUrl.searchParams.get("gift") === "1") {
+      return NextResponse.redirect(new URL("/darovat/app", request.url));
+    }
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
