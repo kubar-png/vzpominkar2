@@ -1873,12 +1873,39 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   margin-bottom: 16px;
 }
 .editorial .signup-form {
-  display: flex;
-  gap: 10px;
   max-width: 540px;
   margin: 0 auto 16px;
+}
+.editorial .signup-form-row {
+  display: flex;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
+}
+.editorial .signup-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  max-width: 540px;
+  margin: 14px auto 0;
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+.editorial .signup-consent input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.editorial .signup-card .signup-consent {
+  color: rgba(237, 228, 207, 0.72);
 }
 .editorial .signup-form input {
   flex: 1;
@@ -3965,7 +3992,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 
   .editorial .companion-grid { grid-template-columns: 1fr; }
   .editorial .feature-tiles { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .editorial .signup-form { flex-direction: column; }
+  .editorial .signup-form-row { flex-direction: column; }
   .editorial .signup-form input { width: 100%; }
   .editorial .signup-form .btn {
     width: 100%;

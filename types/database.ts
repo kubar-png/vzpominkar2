@@ -309,21 +309,30 @@ export type Database = {
       }
       leads: {
         Row: {
+          consent_at: string | null
+          consent_text: string | null
           created_at: string
           email: string
           id: string
+          marketing_consent: boolean
           source: string | null
         }
         Insert: {
+          consent_at?: string | null
+          consent_text?: string | null
           created_at?: string
           email: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
         }
         Update: {
+          consent_at?: string | null
+          consent_text?: string | null
           created_at?: string
           email?: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
         }
         Relationships: []

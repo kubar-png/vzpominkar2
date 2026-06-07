@@ -86,7 +86,13 @@ export default async function HomePage({
 }) {
   const { signup } = await searchParams;
   const signupStatus =
-    signup === "success" ? "success" : signup === "error" ? "error" : null;
+    signup === "success"
+      ? "success"
+      : signup === "consent"
+        ? "consent"
+        : signup === "error"
+          ? "error"
+          : null;
 
   return (
     <div className="editorial">
@@ -711,9 +717,8 @@ export default async function HomePage({
               <h2>Pošleme ukázku knihy a slevový kód 200 Kč.</h2>
               <p className="lede">
                 Podívejte se, jak Vzpomínkář funguje, ještě než cokoliv
-                zaplatíte. Tři e-maily — v prvním ukázka skutečné knihy, ve
-                druhém příběh jedné rodiny, ve třetím slevový kód. Žádný spam,
-                žádné triky.
+                zaplatíte. Pošleme vám jeden e-mail — s ukázkou skutečné knihy
+                a slevovým kódem na 200 Kč. Žádný spam, žádné triky.
               </p>
               {/* The full sign-up flow lives in /app/(auth) routes. This is a
                * lead-magnet form — a Server Action will be wired in by the
@@ -721,7 +726,7 @@ export default async function HomePage({
                * a graceful HTML fallback if that endpoint doesn't exist yet. */}
               {signupStatus === "success" ? (
                 <p className="signup-status signup-status-success" role="status">
-                  Děkujeme, ozveme se vám. První e-mail s ukázkou knihy
+                  Děkujeme. E-mail s ukázkou knihy a slevovým kódem na 200 Kč
                   dorazí do vaší schránky během chvíle.
                 </p>
               ) : (
@@ -735,25 +740,50 @@ export default async function HomePage({
                       jednou.
                     </p>
                   )}
+                  {signupStatus === "consent" && (
+                    <p
+                      className="signup-status signup-status-error"
+                      role="status"
+                    >
+                      Abychom vám mohli ukázku poslat, zaškrtněte prosím
+                      souhlas níže.
+                    </p>
+                  )}
                   <form
                     className="signup-form"
                     action="/api/leads"
                     method="post"
                   >
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="vase@email.cz"
-                      required
-                      aria-label="E-mailová adresa"
-                    />
-                    <button type="submit" className="btn btn-gold">
-                      Poslat ukázku <span className="arrow">↗</span>
-                    </button>
+                    <div className="signup-form-row">
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="vase@email.cz"
+                        required
+                        aria-label="E-mailová adresa"
+                      />
+                      <button type="submit" className="btn btn-gold">
+                        Poslat ukázku <span className="arrow">↗</span>
+                      </button>
+                    </div>
+                    {/* Required GDPR opt-in — blocked client-side (required) and
+                     * re-checked server-side in /api/leads. */}
+                    <label className="signup-consent">
+                      <input
+                        type="checkbox"
+                        name="consent"
+                        value="on"
+                        required
+                        aria-label="Souhlas se zasláním ukázky e-mailem"
+                      />
+                      <span>
+                        Souhlasím, že mi Vzpomínkář může poslat ukázku a
+                        občasné tipy e-mailem (kdykoli se odhlásíte).
+                      </span>
+                    </label>
                   </form>
                   <p className="signup-disclaimer">
-                    Odesláním souhlasíte se zpracováním e-mailu. Odhlásit se
-                    můžete jedním klikem.
+                    Pošleme vám jeden e-mail. Odhlásit se můžete jedním klikem.
                   </p>
                 </>
               )}
