@@ -33,8 +33,8 @@ export function RecentTable<T>({
   emptyLabel = "Žádná data",
 }: RecentTableProps<T>) {
   return (
-    <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white">
-      <div className="border-b border-zinc-200 px-4 py-3">
+    <div className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-[0_1px_2px_rgba(9,9,11,0.04)]">
+      <div className="border-b border-zinc-100 px-5 py-3.5">
         <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
       </div>
       {rows.length === 0 ? (
@@ -46,7 +46,7 @@ export function RecentTable<T>({
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  className={`px-4 py-2 text-xs font-medium uppercase tracking-wide text-zinc-400 ${
+                  className={`px-5 py-2.5 text-xs font-medium uppercase tracking-wide text-zinc-400 ${
                     col.align === "right" ? "text-right" : ""
                   } ${col.className ?? ""}`}
                 >
@@ -61,7 +61,7 @@ export function RecentTable<T>({
                 {columns.map((col, i) => (
                   <td
                     key={i}
-                    className={`px-4 py-2 text-zinc-700 ${
+                    className={`px-5 py-2.5 text-zinc-700 ${
                       col.align === "right" ? "text-right tabular-nums" : ""
                     } ${col.className ?? ""}`}
                   >
