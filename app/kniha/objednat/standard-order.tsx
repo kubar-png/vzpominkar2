@@ -33,6 +33,15 @@ import {
 
 const GIFTWRAP_CZK = 290;
 
+// Honest, paper-product reassurances (no app / "přístup napořád" promises — this
+// book has no account). Shown in the navy rail on desktop, inline on mobile.
+const TRUST = [
+  "Poštovné zdarma (ČR i SK)",
+  "Doručení obvykle do 3–4 týdnů",
+  "Zabezpečená platba",
+  "Píše a pomáhá vám člověk",
+];
+
 function buildStandardQuestions(): Record<string, { id: string; text: string }[]> {
   const out: Record<string, { id: string; text: string }[]> = {};
   for (const p of BOOK_PHASES) {
@@ -50,14 +59,7 @@ function formatCzk(n: number): string {
   return `${n.toLocaleString("cs-CZ")} Kč`;
 }
 
-export function StandardOrder({
-  basePriceCzk,
-  isFree,
-}: {
-  basePriceCzk: number;
-  /** Server-resolved: the charged base price is 0 (free path → no Stripe). */
-  isFree: boolean;
-}) {
+export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<Gender | null>(null);
@@ -76,6 +78,9 @@ export function StandardOrder({
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Voucher is opt-in: closed by default so its (now container-query-safe) live
+  // preview never paints on first load and the page stays short.
+  const [showVoucher, setShowVoucher] = useState(false);
 
   function chooseCoverBg(bg: CoverBg) {
     setCoverBg(bg);
@@ -86,12 +91,6 @@ export function StandardOrder({
   const giftwrapSurcharge = giftwrap ? GIFTWRAP_CZK : 0;
   const totalCzk = basePriceCzk + coverSurcharge + giftwrapSurcharge;
   const hasSurcharge = coverSurcharge > 0 || giftwrapSurcharge > 0;
-
-  // CTA label mirrors /onboarding/platba: "Objednat knihu" on the free path,
-  // "Pokračovat k platbě" when there's a charge. `isFree` is the server-resolved
-  // base (priceCzk === 0); the order only stays free when no priced surcharge is
-  // added, so a free base + giftwrap (+290) truthfully reverts to the pay label.
-  const ordersFree = isFree && totalCzk === 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -128,10 +127,11 @@ export function StandardOrder({
   }
 
   return (
-    <div className="senior-auth">
-      {/* Left — navy editorial pitch (desktop), same as the login split */}
+    <div className="senior-auth senior-auth--shop">
+      {/* Left — NARROW STATIC navy rail (desktop): brand pitch + a live order
+          summary + trust, pinned in view while only the right column scrolls. */}
       <aside className="senior-auth-side">
-        <GoldWordmark className="senior-auth-logo" height={30} />
+        <GoldWordmark className="senior-auth-logo" height={28} />
         <div className="senior-auth-pitch">
           <span className="eyebrow">Kniha vzpomínek</span>
           <h2>
@@ -139,39 +139,75 @@ export function StandardOrder({
             <br />
             zůstane.
           </h2>
-          <p>
-            Pečlivě vybrané otázky napříč šesti životními obdobími. Váš blízký je
-            vyplní vlastní rukou — a vznikne rodinná kronika jeho slovy.
-          </p>
+          <p>Pečlivě vybrané otázky. Váš blízký je vyplní vlastní rukou.</p>
         </div>
-        <p className="colophon">⁂ &nbsp; Standardní kniha · {STANDARD_QUESTION_COUNT} otázek</p>
+
+        {/* Live order summary — the "what am I buying / what does it cost"
+            answer stays on screen the whole time (classic checkout reassurance). */}
+        <div className="co-rail">
+          <div className="co-rail-head">
+            <span className="co-rail-thumb" style={{ background: COVER_BG_HEX[coverBg] }}>
+              <span style={{ borderColor: COVER_TEXT_HEX[coverText] }} />
+            </span>
+            <span className="co-rail-meta">
+              <strong>Standardní kniha vzpomínek</strong>
+              <span>{STANDARD_QUESTION_COUNT} otázek · 6 období</span>
+            </span>
+          </div>
+          <div className="co-rail-lines">
+            <div className="co-rail-line">
+              <span>Kniha s otázkami</span>
+              <span>{formatCzk(basePriceCzk)}</span>
+            </div>
+            {coverSurcharge > 0 ? (
+              <div className="co-rail-line">
+                <span>Barevný přebal</span>
+                <span>+{formatCzk(coverSurcharge)}</span>
+              </div>
+            ) : null}
+            {giftwrapSurcharge > 0 ? (
+              <div className="co-rail-line">
+                <span>Dárkové balení</span>
+                <span>+{formatCzk(giftwrapSurcharge)}</span>
+              </div>
+            ) : null}
+          </div>
+          <div className="co-rail-total">
+            <span>Celkem</span>
+            <strong>{formatCzk(totalCzk)}</strong>
+          </div>
+          <ul className="co-rail-trust">
+            {TRUST.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </div>
       </aside>
 
-      {/* Right — vertically-centered checkout form */}
+      {/* Right — the ONLY thing that scrolls */}
       <main className="senior-auth-main">
         <form className="co-checkout" onSubmit={handleSubmit}>
           <span className="auth-eyebrow">Objednávka</span>
           <h1 className="auth-title">Vaše kniha vzpomínek</h1>
-          <p className="auth-lede">
-            Vyberte přebal a vyplňte doručení. Poštovné zdarma, bez vytvoření účtu.
-          </p>
+          <p className="auth-lede">Vyberte přebal a vyplňte doručení — poštovné zdarma, bez účtu.</p>
 
-          {/* Order summary — what you're buying, with a live cover thumbnail */}
-          <div className="co-summary">
-            <div className="co-thumb" style={{ background: COVER_BG_HEX[coverBg] }}>
-              <span
-                className="co-thumb-frame"
-                style={{ borderColor: COVER_TEXT_HEX[coverText] }}
-              />
+          {/* Mobile-only summary (on desktop the navy rail owns it). */}
+          <div className="co-aside">
+            <div className="co-summary">
+              <div className="co-thumb" style={{ background: COVER_BG_HEX[coverBg] }}>
+                <span className="co-thumb-frame" style={{ borderColor: COVER_TEXT_HEX[coverText] }} />
+              </div>
+              <div className="co-summary-meta">
+                <strong>Standardní kniha vzpomínek</strong>
+                <span>{STANDARD_QUESTION_COUNT} doporučených otázek · 6 životních období</span>
+              </div>
+              <span className="co-summary-price">{formatCzk(basePriceCzk)}</span>
             </div>
-            <div className="co-summary-meta">
-              <strong>Standardní kniha vzpomínek</strong>
-              <span>{STANDARD_QUESTION_COUNT} doporučených otázek · 6 životních období</span>
-            </div>
-            <span className="co-summary-price">{formatCzk(basePriceCzk)}</span>
           </div>
 
           <div className="auth-form">
+            <p className="co-group">Kniha</p>
+
             <div className="auth-field">
               <label>Pro koho je kniha</label>
               <div className="co-pills">
@@ -194,44 +230,50 @@ export function StandardOrder({
               </div>
             </div>
 
-            <div className="auth-field">
-              <label>
-                Barva přebalu
-                <span className="co-note">hnědá v ceně · ostatní +{COVER_PREMIUM_CZK} Kč</span>
-              </label>
-              <div className="co-swatches">
-                {COVER_BG.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    onClick={() => chooseCoverBg(o.value)}
-                    aria-pressed={coverBg === o.value}
-                    aria-label={o.label}
-                    title={isPremiumCover(o.value) ? `${o.label} — +${COVER_PREMIUM_CZK} Kč` : `${o.label} — v ceně`}
-                    className={`co-swatch${coverBg === o.value ? " is-on" : ""}`}
-                    style={{ background: o.hex }}
-                  />
-                ))}
-                <div className="co-textopts">
-                  {COVER_TEXT.map((o) => {
-                    const ok = isLegibleCover(coverBg, o.value);
-                    return (
-                      <button
-                        key={o.value}
-                        type="button"
-                        disabled={!ok}
-                        onClick={() => setCoverText(o.value)}
-                        aria-pressed={coverText === o.value}
-                        title={ok ? `Text: ${o.label}` : `${o.label} — nečitelné na této barvě`}
-                        className={`co-textopt${coverText === o.value ? " is-on" : ""}`}
-                      >
-                        {o.label}
-                      </button>
-                    );
-                  })}
+            {/* Cover folded away by default — hnědá is in the price, so most
+                buyers never open it (and the brown default is the common pick). */}
+            <details className="co-collapse">
+              <summary>Změnit barvu přebalu — hnědá v ceně</summary>
+              <div className="co-collapse-body">
+                <div className="co-swatches">
+                  {COVER_BG.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      onClick={() => chooseCoverBg(o.value)}
+                      aria-pressed={coverBg === o.value}
+                      aria-label={o.label}
+                      title={isPremiumCover(o.value) ? `${o.label} — +${COVER_PREMIUM_CZK} Kč` : `${o.label} — v ceně`}
+                      className={`co-swatch${coverBg === o.value ? " is-on" : ""}`}
+                      style={{ background: o.hex }}
+                    />
+                  ))}
+                  <div className="co-textopts">
+                    {COVER_TEXT.map((o) => {
+                      const ok = isLegibleCover(coverBg, o.value);
+                      return (
+                        <button
+                          key={o.value}
+                          type="button"
+                          disabled={!ok}
+                          onClick={() => setCoverText(o.value)}
+                          aria-pressed={coverText === o.value}
+                          title={ok ? `Text: ${o.label}` : `${o.label} — nečitelné na této barvě`}
+                          className={`co-textopt${coverText === o.value ? " is-on" : ""}`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
+                <p className="co-note" style={{ marginLeft: 0 }}>
+                  Hnědá je v ceně · ostatní barvy +{COVER_PREMIUM_CZK} Kč
+                </p>
               </div>
-            </div>
+            </details>
+
+            <p className="co-group">Doručení</p>
 
             <div className="auth-field">
               <label htmlFor="co-name">Jméno a příjmení</label>
@@ -324,17 +366,29 @@ export function StandardOrder({
             ) : null}
           </div>
 
-          {/* Dárkový poukaz — personalize a printable card to hand over while the
-              book is in the post. Downloadable as PDF on the confirmation page
-              after payment (no free vouchers). */}
+          {/* Dárkový poukaz — opt-in (closed by default). The configurator (with
+              its live A5 preview) mounts only when opened, so the page stays
+              short and the preview never paints crushed on first load. */}
           <div className="co-voucher">
-            <div className="co-voucher-head">
-              <strong>Dárkový poukaz k vytištění</strong>
-              <span>
-                Kniha dorazí za 3–4 týdny — poukaz si po zaplacení stáhnete jako PDF a předáte hned.
+            <button
+              type="button"
+              className="co-voucher-toggle"
+              aria-expanded={showVoucher}
+              onClick={() => setShowVoucher((v) => !v)}
+            >
+              <span className="co-voucher-head">
+                <strong>Přidat dárkový poukaz k vytištění</strong>
+                <span>Kniha dorazí za 3–4 týdny — poukaz předáte hned. Stáhnete jako PDF po zaplacení.</span>
               </span>
-            </div>
-            <VoucherConfigurator initialColor={voucher.color} onChange={setVoucher} />
+              <span className="co-voucher-chev" aria-hidden>
+                {showVoucher ? "–" : "+"}
+              </span>
+            </button>
+            {showVoucher ? (
+              <div className="co-voucher-body">
+                <VoucherConfigurator initialColor={voucher.color} onChange={setVoucher} />
+              </div>
+            ) : null}
           </div>
 
           {error ? (
@@ -343,80 +397,78 @@ export function StandardOrder({
             </p>
           ) : null}
 
-          <div className="co-total">
-            {hasSurcharge ? (
-              <div className="co-lines">
-                <div className="co-line">
-                  <span>Kniha s doporučenými otázkami</span>
-                  <span>{formatCzk(basePriceCzk)}</span>
+          {/* Mobile-only total (on desktop the rail carries it). */}
+          <div className="co-aside">
+            <div className="co-total">
+              {hasSurcharge ? (
+                <div className="co-lines">
+                  <div className="co-line">
+                    <span>Kniha s doporučenými otázkami</span>
+                    <span>{formatCzk(basePriceCzk)}</span>
+                  </div>
+                  {coverSurcharge > 0 ? (
+                    <div className="co-line">
+                      <span>Barevný přebal</span>
+                      <span>+{formatCzk(coverSurcharge)}</span>
+                    </div>
+                  ) : null}
+                  {giftwrapSurcharge > 0 ? (
+                    <div className="co-line">
+                      <span>Dárkové balení</span>
+                      <span>+{formatCzk(giftwrapSurcharge)}</span>
+                    </div>
+                  ) : null}
                 </div>
-                {coverSurcharge > 0 ? (
-                  <div className="co-line">
-                    <span>Barevný přebal</span>
-                    <span>+{formatCzk(coverSurcharge)}</span>
-                  </div>
-                ) : null}
-                {giftwrapSurcharge > 0 ? (
-                  <div className="co-line">
-                    <span>Dárkové balení</span>
-                    <span>+{formatCzk(giftwrapSurcharge)}</span>
-                  </div>
-                ) : null}
+              ) : null}
+              <div className="co-total-row">
+                <span>Celkem</span>
+                <strong>{formatCzk(totalCzk)}</strong>
               </div>
-            ) : null}
-            <div className="co-total-row">
-              <span>Celkem</span>
-              <strong>{formatCzk(totalCzk)}</strong>
             </div>
           </div>
 
+          {/* CTA: payment-intent label per owner request. The path is 0 Kč today
+              (Stripe not yet live), so this reads "Přejít k platbě" ahead of the
+              charge going live; a surcharge appends the live total. */}
           <button type="submit" className="auth-submit" disabled={submitting}>
             {submitting
               ? "Odesíláme…"
-              : ordersFree
-                ? "Objednat knihu"
-                : "Pokračovat k platbě"}
+              : totalCzk > 0
+                ? `Přejít k platbě · ${formatCzk(totalCzk)}`
+                : "Přejít k platbě"}
             <span className="arrow" aria-hidden>
               ↗
             </span>
           </button>
 
-          {/* Reassurance row — honest, paper-product claims only (no app /
-              "přístup napořád" promises; this book has no account or app).
-              Inline-styled to stay inside the owned checkout file (globals.css
-              .co-* classes are owned by the gift-funnel agent). */}
-          <ul
-            aria-label="Co máte jisté"
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: "14px 0 0",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "6px 14px",
-              fontFamily: "var(--font-body-editorial)",
-              fontSize: "12.5px",
-              lineHeight: 1.4,
-              color: "var(--ink-soft)",
-            }}
-          >
-            {[
-              "Poštovné zdarma (ČR i SK)",
-              "Doručení obvykle do 3–4 týdnů",
-              "Zabezpečená platba",
-              "Píše a pomáhá vám člověk",
-            ].map((t) => (
-              <li
-                key={t}
-                style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
-              >
-                <span aria-hidden style={{ color: "var(--gold)", fontWeight: 600 }}>
-                  ✓
-                </span>
-                {t}
-              </li>
-            ))}
-          </ul>
+          {/* Mobile-only trust row (on desktop the rail carries it). Inline-styled
+              for the cream page; wrapped in .co-aside so it hides on desktop. */}
+          <div className="co-aside">
+            <ul
+              aria-label="Co máte jisté"
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: "14px 0 0",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "6px 14px",
+                fontFamily: "var(--font-body-editorial)",
+                fontSize: "12.5px",
+                lineHeight: 1.4,
+                color: "var(--ink-soft)",
+              }}
+            >
+              {TRUST.map((t) => (
+                <li key={t} style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <span aria-hidden style={{ color: "var(--gold)", fontWeight: 600 }}>
+                    ✓
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <p className="auth-fineprint">
             Bez vytvoření účtu. Chcete otázky upravit nebo přidat vlastní?{" "}

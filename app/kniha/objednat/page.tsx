@@ -30,7 +30,7 @@ export default function ObjednatPage() {
 
   return (
     <div className="editorial">
-      <StandardOrder basePriceCzk={basePriceCzk} isFree={basePriceCzk === 0} />
+      <StandardOrder basePriceCzk={basePriceCzk} />
     </div>
   );
 }

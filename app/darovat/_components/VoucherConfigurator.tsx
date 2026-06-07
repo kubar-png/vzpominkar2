@@ -114,6 +114,7 @@ export function VoucherConfigurator({
   const previewSigned = signedBy.trim() || null;
 
   return (
+    <div className="vc-shell">
     <div className="vc">
       {/* ── LIVE A5-landscape preview ── */}
       <div className="vc-preview-wrap">
@@ -264,6 +265,13 @@ export function VoucherConfigurator({
           scales with the card via container-query units so it stays A5-
           proportioned at any width. Nothing here touches global brand sections. */}
       <style>{`
+        /* The shell is the query container. .vc switches to two columns based on
+           the SHELL's own width — never the viewport — so inside the ~520px gift
+           checkout column it stays single-column (preview full width, legible),
+           while on the wide /darovat page it goes two-up. (Fixes the desktop
+           "empty navy card" bug: the old @media(min-width:880px) fired on viewport
+           width and crushed the preview to ~190px inside the narrow column.) */
+        .vc-shell { container-type: inline-size; }
         .vc {
           display: grid;
           grid-template-columns: 1fr;
@@ -274,6 +282,7 @@ export function VoucherConfigurator({
         .vc-card {
           container-type: inline-size;
           width: 100%;
+          max-width: 560px;
           aspect-ratio: 210 / 148;
           border-radius: 8px;
           box-shadow: 0 18px 44px -22px rgba(14, 59, 100, 0.55);
@@ -427,7 +436,7 @@ export function VoucherConfigurator({
           border-color: var(--ink);
           box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.35);
         }
-        @media (min-width: 880px) {
+        @container (min-width: 720px) {
           .vc {
             grid-template-columns: minmax(0, 1.15fr) minmax(280px, 1fr);
             gap: 40px;
@@ -439,6 +448,7 @@ export function VoucherConfigurator({
           .vc-swatch:hover { transform: none; }
         }
       `}</style>
+    </div>
     </div>
   );
 }

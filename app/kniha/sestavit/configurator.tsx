@@ -29,6 +29,10 @@ type Selection = Record<string, Q[]>;
 
 const STORAGE_KEY = "kniha-config-v1";
 const META_KEY = "kniha-config-meta-v1";
+// First-run "Jak na to" intro: shown once to a first-time buyer with no draft.
+// ?navod=1 replays it. Mirrors the dashboard tour's localStorage gating, but
+// in-flow (no dimming overlay) so it never blocks the buying funnel.
+const INTRO_KEY = "kniha-config-intro-v1";
 // The configurator ALWAYS builds the custom book (the buyer reorders / adds /
 // removes / writes their own questions), so it's always the custom price. The
 // cheaper standard book (curated questions, no editing) is bought via its own
@@ -60,6 +64,45 @@ function buildDefault(): Selection {
 
 let customCounter = 0;
 
+/* In-flow "Jak na to" orientation — the first screen a first-time buyer sees,
+ * before Dětství. NOT a dimming overlay tour (which would fight the locked
+ * 100dvh shell and add friction to a buying funnel); it lives in normal flow
+ * inside .kc-main, the phase pills + top CTA stay live behind it, and one tap
+ * dismisses it forever. Mirrors the dashboard tour's calm editorial feel. */
+function KcIntro({ onStart }: { onStart: () => void }) {
+  const steps: [string, string][] = [
+    ["Vyberte otázky", "Vlevo klikáte na návrhy a ony se objeví v knize vpravo."],
+    ["Upravte po svém", "Text každé otázky přepíšete, šipkami změníte pořadí nebo přidáte vlastní."],
+    ["Souhrn a objednávka", "Projdete šest životních období, vyberete přebal a kniha je hotová."],
+  ];
+  return (
+    <section className="kc-intro">
+      <div className="kc-intro-card">
+        <span className="kc-intro-eyebrow">Jak na to</span>
+        <h2 className="kc-intro-title">Sestavte knihu ve třech krocích.</h2>
+        <ol className="kc-intro-steps">
+          {steps.map(([title, body], i) => (
+            <li key={title}>
+              <span className="kc-intro-num">{i + 1}</span>
+              <div>
+                <strong>{title}</strong>
+                <p>{body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p className="kc-intro-reassure">Nic se neztratí — rozpracovanou knihu si pamatujeme.</p>
+        <button type="button" className="btn btn-gold btn-gold-full" onClick={onStart}>
+          Začít sestavovat <span className="arrow">↗</span>
+        </button>
+        <button type="button" className="kc-intro-skip" onClick={onStart}>
+          Přeskočit úvod
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export function Configurator() {
   const [selection, setSelection] = useState<Selection>(buildDefault);
   const [step, setStep] = useState(0); // 0..PHASE_COUNT-1 = phases · PHASE_COUNT = recap
@@ -69,6 +112,8 @@ export function Configurator() {
   // Recipient gender drives how the questions address them; cover bg/text are
   // the buyer's cover design. Persisted with the draft (carried to the order).
   const [gender, setGender] = useState<Gender | null>(null);
+  // First-run intro (resolved after mount to avoid SSR/localStorage mismatch).
+  const [showIntro, setShowIntro] = useState(false);
   const [coverBg, setCoverBg] = useState<CoverBg>(DEFAULT_COVER_BG);
   const [coverText, setCoverText] = useState<CoverText>(DEFAULT_COVER_TEXT);
   // Book-card UX: internal scroll + scroll-to-top button, and drag-to-reorder.
@@ -86,9 +131,11 @@ export function Configurator() {
 
   // Restore a saved draft (guest — no account).
   useEffect(() => {
+    let hadDraft = false;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
+        hadDraft = true;
         const parsed = JSON.parse(raw) as Partial<Selection>;
         const base = buildDefault();
         for (const key of Object.keys(base)) {
@@ -110,6 +157,15 @@ export function Configurator() {
       }
     } catch {
       /* ignore */
+    }
+    // Show the intro once: only for a first-time buyer (no draft, not yet seen).
+    // ?navod=1 forces a replay. A returning buyer with a draft is never re-gated.
+    try {
+      const forced = new URLSearchParams(window.location.search).get("navod") === "1";
+      const seen = localStorage.getItem(INTRO_KEY) === "done";
+      if (forced || (!seen && !hadDraft)) setShowIntro(true);
+    } catch {
+      /* storage unavailable — skip the intro rather than risk re-showing it */
     }
     setHydrated(true);
   }, []);
@@ -217,9 +273,22 @@ export function Configurator() {
     });
   }
 
+  // Persist + dismiss the intro (the "Začít"/"Přeskočit" buttons and any
+  // top-bar/pill bypass all call this, so the intro never re-shows).
+  function dismissIntro() {
+    try {
+      localStorage.setItem(INTRO_KEY, "done");
+    } catch {
+      /* ignore */
+    }
+    setShowIntro(false);
+  }
+
   // All navigation goes through here so leaving the order step always clears it
-  // (otherwise returning to "Souhrn" would re-open the form).
+  // (otherwise returning to "Souhrn" would re-open the form). Clicking a phase
+  // pill or "K objednávce" while the intro is up also dismisses it.
   function goToStep(s: number) {
+    if (showIntro) dismissIntro();
     setShowOrder(false);
     setStep(s);
   }
@@ -296,7 +365,14 @@ export function Configurator() {
 
       {/* ── Main (fills remaining height) ── */}
       <main className="kc-main">
-        {isRecap && showOrder ? (
+        {showIntro ? (
+          <KcIntro
+            onStart={() => {
+              dismissIntro();
+              setStep(0);
+            }}
+          />
+        ) : isRecap && showOrder ? (
           <OrderForm
             total={total}
             pluralQ={pluralQ}

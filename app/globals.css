@@ -2781,6 +2781,108 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* Recap — two columns; scrolls internally only if it overflows */
+/* First-run "Jak na to" intro card — in-flow inside .kc-main (no dimming
+   overlay). Mirrors the recap card's calm centering so it feels native. */
+.editorial .kc-intro {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* generous bottom padding so the CTA clears the fixed cookie bar on mobile */
+  padding: clamp(20px, 4vw, 48px) 16px clamp(40px, 12vh, 96px);
+}
+.editorial .kc-intro-card {
+  width: 100%;
+  max-width: 520px;
+  /* margin-block:auto centers it when it fits but lets the whole card scroll
+     (no top clipping) when it's taller than the area — unlike justify/align
+     center, which clips the top in a scroll container. */
+  margin-block: auto;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: clamp(26px, 4vw, 44px);
+  text-align: center;
+  box-shadow: 0 24px 60px -36px rgba(14, 59, 100, 0.4);
+}
+.editorial .kc-intro-eyebrow {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.editorial .kc-intro-title {
+  font-family: var(--font-display-editorial);
+  font-weight: 500;
+  font-size: clamp(26px, 3.4vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 12px 0 24px;
+}
+.editorial .kc-intro-steps {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+.editorial .kc-intro-steps li { display: flex; align-items: flex-start; gap: 14px; }
+.editorial .kc-intro-num {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display-editorial);
+  font-size: 15px;
+  color: var(--gold);
+  background: rgba(212, 160, 23, 0.1);
+  border: 1px solid rgba(212, 160, 23, 0.4);
+}
+.editorial .kc-intro-steps strong {
+  display: block;
+  font-family: var(--font-body-editorial);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.editorial .kc-intro-steps p {
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.editorial .kc-intro-reassure {
+  font-family: var(--font-body-editorial);
+  font-size: 12.5px;
+  color: var(--ink-mute);
+  margin: 0 0 22px;
+}
+.editorial .kc-intro-skip {
+  margin-top: 14px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 44px;
+}
+.editorial .kc-intro-skip:hover { color: var(--ink); }
+
 .editorial .kc-recap {
   height: 100%;
   overflow-y: auto;
@@ -3106,7 +3208,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 
 /* ═══════ Standard-book checkout (/kniha/objednat) — mirrors the auth split ═══════ */
-.editorial .co-checkout { width: 100%; max-width: 520px; }
+.editorial .co-checkout { width: 100%; max-width: 560px; }
 
 /* Order summary — what you're buying, with a live cover thumbnail */
 .editorial .co-summary {
@@ -3114,7 +3216,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   align-items: center;
   gap: 16px;
   padding: 14px 16px;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -3226,7 +3328,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .co-wrap-price { font-family: var(--font-display-editorial); font-size: 15px; color: var(--ink); }
 
 /* Order total — sits right above the CTA */
-.editorial .co-total { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
+.editorial .co-total { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 .editorial .co-lines { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
 .editorial .co-line { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-soft); }
 .editorial .co-total-row { display: flex; justify-content: space-between; align-items: baseline; }
@@ -3241,6 +3343,178 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   font-weight: 500;
   font-size: 30px;
   color: var(--ink);
+}
+
+/* ═══════ Gift-checkout conversion redesign — narrow sticky rail, collapsibles ═══════ */
+
+/* Group headings inside the form (Kniha / Doručení). */
+.editorial .co-group {
+  font-family: var(--font-body-editorial);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 8px 0 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Cover design folded into a closed-by-default disclosure — hnědá is the
+   in-price default, so most buyers never open it (~110px saved). */
+.editorial .co-collapse {
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: #fff;
+}
+.editorial .co-collapse > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 12px 16px;
+  font-family: var(--font-body-editorial);
+  font-size: 14px;
+  color: var(--ink);
+}
+.editorial .co-collapse > summary::-webkit-details-marker { display: none; }
+.editorial .co-collapse > summary::after {
+  content: '+';
+  font-family: var(--font-display-editorial);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--gold);
+}
+.editorial .co-collapse[open] > summary::after { content: '–'; }
+.editorial .co-collapse[open] > summary { border-bottom: 1px solid var(--line); }
+.editorial .co-collapse-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.editorial .co-collapse-field { display: flex; flex-direction: column; gap: 9px; }
+
+/* Voucher demoted to a closed-by-default toggle — the configurator mounts only
+   when opened, so the (now container-query-safe) preview never paints on first
+   load and ~500px leaves the default height. */
+.editorial .co-voucher-toggle {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.editorial .co-voucher-toggle .co-voucher-head { margin-bottom: 0; }
+.editorial .co-voucher-chev {
+  font-family: var(--font-display-editorial);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.editorial .co-voucher-body { margin-top: 16px; }
+
+/* Mobile-only summary/total/trust: on desktop the navy rail owns these, so the
+   inline copies hide >=960px (the rail is display:none <960px, so nothing is
+   lost on the mobile-skewed traffic). */
+.editorial .co-aside { display: block; }
+@media (min-width: 960px) { .editorial .co-aside { display: none; } }
+
+/* The navy rail's live order summary (desktop only — it lives inside
+   .senior-auth-side, which is display:none <960px). */
+.editorial .co-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 160, 23, 0.28);
+}
+.editorial .co-rail-head { display: flex; align-items: center; gap: 13px; }
+.editorial .co-rail-thumb {
+  flex-shrink: 0;
+  width: 42px;
+  height: 56px;
+  border-radius: 2px 4px 4px 2px;
+  padding: 5px;
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.5);
+}
+.editorial .co-rail-thumb span {
+  display: block;
+  height: 100%;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+}
+.editorial .co-rail-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.editorial .co-rail-meta strong {
+  font-family: var(--font-display-editorial);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--footer-ink);
+}
+.editorial .co-rail-meta span { font-size: 12.5px; color: rgba(237, 228, 207, 0.62); }
+.editorial .co-rail-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(237, 228, 207, 0.16);
+}
+.editorial .co-rail-line {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body-editorial);
+  font-size: 13px;
+  color: rgba(237, 228, 207, 0.72);
+}
+.editorial .co-rail-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 11px;
+  border-top: 1px solid rgba(237, 228, 207, 0.16);
+}
+.editorial .co-rail-total span {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(237, 228, 207, 0.6);
+}
+.editorial .co-rail-total strong {
+  font-family: var(--font-display-editorial);
+  font-weight: 500;
+  font-size: 24px;
+  color: var(--footer-ink);
+}
+.editorial .co-rail-trust {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.editorial .co-rail-trust li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-family: var(--font-body-editorial);
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: rgba(237, 228, 207, 0.82);
+}
+.editorial .co-rail-trust li::before {
+  content: '✓';
+  color: var(--gold);
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
@@ -5035,6 +5309,49 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 @media (min-width: 960px) {
   .editorial .senior-auth-mobile-bar { display: none; }
+}
+
+/* ─── Gift-checkout variant of the split (.senior-auth--shop) ───
+   SCOPED so the shared senior-login / login / signup pages are untouched.
+   Narrow STATIC navy rail (a live order-summary "shelf") + a right column that
+   is the only thing that scrolls. The grid parent is min-height:100svh, so the
+   taller right column drives page height and the sticky rail pins to the top. */
+@media (min-width: 960px) {
+  .editorial .senior-auth--shop {
+    grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  }
+}
+.editorial .senior-auth--shop .senior-auth-side {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  align-self: start;
+  padding: clamp(28px, 2.6vw, 44px);
+  justify-content: flex-start;
+  gap: clamp(20px, 3vh, 36px);
+  /* overflow-y guard for very short laptops; overflow-x still clips the
+     watermark (replaces the base `overflow: hidden`). */
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.editorial .senior-auth--shop .senior-auth-side::before {
+  font-size: 150px;
+  bottom: -4%;
+}
+.editorial .senior-auth--shop .senior-auth-pitch {
+  max-width: 260px;
+  gap: 16px;
+}
+.editorial .senior-auth--shop .senior-auth-pitch h2 {
+  font-size: clamp(28px, 2.4vw, 38px);
+  line-height: 1.06;
+}
+.editorial .senior-auth--shop .senior-auth-pitch p {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.editorial .senior-auth--shop .senior-auth-main {
+  justify-content: flex-start;
 }
 
 /* Legal body — long-form prose tuned for terms / privacy / cookies pages.
