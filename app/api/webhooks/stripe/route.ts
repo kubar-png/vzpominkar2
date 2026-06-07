@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid } from "@/lib/books/server";
+import { recordRedemptionOnce } from "@/lib/coupons/server";
 import { SITE_URL } from "@/lib/site";
 import { sendEmail } from "@/lib/email/send";
 import { shopGiftOrderConfirmationEmail } from "@/lib/email/templates";
@@ -122,6 +123,22 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
         familyId,
         amountCzk,
         paymentIntentId: pi,
+      });
+    }
+
+    // Coupon: a discount code was applied at checkout. Record the redemption now
+    // that the payment has actually completed — keyed on the payment intent so a
+    // retried / duplicate webhook delivery never double-counts (recordRedemption-
+    // Once is a no-op once a row exists for this couponId + orderRef).
+    if (meta.couponId) {
+      const orderRef = pi ?? `session:${session.id}`;
+      const amountOffCzk = Number(meta.couponAmountOffCzk ?? 0);
+      await recordRedemptionOnce(admin, {
+        couponId: meta.couponId,
+        orderRef,
+        email: session.customer_details?.email ?? null,
+        amountOffCzk: Number.isFinite(amountOffCzk) ? amountOffCzk : 0,
+        productType,
       });
     }
     return;

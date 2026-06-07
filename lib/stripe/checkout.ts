@@ -7,6 +7,7 @@ import { requireOwner, requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid, countPaidBooks } from "@/lib/books/server";
 import { getStripe, priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
+import { validateCoupon, recordRedemptionOnce } from "@/lib/coupons/server";
 import { SITE_URL } from "@/lib/site";
 import type Stripe from "stripe";
 import type { Json } from "@/types/database";
@@ -21,7 +22,12 @@ export async function purchaseBook(
   // Order bump: the buyer opted into a second printed copy at the launch
   // discount. Only honoured on the FIRST (base) purchase — that's where the
   // bump is offered. Computed price always comes from the server.
-  opts: { extraCopy?: boolean } = {},
+  //
+  // couponCode: a discount code the buyer typed at checkout. Re-validated
+  // server-side here (the client-typed code is never trusted to be valid, and
+  // no client-sent discount amount is ever honoured). Applies ONLY to the base
+  // line on the FIRST purchase — never the add-on, never the extra-copy bump.
+  opts: { extraCopy?: boolean; couponCode?: string } = {},
 ): Promise<never> {
   const admin = createAdminClient();
   const { data: book } = await admin
@@ -42,11 +48,38 @@ export async function purchaseBook(
   // so the price can't be chosen by the client.
   const isFirst = (await countPaidBooks(admin, book.family_id)) === 0;
   const productType = isFirst ? "book_base" : "book_addon";
-  const priceCzk = priceForProductCzk(productType);
+  const baseListCzk = priceForProductCzk(productType);
+
+  // Coupon — re-validated server-side against the freshly-resolved productType
+  // and the base list price. The discount applies ONLY to the base line (per
+  // the default scope: book_base; the add-on path can still carry an 'all'
+  // coupon, but the bump below is never discounted). The applied amount is
+  // clamped so the base line never goes below 0 (if it hits 0 the free path
+  // below activates the book without Stripe).
+  let couponId: string | null = null;
+  let couponDiscountCzk = 0;
+  const couponCode = opts.couponCode?.trim();
+  if (couponCode) {
+    const result = await validateCoupon(admin, {
+      code: couponCode,
+      productType,
+      subtotalCzk: baseListCzk,
+    });
+    if (result.ok) {
+      couponId = result.couponId;
+      couponDiscountCzk = Math.min(result.amountOffCzk, baseListCzk);
+    }
+    // Invalid / expired / wrong-product → silently no discount. The page
+    // validated and displayed it already; a code that turns invalid between
+    // page render and submit simply charges full price (never over-charges).
+  }
+
+  const priceCzk = Math.max(0, baseListCzk - couponDiscountCzk);
 
   // Extra printed copy (the launch-discounted order bump). Only on the base
   // purchase, and only when the env-configured price is non-zero — otherwise it
-  // adds nothing and we never record copies=2 for a phantom upsell.
+  // adds nothing and we never record copies=2 for a phantom upsell. The coupon
+  // never touches this line.
   const extraCopyCzk = isFirst && opts.extraCopy ? discountedExtraCopyCzk() : 0;
   const wantsExtraCopy = extraCopyCzk > 0;
   const copies = wantsExtraCopy ? 2 : 1;
@@ -82,6 +115,19 @@ export async function purchaseBook(
       amountCzk: 0,
     });
     await recordExtraCopyOrder("paid");
+    // Coupon applied on the free path (e.g. a 200 Kč code that zeroed an
+    // already-free launch price, or a code that brought a paid base to 0).
+    // Record it now, keyed on the book id so a re-run of this completion can't
+    // double-count. recordRedemptionOnce no-ops if already recorded.
+    if (couponId) {
+      await recordRedemptionOnce(admin, {
+        couponId,
+        orderRef: book.id,
+        email: owner.email ?? null,
+        amountOffCzk: couponDiscountCzk,
+        productType,
+      });
+    }
     revalidatePath("/dashboard");
     // After the first (base) purchase, ask the acquisition-attribution
     // question; further volumes go straight back to the app.
@@ -105,11 +151,15 @@ export async function purchaseBook(
     Stripe.Checkout.SessionCreateParams["line_items"]
   >[number];
   const lineItems: CheckoutLineItem[] = [];
-  if (priceCzk > 0) {
+  // Base line is the FULL list price; the coupon is expressed to Stripe as a
+  // separate discount below so the buyer sees "Kniha 2 890 Kč − sleva 200 Kč"
+  // on the Stripe page (honest, Stripe-native). On the rare path where the base
+  // list price is 0 but the bump keeps totalCzk > 0, there's no base line.
+  if (baseListCzk > 0) {
     lineItems.push({
       price_data: {
         currency: "czk",
-        unit_amount: priceCzk * 100, // CZK is 0-decimal; Stripe wants minor units
+        unit_amount: baseListCzk * 100, // CZK is 0-decimal; Stripe wants minor units
         product_data: { name: baseLineName },
       },
       quantity: 1,
@@ -127,6 +177,29 @@ export async function purchaseBook(
   }
 
   const stripe = getStripe();
+
+  // Express the coupon to Stripe as a one-off amount_off coupon applied to this
+  // session. We mint a fresh, single-use Stripe coupon per checkout (rather than
+  // mirroring our coupon catalogue into Stripe) so our DB stays the single
+  // source of truth for validity/caps; Stripe only needs to subtract the amount
+  // we already validated. Guarded by couponDiscountCzk > 0, so the free path and
+  // no-coupon path never touch this. Discounts can't exceed the line subtotal in
+  // Stripe, and couponDiscountCzk is already clamped to <= baseListCzk.
+  type SessionDiscount = NonNullable<
+    Stripe.Checkout.SessionCreateParams["discounts"]
+  >[number];
+  let discounts: SessionDiscount[] | undefined;
+  if (couponDiscountCzk > 0) {
+    const stripeCoupon = await stripe.coupons.create({
+      amount_off: couponDiscountCzk * 100,
+      currency: "czk",
+      duration: "once",
+      max_redemptions: 1,
+      name: `Sleva ${couponCode ?? ""}`.trim(),
+    });
+    discounts = [{ coupon: stripeCoupon.id }];
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     // Express wallets: omit `payment_method_types` so Stripe-hosted Checkout
@@ -135,6 +208,8 @@ export async function purchaseBook(
     // Stripe hosts the page). Visible once Stripe is live (real key + wallets
     // enabled in the Dashboard).
     line_items: lineItems,
+    // The validated coupon as a Stripe-native discount (undefined when none).
+    ...(discounts ? { discounts } : {}),
     // Abandoned-cart recovery: Stripe's native after-expiration recovery gives
     // the abandoned session a recovery URL and lets Stripe re-engage the buyer
     // by e-mail (toggled on in the Dashboard). `expires_at` defaults to 24h, so
@@ -149,6 +224,12 @@ export async function purchaseBook(
       // Present only when a second printed copy was bought — lets the webhook
       // reconcile the extra-copy book_orders row (draft→paid) after payment.
       ...(extraCopyOrderId ? { bookOrderId: extraCopyOrderId } : {}),
+      // Coupon — threaded so the webhook can record the redemption (keyed on the
+      // payment intent) once the payment actually completes. amountOffCzk is the
+      // server-validated amount, never a client value.
+      ...(couponId
+        ? { couponId, couponAmountOffCzk: String(couponDiscountCzk) }
+        : {}),
     },
     success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
     cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,
@@ -168,6 +249,12 @@ export async function startBaseCheckout(formData?: FormData): Promise<never> {
   // The checkbox is named "extra_copy"; honour it only when truthy. The price is
   // never read from the client — purchaseBook recomputes it server-side.
   const extraCopy = formData?.get("extra_copy") != null;
+
+  // Coupon code typed (or URL-prefilled) on the paywall. Passed as a raw string;
+  // purchaseBook re-validates it server-side against the live coupon table and
+  // sizes the discount itself — we never trust a client-sent discount amount.
+  const couponRaw = formData?.get("coupon");
+  const couponCode = typeof couponRaw === "string" && couponRaw.trim() ? couponRaw : undefined;
 
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
@@ -215,7 +302,7 @@ export async function startBaseCheckout(formData?: FormData): Promise<never> {
     }
   }
 
-  return await purchaseBook(bookId, { extraCopy });
+  return await purchaseBook(bookId, { extraCopy, couponCode });
 }
 
 /**

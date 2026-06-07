@@ -151,3 +151,51 @@ export async function recordRedemption(
     // else: someone else incremented between our read and write — retry.
   }
 }
+
+/**
+ * Idempotent-friendly wrapper around {@link recordRedemption}: records a
+ * redemption AT MOST ONCE for a given (couponId, orderRef) pair. The order
+ * reference is the natural idempotency key — a book id on the free path, the
+ * Stripe payment intent on the paid path — so a retried Stripe webhook (or a
+ * re-run of a completion handler) never double-counts a redemption or
+ * double-increments the coupon's `redeemed_count`.
+ *
+ * `orderRef` is REQUIRED here (unlike recordRedemption, where it's optional):
+ * without a stable key there is nothing to dedupe on, so callers that can't
+ * supply one must use recordRedemption directly and accept its at-least-once
+ * semantics.
+ *
+ * NB: this is a check-then-insert, not a DB-level unique constraint, so it is
+ * not bullet-proof against two truly-simultaneous deliveries of the same order.
+ * In practice Stripe serialises retries of the same event with a back-off, and
+ * the free path runs inside a single request, so the window is negligible. The
+ * worst case is a rare double-count, never a wrong charge.
+ */
+export async function recordRedemptionOnce(
+  admin: Admin,
+  opts: {
+    couponId: string;
+    orderRef: string;
+    email?: string | null;
+    amountOffCzk: number;
+    productType?: string | null;
+  },
+): Promise<void> {
+  const { data: existing, error: lookErr } = await admin
+    .from("coupon_redemptions")
+    .select("id")
+    .eq("coupon_id", opts.couponId)
+    .eq("order_ref", opts.orderRef)
+    .limit(1)
+    .maybeSingle();
+  if (lookErr) throw lookErr;
+  if (existing) return; // already recorded for this order — no-op.
+
+  await recordRedemption(admin, {
+    couponId: opts.couponId,
+    orderRef: opts.orderRef,
+    email: opts.email ?? null,
+    amountOffCzk: opts.amountOffCzk,
+    productType: opts.productType ?? null,
+  });
+}

@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { requireOwner, hasActiveAccess } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { startBaseCheckout } from "@/lib/stripe/checkout";
+import { validateCoupon, normalizeCouponCode } from "@/lib/coupons/server";
 import {
   priceForProductCzk,
   discountedExtraCopyCzk,
@@ -11,6 +12,7 @@ import {
 } from "@/lib/stripe/server";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { CouponField } from "./coupon-field";
 
 export const metadata: Metadata = { title: "Aktivace přístupu" };
 
@@ -32,10 +34,13 @@ const BASE_PRICE_TRUST_CZK = 2890;
 export default async function ActivationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cancelled?: string }>;
+  searchParams: Promise<{ cancelled?: string; coupon?: string }>;
 }) {
   const sp = await searchParams;
   const cancelled = sp.cancelled === "1";
+  // A coupon may arrive pre-filled in the URL (e.g. an autoresponder link like
+  // ?coupon=VITEJTE200). Normalize for display/prefill; re-validate below.
+  const prefillCoupon = sp.coupon ? normalizeCouponCode(sp.coupon) : "";
 
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
@@ -72,6 +77,29 @@ export default async function ActivationPage({
   // when the env price is unset (would render a meaningless "0 Kč").
   const extraCopyCzk = discountedExtraCopyCzk();
   const showExtraCopyBump = extraCopyCzk > 0;
+
+  // Coupon — re-validate the (possibly URL-prefilled) code SERVER-SIDE so what
+  // we show equals what the action will charge. A discount only changes the
+  // shown total on a REAL charged setup (priceCzk > 0); on the free path the
+  // book is already free and showing "−200 Kč off 2 890 Kč" would imply a
+  // charge that never happens, so we keep the field (the code is still recorded
+  // as redeemed on completion) but don't render a misleading discounted total.
+  let couponDiscountCzk = 0;
+  let appliedCouponCode: string | null = null;
+  if (prefillCoupon && priceCzk > 0) {
+    const result = await validateCoupon(admin, {
+      code: prefillCoupon,
+      productType: "book_base",
+      subtotalCzk: priceCzk,
+    });
+    if (result.ok) {
+      couponDiscountCzk = Math.min(result.amountOffCzk, priceCzk);
+      appliedCouponCode = prefillCoupon;
+    }
+  }
+  // The amount the buyer will actually be charged for the base book (clamped).
+  const chargedAfterCouponCzk = Math.max(0, priceCzk - couponDiscountCzk);
+  const hasAppliedDiscount = couponDiscountCzk > 0;
 
   return (
     <div className="space-y-10">
@@ -125,18 +153,36 @@ export default async function ActivationPage({
 
           {/* Text stays left-aligned, but each block hugs the card's right edge. */}
           <div className="space-y-7">
-            <div className="md:ml-auto md:w-fit">
+            <div className="md:ml-auto md:w-fit md:text-right">
               <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--color-gold-300)]">
                 Jednorázově · přístup napořád
               </span>
-              <div className="mt-2 flex items-baseline gap-2">
+              <div className="mt-2 flex items-baseline gap-2 md:justify-end">
                 <span className="font-[family-name:var(--font-display)] text-5xl font-medium leading-none text-[var(--color-gold-400)] sm:text-6xl">
-                  {displayPriceCzk.toLocaleString("cs-CZ")}
+                  {(hasAppliedDiscount ? chargedAfterCouponCzk : displayPriceCzk).toLocaleString("cs-CZ")}
                 </span>
                 <span className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper-200)]">
                   Kč
                 </span>
               </div>
+              {/* Honest discount breakdown — original price struck through, the
+                  applied code named, and the saving shown. Price shown here is
+                  exactly what the CTA charges. */}
+              {hasAppliedDiscount ? (
+                <div className="mt-2 space-y-0.5 md:text-right">
+                  <p className="text-sm text-[var(--color-paper-300)]">
+                    <span className="line-through">
+                      {priceCzk.toLocaleString("cs-CZ")}&nbsp;Kč
+                    </span>{" "}
+                    <span className="text-[var(--color-gold-300)]">
+                      −&nbsp;{couponDiscountCzk.toLocaleString("cs-CZ")}&nbsp;Kč
+                    </span>
+                  </p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-gold-300)]">
+                    Sleva {appliedCouponCode} uplatněna
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <ul className="space-y-3 md:ml-auto md:w-fit">
@@ -169,11 +215,27 @@ export default async function ActivationPage({
                     </span>
                   </label>
                 ) : null}
+                {/* Coupon entry — only on a real charged setup (priceCzk > 0).
+                    On the free path the book is already free, so a discount
+                    field would be meaningless. Prefilled + opened automatically
+                    when a code arrives via ?coupon= (e.g. an autoresponder
+                    link). The field name "coupon" is read by startBaseCheckout
+                    and re-validated server-side. */}
+                {priceCzk > 0 ? (
+                  <CouponField
+                    defaultValue={prefillCoupon}
+                    applied={hasAppliedDiscount}
+                  />
+                ) : null}
                 <button
                   type="submit"
                   className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full md:w-auto")}
                 >
-                  {priceCzk > 0 ? "Zaplatit a začít sbírat" : "Začít sbírat vzpomínky"}
+                  {priceCzk > 0
+                    ? hasAppliedDiscount
+                      ? `Zaplatit ${chargedAfterCouponCzk.toLocaleString("cs-CZ")} Kč a začít sbírat`
+                      : "Zaplatit a začít sbírat"
+                    : "Začít sbírat vzpomínky"}
                   <span
                     aria-hidden
                     className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--card-navy)] text-[13px] font-semibold text-[var(--gold)]"
