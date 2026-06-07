@@ -357,7 +357,12 @@ export function SeniorCard({ familyId, senior, manageHref }: SeniorCardProps) {
               </p>
               {senior.contact_address ? (
                 <p>
-                  {senior.contact_channel === "whatsapp" ? "WhatsApp" : "E-mail"}: {senior.contact_address}
+                  {senior.contact_channel === "whatsapp"
+                    ? "WhatsApp"
+                    : senior.contact_channel === "sms"
+                      ? "SMS"
+                      : "E-mail"}
+                  : {senior.contact_address}
                 </p>
               ) : null}
               <p className="tabular-nums">

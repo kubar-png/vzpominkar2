@@ -20,7 +20,7 @@ export default async function FamilyMemoriesPage({
     supabase
       .from("memories")
       .select(
-        "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, prompts(question), profiles!memories_author_id_fkey(id, display_name)",
+        "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
       )
       .eq("family_id", familyId)
       .order("created_at", { ascending: false })
@@ -39,7 +39,7 @@ export default async function FamilyMemoriesPage({
           is_favorite: boolean;
           created_at: string;
           prompts: { question: string } | null;
-          profiles: { id: string; display_name: string | null } | null;
+          profiles: { id: string; display_name: string | null; gender: string | null } | null;
         }[]
       >(),
     supabase
@@ -92,6 +92,7 @@ export default async function FamilyMemoriesPage({
     question: m.prompts?.question ?? null,
     authorId: m.profiles?.id ?? null,
     authorName: m.profiles?.display_name ?? null,
+    authorGender: (m.profiles?.gender as "male" | "female" | null) ?? null,
     images: (attachByMemory.get(m.id) ?? []).filter((a) => a.mime_type.startsWith("image/")),
   }));
 

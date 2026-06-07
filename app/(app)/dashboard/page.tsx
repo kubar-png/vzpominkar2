@@ -83,8 +83,15 @@ export default async function DashboardPage() {
     ? firstSenior.displayName.split(/\s+/)[0] || firstSenior.displayName
     : "";
   const seniorNameById = new Map(seniors.map((s) => [s.id, s.displayName]));
+  const seniorGenderById = new Map(
+    (rawSeniors ?? []).map((s) => [s.id, (s.gender as "male" | "female" | null) ?? null]),
+  );
 
   const onlySenior = seniors.length === 1 ? seniors[0] : null;
+  // When the family has exactly one senior, every gendered surface can safely
+  // use that senior's gender even when a row doesn't carry an explicit
+  // senior_id (older assignments / shared library questions).
+  const onlySeniorGender = onlySenior ? (seniorGenderById.get(onlySenior.id) ?? null) : null;
   const firstName = onlySenior
     ? (onlySenior.displayName.split(/\s+/)[0] || onlySenior.displayName)
     : null;
@@ -102,6 +109,12 @@ export default async function DashboardPage() {
         seniorName: nextRow.senior_id
           ? (seniorNameById.get(nextRow.senior_id) ?? null)
           : null,
+        // Gender for the {masc|fem} tokens in the question: prefer the
+        // assignment's own senior, fall back to the sole senior. null (multiple
+        // seniors / unknown) keeps the slash form, which is the correct fallback.
+        gender: nextRow.senior_id
+          ? (seniorGenderById.get(nextRow.senior_id) ?? null)
+          : onlySeniorGender,
       }
     : null;
 

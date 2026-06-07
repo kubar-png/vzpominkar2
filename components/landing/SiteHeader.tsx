@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { MARKETING_NAV } from "@/components/landing/nav";
 
 interface SiteHeaderProps {
   /**
@@ -39,11 +40,11 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
             <span className="logo-mark" aria-hidden="true" />
           </Link>
           <div className="nav-links">
-            <Link href="/jak-to-funguje">Jak to funguje</Link>
-            <Link href="/cenik">Ceník</Link>
-            <Link href="/darek">Jako dárek</Link>
-            <Link href="/faq">Otázky</Link>
-            <Link href="/o-nas">Náš příběh</Link>
+            {MARKETING_NAV.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
           </div>
           <PrimaryCta variant="nav" />
           <HomeMobileMenu />

@@ -31,6 +31,15 @@ function isKvConfigured(): boolean {
 
 const isProd = process.env.NODE_ENV === "production";
 
+// Scream once at cold start if KV is missing in prod — auth brute-force
+// protection is fail-open without it (see authFailDecision). Cheap visibility
+// so a missing integration doesn't go unnoticed until an attack.
+if (isProd && !isKvConfigured()) {
+  console.error(
+    "[rate-limit] KV/Upstash is NOT configured in production — auth brute-force protection is fail-open. Provision KV_REST_API_URL / KV_REST_API_TOKEN.",
+  );
+}
+
 /**
  * Decide what to do for the `auth` limiter when we cannot get a verdict from
  * Redis (KV unconfigured, or a live call threw). In production we fail CLOSED
@@ -119,9 +128,19 @@ function limiterFor(kind: RateLimitKind): Ratelimit | null {
 
 /** Pulled out so route handlers can pass `request.headers` directly. */
 export function getClientIp(h: Headers): string {
+  // On Vercel `x-real-ip` is set by the platform to the true client IP and
+  // cannot be spoofed by the client — prefer it. Otherwise fall back to the
+  // LAST segment of `x-forwarded-for` (the hop appended by the trusted proxy),
+  // never the first: the leftmost value is client-supplied and trivially
+  // spoofable to dodge per-IP limits.
+  const realIp = h.get("x-real-ip")?.trim();
+  if (realIp) return realIp;
   const fwd = h.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]?.trim() || "unknown";
-  return h.get("x-real-ip") ?? "unknown";
+  if (fwd) {
+    const parts = fwd.split(",").map((s) => s.trim()).filter(Boolean);
+    return parts[parts.length - 1] || "unknown";
+  }
+  return "unknown";
 }
 
 /** For Server Actions — pulls IP from next/headers automatically. */
@@ -227,6 +246,40 @@ export async function checkSeniorUsernameLimit(
     return { ok: false, retryAfterSec };
   } catch (err) {
     console.error(`[rate-limit:senior-login-u] redis error (fail-closed in prod):`, err);
+    return authFailDecision("error");
+  }
+}
+
+/* ── Owner per-account throttle (login + password reset) ──────────────────────
+ * The per-IP `checkRateLimit("auth", ...)` alone lets a rotating-IP attacker
+ * hammer one known owner e-mail. This adds a low per-e-mail ceiling, keyed by
+ * the e-mail (not IP). Mirrors the senior per-username throttle; fail behaviour
+ * matches the auth limiter (closed on a live error in prod, open only when KV is
+ * entirely unprovisioned so a missing integration can't lock everyone out). */
+const authAccountLimiter = makeLimiter({
+  prefix: "auth-account",
+  limit: 10,
+  windowSec: 60 * 60,
+});
+
+/**
+ * Per-account throttle for owner login + password reset, keyed on the e-mail.
+ * Layered on top of the per-IP `checkRateLimit("auth", ...)`.
+ */
+export async function checkAuthAccountLimit(
+  identifier: string,
+): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  if (!authAccountLimiter) {
+    return authFailDecision(isKvConfigured() ? "error" : "unconfigured");
+  }
+  const key = identifier.trim().toLowerCase();
+  try {
+    const res = await authAccountLimiter.limit(`auth-account:${key}`);
+    if (res.success) return { ok: true };
+    const retryAfterSec = Math.max(1, Math.ceil((res.reset - Date.now()) / 1000));
+    return { ok: false, retryAfterSec };
+  } catch (err) {
+    console.error(`[rate-limit:auth-account] redis error (fail-closed in prod):`, err);
     return authFailDecision("error");
   }
 }

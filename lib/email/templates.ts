@@ -1,5 +1,6 @@
 import "server-only";
 import { resolveGender, type Gender } from "@/lib/gender";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Transactional email templates — editorial brand.
@@ -656,6 +657,80 @@ export function leadNotificationEmail(input: {
     `Email:  ${input.email}`,
     `Zdroj:  ${source}`,
     `Čas:    ${when}`,
+  ].join("\n");
+
+  return { subject, html, text };
+}
+
+/* -------------------------------------------------------------------------- */
+/* 7. Lead-magnet autoresponder — sent to the VISITOR who left their e-mail    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The single warm e-mail promised by the homepage lead-magnet form: a short
+ * intro, a gold CTA to buy the main product with 200 Kč off (the link carries
+ * the launch coupon), and the code shown as text for later use.
+ *
+ * Honesty rule: this is ONE e-mail — not a drip of three. The form copy
+ * matches. The CTA link must equal what the buyer gets (VITEJTE200 = 200 Kč
+ * off the base book at checkout). Built from `lib/site` SITE_URL so the origin
+ * is consistent across environments.
+ */
+export const LEAD_WELCOME_COUPON = "VITEJTE200";
+
+export function leadWelcomeEmail() {
+  const subject = "Vaše ukázka Vzpomínkáře + sleva 200 Kč";
+  const ctaUrl = `${SITE_URL}/onboarding?coupon=${LEAD_WELCOME_COUPON}`;
+
+  const html = shell({
+    title: subject,
+    preheader: "Slevový kód VITEJTE200 — 200 Kč dolů z první knihy.",
+    headerEyebrow: "Vítejte",
+    body: `
+      ${h1("Děkujeme za zájem.")}
+      <p style="margin:0 0 14px 0;">
+        Vzpomínkář je pomalý, laskavý způsob, jak zachytit příběh někoho blízkého &mdash;
+        jedna otázka týdně, žádný spěch, žádná aplikace k učení. Na konci je hotová
+        hardcover Kniha vzpomínek, kterou si necháte vytisknout a předáte dál.
+      </p>
+      <p style="margin:0 0 24px 0;">
+        Připravili jsme pro vás <strong>slevu 200 Kč</strong> na první knihu. Tlačítkem níže
+        přejdete rovnou k objednávce a kód se přidá za vás.
+      </p>
+
+      <p style="margin:0 0 14px 0;">${cta("Objednat se slevou 200 Kč", ctaUrl)}</p>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+        <tr><td style="padding:18px 22px;">
+          <div style="font-family:${BODY_FONT};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${INK_SOFT};margin:0 0 6px 0;">Slevový kód</div>
+          <div style="font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;color:${INK};letter-spacing:0.04em;">${esc(LEAD_WELCOME_COUPON)}</div>
+          <div style="margin:8px 0 0 0;font-size:14px;color:${INK_SOFT};">platí 200 Kč sleva, použijte i příště</div>
+        </td></tr>
+      </table>
+
+      ${HR}
+      <p style="margin:0;font-size:14px;color:${INK_SOFT};">
+        Tohle je jediný e-mail, který vám pošleme &mdash; žádný spam, žádné triky. Kdykoli se
+        můžete odhlásit nebo na zprávu prostě odpovědět. Píše vám člověk.
+      </p>
+      ${signoff()}
+    `,
+  });
+
+  const text = [
+    "Děkujeme za zájem.",
+    "",
+    "Vzpomínkář je pomalý, laskavý způsob, jak zachytit příběh někoho blízkého — jedna otázka týdně, žádný spěch, žádná aplikace k učení. Na konci je hotová hardcover Kniha vzpomínek, kterou si necháte vytisknout a předáte dál.",
+    "",
+    "Připravili jsme pro vás slevu 200 Kč na první knihu. Odkazem níže přejdete rovnou k objednávce a kód se přidá za vás.",
+    "",
+    `Objednat se slevou 200 Kč: ${ctaUrl}`,
+    "",
+    `Slevový kód: ${LEAD_WELCOME_COUPON} — platí 200 Kč sleva, použijte i příště.`,
+    "",
+    "Tohle je jediný e-mail, který vám pošleme — žádný spam, žádné triky. Kdykoli se můžete odhlásit nebo na zprávu prostě odpovědět. Píše vám člověk.",
+    "",
+    "Kuba a tým Vzpomínkáře",
   ].join("\n");
 
   return { subject, html, text };

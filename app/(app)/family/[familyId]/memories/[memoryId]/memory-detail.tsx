@@ -8,7 +8,7 @@ import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
 import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
 import type { MemoryDetailData } from "./page";
-import { resolveGender } from "@/lib/gender";
+import { resolveGender, genderFromSeniorRole } from "@/lib/gender";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -297,6 +297,10 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
   const [, startTransition] = useTransition();
   const textLong = (text?.length ?? 0) > 600;
   const label = roleLabel(m.authorRole);
+  // Gender for the {masc|fem} tokens in the question. profiles.gender isn't
+  // loaded on this surface, so derive it from the family-relationship label
+  // (senior_role); "jine"/unknown → null keeps the slash fallback.
+  const authorGender = genderFromSeniorRole(m.authorRole);
   const memoryDate = m.memory_date ? formatDate(m.memory_date) : null;
   const recordedDate = formatDate(m.created_at);
 
@@ -431,7 +435,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       {/* Question quote — small, calm, not gold */}
       {m.question ? (
         <blockquote className="mt-6 border-l-2 border-[var(--color-border-strong)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
-          &bdquo;{m.question ? resolveGender(m.question, null) : ""}&ldquo;
+          &bdquo;{m.question ? resolveGender(m.question, authorGender) : ""}&ldquo;
         </blockquote>
       ) : null}
 

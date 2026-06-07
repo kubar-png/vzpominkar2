@@ -19,6 +19,8 @@ export type MemoryItem = {
   question: string | null;
   authorId: string | null;
   authorName: string | null;
+  /** Author (senior) gender for the {masc|fem} tokens in `question`. */
+  authorGender: "male" | "female" | null;
   attachments: MemoryAttachment[];
 };
 

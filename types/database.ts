@@ -188,6 +188,86 @@ export type Database = {
           },
         ]
       }
+      coupon_redemptions: {
+        Row: {
+          amount_off_czk: number
+          coupon_id: string
+          email: string | null
+          id: string
+          order_ref: string | null
+          product_type: string | null
+          redeemed_at: string
+        }
+        Insert: {
+          amount_off_czk: number
+          coupon_id: string
+          email?: string | null
+          id?: string
+          order_ref?: string | null
+          product_type?: string | null
+          redeemed_at?: string
+        }
+        Update: {
+          amount_off_czk?: number
+          coupon_id?: string
+          email?: string | null
+          id?: string
+          order_ref?: string | null
+          product_type?: string | null
+          redeemed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          amount_off_czk: number
+          applies_to: string
+          code: string
+          created_at: string
+          id: string
+          max_redemptions: number | null
+          note: string | null
+          redeemed_count: number
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean
+          amount_off_czk: number
+          applies_to?: string
+          code: string
+          created_at?: string
+          id?: string
+          max_redemptions?: number | null
+          note?: string | null
+          redeemed_count?: number
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean
+          amount_off_czk?: number
+          applies_to?: string
+          code?: string
+          created_at?: string
+          id?: string
+          max_redemptions?: number | null
+          note?: string | null
+          redeemed_count?: number
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       families: {
         Row: {
           auto_schedule_prompts: boolean
@@ -229,21 +309,30 @@ export type Database = {
       }
       leads: {
         Row: {
+          consent_at: string | null
+          consent_text: string | null
           created_at: string
           email: string
           id: string
+          marketing_consent: boolean
           source: string | null
         }
         Insert: {
+          consent_at?: string | null
+          consent_text?: string | null
           created_at?: string
           email: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
         }
         Update: {
+          consent_at?: string | null
+          consent_text?: string | null
           created_at?: string
           email?: string
           id?: string
+          marketing_consent?: boolean
           source?: string | null
         }
         Relationships: []

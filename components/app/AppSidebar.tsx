@@ -100,7 +100,11 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
         </span>
       );
     }
-    return <Link href={href} className={classes}>{content}</Link>;
+    return (
+      <Link href={href} className={classes} aria-current={active ? "page" : undefined}>
+        {content}
+      </Link>
+    );
   }
 
   return (

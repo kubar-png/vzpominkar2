@@ -21,7 +21,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
   const { data: rawMemories } = await supabase
     .from("memories")
     .select(
-      "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, memory_date, prompts(question), profiles!memories_author_id_fkey(id, display_name)",
+      "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, memory_date, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
     )
     .eq("family_id", familyId)
     .order("is_favorite", { ascending: false })
@@ -39,7 +39,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
         created_at: string;
         memory_date: string | null;
         prompts: { question: string } | null;
-        profiles: { id: string; display_name: string | null } | null;
+        profiles: { id: string; display_name: string | null; gender: string | null } | null;
       }[]
     >();
 
@@ -88,6 +88,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
     question: m.prompts?.question ?? null,
     authorId: m.profiles?.id ?? null,
     authorName: m.profiles?.display_name ?? null,
+    authorGender: (m.profiles?.gender as "male" | "female" | null) ?? null,
     attachments: (attachByMemory.get(m.id) ?? []).map((a) => ({
       storage_path: a.storage_path,
       signedUrl: attachUrls.get(a.storage_path) ?? "",

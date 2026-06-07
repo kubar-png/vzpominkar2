@@ -60,7 +60,7 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
               ) : null}
             </p>
             {m.question ? (
-              <p className="text-sm text-[var(--color-text-muted)]">&#8222;{resolveGender(m.question, null)}&#8220;</p>
+              <p className="text-sm text-[var(--color-text-muted)]">&#8222;{resolveGender(m.question, m.authorGender)}&#8220;</p>
             ) : null}
           </div>
           <div className="flex items-center gap-2">
