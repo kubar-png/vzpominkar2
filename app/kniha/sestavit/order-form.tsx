@@ -4,6 +4,11 @@ import { useState } from "react";
 import { createGiftOrder, type CreateGiftOrderInput } from "@/lib/shop/order-actions";
 import type { Gender } from "@/lib/gender";
 import { COVER_BG_HEX, COVER_TEXT_HEX, type CoverBg, type CoverText } from "@/lib/book/cover";
+import {
+  VoucherConfigurator,
+  DEFAULT_VOUCHER_COLOR,
+  type VoucherConfig,
+} from "@/app/darovat/_components/VoucherConfigurator";
 
 const STORAGE_KEY = "kniha-config-v1";
 const META_KEY = "kniha-config-meta-v1";
@@ -89,6 +94,12 @@ export function OrderForm({
   const [note, setNote] = useState("");
   const [giftwrap, setGiftwrap] = useState(false);
   const [dedication, setDedication] = useState("");
+  const [voucher, setVoucher] = useState<VoucherConfig>({
+    color: DEFAULT_VOUCHER_COLOR,
+    recipient: null,
+    message: null,
+    signedBy: null,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,6 +125,7 @@ export function OrderForm({
       tier: "custom",
       questions: draft.questions,
       shippingAddress: { name, street, city, zip, note },
+      voucher,
     };
 
     setSubmitting(true);
@@ -249,6 +261,16 @@ export function OrderForm({
             <span className="kc-field-hint">Krátký text, který vyrazíme na desky.</span>
           </div>
         ) : null}
+
+        {/* Dárkový poukaz — printable card to hand over while the book is in the
+            post. Downloadable as PDF on the confirmation page after payment. */}
+        <div className="kc-field kc-field-voucher">
+          <label>Dárkový poukaz k vytištění</label>
+          <span className="kc-field-hint">
+            Kniha dorazí za 3–4 týdny — poukaz si po zaplacení stáhnete jako PDF a předáte hned.
+          </span>
+          <VoucherConfigurator initialColor={voucher.color} onChange={setVoucher} />
+        </div>
 
         <div className="kc-order-total">
           <span>

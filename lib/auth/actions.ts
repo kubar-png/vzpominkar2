@@ -16,6 +16,7 @@ import {
 } from "@/lib/validations/auth";
 import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
 import { requireOwner, currentUser } from "@/lib/auth/permissions";
+import { markGiftPending } from "@/lib/gift/cookie";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail } from "@/lib/email/templates";
 import {
@@ -58,6 +59,11 @@ export async function signUpOwner(
     return { ok: false, error: first?.message ?? "Neplatné údaje.", field: first?.path[0]?.toString() };
   }
 
+  // Gift flow marker (from /darovat → /signup?gift=1). Carried as a short-lived
+  // cookie through onboarding so /onboarding/platba renders the voucher
+  // configurator and the buyer can hand over a printable poukaz after paying.
+  const isGift = formData.get("gift") === "1";
+
   // Deferred email verification: with Supabase "Confirm email" OFF, signUp
   // returns a live session, so the owner is logged in right away and skips the
   // inbox wall. We verify their email LATER (gated at the paywall).
@@ -94,6 +100,8 @@ export async function signUpOwner(
       console.error("[signup] profile insert failed:", profileErr);
       return { ok: false, error: "Účet se nepodařilo dokončit. Zkuste to prosím znovu." };
     }
+
+    if (isGift) await markGiftPending();
 
     await sendOwnerVerificationEmail(supabase, parsed.data.email, appUrl);
     redirect("/onboarding");

@@ -3062,6 +3062,32 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   border: 1px solid var(--line);
   border-radius: 10px;
 }
+/* Dárkový poukaz block inside the gift checkouts (objednat + sestavit). A quiet
+   bordered card so the live A5 preview + controls read as one optional step. */
+.editorial .co-voucher,
+.editorial .kc-field-voucher {
+  margin-top: 8px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+.editorial .co-voucher-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.editorial .co-voucher-head strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.editorial .co-voucher-head span {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
 .editorial .kc-checkbox {
   display: flex;
   gap: 10px;

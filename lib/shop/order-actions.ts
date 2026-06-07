@@ -15,6 +15,7 @@ import {
   type CoverBg,
   type CoverText,
 } from "@/lib/book/cover";
+import { createVoucher, markVoucherPaid, type GiftProductType } from "@/lib/gift/voucher";
 import type { Json } from "@/types/database";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -67,6 +68,18 @@ const InputSchema = z.object({
   tier: z.enum(["standard", "custom"]).optional(),
   questions: QuestionsSchema,
   shippingAddress: ShippingAddressSchema,
+  // Optional dárkový poukaz the buyer personalized in the gift flow. When
+  // present, a gift_vouchers row is created and linked to this order; the PDF
+  // becomes downloadable on the confirmation page once payment settles. Absent
+  // on the plain (non-gift) /kniha checkout — no voucher is minted then.
+  voucher: z
+    .object({
+      color: z.enum(coverBgValues).optional(),
+      recipient: z.string().trim().max(60).nullable().optional(),
+      message: z.string().trim().max(200).nullable().optional(),
+      signedBy: z.string().trim().max(60).nullable().optional(),
+    })
+    .optional(),
 });
 
 export type CreateGiftOrderInput = z.input<typeof InputSchema>;
@@ -155,6 +168,29 @@ export async function createGiftOrder(
     return { ok: false, error: "Objednávku se nepodařilo vytvořit. Zkuste to prosím znovu." };
   }
 
+  // 1b) Gift voucher (dárkový poukaz) — created unpaid and linked to the order
+  //     by id. Its high-entropy token threads to the confirmation page (download)
+  //     and into the Stripe metadata so the webhook can mark it paid. Best-effort:
+  //     a voucher failure must never block a paid order — the buyer can still get
+  //     the card from us by e-mail. Token is null when no voucher was configured.
+  const voucherProductType: GiftProductType =
+    baseProduct === "shop_book_standard" ? "shop_book_standard" : "shop_book_custom";
+  let voucherToken: string | null = null;
+  if (input.voucher) {
+    try {
+      const created = await createVoucher({
+        productType: voucherProductType,
+        color: input.voucher.color,
+        recipient: input.voucher.recipient ?? null,
+        message: input.voucher.message ?? null,
+        signedBy: input.voucher.signedBy ?? null,
+      });
+      voucherToken = created.token;
+    } catch (err) {
+      console.error("[shop] createGiftOrder voucher create failed (non-fatal)", err);
+    }
+  }
+
   // 2) Free path — activate instantly + confirm by e-mail. Works without Stripe
   //    (no STRIPE_SECRET_KEY needed) so the flow is testable before launch.
   if (priceCzk === 0) {
@@ -168,12 +204,22 @@ export async function createGiftOrder(
       return { ok: false, error: "Objednávku se nepodařilo dokončit. Zkuste to prosím znovu." };
     }
 
+    // Voucher is now a paid artifact → unlock the PDF download (gates on paid).
+    if (voucherToken) {
+      try {
+        await markVoucherPaid(voucherToken, order.id);
+      } catch (err) {
+        console.error("[shop] createGiftOrder free-path markVoucherPaid failed", err);
+      }
+    }
+
     const mail = shopGiftOrderConfirmationEmail({
       buyerName: input.buyerName,
       questionCount: total,
       amountCzk: 0,
       orderNumber: order.id.slice(0, 8),
       appUrl: SITE_URL,
+      voucherToken,
     });
     await sendEmail({
       to: input.buyerEmail,
@@ -183,7 +229,10 @@ export async function createGiftOrder(
       tag: "shop_gift_order",
     });
 
-    return { ok: true, orderId: order.id, redirect: "/kniha/hotovo" };
+    const redirect = voucherToken
+      ? `/kniha/hotovo?voucher=${encodeURIComponent(voucherToken)}`
+      : "/kniha/hotovo";
+    return { ok: true, orderId: order.id, redirect };
   }
 
   // 3) Paid path — Stripe guest checkout. The webhook flips the order to `paid`
@@ -220,8 +269,15 @@ export async function createGiftOrder(
       // custom recovery e-mail remains a possible upgrade later; the native
       // toggle is the lightest effective option for this pass.
       after_expiration: { recovery: { enabled: true } },
-      metadata: { productType: "shop_book", shopOrderId: order.id },
-      success_url: `${SITE_URL}/kniha/hotovo?order=${order.id}`,
+      metadata: {
+        productType: "shop_book",
+        shopOrderId: order.id,
+        // Threaded so the webhook can mark the voucher paid + e-mail its link.
+        ...(voucherToken ? { voucherToken } : {}),
+      },
+      success_url: voucherToken
+        ? `${SITE_URL}/kniha/hotovo?order=${order.id}&voucher=${encodeURIComponent(voucherToken)}`
+        : `${SITE_URL}/kniha/hotovo?order=${order.id}`,
       cancel_url: `${SITE_URL}/kniha/sestavit?cancelled=1`,
     });
     sessionUrl = session.url;

@@ -17,6 +17,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { saveReferralSource } from "@/lib/onboarding/actions";
 import { REFERRAL_SOURCES } from "@/lib/onboarding/referral";
+import { VoucherDownloadButton } from "@/components/gift/VoucherDownloadButton";
 
 export const metadata: Metadata = { title: "Jak jste se o nás dozvěděli?" };
 
@@ -35,9 +36,20 @@ const ICONS: Record<string, LucideIcon> = {
  * wordmark header), so it matches the rest of the flow. Saves to
  * families.referral_source; re-visiting once set bounces to the dashboard.
  */
-export default async function ReferralPage() {
+export default async function ReferralPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ voucher?: string }>;
+}) {
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
+
+  // Gift flow: the buyer just paid for the app as a gift and a dárkový poukaz is
+  // waiting. Surface its PDF download here (the post-payment screen). A 64-hex
+  // token only; the render route still gates on the voucher being paid.
+  const sp = await searchParams;
+  const voucherToken =
+    sp.voucher && /^[a-f0-9]{64}$/i.test(sp.voucher.trim()) ? sp.voucher.trim() : null;
 
   const admin = createAdminClient();
   const { data: family } = await admin
@@ -45,7 +57,9 @@ export default async function ReferralPage() {
     .select("referral_source")
     .eq("id", owner.familyId)
     .maybeSingle<{ referral_source: string | null }>();
-  if (family?.referral_source) redirect("/dashboard");
+  // Skip the (already-answered) referral question — but NOT when a voucher is
+  // waiting to be downloaded, or the buyer would never reach the PDF.
+  if (family?.referral_source && !voucherToken) redirect("/dashboard");
 
   return (
     <div className="space-y-10">
@@ -72,6 +86,27 @@ export default async function ReferralPage() {
           nejvíc sedí.
         </p>
       </div>
+
+      {/* Gift flow — the dárkový poukaz is ready to download. Honest framing:
+          we've set Vzpomínkář up; the poukaz is what the buyer prints + hands
+          over today. */}
+      {voucherToken ? (
+        <div className="editorial flex flex-col items-start gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-paper-100)] p-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-text-muted)]">
+              Dárkový poukaz
+            </p>
+            <p className="mt-1 max-w-[48ch] text-[15px] leading-relaxed text-[var(--color-text)]">
+              Nastavili jsme Vzpomínkář — váš dárkový poukaz je připravený. Stáhněte si ho jako PDF,
+              vytiskněte a předejte.
+            </p>
+          </div>
+          <VoucherDownloadButton
+            token={voucherToken}
+            className={cn(buttonVariants({ variant: "primary" }))}
+          />
+        </div>
+      ) : null}
 
       <form action={saveReferralSource} className="space-y-8">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

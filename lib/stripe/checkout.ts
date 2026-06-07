@@ -8,6 +8,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { markBookPaid, countPaidBooks } from "@/lib/books/server";
 import { getStripe, priceForProductCzk, discountedExtraCopyCzk } from "@/lib/stripe/server";
 import { validateCoupon, recordRedemptionOnce } from "@/lib/coupons/server";
+import { createVoucher, markVoucherPaid, parseVoucherConfig } from "@/lib/gift/voucher";
+import { setGiftVoucherToken, clearGiftCookie, readGiftState } from "@/lib/gift/cookie";
 import { SITE_URL } from "@/lib/site";
 import type Stripe from "stripe";
 import type { Json } from "@/types/database";
@@ -27,7 +29,11 @@ export async function purchaseBook(
   // server-side here (the client-typed code is never trusted to be valid, and
   // no client-sent discount amount is ever honoured). Applies ONLY to the base
   // line on the FIRST purchase — never the add-on, never the extra-copy bump.
-  opts: { extraCopy?: boolean; couponCode?: string } = {},
+  //
+  // giftVoucherToken: a dárkový poukaz the buyer configured on the paywall (gift
+  // flow). Threaded into the payment so the webhook can mark it paid + the
+  // confirmation screen can offer the PDF. Only meaningful on the base purchase.
+  opts: { extraCopy?: boolean; couponCode?: string; giftVoucherToken?: string } = {},
 ): Promise<never> {
   const admin = createAdminClient();
   const { data: book } = await admin
@@ -75,6 +81,17 @@ export async function purchaseBook(
   }
 
   const priceCzk = Math.max(0, baseListCzk - couponDiscountCzk);
+
+  // Gift voucher — only honoured on the FIRST (base) purchase, where the paywall
+  // shows the configurator. A non-empty token means the buyer personalized a
+  // poukaz; we thread it through payment and surface its PDF after. Cleared from
+  // the cookie once threaded so a later non-gift purchase can't re-attach it.
+  const giftVoucherToken = isFirst ? opts.giftVoucherToken?.trim() || null : null;
+  function zdrojUrl(): string {
+    return giftVoucherToken
+      ? `/onboarding/zdroj?voucher=${encodeURIComponent(giftVoucherToken)}`
+      : "/onboarding/zdroj";
+  }
 
   // Extra printed copy (the launch-discounted order bump). Only on the base
   // purchase, and only when the env-configured price is non-zero — otherwise it
@@ -128,10 +145,20 @@ export async function purchaseBook(
         productType,
       });
     }
+    // Gift voucher → mark paid (unlocks the PDF) + clear the marker. Best-effort.
+    if (giftVoucherToken) {
+      try {
+        await markVoucherPaid(giftVoucherToken, book.id);
+      } catch (err) {
+        console.error("[checkout] free-path markVoucherPaid failed", err);
+      }
+      await clearGiftCookie();
+    }
     revalidatePath("/dashboard");
     // After the first (base) purchase, ask the acquisition-attribution
-    // question; further volumes go straight back to the app.
-    redirect(isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1");
+    // question (carrying the voucher token so the screen can offer the PDF);
+    // further volumes go straight back to the app.
+    redirect(isFirst ? zdrojUrl() : "/dashboard?activated=1");
   }
 
   // Record the pending extra-copy order before redirecting to Stripe so it's not
@@ -230,8 +257,11 @@ export async function purchaseBook(
       ...(couponId
         ? { couponId, couponAmountOffCzk: String(couponDiscountCzk) }
         : {}),
+      // Gift voucher — threaded so the webhook marks it paid once the payment
+      // lands (the PDF download gates on paid).
+      ...(giftVoucherToken ? { voucherToken: giftVoucherToken } : {}),
     },
-    success_url: `${SITE_URL}${isFirst ? "/onboarding/zdroj" : "/dashboard?activated=1"}`,
+    success_url: `${SITE_URL}${isFirst ? zdrojUrl() : "/dashboard?activated=1"}`,
     cancel_url: `${SITE_URL}/onboarding/platba?cancelled=1`,
   });
 
@@ -258,6 +288,33 @@ export async function startBaseCheckout(formData?: FormData): Promise<never> {
 
   const owner = await requireOwner();
   if (!owner.familyId) redirect("/onboarding");
+
+  // Gift flow — when the paywall is in gift mode it submits the voucher
+  // configurator's hidden fields (voucher_*). Mint the dárkový poukaz now
+  // (unpaid) and stash its token in the gift cookie; purchaseBook threads it
+  // into the payment so the webhook/free path can mark it paid. Reuse a token
+  // already minted on a prior submit (e.g. a Stripe cancel → re-pay) so a
+  // re-attempt doesn't pile up vouchers. Best-effort: never block payment.
+  let giftVoucherToken: string | undefined;
+  if (formData) {
+    const { isGift, voucherToken: existing } = await readGiftState();
+    if (isGift) {
+      if (existing) {
+        giftVoucherToken = existing;
+      } else {
+        const config = parseVoucherConfig(formData);
+        if (config) {
+          try {
+            const created = await createVoucher({ productType: "book_base", ...config });
+            giftVoucherToken = created.token;
+            await setGiftVoucherToken(created.token);
+          } catch (err) {
+            console.error("[checkout] gift voucher create failed (non-fatal)", err);
+          }
+        }
+      }
+    }
+  }
   // NB: email verification is intentionally NOT gated here. It must not block
   // onboarding or payment — the owner verifies later from the in-app banner
   // once they're past the paywall and in the dashboard.
@@ -302,7 +359,7 @@ export async function startBaseCheckout(formData?: FormData): Promise<never> {
     }
   }
 
-  return await purchaseBook(bookId, { extraCopy, couponCode });
+  return await purchaseBook(bookId, { extraCopy, couponCode, giftVoucherToken });
 }
 
 /**

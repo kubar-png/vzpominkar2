@@ -2,7 +2,7 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Database } from "@/types/database";
-import type { CoverBg } from "@/lib/book/cover";
+import { COVER_BG, type CoverBg } from "@/lib/book/cover";
 
 /**
  * Gift-voucher data layer (service-role only).
@@ -121,3 +121,42 @@ export async function markVoucherPaid(token: string, orderRef: string): Promise<
     throw new Error(`Failed to mark voucher paid: ${error.message}`);
   }
 }
+
+const COVER_BG_VALUES = new Set<string>(COVER_BG.map((o) => o.value));
+
+/**
+ * Read the voucher configurator's fields off a submitted payload (FormData from
+ * the paywall, or a plain object from the guest-checkout actions). Both the
+ * client `VoucherConfigurator` (fieldPrefix mirror) and the order flows write
+ * the same shape: `${prefix}_color | _recipient | _message | _signed_by`.
+ *
+ * Returns null when no voucher fields are present — so a non-gift order never
+ * accidentally mints a voucher. Caller decides whether a voucher is expected.
+ */
+export function parseVoucherConfig(
+  source: FormData | Record<string, FormDataEntryValue | string | null | undefined>,
+  prefix = "voucher",
+): Omit<CreateVoucherInput, "productType"> | null {
+  const read = (key: string): string | null => {
+    const v = source instanceof FormData ? source.get(key) : source[key];
+    return typeof v === "string" ? v : null;
+  };
+
+  const rawColor = read(`${prefix}_color`);
+  const recipient = read(`${prefix}_recipient`);
+  const message = read(`${prefix}_message`);
+  const signedBy = read(`${prefix}_signed_by`);
+
+  // No fields at all → not a voucher submission.
+  if (rawColor == null && recipient == null && message == null && signedBy == null) {
+    return null;
+  }
+
+  const color: CoverBg =
+    rawColor && COVER_BG_VALUES.has(rawColor) ? (rawColor as CoverBg) : "navy";
+
+  return { color, recipient, message, signedBy };
+}
+
+/** The public download endpoint a confirmation screen POSTs the token to. */
+export const VOUCHER_DOWNLOAD_ENDPOINT = "/api/print/voucher";
