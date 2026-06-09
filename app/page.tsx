@@ -95,7 +95,7 @@ export default async function HomePage({
           : null;
 
   return (
-    <div className="editorial">
+    <div className="editorial home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -6464,3 +6464,43 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 @media (prefers-reduced-motion: reduce) {
   .vzp-switch, .vzp-switch-knob { transition: none; }
 }
+
+/* ─────────────────────────────────────────────────────────────
+ * Homepage media placeholders → very light / white fills
+ * Scoped to `.editorial.home` (the homepage root) on purpose, so the
+ * SHARED classes keep their original brown on other pages:
+ *   · .step-photo  also used on /jak-to-funguje
+ *   · .story-video, .avatar  also used on /o-nas
+ * Each rule mirrors the original brown gradient's shape/angle, just
+ * swapped to a warm near-white so it reads as "photo not added yet".
+ * Revert = delete this block + the `home` class on app/page.tsx root.
+ * ───────────────────────────────────────────────────────────── */
+.editorial.home .leaf-photo::before {
+  background: radial-gradient(ellipse at 30% 30%, #ffffff 0%, #f4f0e6 55%, #e7e1d3 95%);
+}
+.editorial.home .step-photo {
+  background: radial-gradient(ellipse at 35% 30%, #ffffff 0%, #f4f0e6 60%, #e7e1d3 95%);
+}
+/* Soften the dark bottom vignette so the box stays bright (no text sits on these). */
+.editorial.home .step-photo::after {
+  background: linear-gradient(transparent 70%, rgba(120, 108, 84, 0.10) 100%);
+}
+.editorial.home .story-photo {
+  background: radial-gradient(ellipse at 50% 35%, #ffffff 0%, #f4f0e6 50%, #e7e1d3 95%);
+}
+.editorial.home .story-photo.tone-2 { background: radial-gradient(ellipse at 40% 30%, #ffffff 0%, #f5f1e9 45%, #e9e3d6 90%); }
+.editorial.home .story-photo.tone-3 { background: radial-gradient(ellipse at 25% 35%, #ffffff 0%, #f3efe5 50%, #e6e0d2 95%); }
+.editorial.home .story-photo.tone-4 { background: radial-gradient(ellipse at 60% 25%, #ffffff 0%, #f6f2ea 45%, #eae4d8 90%); }
+/* Keep a faint grounding so the gold ▶ play button + role pill stay legible. */
+.editorial.home .story-photo::after {
+  background: linear-gradient(transparent 62%, rgba(60, 50, 34, 0.14) 100%);
+}
+.editorial.home .dark-card-photo {
+  background: radial-gradient(ellipse at 40% 35%, #ffffff 0%, #f1ede2 65%, #e4ddcf 100%);
+}
+.editorial.home .story-video {
+  background: linear-gradient(135deg, #ffffff 0%, #ece6d8 100%);
+}
+.editorial.home .avatar {
+  background: radial-gradient(ellipse at 30% 25%, #ffffff 0%, #e2dccc 85%);
+}
