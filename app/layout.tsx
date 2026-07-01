@@ -23,6 +23,8 @@ const hostGrotesk = Host_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  // Test round — keep the whole site out of search indexes.
+  robots: { index: false, follow: false, nocache: true },
   // No global `alternates.canonical` here — a layout-level canonical would make
   // every marketing subpage canonicalise to "/", so Google would treat them as
   // duplicates of the homepage. Each page sets its own `canonical(...)` instead.

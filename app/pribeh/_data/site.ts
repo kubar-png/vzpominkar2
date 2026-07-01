@@ -47,7 +47,7 @@ export const FOOTER_COLS: { title: string; links: { label: string; href: string 
     title: "O nás",
     links: [
       { label: "Náš příběh", href: "#" },
-      { label: "Kontakt", href: "mailto:ahoj@vzpominkar.cz" },
+      { label: "Kontakt", href: "mailto:ahoj@vzpominkar.com" },
       { label: "Novinky", href: "#" },
       { label: "Pro firmy", href: "#" },
     ],

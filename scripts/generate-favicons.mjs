@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 /**
- * Brand favicon (docs/brand): the off-white symbol on a navy rounded square.
+ * Brand favicon (docs/brand): the off-white symbol on a raspberry rounded square.
  * No gold, no brown — matches the new manual.
  *
  * Run with:  pnpm dlx tsx scripts/generate-favicons.mjs
@@ -26,8 +26,8 @@ function navyGradientSvg(size) {
     <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
       <defs>
         <linearGradient id="g" x1="50%" y1="0%" x2="50%" y2="100%">
-          <stop offset="0%" stop-color="#24395c"/>
-          <stop offset="100%" stop-color="#14243d"/>
+          <stop offset="0%" stop-color="#D24457"/>
+          <stop offset="100%" stop-color="#B52B40"/>
         </linearGradient>
       </defs>
       <rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}" fill="url(#g)"/>

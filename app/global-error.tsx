@@ -44,7 +44,7 @@ export default function GlobalError({
           Stránku se nepodařilo načíst.
         </h1>
         <p style={{ color: "#5b6270" }}>
-          Zkuste to prosím znovu. Pokud chyba zůstane, napište nám na ahoj@vzpominkar.cz.
+          Zkuste to prosím znovu. Pokud chyba zůstane, napište nám na ahoj@vzpominkar.com.
         </p>
         <button
           onClick={() => reset()}

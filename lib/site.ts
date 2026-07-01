@@ -7,10 +7,10 @@
  * safe to import from both Server and Client Components.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.cz"
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://vzpominkar.com"
 ).replace(/\/+$/, "");
 
-/** Bare host (no protocol, no trailing slash) for display, e.g. "vzpominkar.cz". */
+/** Bare host (no protocol, no trailing slash) for display, e.g. "vzpominkar.com". */
 export const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 
 /**

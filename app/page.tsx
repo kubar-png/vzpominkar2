@@ -73,7 +73,7 @@ const ORG_JSON_LD = {
     {
       "@type": "ContactPoint",
       contactType: "customer support",
-      email: "ahoj@vzpominkar.cz",
+      email: "ahoj@vzpominkar.com",
       areaServed: "CZ",
       availableLanguage: ["Czech"],
     },

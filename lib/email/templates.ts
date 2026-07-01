@@ -103,7 +103,7 @@ function shell(opts: {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td align="left" style="font-family:${BODY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.04em;">
-                Vzpomínkář &middot; Praha &middot; <a href="mailto:ahoj@vzpominkar.cz" style="color:${INK_SOFT};text-decoration:none;">ahoj@vzpominkar.cz</a>
+                Vzpomínkář &middot; Praha &middot; <a href="mailto:ahoj@vzpominkar.com" style="color:${INK_SOFT};text-decoration:none;">ahoj@vzpominkar.com</a>
               </td>
               <td align="right" style="font-family:${DISPLAY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.08em;">
                 Psáno i vyprávěno

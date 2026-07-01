@@ -7,7 +7,7 @@ import { FinalCta } from "@/components/landing/FinalCta";
 export const metadata: Metadata = {
   title: "Kontakt",
   description:
-    "Napište nám e-mailem na ahoj@vzpominkar.cz. Odpovídá člověk, ne robot. Telefonní podporu připravujeme.",
+    "Napište nám e-mailem na ahoj@vzpominkar.com. Odpovídá člověk, ne robot. Telefonní podporu připravujeme.",
   alternates: { canonical: canonical("/kontakt") },
 };
 
@@ -24,8 +24,8 @@ const CHANNELS = [
     n: "I",
     eyebrow: "Nejrychlejší",
     label: "E-mail",
-    value: "ahoj@vzpominkar.cz",
-    href: "mailto:ahoj@vzpominkar.cz" as string | null,
+    value: "ahoj@vzpominkar.com",
+    href: "mailto:ahoj@vzpominkar.com" as string | null,
     body: "Odpovídáme do jednoho pracovního dne, většinou do hodiny. Hodí se na konkrétní dotaz k účtu nebo objednávce.",
   },
   {
@@ -71,8 +71,8 @@ export default function KontaktPage() {
             čteme každou zprávu — i tu, která začíná „Vaše stránka se mi
             nelíbí, protože&hellip;“.
           </p>
-          <a href="mailto:ahoj@vzpominkar.cz" className="btn btn-gold hero-cta">
-            Napsat na ahoj@vzpominkar.cz <span className="arrow">↗</span>
+          <a href="mailto:ahoj@vzpominkar.com" className="btn btn-gold hero-cta">
+            Napsat na ahoj@vzpominkar.com <span className="arrow">↗</span>
           </a>
         </div>
       </section>
