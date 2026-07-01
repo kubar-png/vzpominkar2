@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Plus, Trash2 } from "lucide-react";
 import { savePhotoMemory } from "@/lib/memories/actions";
+import { plural } from "@/lib/format/czech-plural";
 
 const MAX_LONG_EDGE = 2560;
 const JPEG_QUALITY = 0.85;
@@ -207,7 +208,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
               {pending
                 ? "Nahráváme…"
                 : photos.length > 1
-                  ? `Uložit ${photos.length} fotek`
+                  ? `Uložit ${photos.length} ${plural(photos.length, ["fotku", "fotky", "fotek"])}`
                   : "Uložit fotku"}
               {!pending && <span className="arrow" aria-hidden>↗</span>}
             </button>

@@ -62,7 +62,7 @@ export default async function CredentialsPage() {
         </h1>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
           Vyberte uživatelské jméno a&nbsp;heslo, kterými se {seniorName} přihlásí.
-          Zapište si je nebo vytiskněte - uvidíte je hned po vytvoření,
+          Zapište si je nebo vytiskněte — uvidíte je hned po vytvoření,
           později jen vy je můžete změnit.
         </p>
       </div>

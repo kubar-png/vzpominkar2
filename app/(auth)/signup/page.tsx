@@ -63,7 +63,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
                   color: "rgba(237, 228, 207, 0.78)",
                 }}
               >
-                <strong style={{ color: "var(--gold)", fontWeight: 600 }}>
+                <strong style={{ color: "var(--footer-ink)", fontWeight: 600 }}>
                   {basePriceCzk.toLocaleString("cs-CZ")} Kč jednorázově
                 </strong>
                 <br />

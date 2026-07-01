@@ -80,8 +80,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         icons={{
           success: (
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden fill="none">
-              <polygon points="7,1 13,7 7,13 1,7" stroke="var(--color-gold-500)" strokeWidth="1.3" fill="var(--color-gold-100)" />
-              <path d="M4.5 7 L6.5 9 L9.5 5.5" stroke="var(--color-navy-900)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <polygon points="7,1 13,7 7,13 1,7" stroke="var(--color-success)" strokeWidth="1.3" fill="#e4f0e9" />
+              <path d="M4.5 7 L6.5 9 L9.5 5.5" stroke="var(--color-success)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
           ),
           error: (

@@ -9,7 +9,20 @@ export const metadata: Metadata = {
     "Přihlášení do účtu Vzpomínkáře. Otevřete e-mail s otázkami a poslechněte vyprávění.",
 };
 
-export default function LoginPage() {
+interface LoginPageProps {
+  searchParams: Promise<{ error?: string }>;
+}
+
+const ERROR_MESSAGES: Record<string, string> = {
+  callback_failed:
+    "Přihlášení přes odkaz se nezdařilo. Zkuste to prosím znovu, nebo se přihlaste e-mailem a heslem.",
+  profile_failed: "Při dokončení účtu se něco pokazilo. Zkuste to prosím znovu.",
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const errorMessage = params.error ? ERROR_MESSAGES[params.error] : undefined;
+
   return (
     <div className="editorial">
       <div className="senior-auth-mobile-bar">
@@ -41,6 +54,12 @@ export default function LoginPage() {
             <p className="auth-lede">
               Zadejte e-mail a&nbsp;heslo, kterými jste se zaregistrovali.
             </p>
+
+            {errorMessage ? (
+              <p role="alert" className="auth-alert">
+                {errorMessage}
+              </p>
+            ) : null}
 
             <LoginForm />
 

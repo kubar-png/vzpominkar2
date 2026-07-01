@@ -111,7 +111,7 @@ export default async function SeniorHomePage() {
       <div
         aria-hidden
         className="h-[2px] w-16 rounded-full"
-        style={{ background: "var(--gold)" }}
+        style={{ background: "var(--line)" }}
       />
 
       {/* Question card */}
@@ -166,7 +166,7 @@ export default async function SeniorHomePage() {
                 </span>
                 <div className="es-action-body">
                   <div className="es-action-title">Přidat fotku</div>
-                  <div className="es-action-meta">Vyfotit nebo vybrat ze galerie</div>
+                  <div className="es-action-meta">Vyfotit nebo vybrat z galerie</div>
                 </div>
                 <span className="es-action-arrow" aria-hidden>↗</span>
               </Link>

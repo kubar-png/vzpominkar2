@@ -194,7 +194,7 @@ export default async function BookPage({
 
       {/* Customize the cover — sold as a feature, not a buried link. The book
           ships with a leather-look binding; the owner picks the binding colour
-          and the foil (zlatá / stříbrná / černá) and sees it live on the book. */}
+          and the foil (světlá / tmavá / stříbrná) and sees it live on the book. */}
       {memories > 0 ? (
         <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white">
           <div className="grid items-center gap-6 p-6 md:grid-cols-[1fr_auto] md:gap-10 md:p-8">
@@ -207,7 +207,7 @@ export default async function BookPage({
                 Upravte si vzhled knihy
               </h2>
               <p className="max-w-[52ch] text-sm leading-relaxed text-[var(--color-text-muted)]">
-                Vyberte barvu vazby a ražby (zlatá, stříbrná nebo černá). Změnu
+                Vyberte barvu vazby a ražby (světlá, tmavá nebo stříbrná). Změnu
                 uvidíte hned na živém náhledu — kniha se ihned převlékne.
               </p>
               <div className="flex items-center gap-2 pt-1" aria-hidden>
@@ -386,7 +386,7 @@ function BookMock({ memories, ready }: { memories: number; ready: boolean }) {
 }
 
 /**
- * Small decorative book showing the included brown + gold binding, used beside
+ * Small decorative book showing the included navy binding with off-white foil, used beside
  * the "Upravte si vzhled knihy" feature copy. Purely illustrative — the live,
  * recolourable preview lives on the /book/preview page.
  */
@@ -400,9 +400,9 @@ function CoverSwatchBook() {
           background: `linear-gradient(135deg, ${hex}, color-mix(in srgb, ${hex} 78%, black))`,
         }}
       >
-        <span className="absolute inset-y-3 left-2 w-0.5 rounded-full bg-[var(--color-gold-500)]/70" />
-        <BookOpen size={26} className="text-[var(--color-gold-400)]/90" />
-        <span className="mt-1 h-px w-12 bg-[var(--color-gold-400)]/50" />
+        <span className="absolute inset-y-3 left-2 w-0.5 rounded-full bg-[#FEF7D7]/70" />
+        <BookOpen size={26} className="text-[#FEF7D7]/90" />
+        <span className="mt-1 h-px w-12 bg-[#FEF7D7]/50" />
       </div>
     </div>
   );

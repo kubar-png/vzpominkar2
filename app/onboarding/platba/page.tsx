@@ -218,7 +218,7 @@ export default async function ActivationPage({
                     : "Začít sbírat vzpomínky"}
                   <span
                     aria-hidden
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--card-navy)] text-[13px] font-semibold text-[var(--gold)]"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--card-navy)] text-[13px] font-semibold text-[var(--color-on-accent)]"
                   >
                     ↗
                   </span>

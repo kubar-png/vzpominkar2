@@ -16,7 +16,7 @@ export type CoverText = "black" | "gold" | "silver";
 
 export const COVER_BG: { value: CoverBg; label: string; hex: string }[] = [
   { value: "brown", label: "Tmavě modrá", hex: "#1B2E4D" },
-  { value: "navy", label: "Modrá", hex: "#1B2E4D" },
+  { value: "navy", label: "Modrá", hex: "#3B5C86" },
   { value: "red", label: "Malinová", hex: "#C33D50" },
   { value: "gold", label: "Světlá", hex: "#FEF7D7" },
 ];

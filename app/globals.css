@@ -1708,7 +1708,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .editorial .gift-img {
   aspect-ratio: 4/3;
-  background: linear-gradient(135deg, #f0d590 0%, #CF364C 50%, #8c6612 100%);
+  background: radial-gradient(ellipse at 35% 30%, #ffffff 0%, #f4f0e6 60%, #e7e1d3 95%);
   border-radius: 8px;
   position: relative;
 }
@@ -4191,9 +4191,9 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial .dark .testimonial h4 { color: var(--footer-ink); }
 .editorial .dark .testimonial blockquote { color: rgba(237, 228, 207, 0.75); }
 .editorial .dark .testimonial cite { color: rgba(237, 228, 207, 0.5); }
-.editorial .dark .btn-dark { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+.editorial .dark .btn-dark { background: var(--gold); color: #FEF7D7; border-color: var(--gold); }
 .editorial .dark .btn-dark:hover { background: var(--gold-soft); }
-.editorial .dark .btn-dark .arrow { background: var(--dark); color: var(--gold); }
+.editorial .dark .btn-dark .arrow { background: var(--dark); color: #FEF7D7; }
 .editorial .dark .btn-outline { border-color: var(--footer-ink); color: var(--footer-ink); }
 .editorial .dark .btn-outline:hover { background: var(--footer-ink); color: var(--dark); }
 .editorial .dark .btn-outline .arrow { background: var(--footer-ink); color: var(--dark); }
@@ -4758,8 +4758,8 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   color: var(--oxblood);
 }
 .editorial-senior .es-banner-success {
-  background: rgba(212, 160, 23, 0.10);
-  border: 1.5px solid rgba(212, 160, 23, 0.45);
+  background: rgba(27, 46, 77, 0.06);
+  border: 1.5px solid rgba(27, 46, 77, 0.25);
   color: var(--ink);
 }
 
@@ -5737,11 +5737,11 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial-senior .te-btn-gold:not(:disabled):hover { background: var(--gold-hover); border-color: var(--gold-hover); }
 .editorial-senior .te-btn-outline { color: var(--ink); border-color: var(--ink); }
 .editorial-senior .te-btn-outline:not(:disabled):hover { background: var(--ink); color: var(--bg); }
-.editorial-senior .te-btn-circle { background: var(--ink); color: var(--gold); }
+.editorial-senior .te-btn-circle { background: var(--ink); color: #FEF7D7; }
 .editorial-senior .te-revert { color: var(--ink-mute); }
 .editorial-senior .te-revert:hover { color: var(--oxblood); }
 .editorial-senior .te-error { color: var(--oxblood); }
-.editorial-senior .te-textarea:focus { box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.22); border-color: var(--ink); }
+.editorial-senior .te-textarea:focus { box-shadow: 0 0 0 3px rgba(207, 54, 76, 0.22); border-color: var(--ink); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Question Deck — paper-card slider section on the homepage
@@ -6255,15 +6255,15 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .cookie-bar-btn-gold {
   background: var(--gold-soft);
   border-color: var(--gold-soft);
-  color: var(--ink);
+  color: var(--color-on-accent);
   padding-right: 14px;
-  box-shadow: 0 8px 22px -10px rgba(212, 160, 23, 0.7);
+  box-shadow: 0 8px 22px -10px rgba(207, 54, 76, 0.45);
 }
 .cookie-bar-btn-gold:hover {
   background: var(--gold);
   border-color: var(--gold);
   transform: translateY(-1px);
-  box-shadow: 0 12px 26px -10px rgba(212, 160, 23, 0.8);
+  box-shadow: 0 12px 26px -10px rgba(207, 54, 76, 0.55);
 }
 @media (prefers-reduced-motion: reduce) {
   .cookie-bar-btn-gold:hover { transform: none; }
@@ -6275,7 +6275,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   height: 24px;
   border-radius: 50%;
   background: var(--ink);
-  color: var(--gold-soft);
+  color: var(--color-paper-50);
   font-size: 12px;
   font-weight: 600;
 }
@@ -6485,7 +6485,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 }
 .vzp-switch.is-on { background: var(--gold, #CF364C); }
 .vzp-switch:disabled { opacity: 0.6; cursor: default; }
-.vzp-switch:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.4); }
+.vzp-switch:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(207, 54, 76, 0.4); }
 .vzp-switch-knob {
   position: absolute;
   top: 2px;

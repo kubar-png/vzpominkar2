@@ -125,7 +125,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
       <div className="mx-5 mb-5 flex items-center gap-3">
         <span className="h-px flex-1 bg-[var(--color-paper-200)]/15" />
         <svg width="10" height="10" viewBox="0 0 8 8" aria-hidden fill="none">
-          <path d="M4 0.5 L7.5 4 L4 7.5 L0.5 4 Z" stroke="var(--color-gold-400)" strokeWidth="1" />
+          <path d="M4 0.5 L7.5 4 L4 7.5 L0.5 4 Z" stroke="var(--color-paper-200)" strokeOpacity="0.3" strokeWidth="1" />
         </svg>
         <span className="h-px flex-1 bg-[var(--color-paper-200)]/15" />
       </div>

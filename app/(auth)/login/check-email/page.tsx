@@ -19,13 +19,13 @@ export default function CheckEmailPage() {
           <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
           <div className="senior-auth-pitch">
             <h2>
-              Podívejte se
+              E-mail už
               <br />
-              do schránky.
+              letí k vám.
             </h2>
             <p>
-              Poslali jsme vám přihlašovací odkaz. Stačí na něj kliknout
-              a&nbsp;vrátit se sem.
+              Otevřete ho na počítači i&nbsp;v&nbsp;telefonu — odkaz zůstává
+              platný, i&nbsp;když tuto stránku zavřete.
             </p>
           </div>
           <p className="colophon">⁂ &nbsp; Kniha rodinné paměti</p>

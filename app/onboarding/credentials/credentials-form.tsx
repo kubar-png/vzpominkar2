@@ -88,7 +88,7 @@ export function CredentialsForm({ familyId, seniorDisplayName }: Props) {
               pattern="^[a-z][a-z0-9_.\-]{2,31}$"
             />
             <p className="text-xs text-[var(--color-text-muted)]">
-              Malá písmena, číslice a tečka, pomlčka, podtržítko. Žádné diakritiky - uživatelské jméno
+              Malá písmena, číslice a tečka, pomlčka, podtržítko. Žádné diakritiky — uživatelské jméno
               jde nadiktovat po telefonu i bez diakritiky.
             </p>
           </div>
@@ -106,7 +106,7 @@ export function CredentialsForm({ familyId, seniorDisplayName }: Props) {
               placeholder="Vyberte krátké heslo, které zvládne i bez brýlí"
             />
             <p className="text-xs text-[var(--color-text-muted)]">
-              Nebudeme ho šifrovat ve vašem prohlížeči - uvidíte ho jen vy. Zapište si ho nebo vytiskněte.
+              Nebudeme ho šifrovat ve vašem prohlížeči — uvidíte ho jen vy. Zapište si ho nebo vytiskněte.
             </p>
           </div>
         </CardContent>
@@ -136,7 +136,7 @@ function Handoff({ creds }: { creds: { username: string; password: string; displ
       <Card className="overflow-hidden border-[var(--color-navy-200)] bg-[var(--color-navy-50)]">
         <CardContent className="space-y-4 p-7">
           <p className="text-sm uppercase tracking-wider text-[var(--color-text-subtle)]">
-            Hotovo - přístup je připraven
+            Hotovo — přístup je připraven
           </p>
           <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-[var(--color-navy-900)]">
             Předejte tento lísteček {creds.displayName ? creds.displayName : "seniorovi"}.
@@ -148,26 +148,26 @@ function Handoff({ creds }: { creds: { username: string; password: string; displ
         </CardContent>
       </Card>
 
-      {/* "Show once" gold alert — emphasises the one-time reveal */}
-      <div className="rounded-[var(--radius-md)] border border-[var(--color-gold-300)] bg-[var(--color-gold-50)] p-4 print:hidden">
+      {/* "Show once" info callout — neutral navy treatment, not an error */}
+      <div className="rounded-[var(--radius-md)] border border-[var(--color-navy-200)] bg-[var(--color-navy-50)] p-4 print:hidden">
         <div className="flex items-center gap-2">
           <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
-            <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-gold-500)" strokeWidth="1" />
+            <polygon points="4,0.5 7.5,4 4,7.5 0.5,4" stroke="var(--color-navy-700)" strokeWidth="1" />
           </svg>
-          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-gold-600)]">
+          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-[var(--color-navy-800)]">
             Heslo se zobrazí jen jednou
           </span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-text)]">
           Vytiskněte si lísteček nebo si přihlašovací údaje opište teď. Po pokračování
-          už heslo neuvidíte - v Nastavení rodiny ho lze vygenerovat znovu.
+          už heslo neuvidíte — v Nastavení rodiny ho lze vygenerovat znovu.
         </p>
       </div>
 
       <Card className="border-[var(--color-paper-300)] bg-[var(--color-surface)] print:shadow-none">
         <CardContent className="space-y-4 p-7">
           <h3 className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-[var(--color-navy-900)]">
-            Vzpomínkář - váš přístup
+            Vzpomínkář — váš přístup
           </h3>
           <p className="text-[var(--color-text-muted)]">
             Otevřete na adrese{" "}

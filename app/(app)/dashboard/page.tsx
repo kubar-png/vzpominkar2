@@ -96,7 +96,7 @@ export default async function DashboardPage() {
     ? (onlySenior.displayName.split(/\s+/)[0] || onlySenior.displayName)
     : null;
   const description = firstName
-    ? `Co ${firstName} zatím vyprávěl${firstName.endsWith("a") || firstName.endsWith("á") ? "a" : ""}.`
+    ? `Co ${firstName} zatím vyprávěl${onlySeniorGender === "female" ? "a" : ""}.`
     : seniors.length > 1
       ? "Co vaši blízcí zatím vyprávěli."
       : "Tady se objeví vzpomínky, jakmile začne první vyprávění.";

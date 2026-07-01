@@ -171,7 +171,7 @@ export default function JakToFungujePage() {
               jste možná nikdy neslyšeli.
             </p>
           </div>
-          <QuestionDeck questions={DECK_QUESTIONS} totalCount={300} />
+          <QuestionDeck questions={DECK_QUESTIONS} totalCount={200} />
         </div>
       </section>
 

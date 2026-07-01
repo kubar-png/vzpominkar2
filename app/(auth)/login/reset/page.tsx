@@ -21,9 +21,9 @@ export default function ResetRequestPage() {
           <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
           <div className="senior-auth-pitch">
             <h2>
-              Pošleme vám
+              Nové heslo
               <br />
-              odkaz.
+              za pár minut.
             </h2>
             <p>
               Zadejte e-mail, kterým jste se registrovali — během pár minut

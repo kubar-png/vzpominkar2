@@ -39,6 +39,19 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
   if (!voucher) notFound();
 
   const bg = COVER_BG_HEX[voucher.color as CoverBg] ?? COVER_BG_HEX.navy;
+  // Derive the copy + frame colours from the chosen card colour so the printed
+  // PDF stays legible and matches the on-screen preview (VoucherConfigurator):
+  //   • light "gold" card    → navy ink copy, keep the raspberry frame/rule
+  //   • raspberry "red" card → off-white copy AND off-white frame/rule (never navy)
+  //   • dark "brown"/"navy" cards → off-white copy + raspberry frame/rule (unchanged)
+  // text = recipient/message/personal/signed/brand, accent = frame border + rule.
+  const VOUCHER_PALETTE: Record<CoverBg, { text: string; accent: string }> = {
+    brown: { text: "#FEF7D7", accent: "#CF364C" },
+    navy: { text: "#FEF7D7", accent: "#CF364C" },
+    red: { text: "#FEF7D7", accent: "#FEF7D7" },
+    gold: { text: "#1B2E4D", accent: "#CF364C" },
+  };
+  const { text, accent } = VOUCHER_PALETTE[voucher.color as CoverBg] ?? VOUCHER_PALETTE.navy;
   // Voucher carries no buyer gender → slash fallback ("koupil/a").
   const gender: Gender | null = null;
   const line2 = resolveGender(MESSAGE_LINE_2, gender);
@@ -77,7 +90,7 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               width: 100%;
               height: 100%;
               box-sizing: border-box;
-              border: 1.4mm solid #CF364C;
+              border: 1.4mm solid ${accent};
               border-radius: 2mm;
               padding: 12mm 14mm;
               display: flex;
@@ -85,12 +98,12 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               align-items: center;
               justify-content: center;
               text-align: center;
-              color: #FEF7D7;
+              color: ${text};
             }
             .voucher-recipient {
               font-family: var(--font-display-loaded), "Bree Serif", "Palatino Linotype", Georgia, serif;
               font-size: 16pt;
-              color: #FEF7D7;
+              color: ${text};
               margin: 0 0 6mm;
             }
             .voucher-message {
@@ -98,28 +111,28 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               font-size: 26pt;
               line-height: 1.3;
               margin: 0;
-              color: #FEF7D7;
+              color: ${text};
             }
             .voucher-message span { display: block; }
             .voucher-personal {
               font-family: var(--font-sans-loaded), "Host Grotesk", Georgia, "Times New Roman", serif;
               font-size: 13pt;
               line-height: 1.5;
-              color: #FEF7D7;
+              color: ${text};
               margin: 8mm 0 0;
               max-width: 150mm;
             }
             .voucher-rule {
               width: 26mm;
               height: 0.5mm;
-              background: #CF364C;
+              background: ${accent};
               margin: 9mm 0 6mm;
               border: 0;
             }
             .voucher-signed {
               font-family: var(--font-sans-loaded), "Host Grotesk", Georgia, "Times New Roman", serif;
               font-size: 12pt;
-              color: #FEF7D7;
+              color: ${text};
               margin: 0;
             }
             .voucher-brand {
@@ -127,7 +140,7 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               font-size: 10pt;
               letter-spacing: 0.18em;
               text-transform: uppercase;
-              color: #FEF7D7;
+              color: ${text};
               margin: 10mm 0 0;
             }
           `,

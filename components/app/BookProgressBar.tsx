@@ -52,10 +52,10 @@ export function BookProgressBar({ count, familyId }: BookProgressBarProps) {
         />
         {/* Gold milestone marker at 30/52 */}
         <div
-          className="absolute top-1/2 h-4 w-0.5 -translate-y-1/2 bg-[var(--color-gold-400)]"
+          className="absolute top-1/2 h-4 w-0.5 -translate-y-1/2 bg-[var(--color-navy-400)]"
           style={{ left: `${milestonePct}%` }}
         >
-          <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.2em] text-[var(--color-gold-400)]">
+          <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
             Min.
           </span>
         </div>

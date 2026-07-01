@@ -325,7 +325,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
               <button
                 type="button"
                 onClick={onSaveEdit}
-                className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--color-gold-500)] px-5 text-sm font-semibold text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)]"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--color-accent)] px-5 text-sm font-semibold text-[var(--color-on-accent)] transition-colors hover:bg-[var(--color-accent-hover)]"
               >
                 Uložit úpravy
                 <span aria-hidden>↗</span>

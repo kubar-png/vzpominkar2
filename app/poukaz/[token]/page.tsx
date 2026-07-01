@@ -37,7 +37,6 @@ export default async function PoukazPage({
     <Shell stickyMobileCta={false}>
       <section className="hero" style={{ minHeight: "70vh", display: "grid", placeItems: "center" }}>
         <div className="container" style={{ maxWidth: "620px" }}>
-          <span className="eyebrow">Dárkový poukaz</span>
           <h1 style={{ maxWidth: "20ch", margin: "0 auto 20px" }}>Váš poukaz je připravený.</h1>
           <p className="lede">
             Stáhněte si dárkový poukaz jako PDF, vytiskněte ho a předejte. Vejde se na formát

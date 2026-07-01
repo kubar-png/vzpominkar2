@@ -33,6 +33,9 @@ import {
 
 const GIFTWRAP_CZK = 290;
 
+const defaultCoverLabel =
+  COVER_BG.find((o) => o.value === DEFAULT_COVER_BG)?.label ?? "Tmavě modrá";
+
 // Honest, paper-product reassurances (no app / "přístup napořád" promises — this
 // book has no account). Shown in the navy rail on desktop, inline on mobile.
 const TRUST = [
@@ -235,7 +238,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
             {/* Cover folded away by default — hnědá is in the price, so most
                 buyers never open it (and the brown default is the common pick). */}
             <details className="co-collapse">
-              <summary>Změnit barvu přebalu — hnědá v ceně</summary>
+              <summary>{`Změnit barvu přebalu — ${defaultCoverLabel.toLowerCase()} v ceně`}</summary>
               <div className="co-collapse-body">
                 <div className="co-swatches">
                   {COVER_BG.map((o) => (
@@ -278,7 +281,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
                 <p className="co-note" style={{ marginLeft: 0 }}>
                   {isTestFree
                     ? "V testovací verzi je vše zdarma"
-                    : `Hnědá je v ceně · ostatní barvy +${COVER_PREMIUM_CZK} Kč`}
+                    : `${defaultCoverLabel} je v ceně · ostatní barvy +${COVER_PREMIUM_CZK} Kč`}
                 </p>
               </div>
             </details>

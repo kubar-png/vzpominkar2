@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { type CSSProperties, useId, useState } from "react";
 import { resolveGender, type Gender } from "@/lib/gender";
 import { COVER_BG, COVER_BG_HEX, type CoverBg } from "@/lib/book/cover";
 
@@ -50,6 +50,22 @@ export interface VoucherConfig {
 }
 
 export const DEFAULT_VOUCHER_COLOR: CoverBg = "navy";
+
+/**
+ * Per-background legibility palette — mirrors the book cover's isLegibleCover /
+ * defaultTextFor logic (lib/book/cover.ts) so the FIXED voucher copy and frame
+ * never disappear into a buyer-chosen card colour:
+ *   • light "gold" (Světlá) card    → navy ink for the copy, keep the raspberry frame/accents
+ *   • raspberry "red" (Malinová) card → off-white copy AND off-white frame/accents (never navy)
+ *   • dark "brown"/"navy" cards      → off-white copy + raspberry accents (unchanged)
+ * text = message/recipient, textSoft = personal/signed, accent = eyebrow/brand/frame/rule.
+ */
+const VOUCHER_PALETTE: Record<CoverBg, { text: string; textSoft: string; accent: string }> = {
+  brown: { text: "#FEF7D7", textSoft: "#FEF9E3", accent: "#CF364C" },
+  navy: { text: "#FEF7D7", textSoft: "#FEF9E3", accent: "#CF364C" },
+  red: { text: "#FEF7D7", textSoft: "#FEF9E3", accent: "#FEF7D7" },
+  gold: { text: "#1B2E4D", textSoft: "#1B2E4D", accent: "#CF364C" },
+};
 
 /** Trim to null so blank inputs never store "". Mirrors lib/gift/voucher clean(). */
 function clean(value: string): string | null {
@@ -108,6 +124,15 @@ export function VoucherConfigurator({
   }
 
   const bgHex = COVER_BG_HEX[color] ?? COVER_BG_HEX.navy;
+  const palette = VOUCHER_PALETTE[color] ?? VOUCHER_PALETTE.navy;
+  // Drive the scoped styles from CSS custom properties so the text/frame colours
+  // track the chosen background (legible on light + raspberry cards alike).
+  const cardStyle = {
+    background: bgHex,
+    "--vc-text": palette.text,
+    "--vc-text-soft": palette.textSoft,
+    "--vc-accent": palette.accent,
+  } as CSSProperties;
   const line2 = resolveGender(MESSAGE_LINE_2, VOUCHER_GENDER);
 
   const previewRecipient = recipient.trim() || null;
@@ -121,7 +146,7 @@ export function VoucherConfigurator({
       <div className="vc-preview-wrap">
         <div
           className="vc-card"
-          style={{ background: bgHex }}
+          style={cardStyle}
           role="img"
           aria-label="Náhled dárkového poukazu"
         >
@@ -262,10 +287,12 @@ export function VoucherConfigurator({
       ) : null}
 
       {/* Scoped styles — editorial tokens reused (--gold, --ink, fonts); the
-          preview mirrors print/voucher (raspberry #CF364C frame, off-white
-          #FEF7D7 text). Type scales with the card via container-query units so it
-          stays A5-proportioned at any width. Nothing here touches global brand
-          sections. */}
+          preview mirrors print/voucher. Copy + frame colours come from the
+          --vc-text / --vc-text-soft / --vc-accent custom properties set per card
+          colour (VOUCHER_PALETTE) so they stay legible on the light and raspberry
+          cards, not just the dark ones. Type scales with the card via
+          container-query units so it stays A5-proportioned at any width. Nothing
+          here touches global brand sections. */}
       <style>{`
         /* The shell is the query container. .vc switches to two columns based on
            the SHELL's own width — never the viewport — so inside the ~520px gift
@@ -299,7 +326,7 @@ export function VoucherConfigurator({
           width: 100%;
           height: 100%;
           box-sizing: border-box;
-          border: 0.7cqw solid #CF364C;
+          border: 0.7cqw solid var(--vc-accent, #CF364C);
           border-radius: 1cqw;
           padding: 5.5cqw 6.5cqw;
           display: flex;
@@ -307,7 +334,7 @@ export function VoucherConfigurator({
           align-items: center;
           justify-content: center;
           text-align: center;
-          color: #FEF7D7;
+          color: var(--vc-text, #FEF7D7);
           overflow: hidden;
         }
         .vc-eyebrow {
@@ -315,14 +342,14 @@ export function VoucherConfigurator({
           font-size: 2.6cqw;
           letter-spacing: 0.32em;
           text-transform: uppercase;
-          color: #CF364C;
+          color: var(--vc-accent, #CF364C);
           margin: 0 0 3.6cqw;
         }
         .vc-recipient {
           font-family: var(--font-display-editorial);
           font-weight: 600;
           font-size: 4.2cqw;
-          color: #FEF7D7;
+          color: var(--vc-text, #FEF7D7);
           margin: 0 0 2.6cqw;
           max-width: 100%;
           overflow-wrap: anywhere;
@@ -332,14 +359,14 @@ export function VoucherConfigurator({
           font-size: 6.4cqw;
           line-height: 1.3;
           margin: 0;
-          color: #FEF7D7;
+          color: var(--vc-text, #FEF7D7);
         }
         .vc-message span { display: block; }
         .vc-personal {
           font-family: var(--font-body-editorial);
           font-size: 3.2cqw;
           line-height: 1.5;
-          color: #FEF9E3;
+          color: var(--vc-text-soft, #FEF9E3);
           margin: 3.6cqw 0 0;
           max-width: 72cqw;
           overflow-wrap: anywhere;
@@ -348,14 +375,14 @@ export function VoucherConfigurator({
           width: 12.5cqw;
           height: 0.24cqw;
           min-height: 1px;
-          background: #CF364C;
+          background: var(--vc-accent, #CF364C);
           margin: 4cqw 0 2.6cqw;
           border: 0;
         }
         .vc-signed {
           font-family: var(--font-body-editorial);
           font-size: 3cqw;
-          color: #FEF9E3;
+          color: var(--vc-text-soft, #FEF9E3);
           margin: 0;
           max-width: 100%;
           overflow-wrap: anywhere;
@@ -365,7 +392,7 @@ export function VoucherConfigurator({
           font-size: 2.4cqw;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #CF364C;
+          color: var(--vc-accent, #CF364C);
           margin: 4.6cqw 0 0;
         }
         .vc-hint {

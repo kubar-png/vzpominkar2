@@ -17,19 +17,19 @@ const FORBES_TESTIMONIALS = [
   {
     title: "Z povinnosti se stal rituál",
     quote:
-      "„Táta se těší na sobotní otázku jako na seriál. Vařím kafe a poslouchám, jak vypráví o vojně v Olomouci.”",
+      "„Táta se těší na sobotní otázku jako na seriál. Vařím kafe a poslouchám, jak vypráví o vojně v Olomouci.“",
     author: "Pavla W., dcera",
   },
   {
     title: "Hodiny jejího hlasu",
     quote:
-      "„Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny — a knihu, kterou děti otevřou kdykoliv.”",
+      "„Babička loni odešla. Neměla jsem po ní jediný záznam. Dneska mám hodiny — a knihu, kterou děti otevřou kdykoliv.“",
     author: "Jana M., dcera",
   },
   {
     title: "Pohádka místo pohádky",
     quote:
-      "„Holky si pouští babiččin hlas na dobrou noc. Vyprávění o tom, jak se v padesátých letech bruslilo na Lužánkách.”",
+      "„Holky si pouští babiččin hlas na dobrou noc. Vyprávění o tom, jak se v padesátých letech bruslilo na Lužánkách.“",
     author: "Marie V., matka dvou dcer",
   },
 ] as const;
@@ -344,7 +344,7 @@ export default async function HomePage({
         <section className="feature-quote dark">
           <div className="container">
             <blockquote data-reveal data-reveal-delay-100>
-              „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&rdquo;
+              „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&ldquo;
             </blockquote>
             <div className="feature-attr" data-reveal data-reveal-delay-200>— Forbes CZ, podzim 2026</div>
             <div data-reveal data-reveal-delay-300>
@@ -433,7 +433,7 @@ export default async function HomePage({
                 <div className="story-body">
                   <blockquote>
                     „Bylo to jako otevřít zásuvku, kterou jsem padesát let
-                    nezavřela.&rdquo;
+                    nezavřela.&ldquo;
                   </blockquote>
                   <cite>Marie V., 78 let, Třebíč</cite>
                 </div>
@@ -445,7 +445,7 @@ export default async function HomePage({
                 <div className="story-body">
                   <blockquote>
                     „Máma poprvé v životě něco používá sama. A těší se na
-                    pondělí.&rdquo;
+                    pondělí.&ldquo;
                   </blockquote>
                   <cite>Jana M., dcera, Brno</cite>
                 </div>
@@ -456,7 +456,7 @@ export default async function HomePage({
                 </div>
                 <div className="story-body">
                   <blockquote>
-                    „Táta nic nepíše. Ale když má vyprávět, nezavře pusu.&rdquo;
+                    „Táta nic nepíše. Ale když má vyprávět, nezavře pusu.&ldquo;
                   </blockquote>
                   <cite>Pavla W., dcera, Plzeň</cite>
                 </div>
@@ -468,7 +468,7 @@ export default async function HomePage({
                 <div className="story-body">
                   <blockquote>
                     „Holky si pouští babiččin hlas na dobrou noc. Místo
-                    pohádky.&rdquo;
+                    pohádky.&ldquo;
                   </blockquote>
                   <cite>Petra K., matka, Praha</cite>
                 </div>

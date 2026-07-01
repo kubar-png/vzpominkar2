@@ -90,8 +90,9 @@ export default function CookiesPage() {
       </p>
       <ul>
         <li>
-          Klikněte na odkaz „Cookies“ v&nbsp;patičce a&nbsp;poté na tlačítko
-          „Upravit volbu“ (chystáme do dalšího vydání).
+          Volbu lze kdykoliv změnit tak, že smažete cookies a&nbsp;localStorage
+          tohoto webu v&nbsp;nastavení soukromí prohlížeče &mdash; lišta se
+          souhlasem se pak při další návštěvě objeví znovu.
         </li>
         <li>
           Cookies lze také smazat přímo v&nbsp;prohlížeči &mdash; všechny

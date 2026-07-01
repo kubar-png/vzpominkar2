@@ -185,9 +185,11 @@ export function FeedbackFlow() {
   const selectOther = useCallback(() => {
     clearTimer();
     setOtherMode((m) => ({ ...m, [q.id]: true }));
-    setValue(q.id, typeof value === "string" ? value : "");
+    const isOptionSlug =
+      typeof value === "string" && (q.options ?? []).some((o) => o.value === value);
+    setValue(q.id, typeof value === "string" && !isOptionSlug ? value : "");
     window.setTimeout(() => otherInputRef.current?.focus(), 0);
-  }, [clearTimer, q.id, setValue, value]);
+  }, [clearTimer, q.id, q.options, setValue, value]);
 
   // ── keyboard ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -322,7 +324,7 @@ export function FeedbackFlow() {
                   </button>
                 )}
 
-                {!isLast && canAdvance && status !== "submitting" && (
+                {!isLast && canAdvance && status !== "submitting" && q.kind !== "text" && (
                   <span className="hidden text-[13px] text-[var(--color-text-subtle)] sm:inline">
                     stiskněte Enter ↵
                   </span>

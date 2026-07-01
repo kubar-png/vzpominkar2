@@ -1,5 +1,6 @@
 import "server-only";
 import { resolveGender, type Gender } from "@/lib/gender";
+import { plural } from "@/lib/format/czech-plural";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -422,14 +423,14 @@ export function newMemoryNotificationEmail(input: {
   const subject =
     input.count === 1
       ? `Nová vzpomínka od ${input.seniorDisplayName}`
-      : `${input.count} nových vzpomínek od ${input.seniorDisplayName}`;
+      : `${input.count} ${plural(input.count, ["nová vzpomínka", "nové vzpomínky", "nových vzpomínek"])} od ${input.seniorDisplayName}`;
   const ctaUrl = `${input.appUrl}/dashboard`;
 
   const added = resolveGender("{přidal|přidala}", input.seniorGender ?? null);
   const headline =
     input.count === 1
       ? `${input.seniorDisplayName} ${added} novou vzpomínku.`
-      : `${input.seniorDisplayName} ${added} ${input.count} nových vzpomínek.`;
+      : `${input.seniorDisplayName} ${added} ${input.count} ${plural(input.count, ["novou vzpomínku", "nové vzpomínky", "nových vzpomínek"])}.`;
 
   const html = shell({
     title: subject,
@@ -783,7 +784,7 @@ export function leadWelcomeEmail() {
       <p style="margin:0 0 14px 0;">
         Vzpomínkář je pomalý, laskavý způsob, jak zachytit příběh někoho blízkého &mdash;
         jedna otázka týdně, žádný spěch, žádná aplikace k učení. Na konci je hotová
-        hardcover Kniha vzpomínek, kterou si necháte vytisknout a předáte dál.
+        Kniha vzpomínek v pevné vazbě, kterou si necháte vytisknout a předáte dál.
       </p>
       <p style="margin:0 0 24px 0;">
         Připravili jsme pro vás <strong>slevu 200 Kč</strong> na první knihu. Tlačítkem níže
@@ -812,7 +813,7 @@ export function leadWelcomeEmail() {
   const text = [
     "Děkujeme za zájem.",
     "",
-    "Vzpomínkář je pomalý, laskavý způsob, jak zachytit příběh někoho blízkého — jedna otázka týdně, žádný spěch, žádná aplikace k učení. Na konci je hotová hardcover Kniha vzpomínek, kterou si necháte vytisknout a předáte dál.",
+    "Vzpomínkář je pomalý, laskavý způsob, jak zachytit příběh někoho blízkého — jedna otázka týdně, žádný spěch, žádná aplikace k učení. Na konci je hotová Kniha vzpomínek v pevné vazbě, kterou si necháte vytisknout a předáte dál.",
     "",
     "Připravili jsme pro vás slevu 200 Kč na první knihu. Odkazem níže přejdete rovnou k objednávce a kód se přidá za vás.",
     "",

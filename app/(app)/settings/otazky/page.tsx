@@ -64,7 +64,7 @@ export default async function OtazkySettingsPage() {
           action={
             <Link
               href={`/family/${owner.familyId}/rodina`}
-              className="inline-flex h-10 items-center rounded-full bg-[var(--color-gold-500)] px-5 text-sm font-semibold text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-gold-400)]"
+              className="inline-flex h-10 items-center rounded-full bg-[var(--color-accent)] px-5 text-sm font-semibold text-[var(--color-on-accent)] transition-colors hover:bg-[var(--color-accent-hover)]"
             >
               Přidat blízkého
               <span aria-hidden className="ml-1">↗</span>
