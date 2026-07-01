@@ -367,48 +367,39 @@ export function weeklyReminderEmail(input: {
    */
   actionUrl?: string;
 }) {
-  const subject = "Tento týden vám rodina poslala otázku";
+  const subject = "Vaše rodina vám právě poslala otázku";
   const primaryUrl = input.actionUrl ?? `${input.appUrl}/senior-login`;
+  const firstName = (input.seniorDisplayName.split(/\s+/)[0] ?? input.seniorDisplayName).trim();
 
   const html = shell({
     title: subject,
     preheader: input.question,
     bodySize: 18,
     body: `
-      ${h1(`Dobrý den, ${input.seniorDisplayName}.`)}
-      <p style="margin:0 0 18px 0;">
-        Tento týden vám rodina poslala otázku. Když si na ni vzpomenete, můžete odpovědět hlasem
-        nebo písmem &mdash; jak je vám pohodlnější.
+      ${h1(`Dobrý den, ${firstName}.`)}
+      <p style="margin:0 0 32px 0;">
+        Vaši rodinu zajímá další váš příběh a poslali vám otázku. Odpovíte na ni jednoduše
+        kliknutím na růžové tlačítko níže.
       </p>
 
-      <blockquote style="margin:24px 0;padding:22px 24px;background:${QUOTE_BG};border-left:3px solid ${OXBLOOD};border-radius:8px;font-family:${DISPLAY_FONT};font-size:22px;line-height:1.4;color:${INK};">
-        &bdquo;${esc(input.question)}&ldquo;
-      </blockquote>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px 0;">
+        <tr><td style="padding:28px 30px;background:${QUOTE_BG};border-left:4px solid ${OXBLOOD};border-radius:10px;font-family:${DISPLAY_FONT};font-size:26px;line-height:1.4;color:${INK};">
+          &bdquo;${esc(input.question)}&ldquo;
+        </td></tr>
+      </table>
 
-      <p style="margin:0 0 8px 0;">${cta("Odpovědět hlasem", primaryUrl)}</p>
-      <p style="margin:14px 0 0 0;font-size:15px;color:${INK_SOFT};">
-        Nebo napište písmem &mdash; stejným odkazem.
-      </p>
-      ${HR}
-      <p style="margin:0;font-size:15px;color:${INK_SOFT};">
-        Není kam spěchat. Stačí, když odpovíte do neděle.
-      </p>
-      ${signoff()}
+      <p style="margin:0;">${cta("Vyprávět příběh", primaryUrl)}</p>
     `,
   });
 
   const text = [
-    `Dobrý den, ${input.seniorDisplayName}.`,
+    `Dobrý den, ${firstName}.`,
     "",
-    "Tento týden vám rodina poslala otázku. Když si na ni vzpomenete, můžete odpovědět hlasem nebo písmem — jak je vám pohodlnější.",
+    "Vaši rodinu zajímá další váš příběh a poslali vám otázku. Odpovíte na ni jednoduše kliknutím na tlačítko níže.",
     "",
     `„${input.question}"`,
     "",
-    `Odpovědět: ${primaryUrl}`,
-    "",
-    "Není kam spěchat. Stačí, když odpovíte do neděle.",
-    "",
-    "Kuba a tým Vzpomínkáře",
+    `Vyprávět příběh: ${primaryUrl}`,
   ].join("\n");
 
   return { subject, html, text };

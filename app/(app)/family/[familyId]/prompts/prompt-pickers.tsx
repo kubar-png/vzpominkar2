@@ -62,7 +62,7 @@ export function PromptPickers({
       <section className="space-y-4">
         <SectionHeading
           title="Knihovna otázek"
-          subtitle="Vyberte z připravených otázek - každá se zařadí do fronty (po týdnu)."
+          subtitle="Vyberte z připravených otázek — odešlete je hned, nebo je přidejte do fronty."
         />
         <LibraryPicker familyId={familyId} groups={groups} seniorIds={selectedIds} />
       </section>

@@ -63,7 +63,9 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
       ? `${audioHours} h ${audioMinutes} min`
       : audioMinutes > 0
         ? `${audioMinutes} min`
-        : "—";
+        : stats.audioSecondsTotal > 0
+          ? `${stats.audioSecondsTotal} s`
+          : "—";
 
   return (
     <aside className="vzp-stats-aside" aria-label="Statistiky rodiny">
@@ -88,7 +90,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
         ) : (
           <header className="vzp-stats-hero">
             <p className="vzp-stats-num-hero">
-              {stats.memoryCount} <span>{plural(stats.memoryCount, ["vzpomínku", "vzpomínky", "vzpomínek"])}</span>
+              {stats.memoryCount} <span>{plural(stats.memoryCount, ["vzpomínka", "vzpomínky", "vzpomínek"])}</span>
             </p>
             <p className="vzp-stats-hero-sub">v knize</p>
           </header>
@@ -116,10 +118,10 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
             </span>
           </li>
           <li>
-            <span className="vzp-stats-num">{stats.weeksSinceStart}.</span>
-            <span className="vzp-stats-label">
-              {plural(stats.weeksSinceStart, ["týden", "týdny", "týdnů"])} vašeho sběru
+            <span className="vzp-stats-num">
+              {stats.daysSinceStart} {plural(stats.daysSinceStart, ["den", "dny", "dní"])}
             </span>
+            <span className="vzp-stats-label">vzpomínky sbíráte</span>
           </li>
           {stats.weekStreak >= 2 ? (
             <li>

@@ -32,6 +32,7 @@ export interface FamilyStats {
   wordsTotal: number;
   approxBookPages: number;
   weeksSinceStart: number;
+  daysSinceStart: number;
   weekStreak: number;
   yearSpan: { min: number; max: number; span: number } | null;
   oldestStoryLabel: string | null;
@@ -44,6 +45,7 @@ const EMPTY: FamilyStats = {
   wordsTotal: 0,
   approxBookPages: 0,
   weeksSinceStart: 0,
+  daysSinceStart: 0,
   weekStreak: 0,
   yearSpan: null,
   oldestStoryLabel: null,
@@ -86,6 +88,7 @@ async function computeFamilyStats(familyId: string): Promise<FamilyStats> {
       ...EMPTY,
       startedAt: family?.created_at ?? null,
       weeksSinceStart: family?.created_at ? weeksBetween(new Date(family.created_at), new Date()) : 0,
+      daysSinceStart: family?.created_at ? daysBetween(new Date(family.created_at), new Date()) : 0,
     };
   }
 
@@ -145,6 +148,7 @@ async function computeFamilyStats(familyId: string): Promise<FamilyStats> {
     wordsTotal,
     approxBookPages,
     weeksSinceStart,
+    daysSinceStart: startedAt ? daysBetween(new Date(startedAt), new Date()) : 0,
     weekStreak,
     yearSpan,
     oldestStoryLabel,
@@ -173,6 +177,11 @@ function countWords(s: string): number {
 function weeksBetween(a: Date, b: Date): number {
   const ms = Math.abs(b.getTime() - a.getTime());
   return Math.max(1, Math.floor(ms / (7 * 24 * 60 * 60 * 1000)));
+}
+
+function daysBetween(a: Date, b: Date): number {
+  const ms = Math.abs(b.getTime() - a.getTime());
+  return Math.max(1, Math.floor(ms / (24 * 60 * 60 * 1000)));
 }
 
 function isoWeekKey(d: Date): string {

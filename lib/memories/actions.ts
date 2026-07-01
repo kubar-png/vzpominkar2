@@ -10,6 +10,7 @@ import { invalidateFamilyStats } from "@/lib/family/stats";
 import { sendEmail } from "@/lib/email/send";
 import { newMemoryNotificationEmail } from "@/lib/email/templates";
 import { transcribeAudio } from "@/lib/memories/transcribe";
+import { polishTranscript } from "@/lib/memories/polish";
 import { extractYear } from "@/lib/memories/extract-metadata";
 import { checkAiRateLimit, aiRateLimitMessage } from "@/lib/rate-limit";
 import { onAssignmentAnswered, currentBookForSenior } from "@/lib/books/server";
@@ -294,6 +295,20 @@ export async function saveAudioMemory(
           const a = createAdminClient();
           await a.from("memories").update({ audio_transcript: t }).eq("id", memoryId);
           await extractAndStoreYear(memoryId, t);
+          // Auto correct + improve (invisible to the senior): context-fix
+          // mis-heard words, then smooth into readable prose. The raw Whisper
+          // text stays in audio_transcript for the "show original" toggle; the
+          // improved version becomes what's shown by default.
+          const improved = await polishTranscript(t.slice(0, 8000), "full");
+          if (improved) {
+            await a
+              .from("memories")
+              .update({
+                audio_transcript_polished: improved,
+                transcript_edited_at: new Date().toISOString(),
+              })
+              .eq("id", memoryId);
+          }
         }
       } catch (err) {
         console.error("[saveAudioMemory] async transcription failed", { memoryId, err });

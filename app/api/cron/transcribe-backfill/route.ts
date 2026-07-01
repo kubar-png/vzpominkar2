@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { verifyCronAuth } from "@/lib/cron";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transcribeAudio } from "@/lib/memories/transcribe";
+import { polishTranscript } from "@/lib/memories/polish";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -52,6 +53,18 @@ export async function GET(req: NextRequest) {
       const transcript = await transcribeAudio(file);
       if (transcript) {
         await admin.from("memories").update({ audio_transcript: transcript }).eq("id", m.id);
+        // Auto correct + improve, same as the live save path, so backfilled
+        // memories also get the polished text shown by default.
+        const improved = await polishTranscript(transcript.slice(0, 8000), "full");
+        if (improved) {
+          await admin
+            .from("memories")
+            .update({
+              audio_transcript_polished: improved,
+              transcript_edited_at: new Date().toISOString(),
+            })
+            .eq("id", m.id);
+        }
         filled++;
       } else {
         failed++;

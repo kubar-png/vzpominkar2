@@ -152,7 +152,7 @@ export default async function PromptsPage({
           subtitle={
             upcoming.length === 0
               ? "Nic ve frontě. Naplánujte další z knihovny níže."
-              : `${upcoming.length} ${plural(upcoming.length, ["otázka", "otázky", "otázek"])} čeká na vašeho blízkého.`
+              : `${upcoming.length} ${plural(upcoming.length, ["otázka", "otázky", "otázek"])} ${plural(upcoming.length, ["čeká", "čekají", "čeká"])} na vašeho blízkého.`
           }
         />
         {upcoming.length === 0 ? (
