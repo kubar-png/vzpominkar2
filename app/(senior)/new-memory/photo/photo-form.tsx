@@ -112,22 +112,21 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={processing}
-            className="w-full text-center rounded-xl border-2 border-dashed transition-colors hover:bg-white"
+            className="flex w-full flex-col items-center rounded-2xl border-2 border-dashed border-[color:var(--line-2)] bg-[var(--paper-2)] text-center transition-colors hover:border-[color:var(--gold)] hover:bg-white"
             style={{
-              borderColor: "var(--ink-soft)",
-              background: "rgba(241, 195, 201, 0.35)",
-              padding: "36px 24px",
-              minHeight: 200,
+              padding: "44px 24px",
+              minHeight: 208,
               cursor: processing ? "not-allowed" : "pointer",
               opacity: processing ? 0.6 : 1,
             }}
           >
-            <Camera
-              size={40}
+            <span
               aria-hidden
-              className="mx-auto mb-3"
-              style={{ color: "var(--ink)" }}
-            />
+              className="mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: "var(--gold)", color: "#FEF7D7" }}
+            >
+              <Camera size={30} />
+            </span>
             <div
               className="text-[22px] font-medium mb-1"
               style={{ color: "var(--ink)", fontFamily: "var(--font-display-editorial)" }}
@@ -184,41 +183,43 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
         </div>
       )}
 
-      {/* Optional caption */}
-      <div>
-        <label className="es-label" htmlFor="caption">
-          Krátký popis (volitelný)
-        </label>
-        <input
-          id="caption"
-          name="caption"
-          type="text"
-          placeholder='Např. „Rok 1962, my u babičky"'
-          maxLength={120}
-          className="es-input"
-        />
-      </div>
+      {/* Caption + save appear once at least one photo is picked, so the
+          screen starts as a single clear action (pick a photo) instead of a
+          greyed-out disabled button. */}
+      {hasPhotos ? (
+        <div className="space-y-6">
+          <div>
+            <label className="es-label" htmlFor="caption">
+              Krátký popis (volitelný)
+            </label>
+            <input
+              id="caption"
+              name="caption"
+              type="text"
+              placeholder='Např. „Rok 1962, my u babičky"'
+              maxLength={120}
+              className="es-input"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button type="submit" disabled={pending} className="es-btn es-btn-gold">
+              {pending
+                ? "Nahráváme…"
+                : photos.length > 1
+                  ? `Uložit ${photos.length} fotek`
+                  : "Uložit fotku"}
+              {!pending && <span className="arrow" aria-hidden>↗</span>}
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {error && (
         <div role="alert" className="es-banner es-banner-error">
           {error}
         </div>
       )}
-
-      <div className="flex justify-end pt-2">
-        <button
-          type="submit"
-          disabled={pending || !hasPhotos}
-          className="es-btn es-btn-gold"
-        >
-          {pending
-            ? "Nahráváme…"
-            : photos.length > 1
-              ? `Uložit ${photos.length} fotek`
-              : "Uložit fotku"}
-          {!pending && <span className="arrow" aria-hidden>↗</span>}
-        </button>
-      </div>
     </form>
   );
 }
