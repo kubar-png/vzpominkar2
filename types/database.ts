@@ -562,6 +562,7 @@ export type Database = {
           gender: string | null
           id: string
           is_senior: boolean
+          is_tester: boolean
           magic_token: string | null
           phone_e164: string | null
           prompt_frequency: number
@@ -588,6 +589,7 @@ export type Database = {
           gender?: string | null
           id: string
           is_senior?: boolean
+          is_tester?: boolean
           magic_token?: string | null
           phone_e164?: string | null
           prompt_frequency?: number
@@ -614,6 +616,7 @@ export type Database = {
           gender?: string | null
           id?: string
           is_senior?: boolean
+          is_tester?: boolean
           magic_token?: string | null
           phone_e164?: string | null
           prompt_frequency?: number

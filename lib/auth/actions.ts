@@ -99,6 +99,7 @@ export async function signUpOwner(
       display_name: parsed.data.displayName,
       email: parsed.data.email,
       email_verified: false,
+      is_tester: isTest,
     });
     if (profileErr && profileErr.code !== "23505") {
       console.error("[signup] profile insert failed:", profileErr);
