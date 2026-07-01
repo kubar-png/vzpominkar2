@@ -74,7 +74,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               "!bg-[var(--color-paper-50)] !text-[var(--color-text)] !border-[var(--color-border)] !shadow-[var(--shadow-md)] !rounded-[var(--radius-md)]",
             title: "!font-medium",
             success: "!text-[var(--color-text)]",
-            error: "!text-[var(--color-red-800)]",
+            error: "!text-[#b3241c]",
           },
         }}
         icons={{
@@ -86,8 +86,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           ),
           error: (
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden fill="none">
-              <polygon points="7,1 13,7 7,13 1,7" stroke="var(--color-red-700)" strokeWidth="1.3" fill="var(--color-red-50)" />
-              <path d="M7 4 V8 M7 10 V10.5" stroke="var(--color-red-800)" strokeWidth="1.4" strokeLinecap="round" />
+              <polygon points="7,1 13,7 7,13 1,7" stroke="#b3241c" strokeWidth="1.3" fill="#f7e7e5" />
+              <path d="M7 4 V8 M7 10 V10.5" stroke="#b3241c" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
           ),
         }}

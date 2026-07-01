@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { PrimaryCta } from "./PrimaryCta";
+import { Logo } from "@/components/brand/Logo";
 import { MARKETING_NAV } from "./nav";
 
 export function HomeMobileMenu() {
@@ -60,7 +61,7 @@ export function HomeMobileMenu() {
               aria-label="Vzpomínkář — domů"
               onClick={() => setOpen(false)}
             >
-              <span className="logo-mark" aria-hidden="true" />
+              <Logo tone="offwhite" height={32} alt="" />
             </Link>
             <button
               type="button"
@@ -72,7 +73,6 @@ export function HomeMobileMenu() {
             </button>
           </div>
 
-          <span className="mobile-menu-eyebrow">Navigace</span>
           <nav className="mobile-menu-links" aria-label="Hlavní navigace">
             {MARKETING_NAV.map((item) => (
               <Link
@@ -86,7 +86,6 @@ export function HomeMobileMenu() {
           </nav>
 
           <div className="mobile-menu-actions">
-            <span className="mobile-menu-eyebrow">Začněte zde</span>
             <Link
               href="/login"
               className="btn btn-outline"

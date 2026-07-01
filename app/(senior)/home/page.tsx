@@ -11,14 +11,13 @@ export const metadata: Metadata = { title: "Domů" };
  * Senior /home — editorial direction.
  *
  * Layout:
- *   • Greeting (h1 with PP Pangaia)
- *   • Eyebrow "Otázka týdne"
- *   • Italic PP Pangaia question (the prompt)
+ *   • Greeting (h1)
+ *   • The weekly question (the prompt) as the leading heading
  *   • Three large action cards stacked: Vyprávět nahlas / Napsat / Přidat fotku
  *   • Optional draft pill
  *   • "Moje vzpomínky" arrow-link at the bottom
  *
- * All interactive elements are ≥ 64px (cards are 88px), navy ink on cream,
+ * All interactive elements are ≥ 64px (cards are 88px), navy ink on off-white,
  * AAA contrast throughout.
  */
 export default async function SeniorHomePage() {
@@ -118,7 +117,6 @@ export default async function SeniorHomePage() {
       <section className="es-card mt-10">
         {active?.prompts ? (
           <>
-            <span className="es-eyebrow">Otázka týdne</span>
             <h2 className="es-question">{resolveGender(active.prompts.question, user.gender)}</h2>
             <div className="es-rule-gold" />
             <p className="text-[18px] sm:text-[19px] text-[var(--ink-soft)] mb-7 leading-relaxed">
@@ -175,7 +173,6 @@ export default async function SeniorHomePage() {
           </>
         ) : bookFinished ? (
           <>
-            <span className="es-eyebrow">Hotovo</span>
             <h2 className="es-question">Vaše kniha je celá.</h2>
             <div className="es-rule-gold" />
             <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
@@ -187,7 +184,6 @@ export default async function SeniorHomePage() {
           </>
         ) : (
           <>
-            <span className="es-eyebrow">Otázka týdne</span>
             <h2 className="es-question">Otázka brzy přijde.</h2>
             <div className="es-rule-gold" />
             <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
@@ -206,13 +202,13 @@ export default async function SeniorHomePage() {
           className="mt-6 block rounded-xl border-2 border-dashed px-5 py-4 transition-colors hover:bg-white"
           style={{
             borderColor: "var(--gold)",
-            background: "rgba(247, 233, 192, 0.55)",
+            background: "rgba(241, 195, 201, 0.55)",
           }}
         >
-          <p className="text-[14px] uppercase tracking-[0.18em] font-semibold text-[var(--ink-soft)] mb-1">
+          <p className="text-[15px] font-semibold text-[var(--ink-soft)] mb-1">
             Pokračovat v rozepsané vzpomínce
           </p>
-          <p className="text-[18px] text-[var(--ink)] line-clamp-2 italic">
+          <p className="text-[18px] text-[var(--ink)] line-clamp-2">
             &bdquo;{draft.text_content?.slice(0, 120) ?? ""}
             {(draft.text_content?.length ?? 0) > 120 ? "…" : ""}&ldquo;
           </p>

@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const isLoginRoute = pathname === "/admin/login" || pathname.startsWith("/admin/login/");
 
   if (isLoginRoute) {
-    return <div className="min-h-screen bg-zinc-50 text-zinc-900 antialiased">{children}</div>;
+    return <div className="min-h-screen bg-[#FEF7D7] text-[#1B2E4D] antialiased">{children}</div>;
   }
 
   const cookieStore = await cookies();
@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!valid) redirect("/admin/login");
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+    <div className="min-h-screen bg-[#FEF7D7] text-[#1B2E4D] antialiased">
       <AdminNav />
       <main className="md:pl-60">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-10">{children}</div>

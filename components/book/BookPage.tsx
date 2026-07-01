@@ -30,7 +30,7 @@ export const BookPage = forwardRef<HTMLDivElement, BookPageProps>(function BookP
   return (
     <div ref={ref} className="book-page-leaf h-full w-full" data-density="soft">
       <div
-        className="relative flex h-full w-full flex-col bg-[#fbf5e3] text-[#1a1714]"
+        className="relative flex h-full w-full flex-col bg-[#FEF7D7] text-[#1B2E4D]"
         style={{ boxShadow: spineShadow }}
       >
         {/* Subtle paper grain */}

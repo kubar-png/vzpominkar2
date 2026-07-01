@@ -13,15 +13,14 @@ export default function LoginPage() {
   return (
     <div className="editorial">
       <div className="senior-auth-mobile-bar">
-        <GoldWordmark height={24} />
+        <GoldWordmark height={24} tone="offwhite" />
       </div>
 
       <div className="senior-auth">
         {/* Left: navy editorial pitch (desktop) */}
         <aside className="senior-auth-side">
-          <GoldWordmark className="senior-auth-logo" height={30} />
+          <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Vítejte zpět</span>
             <h2>
               Vaše vzpomínky
               <br />
@@ -38,7 +37,6 @@ export default function LoginPage() {
         {/* Right: the form */}
         <main className="senior-auth-main">
           <div style={{ width: "100%", maxWidth: 460 }}>
-            <span className="auth-eyebrow">Přihlášení</span>
             <h1 className="auth-title">Vítejte zpátky.</h1>
             <p className="auth-lede">
               Zadejte e-mail a&nbsp;heslo, kterými jste se zaregistrovali.

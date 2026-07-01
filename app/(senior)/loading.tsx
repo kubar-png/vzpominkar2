@@ -8,7 +8,7 @@ export default function SeniorLoading() {
         aria-hidden
         className="h-14 w-14 animate-spin rounded-full"
         style={{
-          border: "4px solid rgba(14, 59, 100, 0.15)",
+          border: "4px solid rgba(27, 46, 77, 0.15)",
           borderTopColor: "var(--ink)",
         }}
       />

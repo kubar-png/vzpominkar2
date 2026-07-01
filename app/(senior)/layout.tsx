@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { requireSenior } from "@/lib/auth/permissions";
 import { signOut } from "@/lib/auth/actions";
+import { Logo } from "@/components/brand/Logo";
 
 /**
- * Senior shell — editorial direction.
+ * Senior shell — brand direction.
  *
- * Cream paper canvas (same `--bg` as the marketing homepage), wordmark logo
- * with the editorial gold underline, big "Odhlásit" outline button. The
- * `.editorial-senior` scope class in globals.css carries every design token:
- * typography, buttons, cards, recording UI. No sidebar, no modals.
+ * Off-white paper canvas (same `--bg` as the marketing homepage), the brand
+ * SVG wordmark, big "Odhlásit" outline button. The `.editorial-senior` scope
+ * class in globals.css carries every design token: typography, buttons, cards,
+ * recording UI. No sidebar, no modals.
  *
- * AAA contrast is enforced by the scope: navy ink (#0e3b64) on cream
- * (#f4ebd6) clears WCAG AAA (~10.6:1), and the gold pill uses navy text
- * (~9:1).
+ * AAA contrast is enforced by the scope: navy ink on off-white clears WCAG
+ * AAA, and the raspberry pill uses off-white text.
  */
 export default async function SeniorLayout({ children }: { children: React.ReactNode }) {
   const user = await requireSenior();
@@ -23,8 +23,12 @@ export default async function SeniorLayout({ children }: { children: React.React
     <div className="editorial-senior" data-surface="senior" data-mode={mode}>
       <header className="es-header">
         <div className="es-header-inner">
-          <Link href="/home" className="es-logo" aria-label="Vzpomínkář — domů">
-            Vzpomínkář.
+          <Link
+            href="/home"
+            aria-label="Vzpomínkář — domů"
+            className="inline-flex items-center"
+          >
+            <Logo tone="raspberry" height={30} />
           </Link>
 
           <div className="flex items-center gap-3 sm:gap-4">

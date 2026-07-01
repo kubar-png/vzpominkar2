@@ -1,55 +1,24 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
-import localFont from "next/font/local";
-import { Instrument_Sans, Caveat, Outfit } from "next/font/google";
+import { Bree_Serif, Host_Grotesk } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/shared/CookieConsent";
 import { SmoothScroll } from "@/components/marketing/SmoothScroll";
 import { RevealObserver } from "@/components/marketing/RevealObserver";
 
-/* PP Pangaia — display serif. Licensed OTFs live in /public/fonts/.
- * The editorial display face on the marketing surface. */
-const pangaia = localFont({
-  src: [
-    {
-      path: "../public/fonts/PPPangaia-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/PPPangaia-MediumItalic.otf",
-      weight: "500",
-      style: "italic",
-    },
-  ],
-  variable: "--font-display-loaded",
+/* Brand fonts (docs/brand): Bree Serif (display, 400 only) + Host Grotesk (UI/body). */
+const breeSerif = Bree_Serif({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
   display: "swap",
-  // Generate a size-adjusted fallback (@font-face with ascent/descent/size-adjust
-  // overrides) so the Georgia→PP Pangaia swap does not reflow display headings —
-  // most visibly the shared footer h2. Without this, next/font emits no metric
-  // fallback for a local font and the swap shifts surrounding chrome.
-  adjustFontFallback: "Times New Roman",
+  variable: "--font-display-loaded",
 });
 
-const instrumentSans = Instrument_Sans({
+const hostGrotesk = Host_Grotesk({
   subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-sans-loaded",
-  weight: ["400", "500", "600"],
-});
-
-const outfit = Outfit({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-outfit-loaded",
-  weight: ["400", "500", "600", "700"],
-});
-
-const caveat = Caveat({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-script-loaded",
-  weight: ["500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -84,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="cs"
-      className={`${instrumentSans.variable} ${pangaia.variable} ${outfit.variable} ${caveat.variable}`}
+      className={`${hostGrotesk.variable} ${breeSerif.variable}`}
     >
       <body
         style={{

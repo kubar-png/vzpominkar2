@@ -63,7 +63,6 @@ export default function KontaktPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Kontakt</span>
           <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
             Napište. Odpoví člověk.
           </h1>
@@ -85,10 +84,6 @@ export default function KontaktPage() {
           <div className="kontakt-grid">
             {CHANNELS.map((c) => (
               <article key={c.label} className="kontakt-card" data-reveal>
-                <div className="kontakt-card-head">
-                  <span className="kontakt-card-numeral">{c.n}</span>
-                  <span className="eyebrow">{c.eyebrow}</span>
-                </div>
                 <h3>{c.label}</h3>
                 {c.href ? (
                   <a href={c.href} className="kontakt-card-value kontakt-card-value-link">
@@ -109,7 +104,6 @@ export default function KontaktPage() {
       {/* ═══════════ FOUNDER PROMISE — warm dark ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
-          <span className="eyebrow">Slibujeme jen tohle</span>
           <blockquote>
             „Když napíšete, odpovíme do druhého rána. Když pošlete dopis,
             přečteme ho a napíšeme zpátky — rukou, na kartě.&ldquo;
@@ -123,7 +117,6 @@ export default function KontaktPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Než nám napíšete</span>
             <h2>Možná najdete odpověď rychleji sami.</h2>
           </div>
           <div className="kontakt-quicklinks">
@@ -142,7 +135,6 @@ export default function KontaktPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Začít rovnou"
         heading="Pošlete jim první otázku v pondělí."
         lede="Registrace zabere pět minut. Jednorázově, přístup napořád — bez předplatného."
       />

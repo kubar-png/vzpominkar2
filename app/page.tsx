@@ -6,6 +6,7 @@ import { QuestionDeck } from "@/components/landing/QuestionDeck";
 import { TestimonialCarousel } from "@/components/landing/TestimonialCarousel";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
 import { Promo } from "@/components/landing/Promo";
+import { Logo } from "@/components/brand/Logo";
 import { SITE_URL, canonical } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -65,7 +66,7 @@ const ORG_JSON_LD = {
   "@type": "Organization",
   name: "Vzpomínkář",
   url: SITE_URL,
-  logo: `${SITE_URL}/brand/logo.png`,
+  logo: `${SITE_URL}/brand/logo-malinova.svg`,
   description:
     "Vzpomínkář — kniha rodinné paměti. Rok týdenních otázek pro rodiče a prarodiče; z jejich hlasů uděláme tištěnou knihu pro vnoučata.",
   contactPoint: [
@@ -116,6 +117,12 @@ export default async function HomePage({
       <style
         dangerouslySetInnerHTML={{
           __html: `
+            /* Hero H1 ~30% smaller than the global editorial clamp
+             * (48/7.5vw/96 → 34/5.3vw/66) so the long headline reads calmer. */
+            .editorial .hero h1{font-size:clamp(34px,5.3vw,66px);}
+            /* Breathing room above the book (the removed bg-wordmark used to
+             * provide it) so the book isn't cramped under the trust line. */
+            .editorial .hero .book-stage{margin-top:clamp(40px,6vw,88px);}
             .editorial .hero-trust{
               margin:0 auto;max-width:480px;
               font-family:var(--font-body-editorial);
@@ -123,7 +130,7 @@ export default async function HomePage({
               color:var(--ink-soft);position:relative;z-index:5;
             }
             @media (max-width:600px){
-              .editorial .hero h1{font-size:clamp(30px,8.4vw,52px);}
+              .editorial .hero h1{font-size:clamp(28px,7vw,42px);}
               .editorial .hero .lede{font-size:16px;}
               .editorial .hero-trust{font-size:12px;}
             }
@@ -141,7 +148,7 @@ export default async function HomePage({
         <div className="container">
           <nav className="nav">
             <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
-              <span className="logo-mark" aria-hidden="true" />
+              <Logo tone="raspberry" height={34} alt="" />
             </Link>
             <div className="nav-links">
               <a href="#jak">Jak to funguje</a>
@@ -160,7 +167,6 @@ export default async function HomePage({
         {/* ═══════════ 1. HERO ═══════════ */}
         <section className="hero">
           <div className="container">
-            <span className="eyebrow">Vzpomínkář — kniha rodinné paměti</span>
             {/* No hard <br>: lets the headline wrap by itself + text-wrap:balance
              * so it never overflows narrow phones. Mobile font-size is tamed by
              * the scoped <style> below (the global clamp floors at 48px). */}
@@ -176,13 +182,8 @@ export default async function HomePage({
             {/* Reassurance row — true claims only (no guarantee, no SMS promise).
              * Gives a cold visitor the price + the gist in one glance above the fold. */}
             <p className="hero-trust">
-              2&nbsp;890&nbsp;Kč jednorázově · první tištěná kniha v ceně ·
-              přístup k nahrávkám napořád
+              První tištěná kniha v ceně · přístup k nahrávkám napořád
             </p>
-          </div>
-
-          <div className="bg-wordmark" aria-hidden="true">
-            VZPOMÍNKÁŘ.
           </div>
 
           <div className="book-stage" aria-label="Kniha životních příběhů">
@@ -208,7 +209,6 @@ export default async function HomePage({
         {/* ═══════════ 2. PRESS STRIP ═══════════ */}
         <section className="press">
           <div className="container press-inner">
-            <span className="press-label">Píší o nás</span>
             <div className="press-logos">
               <span className="press-logo">Hospodářské noviny</span>
               <span className="press-logo">Forbes CZ</span>
@@ -225,7 +225,6 @@ export default async function HomePage({
         <section className="section" id="jak">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Jak to funguje</span>
               <h2>Jednoduchý týdenní rituál.</h2>
             </div>
             <div className="steps">
@@ -283,7 +282,6 @@ export default async function HomePage({
         <section className="section question-deck-section">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Otázky z knihovny</span>
               <h2 className="q-deck-title">
                 Co všechno nevíte
                 <br />
@@ -316,7 +314,6 @@ export default async function HomePage({
                 </div>
               </div>
               <div className="product-copy" data-reveal data-reveal-delay-150>
-                <span className="eyebrow">Produkt</span>
                 <h2>Vázaná kniha s hlasem na každé stránce.</h2>
                 <p className="lede">
                   Z padesáti hodin vyprávění vznikne kniha, kterou udržíte
@@ -346,7 +343,6 @@ export default async function HomePage({
         <div className="divider" />
         <section className="feature-quote dark">
           <div className="container">
-            <span className="eyebrow" data-reveal>Píše o nás Forbes CZ</span>
             <blockquote data-reveal data-reveal-delay-100>
               „Vzpomínkář je nejlepší dárek, na který jsme letos narazili.&rdquo;
             </blockquote>
@@ -362,7 +358,6 @@ export default async function HomePage({
         <section className="qr-section">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Hlas v knize</span>
               <h2>
                 Jejich hlas.
                 <br />
@@ -377,7 +372,6 @@ export default async function HomePage({
             <div className="book-mockup" data-reveal data-reveal-variant="scale" data-reveal-delay-200>
               <div className="book">
                 <div className="book-page">
-                  <p className="book-eyebrow">Kapitola 4</p>
                   <h4>První vzpomínky z dětství</h4>
                   <div className="book-lines">
                     {Array.from({ length: 8 }).map((_, i) => (
@@ -386,7 +380,6 @@ export default async function HomePage({
                   </div>
                 </div>
                 <div className="book-page">
-                  <p className="book-eyebrow">Kapitola 5</p>
                   <h4>Když přišla zima</h4>
                   <div className="book-lines">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -423,7 +416,6 @@ export default async function HomePage({
         <section className="gallery">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Co píší rodiny</span>
               <h2>
                 Padesát let paměti,
                 <br />
@@ -436,7 +428,6 @@ export default async function HomePage({
             <div className="gallery-grid">
               <article className="story-card" data-reveal>
                 <div className="story-photo">
-                  <span className="story-role">Vyprávěla</span>
                   <span className="story-play" />
                 </div>
                 <div className="story-body">
@@ -449,7 +440,6 @@ export default async function HomePage({
               </article>
               <article className="story-card" data-reveal data-reveal-delay-100>
                 <div className="story-photo tone-2">
-                  <span className="story-role">Koupila mámě</span>
                   <span className="story-play" />
                 </div>
                 <div className="story-body">
@@ -462,7 +452,6 @@ export default async function HomePage({
               </article>
               <article className="story-card" data-reveal data-reveal-delay-200>
                 <div className="story-photo tone-3">
-                  <span className="story-role">Koupila tátovi</span>
                   <span className="story-play" />
                 </div>
                 <div className="story-body">
@@ -474,7 +463,6 @@ export default async function HomePage({
               </article>
               <article className="story-card" data-reveal data-reveal-delay-300>
                 <div className="story-photo tone-4">
-                  <span className="story-role">Pro vnoučata</span>
                   <span className="story-play" />
                 </div>
                 <div className="story-body">
@@ -527,7 +515,6 @@ export default async function HomePage({
         <section className="tech">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Technologie</span>
               <h2>Mluvené slovo, otištěné na papír.</h2>
               <p className="lede">
                 Hlas do příběhu převede nahrávku na plynulý text — a
@@ -596,7 +583,6 @@ export default async function HomePage({
               {/* 11b. Gift delivery */}
               <div className="gift-block" data-reveal data-reveal-variant="scale" data-reveal-delay-100>
                 <div>
-                  <span className="eyebrow">Dárek</span>
                   <h2>
                     Dárek, který se
                     <br />
@@ -634,7 +620,6 @@ export default async function HomePage({
         <section className="faq" id="faq">
           <div className="container">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Časté otázky</span>
               <h2>
                 Na co se nás
                 <br />
@@ -713,12 +698,10 @@ export default async function HomePage({
         <section className="signup" id="signup">
           <div className="container">
             <div className="signup-card" data-reveal data-reveal-variant="scale">
-              <span className="eyebrow">Ochutnávka — sleva 200 Kč</span>
-              <h2>Pošleme ukázku knihy a slevový kód 200 Kč.</h2>
+              <h2>Pošleme vám ukázku skutečné knihy.</h2>
               <p className="lede">
-                Podívejte se, jak Vzpomínkář funguje, ještě než cokoliv
-                zaplatíte. Pošleme vám jeden e-mail — s ukázkou skutečné knihy
-                a slevovým kódem na 200 Kč. Žádný spam, žádné triky.
+                Podívejte se, jak Vzpomínkář funguje. Pošleme vám jeden e-mail
+                s ukázkou skutečné knihy. Žádný spam, žádné triky.
               </p>
               {/* The full sign-up flow lives in /app/(auth) routes. This is a
                * lead-magnet form — a Server Action will be wired in by the
@@ -726,8 +709,8 @@ export default async function HomePage({
                * a graceful HTML fallback if that endpoint doesn't exist yet. */}
               {signupStatus === "success" ? (
                 <p className="signup-status signup-status-success" role="status">
-                  Děkujeme. E-mail s ukázkou knihy a slevovým kódem na 200 Kč
-                  dorazí do vaší schránky během chvíle.
+                  Děkujeme. E-mail s ukázkou knihy dorazí do vaší schránky
+                  během chvíle.
                 </p>
               ) : (
                 <>
@@ -858,7 +841,13 @@ export default async function HomePage({
               </ul>
             </div>
           </div>
-          <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
+          <Logo
+            variant="full"
+            tone="offwhite"
+            tagline
+            height={48}
+            className="footer-logo"
+          />
           <div className="footer-bottom">
             <span>© 2026 Vzpomínkář</span>
             <span>
@@ -881,7 +870,7 @@ export default async function HomePage({
       >
         <PrimaryCta label="Začít sbírat vzpomínky" />
         <p className="sticky-mobile-cta-note">
-          2 890 Kč jednorázově · první kniha v ceně
+          První tištěná kniha v ceně
         </p>
       </div>
     </div>

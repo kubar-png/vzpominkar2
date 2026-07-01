@@ -16,18 +16,10 @@ export const metadata: Metadata = {
  * /cenik — full editorial rebuild
  *
  * Single paper-card plan (no shadcn), homepage .feature-list bullets,
- * mini-FAQ using .faq-item, final signup-card. Pricing tokens come from
- * env; flat 2 890 Kč fallback (pilotní verze retired).
+ * mini-FAQ using .faq-item, final signup-card. Prices are hidden while the
+ * app runs as a free testing version — cards show a number-free "V testovací
+ * verzi zdarma" state; structure and CTAs stay intact.
  * ─────────────────────────────────────────────────────────────────────── */
-
-const PRICE_BASE = Number(process.env.PRICE_BOOK_BASE_CZK ?? "2890");
-const PRICE_ADDON = Number(process.env.PRICE_BOOK_ADDON_CZK ?? "1790");
-const PRICE_COVER_PREMIUM = Number(process.env.PRICE_BOOK_COVER_PREMIUM_CZK ?? "99");
-const PRICE_GIFTWRAP = Number(process.env.PRICE_BOOK_GIFTWRAP_CZK ?? "290");
-
-function formatCzk(n: number): string {
-  return `${n.toLocaleString("cs-CZ")} Kč`;
-}
 
 const INCLUDED = [
   "Padesát dva otázek, jedna za týden",
@@ -38,10 +30,10 @@ const INCLUDED = [
   "První tištěná kniha v ceně — objednáte, až bude hotová",
 ];
 
-const ADDONS: ReadonlyArray<readonly [string, string]> = [
-  ["Jiná barva desek — hnědá se zlatým písmem je v ceně", `+ ${formatCzk(PRICE_COVER_PREMIUM)}`],
-  ["Dárkové balení s raženým věnováním", `+ ${formatCzk(PRICE_GIFTWRAP)}`],
-  ["Další výtisk pro sourozence", "cena dle objednávky"],
+const ADDONS: ReadonlyArray<string> = [
+  "Jiná barva desek — hnědá se zlatým písmem je v ceně",
+  "Dárkové balení s raženým věnováním",
+  "Další výtisk pro sourozence",
 ];
 
 const FAQ_EXCERPT = [
@@ -65,7 +57,6 @@ export default function PricingPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Ceník</span>
           <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
             Jedna platba. Žádné předplatné.
           </h1>
@@ -82,17 +73,15 @@ export default function PricingPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="cenik-card" data-reveal>
-            <div className="cenik-card-head">
-              <span className="eyebrow">Přístup ke knize</span>
-            </div>
             <div className="cenik-price">
-              <span className="cenik-price-amount">{formatCzk(PRICE_BASE)}</span>
-              <span className="cenik-price-sub">jednorázově · napořád</span>
+              <span className="cenik-price-amount">V testovací verzi zdarma</span>
+              <span className="cenik-price-sub">přístup ke knize · napořád</span>
             </div>
             <p className="cenik-price-note">
-              Jedna platba, kniha je vaše napořád — žádné předplatné. Zahrnuje
-              jednoho blízkého, až 52 otázek a první tištěnou knihu v ceně.
-              Další blízký nebo další díl řešíme samostatně níže.
+              Po spuštění placené verze jedna platba a kniha je vaše napořád —
+              žádné předplatné. Zahrnuje jednoho blízkého, až 52 otázek a první
+              tištěnou knihu v ceně. Další blízký nebo další díl řešíme
+              samostatně níže.
             </p>
 
             <ul className="feature-list" style={{ margin: "32px 0 32px" }}>
@@ -113,19 +102,14 @@ export default function PricingPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="cenik-card" data-reveal>
-            <div className="cenik-card-head">
-              <span className="eyebrow">Další blízký nebo další díl</span>
-            </div>
             <div className="cenik-price">
-              <span className="cenik-price-amount">{formatCzk(PRICE_ADDON)}</span>
-              <span className="cenik-price-sub">jednorázově · za každý další</span>
+              <span className="cenik-price-amount">V testovací verzi zdarma</span>
+              <span className="cenik-price-sub">další blízký nebo další díl</span>
             </div>
             <p className="cenik-price-note">
               Chcete vyprávění od druhého rodiče, nebo druhý díl pro stejného
               blízkého? Přidáte si jeho vlastní sadu otázek a jeho vlastní
-              knihu — za každého dalšího blízkého nebo každý další díl
-              {" "}
-              {formatCzk(PRICE_ADDON)}.
+              knihu — za každého dalšího blízkého nebo každý další díl.
             </p>
             <PrimaryCta className="btn-gold-full" />
           </div>
@@ -137,8 +121,7 @@ export default function PricingPage() {
         <div className="container">
           <div className="cenik-print-grid">
             <div data-reveal>
-              <span className="eyebrow">Tisk a doplňky</span>
-              <h2 style={{ margin: "12px 0 20px" }}>
+              <h2 style={{ margin: "0 0 20px" }}>
                 První tištěná kniha je v ceně.
               </h2>
               <p style={{ maxWidth: "44ch", marginBottom: 28 }}>
@@ -153,15 +136,14 @@ export default function PricingPage() {
             </div>
 
             <ul className="cenik-addons" data-reveal>
-              {ADDONS.map(([label, price]) => (
+              {ADDONS.map((label) => (
                 <li key={label}>
                   <span>{label}</span>
-                  <span className="cenik-addons-price">{price}</span>
+                  <span className="cenik-addons-price">v testovací verzi zdarma</span>
                 </li>
               ))}
               <li className="cenik-addons-note">
-                Doplňky účtujeme jen tehdy, pokud si je v okamžiku tisku
-                zvolíte.
+                Doplňky si vyberete až v okamžiku tisku.
               </li>
             </ul>
           </div>
@@ -173,7 +155,6 @@ export default function PricingPage() {
       <section className="faq">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Tři odpovědi před rozhodnutím</span>
             <h2>
               Co se nejčastěji
               <br />
@@ -205,7 +186,6 @@ export default function PricingPage() {
 
       {/* ═══════════ FINAL SIGNUP CARD ═══════════ */}
       <FinalCta
-        eyebrow="Začněte dnes"
         heading="Pošlete jim první otázku v pondělí."
         lede="Jednorázově, přístup napořád — bez předplatného."
         footer={

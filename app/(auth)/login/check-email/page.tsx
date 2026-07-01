@@ -11,14 +11,13 @@ export default function CheckEmailPage() {
   return (
     <div className="editorial">
       <div className="senior-auth-mobile-bar">
-        <GoldWordmark height={24} />
+        <GoldWordmark height={24} tone="offwhite" />
       </div>
 
       <div className="senior-auth">
         <aside className="senior-auth-side">
-          <GoldWordmark className="senior-auth-logo" height={30} />
+          <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Odkaz odeslán</span>
             <h2>
               Podívejte se
               <br />
@@ -34,7 +33,6 @@ export default function CheckEmailPage() {
 
         <main className="senior-auth-main">
           <div style={{ width: "100%", maxWidth: 460 }}>
-            <span className="auth-eyebrow">Odkaz odeslán</span>
             <h1 className="auth-title">Podívejte se do schránky.</h1>
             <p className="auth-lede">
               Poslali jsme vám přihlašovací odkaz. Stačí na něj kliknout

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { Logo } from "@/components/brand/Logo";
 
 interface SiteFooterProps {
   /**
@@ -102,7 +103,13 @@ export function SiteFooter({ variant = "full" }: SiteFooterProps) {
           </div>
         </div>
 
-        <span className="logo-mark footer-logo" aria-label="Vzpomínkář" />
+        <Logo
+          variant="full"
+          tone="offwhite"
+          tagline
+          height={48}
+          className="footer-logo"
+        />
 
         <div className="footer-bottom">
           <span>© 2026 Vzpomínkář</span>

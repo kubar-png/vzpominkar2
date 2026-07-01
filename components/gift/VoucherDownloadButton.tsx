@@ -73,7 +73,7 @@ export function VoucherDownloadButton({
         </span>
       </button>
       {error ? (
-        <span role="alert" style={{ fontSize: "13px", color: "var(--oxblood)", maxWidth: "40ch", textAlign: "center" }}>
+        <span role="alert" style={{ fontSize: "13px", color: "var(--color-danger)", maxWidth: "40ch", textAlign: "center" }}>
           {error}
         </span>
       ) : null}

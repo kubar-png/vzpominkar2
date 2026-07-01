@@ -70,9 +70,8 @@ export function StatusBlock({ familyId, next, onlySeniorFirstName }: StatusBlock
           "bg-white px-6 py-6 sm:px-8 sm:py-7",
         )}
       >
-        <span aria-hidden className="absolute inset-y-5 left-0 w-[3px] rounded-full bg-[var(--color-gold-400)]" />
-        <p className="app-eyebrow text-[var(--color-gold-600)]">Tento týden</p>
-        <p className="mt-3 font-[family-name:var(--font-display)] text-[22px] font-medium leading-snug text-[var(--color-navy-900)] sm:text-2xl">
+        <span aria-hidden className="absolute inset-y-5 left-0 w-[3px] rounded-full bg-[#CF364C]" />
+        <p className="font-[family-name:var(--font-display)] text-[22px] font-medium leading-snug text-[var(--color-navy-900)] sm:text-2xl">
           Brzy naplánujeme další otázku.
         </p>
         <p className="mt-2 text-sm text-[var(--color-text-muted)]">
@@ -105,10 +104,9 @@ export function StatusBlock({ familyId, next, onlySeniorFirstName }: StatusBlock
     >
       <span
         aria-hidden
-        className="absolute inset-y-5 left-0 w-[3px] rounded-full bg-[var(--color-gold-400)]"
+        className="absolute inset-y-5 left-0 w-[3px] rounded-full bg-[#CF364C]"
       />
-      <p className="app-eyebrow text-[var(--color-gold-600)]">Tento týden</p>
-      <blockquote className="mt-3">
+      <blockquote>
         <p className="font-[family-name:var(--font-display)] text-[22px] font-medium leading-snug text-[var(--color-navy-900)] sm:text-2xl">
           &bdquo;{resolveGender(next.question, next.gender)}&ldquo;
         </p>

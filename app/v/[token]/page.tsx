@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { resolveGender, type Gender } from "@/lib/gender";
+import { Logo } from "@/components/brand/Logo";
 
 /**
  * Public memory playback — the page a printed QR code points to (/v/{token}).
@@ -23,10 +24,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const NAVY = "#0e3b64";
-const CREAM = "#faf6ec";
-const OXBLOOD = "#a8231f";
-const INK_SOFT = "rgba(14,59,100,0.72)";
+const NAVY = "#1B2E4D";
+const CREAM = "#FEF7D7";
+const OXBLOOD = "#CF364C";
+const INK_SOFT = "rgba(27,46,77,0.72)";
+const BODY_FONT = "var(--font-sans-loaded), 'Host Grotesk', system-ui, -apple-system, sans-serif";
+const DISPLAY_FONT = "var(--font-display-loaded), 'Bree Serif', Georgia, serif";
 
 type PublicMemory = {
   id: string;
@@ -94,30 +97,17 @@ export default async function PublicMemoryPage({ params }: { params: Promise<{ t
         minHeight: "100dvh",
         background: CREAM,
         color: NAVY,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: BODY_FONT,
         display: "flex",
         justifyContent: "center",
         padding: "32px 20px 56px",
       }}
     >
       <article style={{ width: "100%", maxWidth: 560 }}>
-        <p
-          style={{
-            fontFamily: "Arial, Helvetica, sans-serif",
-            fontSize: 11,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: OXBLOOD,
-            margin: "0 0 6px",
-          }}
-        >
-          Vzpomínka
-        </p>
-
         {question ? (
-          <h1 style={{ fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 8px" }}>{question}</h1>
+          <h1 style={{ fontFamily: DISPLAY_FONT, fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 8px" }}>{question}</h1>
         ) : memory.title ? (
-          <h1 style={{ fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 8px" }}>{memory.title}</h1>
+          <h1 style={{ fontFamily: DISPLAY_FONT, fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 8px" }}>{memory.title}</h1>
         ) : null}
 
         <p style={{ fontSize: 14, color: INK_SOFT, margin: "0 0 24px" }}>
@@ -148,7 +138,7 @@ export default async function PublicMemoryPage({ params }: { params: Promise<{ t
                 key={i}
                 src={src}
                 alt=""
-                style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(168,35,31,0.25)" }}
+                style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(207,54,76,0.25)" }}
               />
             ))}
           </div>
@@ -158,9 +148,10 @@ export default async function PublicMemoryPage({ params }: { params: Promise<{ t
           <p style={{ fontSize: 17, lineHeight: 1.7, whiteSpace: "pre-wrap", margin: "0 0 32px" }}>{transcript}</p>
         ) : null}
 
-        <footer style={{ borderTop: "1px solid rgba(14,59,100,0.15)", paddingTop: 16, textAlign: "center" }}>
+        <footer style={{ borderTop: "1px solid rgba(27,46,77,0.15)", paddingTop: 16, textAlign: "center" }}>
+          <Logo variant="full" tone="raspberry" height={26} style={{ margin: "0 auto 12px" }} />
           <p style={{ fontSize: 13, color: INK_SOFT, margin: 0 }}>
-            Uchováno ve <strong style={{ color: NAVY }}>Vzpomínkáři</strong> — knize vzpomínek vašich blízkých.
+            Uchováno v knize vzpomínek vašich blízkých.
           </p>
           <p style={{ fontSize: 13, color: INK_SOFT, margin: "10px 0 0" }}>
             <Link
@@ -183,7 +174,7 @@ function NotAvailable() {
         minHeight: "100dvh",
         background: CREAM,
         color: NAVY,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: BODY_FONT,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -192,7 +183,7 @@ function NotAvailable() {
         padding: "32px 24px",
       }}
     >
-      <h1 style={{ fontSize: 24, fontWeight: 500, margin: "0 0 10px" }}>Vzpomínka není dostupná</h1>
+      <h1 style={{ fontFamily: DISPLAY_FONT, fontSize: 24, fontWeight: 500, margin: "0 0 10px" }}>Vzpomínka není dostupná</h1>
       <p style={{ fontSize: 15, color: INK_SOFT, maxWidth: 420, margin: 0 }}>
         Tuto vzpomínku se nepodařilo najít. Možná byla odstraněna, nebo odkaz není úplný.
       </p>

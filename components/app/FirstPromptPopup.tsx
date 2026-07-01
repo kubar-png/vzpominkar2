@@ -111,7 +111,6 @@ export function FirstPromptPopup({ familyId, seniorId, seniorName, seniorGender,
         <button type="button" className="vzp-modal-x" onClick={() => setShow(false)} aria-label="Zavřít">
           <X size={16} />
         </button>
-        <span className="vzp-modal-eyebrow">První otázka</span>
         <h2 className="vzp-modal-title">Co se {seniorName} zeptáme jako první?</h2>
         <p className="vzp-modal-lede">
           Vyberte jednu otázku — odejde {seniorName} v pondělí ráno. Další už pak

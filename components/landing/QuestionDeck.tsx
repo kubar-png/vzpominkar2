@@ -100,18 +100,12 @@ export function QuestionDeck({ questions, totalCount }: QuestionDeckProps) {
             aria-hidden
             key={`exit-${exiting.idx}`}
           >
-            <div className="q-card-head">
-              <span className="q-card-eyebrow">{leaving.category}</span>
-            </div>
             <blockquote className="q-card-question">{leaving.question}</blockquote>
             <div className="q-card-rule" aria-hidden />
           </div>
         )}
 
         <div className="q-card q-card-enter" key={`enter-${index}`}>
-          <div className="q-card-head">
-            <span className="q-card-eyebrow">{current.category}</span>
-          </div>
           <blockquote className="q-card-question">{current.question}</blockquote>
           <div className="q-card-rule" aria-hidden />
         </div>

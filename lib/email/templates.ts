@@ -6,12 +6,12 @@ import { SITE_URL } from "@/lib/site";
  * Transactional email templates — editorial brand.
  *
  * Design rules (mirrors marketing site, simplified for email clients):
- *   • Cream backdrop (#f4ebd6), paper-card body (#fbf5e3) with soft shadow.
- *   • Display headings → Georgia (a web-safe stand-in for PP Pangaia).
- *   • Body type   → system stack at 1.6 leading.
- *   • Accents     → handwritten "Bradley Hand" only for the wordmark + sign-off.
- *   • CTA         → gold pill (#d4a017), white text, trailing ↗.
- *   • Footer      → tiny editorial line + Roman numeral MMXXVI.
+ *   • Off-white backdrop (#FEF7D7), paper-card body (#FFFDF3) with soft shadow.
+ *   • Display headings → Bree Serif stack (email can't load webfonts, so this
+ *     falls back to Georgia — the closest web-safe serif).
+ *   • Body type   → system sans stack at 1.6 leading.
+ *   • CTA         → raspberry pill (#CF364C), white text, trailing ↗.
+ *   • Footer      → tiny editorial line + tagline "Psáno i vyprávěno".
  *
  * Inlined styles are intentional — most clients strip <style>/<link>.
  * Outlook-safe: nested 600px <table> layout, no flex, no CSS variables.
@@ -27,17 +27,16 @@ import { SITE_URL } from "@/lib/site";
 /* Palette                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const CREAM = "#f4ebd6";
-const PAPER = "#fbf5e3";
-const INK = "#0e3b64";
-const INK_SOFT = "#5a6b7c";
-const GOLD = "#d4a017";
-const OXBLOOD = "#a8231f";
-const HAIRLINE = "#e8dec3";
+const CREAM = "#FEF7D7";
+const PAPER = "#FFFDF3";
+const INK = "#1B2E4D";
+const INK_SOFT = "#5F6D82";
+const GOLD = "#CF364C";
+const OXBLOOD = "#CF364C";
+const HAIRLINE = "#F1C3C9";
 
-const DISPLAY_FONT = `Georgia, "Times New Roman", serif`;
+const DISPLAY_FONT = `"Bree Serif", Georgia, "Times New Roman", serif`;
 const BODY_FONT = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
-const HAND_FONT = `"Bradley Hand", "Brush Script MT", cursive`;
 
 /* -------------------------------------------------------------------------- */
 /* Primitives                                                                 */
@@ -53,14 +52,12 @@ function esc(s: string): string {
 }
 
 /**
- * Outer brand shell. `opts.headerEyebrow` is the tiny uppercase label that
- * sits above the wordmark (e.g. "VÍTEJTE", "TÝDENNÍ OTÁZKA"). `opts.body`
- * is raw HTML — callers must pre-escape any user input themselves.
+ * Outer brand shell. `opts.body` is raw HTML — callers must pre-escape any user
+ * input themselves.
  */
 function shell(opts: {
   title: string;
   preheader?: string;
-  headerEyebrow?: string;
   body: string;
   /** Override the gentler reading size (used by senior-facing emails). */
   bodySize?: 16 | 18;
@@ -87,18 +84,13 @@ function shell(opts: {
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
         <tr>
           <td align="left" style="padding:0 8px 20px 8px;">
-            ${
-              opts.headerEyebrow
-                ? `<div style="font-family:${BODY_FONT};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${INK_SOFT};margin:0 0 6px 0;">${esc(opts.headerEyebrow)}</div>`
-                : ""
-            }
-            <div style="font-family:${HAND_FONT};font-size:28px;color:${INK};line-height:1;">Vzpomínkář</div>
+            <div style="font-family:${DISPLAY_FONT};font-size:26px;color:${INK};line-height:1;">Vzpomínkář</div>
           </td>
         </tr>
       </table>
 
       <!-- Paper card -->
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:${PAPER};border:1px solid ${HAIRLINE};border-radius:14px;box-shadow:0 1px 0 rgba(14,59,100,0.04),0 12px 30px -18px rgba(14,59,100,0.18);">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:${PAPER};border:1px solid ${HAIRLINE};border-radius:14px;box-shadow:0 1px 0 rgba(27,46,77,0.04),0 12px 30px -18px rgba(27,46,77,0.18);">
         <tr><td style="padding:36px 36px 32px 36px;font-family:${BODY_FONT};font-size:${bodySize}px;line-height:1.6;color:${INK};">
           ${opts.body}
         </td></tr>
@@ -113,8 +105,8 @@ function shell(opts: {
               <td align="left" style="font-family:${BODY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.04em;">
                 Vzpomínkář &middot; Praha &middot; <a href="mailto:ahoj@vzpominkar.cz" style="color:${INK_SOFT};text-decoration:none;">ahoj@vzpominkar.cz</a>
               </td>
-              <td align="right" style="font-family:${DISPLAY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.12em;">
-                MMXXVI
+              <td align="right" style="font-family:${DISPLAY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.08em;">
+                Psáno i vyprávěno
               </td>
             </tr>
           </table>
@@ -127,7 +119,7 @@ function shell(opts: {
 </html>`;
 }
 
-/** Gold pill CTA with trailing ↗. */
+/** Raspberry pill CTA with trailing ↗. */
 function cta(label: string, href: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0;"><tr><td align="center" style="background:${GOLD};border-radius:999px;mso-padding-alt:14px 28px;">
     <a href="${esc(href)}" style="display:inline-block;padding:14px 28px;font-family:${BODY_FONT};font-size:15px;font-weight:600;letter-spacing:0.01em;color:#ffffff;text-decoration:none;line-height:1;">
@@ -136,7 +128,7 @@ function cta(label: string, href: string): string {
   </td></tr></table>`;
 }
 
-/** Display heading (Georgia, large). */
+/** Display heading (Bree Serif stack, large). */
 function h1(text: string, color: string = INK): string {
   return `<h1 style="margin:0 0 18px 0;font-family:${DISPLAY_FONT};font-size:30px;line-height:1.15;color:${color};font-weight:400;letter-spacing:-0.01em;">${esc(text)}</h1>`;
 }
@@ -144,9 +136,9 @@ function h1(text: string, color: string = INK): string {
 /** Soft hairline separator inside the card. */
 const HR = `<div style="height:1px;background:${HAIRLINE};margin:24px 0;line-height:1px;font-size:1px;">&nbsp;</div>`;
 
-/** Handwritten sign-off line. */
+/** Warm sign-off line. */
 function signoff(name: string = "Kuba a tým Vzpomínkáře"): string {
-  return `<p style="margin:24px 0 0 0;font-family:${HAND_FONT};font-size:20px;color:${INK};line-height:1.3;">${esc(name)}</p>`;
+  return `<p style="margin:24px 0 0 0;font-family:${DISPLAY_FONT};font-size:18px;color:${INK};line-height:1.3;">${esc(name)}</p>`;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -161,7 +153,6 @@ export function welcomeEmail(input: { displayName: string; appUrl: string }) {
   const html = shell({
     title: subject,
     preheader: "Pomalý začátek. Jedna otázka týdně, žádný spěch.",
-    headerEyebrow: "Vítejte",
     body: `
       ${h1(`Dobrý den, ${firstName}.`)}
       <p style="margin:0 0 14px 0;">
@@ -217,7 +208,6 @@ export function seniorCredentialsEmail(input: {
   const html = shell({
     title: subject,
     preheader: `Uživatelské jméno a heslo pro ${input.seniorDisplayName}.`,
-    headerEyebrow: "Přihlašovací lísteček",
     body: `
       ${h1(`Pro ${input.seniorDisplayName} jsme připravili přihlašovací údaje.`)}
       <p style="margin:0 0 20px 0;">
@@ -226,7 +216,7 @@ export function seniorCredentialsEmail(input: {
       </p>
 
       <!-- Credentials block -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px 0;background:#FEF9E3;border:1px solid ${HAIRLINE};border-radius:10px;">
         <tr><td style="padding:20px 22px;">
           <div style="font-family:${BODY_FONT};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${INK_SOFT};margin:0 0 4px 0;">Uživatelské jméno</div>
           <div style="font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;color:${INK};letter-spacing:0.02em;margin:0 0 18px 0;">${esc(input.username)}</div>
@@ -293,7 +283,6 @@ export function weeklyReminderEmail(input: {
   const html = shell({
     title: subject,
     preheader: input.question,
-    headerEyebrow: "Týdenní otázka",
     bodySize: 18,
     body: `
       ${h1(`Dobrý den, ${input.seniorDisplayName}.`)}
@@ -302,7 +291,7 @@ export function weeklyReminderEmail(input: {
         nebo písmem &mdash; jak je vám pohodlnější.
       </p>
 
-      <blockquote style="margin:24px 0;padding:24px 26px;background:#fffaf0;border-left:3px solid ${OXBLOOD};border-radius:8px;font-family:${DISPLAY_FONT};font-size:24px;line-height:1.35;color:${INK};font-style:italic;">
+      <blockquote style="margin:24px 0;padding:24px 26px;background:#FEF9E3;border-left:3px solid ${OXBLOOD};border-radius:8px;font-family:${DISPLAY_FONT};font-size:24px;line-height:1.35;color:${INK};">
         &bdquo;${esc(input.question)}&ldquo;
       </blockquote>
 
@@ -364,7 +353,6 @@ export function newMemoryNotificationEmail(input: {
   const html = shell({
     title: subject,
     preheader: headline,
-    headerEyebrow: "Nová vzpomínka",
     body: `
       ${h1(`Dobrý den, ${firstName}.`)}
       <p style="margin:0 0 24px 0;">
@@ -417,14 +405,13 @@ export function bookOrderConfirmationEmail(input: {
   const html = shell({
     title: subject,
     preheader: "Tisk, vazba a doprava trvají přibližně 3–4 týdny.",
-    headerEyebrow: "Objednávka knihy",
     body: `
       ${h1(`Děkujeme, ${firstName}.`)}
       <p style="margin:0 0 14px 0;">
         Vaši objednávku knihy jsme zaznamenali a postupně ji posíláme do tisku.
       </p>
 
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;background:#FEF9E3;border:1px solid ${HAIRLINE};border-radius:10px;">
         <tr><td style="padding:18px 22px;font-size:15px;line-height:1.7;">
           ${orderLine ? `<div style="margin:0 0 6px 0;">${orderLine}</div>` : ""}
           <div>${amountLine}</div>
@@ -521,7 +508,6 @@ export function shopGiftOrderConfirmationEmail(input: {
     preheader: voucherUrl
       ? "Dárkový poukaz je ke stažení. Kniha dorazí do 3–4 týdnů."
       : "Vaši knihu vysázíme, vytiskneme a pošleme. Trvá to přibližně 3–4 týdny.",
-    headerEyebrow: "Objednávka knihy",
     body: `
       ${h1(`Děkujeme, ${firstName}.`)}
       <p style="margin:0 0 14px 0;">
@@ -529,7 +515,7 @@ export function shopGiftOrderConfirmationEmail(input: {
         a jakmile bude hotová, pošleme ji na uvedenou adresu.
       </p>
 
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;background:#FEF9E3;border:1px solid ${HAIRLINE};border-radius:10px;">
         <tr><td style="padding:18px 22px;font-size:15px;line-height:1.7;">
           ${orderLine ? `<div style="margin:0 0 6px 0;">${orderLine}</div>` : ""}
           <div style="margin:0 0 6px 0;">${countLine}</div>
@@ -608,7 +594,6 @@ export function bookFullEmail(input: {
   const html = shell({
     title: subject,
     preheader: `Všech 52 otázek je zodpovězeno. Pokud chcete, můžete pokračovat dílem ${nextVolumeNo}.`,
-    headerEyebrow: "Kniha je plná",
     body: `
       ${h1(`Hotovo, ${firstName}.`)}
       <p style="margin:0 0 14px 0;">
@@ -712,7 +697,6 @@ export function leadWelcomeEmail() {
   const html = shell({
     title: subject,
     preheader: "Slevový kód VITEJTE200 — 200 Kč dolů z první knihy.",
-    headerEyebrow: "Vítejte",
     body: `
       ${h1("Děkujeme za zájem.")}
       <p style="margin:0 0 14px 0;">
@@ -727,7 +711,7 @@ export function leadWelcomeEmail() {
 
       <p style="margin:0 0 14px 0;">${cta("Objednat se slevou 200 Kč", ctaUrl)}</p>
 
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px 0;background:#fffaf0;border:1px solid ${HAIRLINE};border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px 0;background:#FEF9E3;border:1px solid ${HAIRLINE};border-radius:10px;">
         <tr><td style="padding:18px 22px;">
           <div style="font-family:${BODY_FONT};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${INK_SOFT};margin:0 0 6px 0;">Slevový kód</div>
           <div style="font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;color:${INK};letter-spacing:0.04em;">${esc(LEAD_WELCOME_COUPON)}</div>

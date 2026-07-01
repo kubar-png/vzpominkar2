@@ -1,28 +1,20 @@
+import { Logo } from "./Logo";
+
 /**
- * The gold "Vzpomínkář" wordmark rendered via CSS mask (same technique as the
- * onboarding/app header), so it matches the gold logo used everywhere else.
- * Sized by `height`; width follows the artwork's 1892×390 aspect ratio.
+ * Back-compat wrapper — renders the brand SVG logo. (Name kept so existing
+ * auth/checkout imports keep working; no longer "gold".) Use `tone="offwhite"`
+ * on navy backgrounds.
  */
 export function GoldWordmark({
   height = 30,
   className,
+  tone = "raspberry",
 }: {
   height?: number;
   className?: string;
+  tone?: "raspberry" | "offwhite";
 }) {
   return (
-    <span
-      role="img"
-      aria-label="Vzpomínkář"
-      className={className}
-      style={{
-        display: "inline-block",
-        height,
-        width: height * (1892 / 390),
-        backgroundColor: "var(--gold)",
-        WebkitMask: "url('/brand/logo-mask.png') no-repeat center / contain",
-        mask: "url('/brand/logo-mask.png') no-repeat center / contain",
-      }}
-    />
+    <Logo variant="full" tone={tone} height={height} className={className} />
   );
 }

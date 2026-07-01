@@ -11,8 +11,8 @@ export const metadata: Metadata = { title: "Moje vzpomínky" };
 /**
  * Senior archive — editorial direction.
  *
- * Chronological list of published memories. Each entry shows the date in
- * small-caps eyebrow, the original question in PP Pangaia italic, then the
+ * Chronological list of published memories. Each entry shows the date as
+ * plain metadata, the original question in the display serif, then the
  * memory body (audio player, text, photos). Audio uses the same signed-URL
  * batch the legacy version did.
  */
@@ -94,7 +94,6 @@ export default async function MyMemoriesPage({
       {/* Header strip */}
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <span className="es-eyebrow">Archiv</span>
           <h1>Moje vzpomínky</h1>
         </div>
         <Link href="/home" className="es-btn es-btn-outline">
@@ -110,7 +109,6 @@ export default async function MyMemoriesPage({
 
       {list.length === 0 ? (
         <div className="es-card">
-          <span className="es-eyebrow">Zatím prázdno</span>
           <h2 className="es-question mb-4">Tady se objeví, co vyprávíte.</h2>
           <p className="text-[19px] text-[var(--ink-soft)] leading-relaxed">
             Až odpovíte na první otázku, najdete ji tady — i nahrávku, i text,

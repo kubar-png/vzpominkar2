@@ -28,16 +28,16 @@ export function SignupForm({
         <div
           style={{
             padding: "1.5rem",
-            border: "1px solid var(--color-paper-200, #e6dcc4)",
+            border: "1px solid var(--color-paper-200, #F3E9C8)",
             borderRadius: "10px",
-            background: "var(--color-paper-100, #faf6ec)",
+            background: "var(--color-paper-100, #FEF9E3)",
           }}
         >
           <p
             style={{
               fontSize: "1.1rem",
               lineHeight: 1.5,
-              color: "var(--color-navy-900, #16213a)",
+              color: "var(--color-navy-900, #101d31)",
               margin: 0,
             }}
           >
@@ -49,7 +49,7 @@ export function SignupForm({
             style={{
               marginTop: "0.75rem",
               fontSize: "0.85rem",
-              color: "var(--color-ink-600, #5b5547)",
+              color: "var(--ink-soft)",
             }}
           >
             Nedorazil? Mrkněte do nevyžádané pošty.
@@ -122,7 +122,7 @@ function Field({
     id: props.name,
     "aria-invalid": error ? true : undefined,
     "aria-describedby": errorId,
-    style: error ? { borderColor: "var(--oxblood)" } : undefined,
+    style: error ? { borderColor: "var(--color-danger)" } : undefined,
     ...props,
   };
   return (

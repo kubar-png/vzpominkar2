@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 export default function PodminkyPage() {
   return (
     <LegalLayout
-      eyebrow="Obchodní podmínky"
       title={
         <>
           Pravidla, za kterých Vzpomínkář funguje.

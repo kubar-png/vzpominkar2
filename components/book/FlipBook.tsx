@@ -286,7 +286,7 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
             <div aria-hidden className="h-px w-12 bg-[rgba(120,90,50,0.4)]" />
             <h2
               className="font-[family-name:var(--font-display)] leading-[1.1] tracking-[-0.01em]"
-              style={{ fontSize: "clamp(28px, 5vw, 40px)", color: "#0e3b64", fontWeight: 500 }}
+              style={{ fontSize: "clamp(28px, 5vw, 40px)", color: "#1B2E4D", fontWeight: 500 }}
             >
               {familyName}
             </h2>
@@ -327,7 +327,7 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
                 <li
                   key={m.id}
                   className="flex items-baseline justify-between gap-3"
-                  style={{ color: "#1a1714" }}
+                  style={{ color: "#1B2E4D" }}
                 >
                   <span className="flex-1 truncate">
                     {romanNumeral(i + 1)}. {m.title ?? m.question ?? m.date}
@@ -365,7 +365,7 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
               </p>
               <p
                 className="font-[family-name:var(--font-display)] text-[18px] leading-[1.5]"
-                style={{ color: "#1a1714", maxWidth: "28ch" }}
+                style={{ color: "#1B2E4D", maxWidth: "28ch" }}
               >
                 Až váš blízký odpoví na první otázku, objeví se zde první kapitola.
               </p>
@@ -402,7 +402,7 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
                   {m.question ? (
                     <h3
                       className="mb-4 font-[family-name:var(--font-display)] leading-[1.2]"
-                      style={{ fontSize: metrics.qFont, color: "#0e3b64", fontWeight: 500 }}
+                      style={{ fontSize: metrics.qFont, color: "#1B2E4D", fontWeight: 500 }}
                     >
                       &bdquo;{m.question}&ldquo;
                     </h3>
@@ -433,7 +433,7 @@ export function FlipBook({ familyName, year, coverBg, coverText, memories }: Fli
                   style={{
                     fontSize: metrics.bodyFont,
                     lineHeight: 1.55,
-                    color: "#1a1714",
+                    color: "#1B2E4D",
                     whiteSpace: "pre-wrap",
                   }}
                 >

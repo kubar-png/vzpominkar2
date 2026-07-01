@@ -15,7 +15,7 @@ export const maxDuration = 60;
 /**
  * Audio answer page — editorial direction.
  *
- * Top strip: back link + eyebrow + PP Pangaia italic question. Then the
+ * Top strip: back link + the question as the leading heading. Then the
  * recording stage, which fills the remainder. The form owns its own
  * action button at the bottom so the recording phase can swap the
  * button label (Začít / Hotovo / Uložit) without rerendering the strip.
@@ -39,10 +39,7 @@ export default async function NewAudioMemoryPage({
 
       <header className="mb-10">
         {ctx ? (
-          <>
-            <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
-          </>
+          <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
         ) : (
           <h2 className="es-question">Vyprávějte vzpomínku nahlas.</h2>
         )}

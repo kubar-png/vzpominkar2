@@ -10,10 +10,11 @@ import { COVER_BG, COVER_BG_HEX, type CoverBg } from "@/lib/book/cover";
  * own signature, while a LIVE A5-landscape preview updates beside the controls.
  *
  * The preview is a faithful web rendering of the print page
- * (app/print/voucher/[token]/page.tsx): same gold frame, gold eyebrow "Dárkový
- * poukaz", the fixed two-line message ("Zajímá mě tvůj příběh." / "Proto jsem
- * ti koupil/a Vzpomínkář."), optional personal line, gold rule + signature, and
- * the gold "Vzpomínkář" brand line — on a full-bleed brand-coloured card. The
+ * (app/print/voucher/[token]/page.tsx): same raspberry frame, raspberry eyebrow
+ * "Dárkový poukaz", the fixed two-line message ("Zajímá mě tvůj příběh." /
+ * "Proto jsem ti koupil/a Vzpomínkář."), optional personal line, raspberry rule
+ * + signature, and the raspberry "Vzpomínkář" brand line — on a full-bleed
+ * brand-coloured card. The
  * type scales with the card via container-query units (cqw) so it stays A5-
  * proportioned on every screen.
  *
@@ -261,9 +262,10 @@ export function VoucherConfigurator({
       ) : null}
 
       {/* Scoped styles — editorial tokens reused (--gold, --ink, fonts); the
-          preview mirrors print/voucher (gold frame #d4a017, cream text). Type
-          scales with the card via container-query units so it stays A5-
-          proportioned at any width. Nothing here touches global brand sections. */}
+          preview mirrors print/voucher (raspberry #CF364C frame, off-white
+          #FEF7D7 text). Type scales with the card via container-query units so it
+          stays A5-proportioned at any width. Nothing here touches global brand
+          sections. */}
       <style>{`
         /* The shell is the query container. .vc switches to two columns based on
            the SHELL's own width — never the viewport — so inside the ~520px gift
@@ -285,7 +287,7 @@ export function VoucherConfigurator({
           max-width: 560px;
           aspect-ratio: 210 / 148;
           border-radius: 8px;
-          box-shadow: 0 18px 44px -22px rgba(14, 59, 100, 0.55);
+          box-shadow: 0 18px 44px -22px rgba(27, 46, 77, 0.55);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -297,7 +299,7 @@ export function VoucherConfigurator({
           width: 100%;
           height: 100%;
           box-sizing: border-box;
-          border: 0.7cqw solid #d4a017;
+          border: 0.7cqw solid #CF364C;
           border-radius: 1cqw;
           padding: 5.5cqw 6.5cqw;
           display: flex;
@@ -305,7 +307,7 @@ export function VoucherConfigurator({
           align-items: center;
           justify-content: center;
           text-align: center;
-          color: #f4ecd8;
+          color: #FEF7D7;
           overflow: hidden;
         }
         .vc-eyebrow {
@@ -313,14 +315,14 @@ export function VoucherConfigurator({
           font-size: 2.6cqw;
           letter-spacing: 0.32em;
           text-transform: uppercase;
-          color: #d4a017;
+          color: #CF364C;
           margin: 0 0 3.6cqw;
         }
         .vc-recipient {
           font-family: var(--font-display-editorial);
-          font-style: italic;
+          font-weight: 600;
           font-size: 4.2cqw;
-          color: #f4ecd8;
+          color: #FEF7D7;
           margin: 0 0 2.6cqw;
           max-width: 100%;
           overflow-wrap: anywhere;
@@ -330,15 +332,14 @@ export function VoucherConfigurator({
           font-size: 6.4cqw;
           line-height: 1.3;
           margin: 0;
-          color: #fbf6ea;
+          color: #FEF7D7;
         }
         .vc-message span { display: block; }
         .vc-personal {
-          font-family: Georgia, "Times New Roman", serif;
-          font-style: italic;
+          font-family: var(--font-body-editorial);
           font-size: 3.2cqw;
           line-height: 1.5;
-          color: #e7dcc4;
+          color: #FEF9E3;
           margin: 3.6cqw 0 0;
           max-width: 72cqw;
           overflow-wrap: anywhere;
@@ -347,14 +348,14 @@ export function VoucherConfigurator({
           width: 12.5cqw;
           height: 0.24cqw;
           min-height: 1px;
-          background: #d4a017;
+          background: #CF364C;
           margin: 4cqw 0 2.6cqw;
           border: 0;
         }
         .vc-signed {
-          font-family: Georgia, "Times New Roman", serif;
+          font-family: var(--font-body-editorial);
           font-size: 3cqw;
-          color: #e7dcc4;
+          color: #FEF9E3;
           margin: 0;
           max-width: 100%;
           overflow-wrap: anywhere;
@@ -364,7 +365,7 @@ export function VoucherConfigurator({
           font-size: 2.4cqw;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #d4a017;
+          color: #CF364C;
           margin: 4.6cqw 0 0;
         }
         .vc-hint {
@@ -382,16 +383,12 @@ export function VoucherConfigurator({
         .vc-field { display: flex; flex-direction: column; gap: 8px; }
         .vc-label {
           font-family: var(--font-body-editorial);
-          font-size: 11px;
+          font-size: 13px;
           font-weight: 600;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
           color: var(--ink-soft);
         }
         .vc-optional {
-          font-weight: 500;
-          letter-spacing: 0.04em;
-          text-transform: none;
+          font-weight: 400;
           color: var(--ink-mute);
         }
         .vc-swatches { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -413,7 +410,7 @@ export function VoucherConfigurator({
         }
         .vc-swatch:focus-visible {
           outline: none;
-          box-shadow: 0 0 0 2px var(--gold), 0 0 0 4px var(--bg, #fbf5e3);
+          box-shadow: 0 0 0 2px var(--gold), 0 0 0 4px var(--bg, #FFFDF3);
         }
         .vc-swatch-check { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5)); }
         .vc-input {
@@ -423,7 +420,7 @@ export function VoucherConfigurator({
           font-size: 15px;
           color: var(--ink);
           background: #fff;
-          border: 1px solid var(--color-border, rgba(14, 59, 100, 0.18));
+          border: 1px solid var(--color-border, rgba(27, 46, 77, 0.18));
           border-radius: 10px;
           padding: 12px 14px;
           min-height: 44px;
@@ -434,7 +431,7 @@ export function VoucherConfigurator({
         .vc-input:focus-visible {
           outline: none;
           border-color: var(--ink);
-          box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.35);
+          box-shadow: 0 0 0 2px rgba(207, 54, 76, 0.35);
         }
         @container (min-width: 720px) {
           .vc {

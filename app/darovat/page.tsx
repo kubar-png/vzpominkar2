@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Shell } from "@/components/landing/Shell";
 import { FinalCta, FinalCtaFooterLink } from "@/components/landing/FinalCta";
 import { canonical } from "@/lib/site";
+import { Logo } from "@/components/brand/Logo";
 import { GiftProductCard } from "./_components/GiftProductCard";
 
 export const metadata: Metadata = {
@@ -28,20 +29,12 @@ export const metadata: Metadata = {
  *   RIGHT (side) = kniha s vlastními otázkami — 899 Kč.
  *                  Guest configurator → /kniha/sestavit?gift=1.
  *
- * Prices come from env (same display discipline as /cenik + /kniha): a real
- * fallback so an unset/0 env (free-path dev/preview) still shows the honest
- * price. Editorial styles reused; bespoke 3-up layout in the scoped block.
- * Mobile = stacked with the app card FIRST (the page renders it first; the
- * desktop grid re-orders it to the centre column).
+ * This chooser stays number-free on purpose: the buyer sees the exact charge
+ * inside each funnel (and can compare on /cenik), so no prices are printed here.
+ * Editorial styles reused; bespoke 3-up layout in the scoped block. Mobile =
+ * stacked with the app card FIRST (the page renders it first; the desktop grid
+ * re-orders it to the centre column).
  * ─────────────────────────────────────────────────────────────────────── */
-
-const PRICE_APP = Number(process.env.PRICE_BOOK_BASE_CZK) || 2890;
-const PRICE_STANDARD = Number(process.env.PRICE_SHOP_BOOK_STANDARD_CZK) || 599;
-const PRICE_CUSTOM = Number(process.env.PRICE_SHOP_BOOK_CUSTOM_CZK) || 899;
-
-function formatCzk(n: number): string {
-  return `${n.toLocaleString("cs-CZ")} Kč`;
-}
 
 const APP_BULLETS = [
   "Online knihovna pro celou rodinu — napořád",
@@ -60,7 +53,9 @@ export default function DarovatPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Darovat Vzpomínkář</span>
+          <div className="gpc-hero-logo">
+            <Logo tone="raspberry" height={30} />
+          </div>
           <h1 style={{ maxWidth: "20ch", margin: "0 auto 24px" }}>
             Vyberte, jaký dárek to bude.
           </h1>
@@ -80,9 +75,7 @@ export default function DarovatPage() {
                 card; the desktop grid re-orders it into the centre column. */}
             <GiftProductCard
               variant="featured"
-              eyebrow="Online + tištěná kniha"
               title="Vzpomínkář pro celý rok"
-              price={formatCzk(PRICE_APP)}
               priceSub="jednorázově · přístup napořád"
               blurb="Každý týden přijde jedna otázka. Z roku vyprávění vznikne online knihovna pro celou rodinu — a na konci tištěná kniha s hlasem u každé kapitoly."
               bullets={APP_BULLETS}
@@ -94,9 +87,7 @@ export default function DarovatPage() {
             {/* LEFT — standard fill-in book */}
             <GiftProductCard
               variant="side"
-              eyebrow="Vyplňovací kniha"
               title="Kniha s připravenými otázkami"
-              price={formatCzk(PRICE_STANDARD)}
               priceSub="jednorázově · poštovné zdarma"
               blurb="Klasická tištěná kniha s našimi otázkami napříč šesti životními obdobími. Stačí vybrat, komu ji věnujete, a objednat — bez sestavování."
               ctaHref="/kniha/objednat?gift=1"
@@ -107,9 +98,7 @@ export default function DarovatPage() {
             {/* RIGHT — custom book */}
             <GiftProductCard
               variant="side"
-              eyebrow="Kniha na míru"
               title="Kniha s vlastními otázkami"
-              price={formatCzk(PRICE_CUSTOM)}
               priceSub="jednorázově · poštovné zdarma"
               blurb="Otázky si sami přidáte, odeberete nebo přepíšete. Tištěná kniha přesně o tom, co vás u vašeho blízkého zajímá."
               ctaHref="/kniha/sestavit?gift=1"
@@ -135,7 +124,6 @@ export default function DarovatPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Připravíte za pár minut"
         heading="Darujte příběh, ne další předmět."
         lede="Jednorázově, bez předplatného. Vyberte produkt nahoře a my vás provedeme zbytkem."
         ctaHref="/signup?gift=1"
@@ -151,12 +139,17 @@ export default function DarovatPage() {
         }
       />
 
-      {/* Scoped layout — editorial tokens reused (--ink #0e3b64, --gold,
-          --paper, --footer-ink cream, display font). The bespoke 3-up grid
+      {/* Scoped layout — editorial tokens reused (--ink navy, --gold raspberry,
+          --paper + --footer-ink off-white, display font). The bespoke 3-up grid
           isn't covered by a globals.css class, so it lives here; nothing below
           touches global brand sections. Mobile: single column, app card first.
           Desktop: featured centre column, wider + lifted. */}
       <style>{`
+        .gpc-hero-logo {
+          display: flex;
+          justify-content: flex-start;
+          margin: 0 0 20px;
+        }
         .gpc-grid {
           display: grid;
           grid-template-columns: 1fr;
@@ -177,10 +170,9 @@ export default function DarovatPage() {
           transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
         }
         .gpc:hover {
-          box-shadow: 0 18px 44px -22px rgba(14, 59, 100, 0.28);
+          box-shadow: 0 18px 44px -22px rgba(27, 46, 77, 0.28);
           border-color: var(--line-2);
         }
-        .gpc-eyebrow { color: var(--ink-soft); }
         .gpc-title {
           font-family: var(--font-display-editorial);
           font-size: clamp(22px, 2vw, 27px);
@@ -200,7 +192,6 @@ export default function DarovatPage() {
         .gpc-price-sub {
           font-family: var(--font-body-editorial);
           font-size: 13px;
-          letter-spacing: 0.02em;
           color: var(--ink-mute);
         }
         .gpc-blurb {
@@ -242,6 +233,24 @@ export default function DarovatPage() {
           gap: 10px;
         }
         .gpc-cta { width: 100%; justify-content: space-between; }
+        /* Side-card CTAs → raspberry outline (featured uses filled btn-gold). */
+        .gpc .btn-outline.gpc-cta {
+          border-color: var(--gold);
+          color: var(--gold);
+        }
+        .gpc .btn-outline.gpc-cta:hover {
+          background: var(--gold);
+          border-color: var(--gold);
+          color: var(--bg);
+        }
+        .gpc .btn-outline.gpc-cta .arrow {
+          background: var(--gold);
+          color: var(--bg);
+        }
+        .gpc .btn-outline.gpc-cta:hover .arrow {
+          background: var(--bg);
+          color: var(--gold);
+        }
         .gpc-note {
           font-family: var(--font-body-editorial);
           font-size: 12.5px;
@@ -256,10 +265,9 @@ export default function DarovatPage() {
           border-color: var(--card-navy);
         }
         .gpc-featured:hover {
-          box-shadow: 0 24px 56px -24px rgba(14, 59, 100, 0.55);
+          box-shadow: 0 24px 56px -24px rgba(27, 46, 77, 0.55);
           border-color: var(--card-navy);
         }
-        .gpc-featured .gpc-eyebrow { color: var(--gold); }
         .gpc-featured .gpc-title,
         .gpc-featured .gpc-price-amount { color: var(--footer-ink); }
         .gpc-featured .gpc-price-sub { color: var(--footer-mute); }
@@ -271,11 +279,9 @@ export default function DarovatPage() {
           top: 18px;
           right: 18px;
           font-family: var(--font-body-editorial);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--ink);
+          font-size: 12px;
+          font-weight: 600;
+          color: #FEF7D7;
           background: var(--gold);
           border-radius: 999px;
           padding: 6px 12px;

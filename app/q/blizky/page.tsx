@@ -22,10 +22,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const NAVY = "#0e3b64";
-const CREAM = "#faf6ec";
-const OXBLOOD = "#a8231f";
-const INK_SOFT = "rgba(14,59,100,0.72)";
+const NAVY = "#1B2E4D";
+const CREAM = "#FEF7D7";
+const INK_SOFT = "rgba(27,46,77,0.72)";
+const FONT_BODY = "var(--font-body-editorial)";
+const FONT_HEAD = "var(--font-display-editorial)";
 
 export default function QBlizkyPage() {
   return (
@@ -34,26 +35,14 @@ export default function QBlizkyPage() {
         minHeight: "100dvh",
         background: CREAM,
         color: NAVY,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: FONT_BODY,
         display: "flex",
         justifyContent: "center",
         padding: "40px 20px 56px",
       }}
     >
       <article style={{ width: "100%", maxWidth: 540 }}>
-        <p
-          style={{
-            fontFamily: "Arial, Helvetica, sans-serif",
-            fontSize: 11,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: OXBLOOD,
-            margin: "0 0 6px",
-          }}
-        >
-          Přihlašovací odkaz
-        </p>
-        <h1 style={{ fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
+        <h1 style={{ fontFamily: FONT_HEAD, fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
           Tento odkaz patří vašemu blízkému
         </h1>
 
@@ -76,7 +65,7 @@ export default function QBlizkyPage() {
             width: "100%",
             boxSizing: "border-box",
             padding: "16px 20px",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontFamily: FONT_BODY,
             fontSize: 17,
             fontWeight: 600,
             color: CREAM,

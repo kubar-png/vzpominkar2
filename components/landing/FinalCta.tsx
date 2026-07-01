@@ -3,7 +3,11 @@ import Link from "next/link";
 import { PrimaryCta } from "./PrimaryCta";
 
 interface FinalCtaProps {
-  eyebrow: string;
+  /**
+   * Deprecated — eyebrow/kicker labels were removed brand-wide. Still accepted
+   * so existing callers keep compiling; the value is intentionally not rendered.
+   */
+  eyebrow?: string;
   heading: ReactNode;
   lede: ReactNode;
   ctaHref?: string;
@@ -20,7 +24,6 @@ interface FinalCtaProps {
  * lede paragraph, primary CTA, optional footer link.
  */
 export function FinalCta({
-  eyebrow,
   heading,
   lede,
   ctaHref,
@@ -31,7 +34,6 @@ export function FinalCta({
     <section className="signup">
       <div className="container">
         <div className="signup-card">
-          <span className="eyebrow">{eyebrow}</span>
           <h2>{heading}</h2>
           <p className="lede">{lede}</p>
           <PrimaryCta href={ctaHref} label={ctaLabel} />

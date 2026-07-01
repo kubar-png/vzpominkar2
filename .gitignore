@@ -48,3 +48,10 @@ next-env.d.ts
 vzpominkar-project.code-workspace
 .claude/scheduled_tasks.lock
 .env*.local
+
+# local design mockups + competitor research (do not commit)
+.mockups/
+.research/
+
+# Claude Code local config
+.claude/

@@ -33,8 +33,8 @@ export function PeriodToggle({ active }: { active: Period }) {
             className={
               "rounded-full px-3.5 py-1 text-sm font-medium transition-colors " +
               (isActive
-                ? "bg-zinc-900 text-white"
-                : "text-zinc-500 hover:text-zinc-900")
+                ? "bg-[#CF364C] text-white hover:bg-[#C33D50]"
+                : "text-zinc-500 hover:text-[#1B2E4D]")
             }
           >
             {label}

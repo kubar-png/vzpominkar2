@@ -36,10 +36,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const NAVY = "#0e3b64";
-const CREAM = "#faf6ec";
-const OXBLOOD = "#a8231f";
-const INK_SOFT = "rgba(14,59,100,0.72)";
+const NAVY = "#1B2E4D";
+const CREAM = "#FEF7D7";
+const OXBLOOD = "#CF364C";
+const INK_SOFT = "rgba(27,46,77,0.72)";
+const FONT_BODY = "var(--font-body-editorial)";
+const FONT_HEAD = "var(--font-display-editorial)";
 
 /** The two channels a message can be sent on; the only valid `kanal` values. */
 type Kanal = "sms" | "whatsapp";
@@ -170,8 +172,7 @@ function Notice({
   const name = seniorName?.trim() || null;
   return (
     <Page>
-      <Eyebrow>Odhlášení odběru</Eyebrow>
-      <h1 style={{ fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
+      <h1 style={{ fontFamily: FONT_HEAD, fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
         {name ? <>{name}, posíláme vám týdenní otázky na vzpomínání</> : <>Týdenní otázky na vzpomínání</>}
       </h1>
 
@@ -204,7 +205,7 @@ function Notice({
             display: "block",
             width: "100%",
             padding: "16px 20px",
-            fontFamily: "Arial, Helvetica, sans-serif",
+            fontFamily: FONT_BODY,
             fontSize: 17,
             fontWeight: 600,
             color: CREAM,
@@ -233,8 +234,7 @@ function Notice({
 function Confirmation({ channelLabel }: { channelLabel: string }) {
   return (
     <Page>
-      <Eyebrow>Hotovo</Eyebrow>
-      <h1 style={{ fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
+      <h1 style={{ fontFamily: FONT_HEAD, fontSize: 25, lineHeight: 1.25, fontWeight: 500, margin: "0 0 16px" }}>
         Odběr je zrušený
       </h1>
       <p style={{ fontSize: 17, lineHeight: 1.7, margin: "0 0 16px" }}>
@@ -259,7 +259,7 @@ function Page({ children }: { children: React.ReactNode }) {
         minHeight: "100dvh",
         background: CREAM,
         color: NAVY,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: FONT_BODY,
         display: "flex",
         justifyContent: "center",
         padding: "40px 20px 56px",
@@ -267,23 +267,6 @@ function Page({ children }: { children: React.ReactNode }) {
     >
       <article style={{ width: "100%", maxWidth: 540 }}>{children}</article>
     </main>
-  );
-}
-
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      style={{
-        fontFamily: "Arial, Helvetica, sans-serif",
-        fontSize: 11,
-        letterSpacing: "0.32em",
-        textTransform: "uppercase",
-        color: OXBLOOD,
-        margin: "0 0 6px",
-      }}
-    >
-      {children}
-    </p>
   );
 }
 
@@ -314,7 +297,7 @@ function NotAvailable() {
         minHeight: "100dvh",
         background: CREAM,
         color: NAVY,
-        fontFamily: "Georgia, 'Times New Roman', serif",
+        fontFamily: FONT_BODY,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -323,7 +306,7 @@ function NotAvailable() {
         padding: "32px 24px",
       }}
     >
-      <h1 style={{ fontSize: 24, fontWeight: 500, margin: "0 0 10px" }}>Odkaz není platný</h1>
+      <h1 style={{ fontFamily: FONT_HEAD, fontSize: 24, fontWeight: 500, margin: "0 0 10px" }}>Odkaz není platný</h1>
       <p style={{ fontSize: 15, color: INK_SOFT, maxWidth: 420, margin: 0, lineHeight: 1.6 }}>
         Tento odkaz na odhlášení se nepodařilo otevřít &mdash; možná není úplný.
         Zkuste prosím klepnout přímo na odkaz z poslední zprávy, kterou jsme vám

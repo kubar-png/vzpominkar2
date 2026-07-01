@@ -26,16 +26,15 @@ export default async function SeniorLoginPage({
     <div className="editorial">
       {/* Mobile-only top bar with logo */}
       <div className="senior-auth-mobile-bar">
-        <GoldWordmark height={24} />
+        <GoldWordmark height={24} tone="offwhite" />
       </div>
 
       <div className="senior-auth">
         {/* ── Left side: navy editorial pitch, desktop only ── */}
         <aside className="senior-auth-side" aria-hidden="false">
-          <GoldWordmark className="senior-auth-logo" height={30} />
+          <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
 
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Vyprávějící</span>
             <h2>
               Váš příběh
               <br />
@@ -53,7 +52,6 @@ export default async function SeniorLoginPage({
         {/* ── Right side: large, accessible form ── */}
         <main className="senior-auth-main" data-surface="senior">
           <div className="senior-auth-card">
-            <span className="auth-eyebrow">Přihlášení</span>
             <h1 className="auth-title">Vítejte zpátky.</h1>
             <p className="auth-lede">
               Zadejte uživatelské jméno a&nbsp;heslo, které vám rodina

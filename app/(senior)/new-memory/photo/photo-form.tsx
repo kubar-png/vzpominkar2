@@ -18,7 +18,7 @@ interface PickedPhoto {
  * Photo memory form — editorial reskin.
  *
  * Client-side compression and the Server Action upload are untouched.
- * Only the surface changed: editorial card, gold pill, sepia-frame
+ * Only the surface changed: editorial card, raspberry pill, framed
  * previews.
  */
 export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null }) {
@@ -115,7 +115,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
             className="w-full text-center rounded-xl border-2 border-dashed transition-colors hover:bg-white"
             style={{
               borderColor: "var(--ink-soft)",
-              background: "rgba(247, 233, 192, 0.35)",
+              background: "rgba(241, 195, 201, 0.35)",
               padding: "36px 24px",
               minHeight: 200,
               cursor: processing ? "not-allowed" : "pointer",
@@ -153,7 +153,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
                   style={{
                     background: "#fff",
                     border: "1px solid var(--line)",
-                    boxShadow: "0 4px 12px -4px rgba(14, 59, 100, 0.18)",
+                    boxShadow: "0 4px 12px -4px rgba(27, 46, 77, 0.18)",
                   }}
                 />
                 <button
@@ -164,7 +164,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
                   style={{
                     background: "#fff",
                     color: "var(--oxblood)",
-                    boxShadow: "0 4px 12px rgba(14, 59, 100, 0.2)",
+                    boxShadow: "0 4px 12px rgba(27, 46, 77, 0.2)",
                   }}
                 >
                   <Trash2 size={18} />

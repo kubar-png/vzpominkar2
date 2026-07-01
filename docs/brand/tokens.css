@@ -1,0 +1,29 @@
+/* Vzpomínkář — brand tokeny (z Logomanual_VZPOMINKAR.pdf).
+   Naředěné odstíny jsou zploštěné přes bílou na solidní hex (bez průhlednosti). */
+
+:root {
+  /* — Primární — */
+  --navy:            #1B2E4D;  /* Námořnická modř 100 % */
+  --navy-70:         #5F6D82;  /* 70 % */
+  --navy-30:         #BBC0CA;  /* 30 % */
+
+  --raspberry:       #CF364C;  /* Malinová růžová — tlačítka/CTA + akcenty (výraznější) */
+  --raspberry-70:    #DD7282;  /* 70 % */
+  --raspberry-30:    #F1C3C9;  /* 30 % */
+
+  --raspberry-fill:    #C33D50;  /* Malinová — plochy — barevné plochy (méně výrazná) */
+  --raspberry-fill-70: #D57784;  /* 70 % */
+  --raspberry-fill-30: #EDC5CA;  /* 30 % */
+
+  /* — Sekundární — */
+  --offwhite:        #FEF7D7;  /* Off-White 100 % */
+  --offwhite-70:     #FEF9E3;  /* 70 % */
+  --offwhite-30:     #FFFDF3;  /* 30 % */
+
+  /* — Logo (skutečná barva uvnitř SVG; mírně jasnější než swatch) — */
+  --logo-raspberry:  #D5364D;
+
+  /* — Fonty — */
+  --font-display: 'Bree Serif', Georgia, serif;     /* nadpisy */
+  --font-body:    'Host Grotesk', system-ui, sans-serif; /* UI / text */
+}

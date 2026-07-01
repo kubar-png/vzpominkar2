@@ -89,7 +89,6 @@ export default function JakToFungujePage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Jak to funguje</span>
           <h1 style={{ maxWidth: "20ch", margin: "0 auto 24px" }}>
             Čtyři kroky od otázky ke knize.
           </h1>
@@ -106,7 +105,6 @@ export default function JakToFungujePage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Čtyři kroky</span>
             <h2>Od první otázky po hotovou knihu.</h2>
             <p className="lede">
               Vy řešíte jen výběr otázek. Posílání, přepis, sazba i tisk
@@ -132,7 +130,6 @@ export default function JakToFungujePage() {
                   </span>
 
                   <div className="jtf-step-copy">
-                    <span className="step-label">{step.eyebrow}</span>
                     <h2>{step.title}</h2>
                     <p>{step.body}</p>
                     <p className="jtf-step-aside">{step.aside}</p>
@@ -151,7 +148,6 @@ export default function JakToFungujePage() {
       {/* ═══════════ QUOTE BELT — warm dark ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
-          <span className="eyebrow">Z dopisů, které nám chodí</span>
           <blockquote>
             „Maminka první pondělí odpověděla z čistého pocitu povinnosti.
             Třetí pondělí už čekala telefonem v ruce, kdy otázka přijde.&ldquo;
@@ -165,7 +161,6 @@ export default function JakToFungujePage() {
       <section className="section question-deck-section">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Otázky z knihovny</span>
             <h2 className="q-deck-title">
               Osm z dvou set otázek,
               <br />
@@ -186,7 +181,6 @@ export default function JakToFungujePage() {
         <div className="container">
           <div className="jtf-roles">
             <div data-reveal>
-              <span className="eyebrow">Co dělá rodina</span>
               <h2>Vy jen vyprávíte.</h2>
               <ul className="feature-list">
                 <li>Vyberete otázky, na které stojí za to odpovědět.</li>
@@ -197,7 +191,6 @@ export default function JakToFungujePage() {
             </div>
 
             <div data-reveal>
-              <span className="eyebrow">Co děláme my</span>
               <h2>My všechno ostatní.</h2>
               <ul className="feature-list">
                 <li>Posíláme otázky každé pondělí ráno v 10:00.</li>
@@ -215,7 +208,6 @@ export default function JakToFungujePage() {
       <section className="faq">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Než začnete</span>
             <h2>Tři otázky, které slyšíme nejčastěji.</h2>
             <p className="lede">
               Celý seznam najdete v plném{" "}
@@ -244,7 +236,6 @@ export default function JakToFungujePage() {
 
       {/* ═══════════ FINAL SIGNUP CARD — navy + gold ═══════════ */}
       <FinalCta
-        eyebrow="Začněte dnes"
         heading="Zeptejte se na to důležité ještě dnes."
         lede="Jednorázově, přístup napořád — bez předplatného."
         footer={

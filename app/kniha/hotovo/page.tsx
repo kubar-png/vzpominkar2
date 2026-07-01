@@ -37,7 +37,6 @@ export default async function KnihaHotovoPage({
     <Shell>
       <section className="hero" style={{ minHeight: "70vh", display: "grid", placeItems: "center" }}>
         <div className="container" style={{ maxWidth: "640px" }}>
-          <span className="eyebrow">Objednávka přijata</span>
           <h1 style={{ maxWidth: "20ch", margin: "0 auto 24px" }}>Děkujeme — knihu máme.</h1>
           <p className="lede">
             Vaši objednávku knihy vzpomínek jsme přijali. Potvrzení jsme poslali na váš e-mail.

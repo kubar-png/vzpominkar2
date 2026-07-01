@@ -18,12 +18,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-[var(--gold-soft)] border-[var(--gold-soft)] text-[var(--ink)] " +
-          "hover:bg-[var(--gold-hover)] hover:border-[var(--gold-hover)] hover:text-[var(--color-navy-900)] hover:-translate-y-px " +
+          "bg-[var(--color-accent)] border-[var(--color-accent)] text-[var(--color-paper-50)] " +
+          "hover:bg-[var(--gold-hover)] hover:border-[var(--gold-hover)] hover:text-[var(--color-paper-50)] hover:-translate-y-px " +
           "active:translate-y-0 active:bg-[var(--gold-hover)]",
         accent:
-          "bg-[var(--oxblood,#a8231f)] border-[var(--oxblood,#a8231f)] text-[var(--color-paper-50)] " +
-          "hover:bg-[var(--color-red-800)] hover:border-[var(--color-red-800)] active:bg-[var(--color-red-900)]",
+          "bg-[var(--oxblood,#CF364C)] border-[var(--oxblood,#CF364C)] text-[var(--color-paper-50)] " +
+          "hover:bg-[var(--gold-hover)] hover:border-[var(--gold-hover)] active:bg-[var(--gold-hover)]",
         secondary:
           "bg-transparent border-[var(--ink)] text-[var(--ink)] " +
           "hover:bg-[var(--ink)] hover:text-[var(--color-paper-50)]",
@@ -34,8 +34,8 @@ const buttonVariants = cva(
           "bg-transparent border-transparent text-[var(--ink)] underline-offset-4 hover:underline " +
           "!rounded-none px-0 h-auto",
         danger:
-          "bg-[var(--color-red-700)] border-[var(--color-red-700)] text-white " +
-          "hover:bg-[var(--color-red-800)] hover:border-[var(--color-red-800)] active:bg-[var(--color-red-900)]",
+          "bg-[#b3241c] border-[#b3241c] text-white " +
+          "hover:bg-[#8f1c16] hover:border-[#8f1c16] active:bg-[#6f1611]",
       },
       size: {
         sm: "h-9 pl-4 pr-3.5 text-[14px]",

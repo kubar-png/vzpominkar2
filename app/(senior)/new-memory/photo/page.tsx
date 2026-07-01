@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Přidat fotku" };
 /**
  * Photo answer page — editorial direction.
  *
- * Back link + eyebrow + PP Pangaia italic question, then the photo
+ * Back link + the question as the leading heading, then the photo
  * picker + optional caption inside an editorial card.
  */
 export default async function NewPhotoMemoryPage({
@@ -32,10 +32,7 @@ export default async function NewPhotoMemoryPage({
 
       <header className="mb-8">
         {ctx ? (
-          <>
-            <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
-          </>
+          <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
         ) : (
           <h2 className="es-question">Přidat fotku.</h2>
         )}

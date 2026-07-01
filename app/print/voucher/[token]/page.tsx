@@ -49,10 +49,10 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
 
   return (
     <>
-      {/* A5 landscape, full-bleed brand colour card with a gold frame. The
+      {/* A5 landscape, full-bleed brand colour card with a raspberry frame. The
           marketing chrome from the root layout is stripped so it never leaks
           into the PDF (a cookie bar would overlay the card in the cookie-less
-          headless session). Display headings use PP Pangaia
+          headless session). Display headings use Bree Serif
           (--font-display-loaded, set on <html> by next/font in the root
           layout). */}
       <style
@@ -77,7 +77,7 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               width: 100%;
               height: 100%;
               box-sizing: border-box;
-              border: 1.4mm solid #d4a017;
+              border: 1.4mm solid #CF364C;
               border-radius: 2mm;
               padding: 12mm 14mm;
               display: flex;
@@ -85,59 +85,49 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
               align-items: center;
               justify-content: center;
               text-align: center;
-              color: #f4ecd8;
-            }
-            .voucher-eyebrow {
-              font-family: var(--font-display-loaded), "PP Pangaia", "Palatino Linotype", Georgia, serif;
-              font-size: 11pt;
-              letter-spacing: 0.32em;
-              text-transform: uppercase;
-              color: #d4a017;
-              margin: 0 0 8mm;
+              color: #FEF7D7;
             }
             .voucher-recipient {
-              font-family: var(--font-display-loaded), "PP Pangaia", "Palatino Linotype", Georgia, serif;
-              font-style: italic;
+              font-family: var(--font-display-loaded), "Bree Serif", "Palatino Linotype", Georgia, serif;
               font-size: 16pt;
-              color: #f4ecd8;
+              color: #FEF7D7;
               margin: 0 0 6mm;
             }
             .voucher-message {
-              font-family: var(--font-display-loaded), "PP Pangaia", "Palatino Linotype", Georgia, serif;
+              font-family: var(--font-display-loaded), "Bree Serif", "Palatino Linotype", Georgia, serif;
               font-size: 26pt;
               line-height: 1.3;
               margin: 0;
-              color: #fbf6ea;
+              color: #FEF7D7;
             }
             .voucher-message span { display: block; }
             .voucher-personal {
-              font-family: Georgia, "Times New Roman", serif;
-              font-style: italic;
+              font-family: var(--font-sans-loaded), "Host Grotesk", Georgia, "Times New Roman", serif;
               font-size: 13pt;
               line-height: 1.5;
-              color: #e7dcc4;
+              color: #FEF7D7;
               margin: 8mm 0 0;
               max-width: 150mm;
             }
             .voucher-rule {
               width: 26mm;
               height: 0.5mm;
-              background: #d4a017;
+              background: #CF364C;
               margin: 9mm 0 6mm;
               border: 0;
             }
             .voucher-signed {
-              font-family: Georgia, "Times New Roman", serif;
+              font-family: var(--font-sans-loaded), "Host Grotesk", Georgia, "Times New Roman", serif;
               font-size: 12pt;
-              color: #e7dcc4;
+              color: #FEF7D7;
               margin: 0;
             }
             .voucher-brand {
-              font-family: var(--font-display-loaded), "PP Pangaia", "Palatino Linotype", Georgia, serif;
+              font-family: var(--font-display-loaded), "Bree Serif", "Palatino Linotype", Georgia, serif;
               font-size: 10pt;
               letter-spacing: 0.18em;
               text-transform: uppercase;
-              color: #d4a017;
+              color: #FEF7D7;
               margin: 10mm 0 0;
             }
           `,
@@ -145,8 +135,6 @@ export default async function PrintVoucherPage({ params }: { params: Promise<Par
       />
       <div className="voucher-sheet">
         <div className="voucher-frame">
-          <p className="voucher-eyebrow">Dárkový poukaz</p>
-
           {recipient ? <p className="voucher-recipient">{recipient}</p> : null}
 
           <p className="voucher-message">

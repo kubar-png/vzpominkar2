@@ -78,7 +78,6 @@ function KcIntro({ onStart }: { onStart: () => void }) {
   return (
     <section className="kc-intro">
       <div className="kc-intro-card">
-        <span className="kc-intro-eyebrow">Jak na to</span>
         <h2 className="kc-intro-title">Sestavte knihu ve třech krocích.</h2>
         <ol className="kc-intro-steps">
           {steps.map(([title, body], i) => (

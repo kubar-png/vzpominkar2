@@ -82,7 +82,6 @@ export function BookDocument({
         }}
       >
         <div className={styles.coverInner}>
-          <span className={styles.coverEyebrow}>Kniha vzpomínek</span>
           <h1 className={styles.coverTitle}>{title}</h1>
           {dedication ? <p className={styles.coverDedication}>{dedication}</p> : null}
         </div>
@@ -99,7 +98,6 @@ export function BookDocument({
           {/* ── One page per question ── */}
           {section.entries.map((entry, qi) => (
             <article key={qi} className={`${styles.page} ${styles.qpage}`}>
-              <p className={styles.qkicker}>{section.title}</p>
               <h3 className={styles.qtext}>{resolveGender(entry.question, gender ?? null)}</h3>
               {mode === "filled" && entry.answer ? (
                 <div className={styles.answerWrap}>

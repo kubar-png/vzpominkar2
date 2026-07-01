@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
 import { signOut } from "@/lib/auth/actions";
+import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
 interface AppMobileMenuProps {
@@ -74,29 +75,19 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
   return (
     <>
       {/* Top header bar - mobile only */}
-      <header className="fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 px-5 backdrop-blur-sm md:hidden">
+      <header className="fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between border-b border-[#16263f] bg-[#1B2E4D]/95 px-5 backdrop-blur-sm md:hidden">
         <Link
           href="/dashboard"
           aria-label="Vzpomínkář — domovská stránka"
           className="inline-flex"
         >
-          <span
-            aria-hidden
-            className="block"
-            style={{
-              width: 110,
-              aspectRatio: "1892 / 390",
-              backgroundColor: "var(--gold)",
-              WebkitMask: "url('/brand/logo-mask.png') no-repeat left center / contain",
-              mask: "url('/brand/logo-mask.png') no-repeat left center / contain",
-            }}
-          />
+          <Logo variant="full" tone="offwhite" height={24} />
         </Link>
         <button
           type="button"
           onClick={() => setOpen(true)}
           data-tour="mobile-menu"
-          className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-navy-900)] transition-colors hover:bg-[var(--color-paper-200)]"
+          className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-paper-100)] transition-colors hover:bg-[#16263f]"
           aria-label="Otevřít menu"
           aria-expanded={open}
         >
@@ -116,27 +107,20 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
         onClick={() => setOpen(false)}
       />
 
-      {/* Drawer - slides from right. Warm dark-brown matches desktop sidebar. */}
+      {/* Drawer - slides from right. Navy matches desktop sidebar. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Navigace"
-        className="fixed inset-y-0 right-0 z-50 flex w-[280px] flex-col bg-[#1c1814]"
+        className="fixed inset-y-0 right-0 z-50 flex w-[280px] flex-col bg-[#1B2E4D]"
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 pb-4 pt-6">
-          <div className="flex items-center gap-2 opacity-70">
-            <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden fill="none">
-              <path d="M4 0.5 L7.5 4 L4 7.5 L0.5 4 Z" stroke="var(--color-gold-400)" strokeWidth="1" />
-            </svg>
-            <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-paper-300)]">
-              Vzpomínkář
-            </span>
-          </div>
+          <Logo variant="full" tone="offwhite" height={20} />
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-paper-300)] transition-colors hover:bg-[#2d2620] hover:text-[var(--color-paper-50)]"
+            className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-paper-300)] transition-colors hover:bg-[#16263f] hover:text-[var(--color-paper-50)]"
             aria-label="Zavřít menu"
           >
             <X size={18} />
@@ -163,10 +147,10 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
             const classes = cn(
               "group relative mx-3 flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-3 transition-colors",
               active
-                ? "bg-[#2d2620] text-[var(--color-paper-50)]"
+                ? "bg-[#16263f] text-[var(--color-paper-50)]"
                 : disabled
                   ? "cursor-default text-[var(--color-paper-300)] opacity-40"
-                  : "text-[var(--color-paper-200)] hover:bg-[#2d2620] hover:text-[var(--color-paper-50)]",
+                  : "text-[var(--color-paper-200)] hover:bg-[#16263f] hover:text-[var(--color-paper-50)]",
             );
 
             const content = (
@@ -174,15 +158,15 @@ export function AppMobileMenu({ familyId, displayName, email }: AppMobileMenuPro
                 {active && (
                   <span
                     aria-hidden
-                    className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-gold-400)]"
+                    className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-[#CF364C]"
                   />
                 )}
                 <span
                   className={cn(
                     "w-7 shrink-0 font-[family-name:var(--font-display)] text-[10px]",
                     active
-                      ? "text-[var(--color-gold-400)]"
-                      : "text-[var(--color-paper-400)] group-hover:text-[var(--color-gold-400)]",
+                      ? "text-[#CF364C]"
+                      : "text-[var(--color-paper-400)] group-hover:text-[#CF364C]",
                   )}
                 >
                   {item.numeral}.

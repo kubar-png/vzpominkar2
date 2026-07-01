@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HomeMobileMenu } from "@/components/landing/HomeMobileMenu";
 import { PrimaryCta } from "@/components/landing/PrimaryCta";
+import { Logo } from "@/components/brand/Logo";
 import { MARKETING_NAV } from "@/components/landing/nav";
 
 interface SiteHeaderProps {
@@ -24,7 +25,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
         <div className="container">
           <nav className="nav" style={{ justifyContent: "center" }}>
             <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
-              <span className="logo-mark" aria-hidden="true" />
+              <Logo tone="raspberry" height={34} alt="" />
             </Link>
           </nav>
         </div>
@@ -37,7 +38,7 @@ export function SiteHeader({ variant = "full" }: SiteHeaderProps) {
       <div className="container">
         <nav className="nav">
           <Link href="/" className="logo" aria-label="Vzpomínkář — domů">
-            <span className="logo-mark" aria-hidden="true" />
+            <Logo tone="raspberry" height={34} alt="" />
           </Link>
           <div className="nav-links">
             {MARKETING_NAV.map((item) => (

@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { logoutAdmin } from "@/lib/admin/actions";
+import { Logo } from "@/components/brand/Logo";
 
 /**
  * Admin navigation — a dark, monochrome left column on desktop and a sticky top
@@ -41,10 +42,8 @@ function useActive() {
 function Wordmark() {
   return (
     <div className="flex items-center gap-2">
-      <span className="font-[family-name:var(--font-display)] text-[15px] font-semibold text-white">
-        Vzpomínkář
-      </span>
-      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+      <Logo tone="offwhite" height={22} />
+      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/70">
         Admin
       </span>
     </div>
@@ -75,7 +74,7 @@ export function AdminNav() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col bg-zinc-950 px-3 py-5 md:flex">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col bg-[#1B2E4D] px-3 py-5 md:flex">
         <div className="px-3 pb-6">
           <Wordmark />
         </div>
@@ -90,8 +89,8 @@ export function AdminNav() {
                 className={
                   "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors " +
                   (active
-                    ? "bg-white/10 text-white"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white")
+                    ? "bg-[#CF364C]/20 text-white"
+                    : "text-zinc-400 hover:bg-[#CF364C]/10 hover:text-white")
                 }
               >
                 <Icon size={17} aria-hidden className="shrink-0" />
@@ -106,7 +105,7 @@ export function AdminNav() {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-20 border-b border-zinc-800 bg-zinc-950 md:hidden">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1B2E4D] md:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <Wordmark />
           <LogoutButton subtle />
@@ -121,7 +120,7 @@ export function AdminNav() {
                 aria-current={active ? "page" : undefined}
                 className={
                   "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors " +
-                  (active ? "bg-white/10 text-white" : "text-zinc-400 hover:text-white")
+                  (active ? "bg-[#CF364C]/20 text-white" : "text-zinc-400 hover:text-white")
                 }
               >
                 <Icon size={15} aria-hidden />

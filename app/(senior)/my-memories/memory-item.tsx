@@ -16,9 +16,9 @@ interface Memory {
 /**
  * Single memory card — editorial direction.
  *
- * Date small-caps eyebrow → italic PP Pangaia question quote → optional
- * PP Pangaia title → audio player / text body / photo grid. The card uses
- * the paper surface like the marketing site's testimonial cards.
+ * Date as plain metadata → display-serif question quote → optional title →
+ * audio player / text body / photo grid. The card uses the paper surface
+ * like the marketing site's testimonial cards.
  */
 export function MemoryItem({ memory, isSenior }: { memory: Memory; isSenior: boolean }) {
   const date = new Date(memory.createdAt).toLocaleDateString("cs-CZ", {
@@ -33,7 +33,16 @@ export function MemoryItem({ memory, isSenior }: { memory: Memory; isSenior: boo
 
   return (
     <article className="es-memory">
-      <div className="es-memory-date">{date}</div>
+      <div
+        style={{
+          fontFamily: "var(--font-body-editorial)",
+          fontSize: 15,
+          color: "var(--ink-mute)",
+          marginBottom: 10,
+        }}
+      >
+        {date}
+      </div>
 
       {memory.question ? (
         <p className="es-memory-q">&bdquo;{memory.question}&ldquo;</p>

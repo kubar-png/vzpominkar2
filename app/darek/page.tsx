@@ -111,7 +111,6 @@ export default function DarekPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Vzpomínkář jako dárek</span>
           <h1 style={{ maxWidth: "20ch", margin: "0 auto 24px" }}>
             Dárek, který se otevře každý týden znovu.
           </h1>
@@ -129,7 +128,6 @@ export default function DarekPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Proč Vzpomínkář</span>
             <h2>
               Čtyři důvody,
               <br />
@@ -139,7 +137,6 @@ export default function DarekPage() {
           <div className="onas-values">
             {REASONS.map((r) => (
               <div key={r.n} className="onas-value" data-reveal>
-                <span className="onas-value-numeral">{r.n}</span>
                 <h3>{r.h}</h3>
                 <p>{r.body}</p>
               </div>
@@ -153,7 +150,6 @@ export default function DarekPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Jak to celé probíhá</span>
             <h2>
               Tři kroky.
               <br />
@@ -168,7 +164,6 @@ export default function DarekPage() {
           <div className="darek-steps">
             {STEPS.map((s) => (
               <div className="darek-step" key={s.n} data-reveal>
-                <span className="darek-step-numeral">{s.n}</span>
                 <h3>{s.h}</h3>
                 <p>{s.body}</p>
               </div>
@@ -182,7 +177,6 @@ export default function DarekPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Co u nás nastavíte</span>
             <h2>Pár polí. Žádný formulář na pět stránek.</h2>
             <p className="lede">
               Vyplníte za pár minut z gauče. Ostatní vyřešíme my.
@@ -205,7 +199,6 @@ export default function DarekPage() {
       {/* ═══════════ REASSURANCE — honest, no fabricated proof ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
-          <span className="eyebrow">Klid na duši</span>
           <blockquote>
             Píše a pomáhá vám člověk, ne robot. Vzpomínky i přístup ke knize
             zůstávají vaší rodině napořád. A když si nebudete vědět rady,
@@ -220,7 +213,6 @@ export default function DarekPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Pro jakou příležitost</span>
             <h2>
               Čtyři okamžiky,
               <br />
@@ -244,7 +236,6 @@ export default function DarekPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Připravíte za pár minut"
         heading="Darujte Vzpomínkář."
         lede="Jednorázově, přístup napořád — bez předplatného."
         ctaHref="/darovat"

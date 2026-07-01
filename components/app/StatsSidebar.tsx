@@ -71,7 +71,6 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
         {/* Hero — life-years covered (only if AI extracted something reliable) */}
         {hero ? (
           <header className="vzp-stats-hero">
-            <p className="vzp-stats-eyebrow">Vzpomínáte na</p>
             <p className="vzp-stats-num-hero">
               {hero.span} <span>let</span>
             </p>
@@ -88,7 +87,6 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
           </header>
         ) : (
           <header className="vzp-stats-hero">
-            <p className="vzp-stats-eyebrow">Zatím máte</p>
             <p className="vzp-stats-num-hero">
               {stats.memoryCount} <span>{plural(stats.memoryCount, ["vzpomínku", "vzpomínky", "vzpomínek"])}</span>
             </p>

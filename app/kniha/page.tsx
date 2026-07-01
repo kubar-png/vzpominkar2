@@ -13,14 +13,6 @@ export const metadata: Metadata = {
   alternates: { canonical: canonical("/kniha") },
 };
 
-// Tiered gift-book price (display). Mirrors priceForProductCzk on the server;
-// `|| fallback` so an unset/0 env (free-path dev/preview) still shows the real price.
-const PRICE_STANDARD = Number(process.env.PRICE_SHOP_BOOK_STANDARD_CZK) || 599;
-const PRICE_CUSTOM = Number(process.env.PRICE_SHOP_BOOK_CUSTOM_CZK) || 899;
-function formatCzk(n: number): string {
-  return `${n.toLocaleString("cs-CZ")} Kč`;
-}
-
 /* ─────────────────────────────────────────────────────────────────────────
  * /kniha — fyzická vyplňovací kniha (doplněk k appce)
  *
@@ -152,7 +144,6 @@ export default function KnihaPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Kniha vzpomínek — vyplňovací kniha</span>
           <h1 style={{ maxWidth: "24ch", margin: "0 auto 24px" }}>
             Kniha, do které blízký vlastní rukou napíše svůj život.
           </h1>
@@ -189,7 +180,6 @@ export default function KnihaPage() {
       <section className="section" style={{ paddingTop: 0 }} id="ukazka">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Ukázka otázek</span>
             <h2>
               Šest životních období.
               <br />
@@ -206,7 +196,6 @@ export default function KnihaPage() {
                 <div className="kniha-chapter-head">
                   <span className="kniha-chapter-numeral">{ch.n}</span>
                   <div>
-                    <span className="eyebrow">{ch.eyebrow}</span>
                     <h3>{ch.h}</h3>
                   </div>
                 </div>
@@ -231,7 +220,6 @@ export default function KnihaPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Proč kniha</span>
             <h2>
               Pro ty, kdo mají
               <br />
@@ -265,7 +253,6 @@ export default function KnihaPage() {
       <section className="section" style={{ paddingTop: 0 }} id="cena">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Cena</span>
             <h2>Dvě varianty, jedna kniha.</h2>
             <p className="lede">
               Jednorázová platba, poštovné zdarma (ČR i SK). Žádné předplatné.
@@ -293,16 +280,25 @@ export default function KnihaPage() {
                 gap: "12px",
               }}
             >
-              <span className="eyebrow">Doporučené otázky</span>
-              <div
+              <h3
                 style={{
                   fontFamily: "var(--font-display-editorial)",
-                  fontSize: "36px",
+                  fontSize: "28px",
                   fontWeight: 500,
                   color: "var(--ink)",
+                  margin: 0,
                 }}
               >
-                {formatCzk(PRICE_STANDARD)}
+                Doporučené otázky
+              </h3>
+              <div
+                style={{
+                  fontFamily: "var(--font-body-editorial)",
+                  fontSize: "18px",
+                  color: "var(--ink-soft)",
+                }}
+              >
+                V testovací verzi zdarma
               </div>
               <p style={{ flex: 1 }}>
                 Naše otázky napříč šesti životními obdobími. Stačí vybrat, komu
@@ -330,16 +326,25 @@ export default function KnihaPage() {
                 gap: "12px",
               }}
             >
-              <span className="eyebrow">Vlastní otázky</span>
-              <div
+              <h3
                 style={{
                   fontFamily: "var(--font-display-editorial)",
-                  fontSize: "36px",
+                  fontSize: "28px",
                   fontWeight: 500,
                   color: "var(--ink)",
+                  margin: 0,
                 }}
               >
-                {formatCzk(PRICE_CUSTOM)}
+                Vlastní otázky
+              </h3>
+              <div
+                style={{
+                  fontFamily: "var(--font-body-editorial)",
+                  fontSize: "18px",
+                  color: "var(--ink-soft)",
+                }}
+              >
+                V testovací verzi zdarma
               </div>
               <p style={{ flex: 1 }}>
                 Otázky si sami přidáte, odeberete nebo přepíšete. Kniha přesně
@@ -362,7 +367,6 @@ export default function KnihaPage() {
       <section className="faq">
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Než objednáte</span>
             <h2>Co se nejčastěji ptáte.</h2>
           </div>
           <div className="faq-list">
@@ -383,7 +387,6 @@ export default function KnihaPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Darujte vzpomínky"
         heading="Než ty příběhy vyblednou."
         lede="Jednorázově, poštovné zdarma — kniha, kterou si nikdo nekoupí v obchodě úplně stejnou."
         ctaHref="/kniha/sestavit"

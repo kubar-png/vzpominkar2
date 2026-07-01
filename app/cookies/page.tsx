@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 export default function CookiesPage() {
   return (
     <LegalLayout
-      eyebrow="Cookies"
       title={
         <>
           Co o vás ukládáme do prohlížeče.

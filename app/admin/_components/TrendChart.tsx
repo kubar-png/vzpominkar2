@@ -56,8 +56,8 @@ export function TrendChart({
 }: TrendChartProps) {
   // Recharts needs a stable numeric key per point; map to a plain shape.
   const chartData = data.map((p) => ({ t: p.t, v: p.v }));
-  const stroke = "#71717a"; // zinc-500
-  const fill = "#e4e4e7"; // zinc-200
+  const stroke = "#5F6D82"; // navy 70
+  const fill = "#BBC0CA"; // navy 30
 
   return (
     <div style={{ width: "100%", height }} aria-hidden>
@@ -65,7 +65,7 @@ export function TrendChart({
         {variant === "bar" ? (
           <BarChart data={chartData} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
             <Tooltip
-              cursor={{ fill: "rgba(228,228,231,0.4)" }}
+              cursor={{ fill: "rgba(187,192,202,0.4)" }}
               content={<TrendTooltip money={money} />}
             />
             <Bar dataKey="v" fill={stroke} radius={[1, 1, 0, 0]} isAnimationActive={false} />

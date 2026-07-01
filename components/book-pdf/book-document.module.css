@@ -6,15 +6,16 @@
  * only ink (text/lines) prints. The on-screen preview shows white sheets on a
  * grey desk for legibility — that white is not printed.
  *
- * Body = Georgia (classic book serif). Headings = the web display face
- * (--font-display-loaded, PP Pangaia), set on <html> by next/font. */
+ * Body = Georgia (classic book serif, kept for print readability). Headings =
+ * the web display face (--font-display-loaded, Bree Serif), set on <html> by
+ * next/font. */
 @page {
   size: 176mm 250mm;
   margin: 14mm 16mm;
 }
 
 .doc {
-  background: #6b6660;
+  background: #1B2E4D;
   padding: 28px 0;
   display: flex;
   flex-direction: column;
@@ -28,7 +29,7 @@
   box-sizing: border-box;
   padding: 14mm 16mm;
   background: #fff;
-  color: #0e3b64;
+  color: #1B2E4D;
   font-family: Georgia, "Times New Roman", serif;
   box-shadow: 0 10px 36px rgba(0, 0, 0, 0.28);
   position: relative;
@@ -74,7 +75,7 @@
   /* The cover is a printed colour panel — keep its background (the .page rule
    * above blanks every other sheet so coloured paper shows through). */
   .cover {
-    background: var(--cover-bg, #0e3b64);
+    background: var(--cover-bg, #1B2E4D);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -90,15 +91,15 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: var(--cover-bg, #0e3b64);
-  color: var(--cover-ink, #e8c66a);
+  background: var(--cover-bg, #1B2E4D);
+  color: var(--cover-ink, #FEF7D7);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 .coverInner {
   width: 100%;
   flex: 1;
-  border: 1.5px solid var(--cover-ink, #e8c66a);
+  border: 1.5px solid var(--cover-ink, #FEF7D7);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,26 +107,18 @@
   gap: 8mm;
   padding: 20mm 12mm;
 }
-.coverEyebrow {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 10pt;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--cover-ink, #e8c66a);
-}
 .coverTitle {
   margin: 0;
   font-family: var(--font-display-loaded), Georgia, serif;
   font-size: 34pt;
   line-height: 1.12;
   font-weight: 500;
-  color: var(--cover-ink, #e8c66a);
+  color: var(--cover-ink, #FEF7D7);
 }
 .coverDedication {
   margin: 0;
-  font-style: italic;
   font-size: 13pt;
-  color: var(--cover-ink, #e8c66a);
+  color: var(--cover-ink, #FEF7D7);
   opacity: 0.85;
 }
 
@@ -139,7 +132,7 @@
   font-family: var(--font-display-loaded), Georgia, serif;
   font-size: 90pt;
   line-height: 1;
-  color: #a8231f;
+  color: #CF364C;
 }
 .chapterTitle {
   margin: 6mm 0 0;
@@ -149,14 +142,6 @@
 }
 
 /* ── Question page ── */
-.qkicker {
-  margin: 0 0 5mm;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 8pt;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #a8231f;
-}
 .qtext {
   margin: 0 0 7mm;
   font-family: var(--font-display-loaded), Georgia, serif;
@@ -173,8 +158,8 @@
   margin-top: 12mm;
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(14, 59, 100, 0.26) 0,
-    rgba(14, 59, 100, 0.26) 1px,
+    rgba(27, 46, 77, 0.26) 0,
+    rgba(27, 46, 77, 0.26) 1px,
     transparent 1px,
     transparent 12mm
   );
@@ -204,7 +189,7 @@
   font-size: 6pt;
   line-height: 1.25;
   letter-spacing: 0.02em;
-  color: rgba(14, 59, 100, 0.55);
+  color: rgba(27, 46, 77, 0.55);
 }
 .answer {
   margin: 0;
@@ -225,8 +210,8 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: #ede4cf;
-  border: 1px solid rgba(168, 35, 31, 0.25);
+  background: #FEF7D7;
+  border: 1px solid rgba(207, 54, 76, 0.25);
 }
 
 /* ── On-screen preview footer (QR placeholder · spacing) ──
@@ -241,18 +226,18 @@
   justify-content: space-between;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
-  color: rgba(14, 59, 100, 0.5);
+  color: rgba(27, 46, 77, 0.5);
 }
 .qr {
   width: 13mm;
   height: 13mm;
-  border: 1px solid rgba(14, 59, 100, 0.3);
+  border: 1px solid rgba(27, 46, 77, 0.3);
   border-radius: 2px;
   display: grid;
   place-items: center;
   font-size: 6pt;
   letter-spacing: 0.12em;
-  color: rgba(14, 59, 100, 0.45);
+  color: rgba(27, 46, 77, 0.45);
   object-fit: contain;
 }
 
@@ -271,16 +256,16 @@
 }
 .noPrint button {
   cursor: pointer;
-  border: 1px solid #d8cdb0;
-  background: #fcf9ee;
+  border: 1px solid #F1C3C9;
+  background: #FFFDF3;
   border-radius: 7px;
   padding: 7px 12px;
   font-size: 13px;
 }
 .noPrint button[data-active="true"] {
-  background: #0e3b64;
+  background: #1B2E4D;
   color: #fff;
-  border-color: #0e3b64;
+  border-color: #1B2E4D;
 }
 @media print {
   .noPrint {

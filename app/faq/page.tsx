@@ -124,15 +124,15 @@ const CATEGORIES: Category[] = [
     items: [
       {
         q: "Kdy a kolik se platí?",
-        a: "Jednorázových 2 890 Kč za přístup k jedné knize — jeden blízký a až 52 otázek, napořád, včetně první tištěné knihy. Žádné předplatné, nic se neobnovuje. Další blízký nebo další díl stojí 1 790 Kč.",
+        a: "Jednorázově za přístup k jedné knize — jeden blízký a až 52 otázek, napořád, včetně první tištěné knihy. Žádné předplatné, nic se neobnovuje. V testovací verzi je přístup zdarma.",
       },
       {
         q: "Co se stane, když vyčerpám 52 otázek?",
-        a: "Tím je kniha plná. Můžete objednat tisk a/nebo si pořídit další díl (1 790 Kč) a plynule pokračovat — vznikne Díl 2 s dalšími 52 otázkami o stejném blízkém. Přístup k hotové knize i vzpomínkám máte napořád.",
+        a: "Tím je kniha plná. Můžete objednat tisk a/nebo si pořídit další díl a plynule pokračovat — vznikne Díl 2 s dalšími 52 otázkami o stejném blízkém. Přístup k hotové knize i vzpomínkám máte napořád.",
       },
       {
         q: "Mohu mít víc seniorů — babičku i dědu?",
-        a: "Ano. Dalšího blízkého přidáte za 1 790 Kč — každý má svou vlastní knihu a svůj jednoduchý přístup. Babička i děda tak mohou vyprávět souběžně, každý svůj příběh.",
+        a: "Ano. Dalšího blízkého přidáte kdykoli — každý má svou vlastní knihu a svůj jednoduchý přístup. Babička i děda tak mohou vyprávět souběžně, každý svůj příběh.",
       },
     ],
   },
@@ -192,7 +192,6 @@ export default function FaqPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Časté otázky</span>
           <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
             Na co se ptáte nejčastěji.
           </h1>
@@ -213,7 +212,6 @@ export default function FaqPage() {
 
       {/* ═══════════ FINAL CTA — navy signup-card ═══════════ */}
       <FinalCta
-        eyebrow="Stále váháte?"
         heading="Přístup ke knize, jednou a napořád."
         lede="Jednorázově, bez předplatného. Tištěnou knihu si objednáte, až budete mít vzpomínek dost."
         footer={

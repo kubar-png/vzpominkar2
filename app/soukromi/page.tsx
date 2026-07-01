@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 export default function SoukromiPage() {
   return (
     <LegalLayout
-      eyebrow="Ochrana soukromí"
       title={
         <>
           Vaše vzpomínky patří vám.
@@ -322,8 +321,8 @@ export default function SoukromiPage() {
         </dd>
         <dt>Vaše právo se kdykoliv odhlásit</dt>
         <dd>
-          V&nbsp;každé zprávě je odkaz <em>„Proč vám píšeme a&nbsp;jak se
-          odhlásit&ldquo;</em>. Jedním klepnutím na&nbsp;něj posílání okamžitě
+          V&nbsp;každé zprávě je odkaz <strong>„Proč vám píšeme a&nbsp;jak se
+          odhlásit&ldquo;</strong>. Jedním klepnutím na&nbsp;něj posílání okamžitě
           zastavíte &mdash; bez přihlašování a&nbsp;bez vysvětlování. Máte také
           právo vznést námitku proti zpracování a&nbsp;všechna ostatní práva
           uvedená výše v&nbsp;části „Vaše práva&ldquo;.

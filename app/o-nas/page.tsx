@@ -72,7 +72,6 @@ export default function ONasPage() {
       {/* ═══════════ HERO ═══════════ */}
       <section className="hero">
         <div className="container">
-          <span className="eyebrow">Náš příběh</span>
           <h1 style={{ maxWidth: "22ch", margin: "0 auto 24px" }}>
             Pomalá kniha jednoho života.
           </h1>
@@ -91,7 +90,6 @@ export default function ONasPage() {
           <div className="story-block dark" data-reveal>
             <div className="story-video" aria-hidden />
             <div>
-              <span className="eyebrow">Slovo zakladatelů</span>
               <h2 style={{ margin: "8px 0 20px" }}>
                 Proč jsme to vůbec začali dělat.
               </h2>
@@ -145,7 +143,6 @@ export default function ONasPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Čím se řídíme</span>
             <h2>
               Čtyři pravidla,
               <br />
@@ -160,7 +157,6 @@ export default function ONasPage() {
           <div className="onas-values">
             {VALUES.map((v) => (
               <div key={v.n} className="onas-value" data-reveal>
-                <span className="onas-value-numeral">{v.n}</span>
                 <h3>{v.h}</h3>
                 <p>{v.body}</p>
               </div>
@@ -172,7 +168,6 @@ export default function ONasPage() {
       {/* ═══════════ TEAM — warm-dark testimonial grid ═══════════ */}
       <section className="feature-quote dark">
         <div className="container">
-          <span className="eyebrow">Lidé za knihou</span>
           <blockquote>
             Malá parta. Velký důraz na detail.
           </blockquote>
@@ -195,7 +190,6 @@ export default function ONasPage() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Náš slib</span>
             <h2>
               Co u nás vždycky platí.
             </h2>
@@ -215,7 +209,6 @@ export default function ONasPage() {
 
       {/* ═══════════ FINAL CTA ═══════════ */}
       <FinalCta
-        eyebrow="Začněte dnes"
         heading="Pošlete vašemu blízkému první otázku."
         lede="Jednorázově, přístup napořád — bez předplatného."
         footer={

@@ -12,8 +12,8 @@ export const metadata: Metadata = { title: "Napsat odpověď" };
 /**
  * Text answer page — editorial direction.
  *
- * Back link + eyebrow + PP Pangaia italic question on top, then the large
- * cream textarea inside an editorial card. Autosave logic is unchanged.
+ * Back link + the question as the leading heading, then the large
+ * textarea inside an editorial card. Autosave logic is unchanged.
  */
 export default async function NewTextMemoryPage({
   searchParams,
@@ -48,10 +48,7 @@ export default async function NewTextMemoryPage({
 
       <header className="mb-8">
         {ctx ? (
-          <>
-            <span className="es-eyebrow">Vaše otázka</span>
-            <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
-          </>
+          <h2 className="es-question">{resolveGender(ctx.question, senior.gender)}</h2>
         ) : (
           <h2 className="es-question">Napsat vzpomínku.</h2>
         )}

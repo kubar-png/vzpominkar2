@@ -7,24 +7,25 @@ type Level = 1 | 2 | 3;
  * SeniorHeading — editorial direction.
  *
  * Inherits the heading sizes from the `.editorial-senior` scope, so callers
- * don't have to repeat the clamp() formula. Pass `italic` to opt into the
- * PP Pangaia italic voice used for the weekly question and similar callouts.
+ * don't have to repeat the clamp() formula. Pass `emphasis` to opt into the
+ * display-serif voice (weight + color, no italics) used for the weekly
+ * question and similar callouts.
  */
 export interface SeniorHeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   level?: Level;
-  italic?: boolean;
+  emphasis?: boolean;
 }
 
 export function SeniorHeading({
   level = 2,
   className,
-  italic = false,
+  emphasis = false,
   children,
   ...props
 }: SeniorHeadingProps) {
   const Tag = (`h${level}` as unknown) as "h1" | "h2" | "h3";
   return (
-    <Tag className={cn(italic ? "es-question" : "", className)} {...props}>
+    <Tag className={cn(emphasis ? "es-question" : "", className)} {...props}>
       {children}
     </Tag>
   );

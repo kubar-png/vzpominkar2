@@ -22,7 +22,7 @@ export function AdminLoginForm() {
           autoCapitalize="none"
           spellCheck={false}
           required
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-[#1B2E4D] focus:ring-1 focus:ring-[#1B2E4D]"
         />
       </div>
 
@@ -36,7 +36,7 @@ export function AdminLoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-[#1B2E4D] focus:ring-1 focus:ring-[#1B2E4D]"
         />
       </div>
 
@@ -49,7 +49,7 @@ export function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-md bg-[#CF364C] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#C33D50] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B2E4D] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? "Přihlašuji…" : "Přihlásit se"}
       </button>

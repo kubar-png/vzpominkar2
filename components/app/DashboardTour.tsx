@@ -18,31 +18,26 @@ const POPOVER_W = 344;
 interface TourStep {
   /** Target element(s) — first visible one wins. Omit for a centered card. */
   selector?: string[];
-  eyebrow: string;
   title: string;
   body: string;
 }
 
 const STEPS: TourStep[] = [
   {
-    eyebrow: "Vítejte",
     title: "Tady vznikne kniha vzpomínek.",
     body: "Za chvilku vám ukážeme, kde co najdete. Je to na pár vteřin a kdykoliv můžete prohlídku zavřít.",
   },
   {
     selector: ['[data-tour="add-storyteller"]'],
-    eyebrow: "Krok 1",
     title: "Začněte vypravěčem.",
     body: "Přidáte blízkého a vytvoříte mu jednoduchý přístup — jméno a heslo, žádný e-mail. Pak už mu chodí otázky a stačí, aby vyprávěl.",
   },
   {
     selector: ['[data-tour="nav"]', '[data-tour="mobile-menu"]'],
-    eyebrow: "Krok 2",
     title: "Vaše rozcestí.",
     body: "Odsud se dostanete k rodině, otázkám i ke knize, která postupně vzniká z odpovědí. Nic složitého — jen to, co je zrovna potřeba.",
   },
   {
-    eyebrow: "A to je vše",
     title: "Zbytek se stane skoro sám.",
     body: "Jakmile začne vyprávění, objeví se na Domů a samo se skládá do knihy. Přejeme hezké vzpomínky.",
   },
@@ -246,7 +241,6 @@ export function DashboardTour() {
         <button type="button" className="vzp-tour-x" onClick={finish} aria-label="Zavřít prohlídku">
           <X size={16} />
         </button>
-        <span className="vzp-tour-eyebrow">{step.eyebrow}</span>
         <h3 className="vzp-tour-title">{step.title}</h3>
         <p className="vzp-tour-body">{step.body}</p>
 

@@ -20,8 +20,8 @@ const badgeStyle: React.CSSProperties = {
   padding: "0.4rem 0.85rem",
   fontSize: "0.78rem",
   letterSpacing: "0.04em",
-  background: "var(--color-paper-200, #f4ecd8)",
-  color: "var(--color-navy-900, #16213a)",
+  background: "var(--color-paper-200, #F3E9C8)",
+  color: "var(--color-navy-900, #101d31)",
   borderRadius: "999px",
 };
 
@@ -33,15 +33,14 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   return (
     <div className="editorial">
       <div className="senior-auth-mobile-bar">
-        <GoldWordmark height={24} />
+        <GoldWordmark height={24} tone="offwhite" />
       </div>
 
       <div className="senior-auth">
         {/* Left: navy editorial pitch (desktop) */}
         <aside className="senior-auth-side">
-          <GoldWordmark className="senior-auth-logo" height={30} />
+          <GoldWordmark className="senior-auth-logo" height={30} tone="offwhite" />
           <div className="senior-auth-pitch">
-            <span className="eyebrow">Krok 1 ze 3 · pak uvidíte cenu</span>
             <h2>
               Začněte
               <br />
@@ -75,28 +74,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         {/* Right: the form */}
         <main className="senior-auth-main">
           <div style={{ width: "100%", maxWidth: 460 }}>
-            <span className="auth-eyebrow">Registrace</span>
             <h1 className="auth-title">Vytvořte si účet.</h1>
-
-            {/* Mobile-only step + price sub-label — on desktop the navy aside
-                carries this, but the aside is hidden below 960px (the dominant
-                paid-Meta traffic), so surface "Krok 1 ze 3" + the price here. */}
-            <p
-              className="min-[960px]:hidden"
-              style={{
-                margin: "10px 0 4px",
-                fontFamily: "var(--font-body-editorial)",
-                fontSize: "12px",
-                fontWeight: 500,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: "var(--ink-soft)",
-              }}
-            >
-              {basePriceCzk > 0
-                ? `Krok 1 ze 3 · pak uvidíte cenu (${basePriceCzk.toLocaleString("cs-CZ")} Kč, jednorázově)`
-                : "Krok 1 ze 3 · poslední krok je platba"}
-            </p>
 
             <p className="auth-lede">
               Stačí vaše jméno, e-mail a&nbsp;heslo. Pak řeknete, kdo bude

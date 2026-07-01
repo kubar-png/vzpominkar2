@@ -87,7 +87,6 @@ export default async function ActivationPage({
   // charge that never happens, so we keep the field (the code is still recorded
   // as redeemed on completion) but don't render a misleading discounted total.
   let couponDiscountCzk = 0;
-  let appliedCouponCode: string | null = null;
   if (prefillCoupon && priceCzk > 0) {
     const result = await validateCoupon(admin, {
       code: prefillCoupon,
@@ -96,7 +95,6 @@ export default async function ActivationPage({
     });
     if (result.ok) {
       couponDiscountCzk = Math.min(result.amountOffCzk, priceCzk);
-      appliedCouponCode = prefillCoupon;
     }
   }
   // The amount the buyer will actually be charged for the base book (clamped).
@@ -125,20 +123,6 @@ export default async function ActivationPage({
         </p>
       ) : null}
 
-      {/* Progress strip — step two of two */}
-      <div className="flex items-center gap-4">
-        <span className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--color-red-700)]">
-          II.
-        </span>
-        <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Krok 2 ze 2 · poslední
-        </span>
-        <div className="ml-2 flex flex-1 items-center gap-1.5">
-          <span className="h-[2px] flex-1 bg-[var(--color-navy-700)]" />
-          <span className="h-[2px] flex-1 bg-[var(--color-red-700)]" />
-        </div>
-      </div>
-
       <div className="space-y-5">
         <h1
           className="max-w-[20ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.1] tracking-tight text-[var(--color-ink-900)] sm:text-4xl"
@@ -160,40 +144,10 @@ export default async function ActivationPage({
         <div className="grid gap-9 p-7 sm:p-10 md:grid-cols-[210px_1fr] md:items-center md:gap-16">
           <BookCover seniorName={seniorName} />
 
-          {/* Text stays left-aligned, but each block hugs the card's right edge. */}
+          {/* Text stays left-aligned, but each block hugs the card's right edge.
+              The price is intentionally not shown here — the exact charged
+              amount (when any) lives on the CTA below. */}
           <div className="space-y-7">
-            <div className="md:ml-auto md:w-fit md:text-right">
-              <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--color-gold-300)]">
-                Jednorázově · přístup napořád
-              </span>
-              <div className="mt-2 flex items-baseline gap-2 md:justify-end">
-                <span className="font-[family-name:var(--font-display)] text-5xl font-medium leading-none text-[var(--color-gold-400)] sm:text-6xl">
-                  {(hasAppliedDiscount ? chargedAfterCouponCzk : displayPriceCzk).toLocaleString("cs-CZ")}
-                </span>
-                <span className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper-200)]">
-                  Kč
-                </span>
-              </div>
-              {/* Honest discount breakdown — original price struck through, the
-                  applied code named, and the saving shown. Price shown here is
-                  exactly what the CTA charges. */}
-              {hasAppliedDiscount ? (
-                <div className="mt-2 space-y-0.5 md:text-right">
-                  <p className="text-sm text-[var(--color-paper-300)]">
-                    <span className="line-through">
-                      {priceCzk.toLocaleString("cs-CZ")}&nbsp;Kč
-                    </span>{" "}
-                    <span className="text-[var(--color-gold-300)]">
-                      −&nbsp;{couponDiscountCzk.toLocaleString("cs-CZ")}&nbsp;Kč
-                    </span>
-                  </p>
-                  <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-gold-300)]">
-                    Sleva {appliedCouponCode} uplatněna
-                  </p>
-                </div>
-              ) : null}
-            </div>
-
             <ul className="space-y-3 md:ml-auto md:w-fit">
               {INCLUDED.map((line) => (
                 <li key={line} className="flex items-start gap-3 text-[15px] leading-snug text-[var(--color-paper-100)]">
@@ -303,7 +257,7 @@ export default async function ActivationPage({
       {/* Honest expectation-setter instead of unverified social proof — what
           actually happens once the payment goes through. */}
       <div className="space-y-4">
-        <h2 className="text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
+        <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--color-ink-900)]">
           Co se stane po zaplacení
         </h2>
         <ol className="space-y-3">
@@ -359,7 +313,7 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
       <div
         className="relative flex aspect-[3/4] flex-col items-center justify-center gap-2.5 px-4 py-7 text-center"
         style={{
-          background: "linear-gradient(160deg, #5d3a1e 0%, #432712 55%, #2c1a09 100%)",
+          background: "linear-gradient(160deg, #24395c 0%, #1B2E4D 55%, #14243d 100%)",
           borderRadius: "3px 8px 8px 3px",
           boxShadow:
             "-3px 0 10px -3px rgba(0,0,0,.4), 0 24px 44px -18px rgba(20,15,10,.7), inset 0 0 0 1px rgba(0,0,0,.3)",
@@ -368,7 +322,7 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
         {/* gold inner frame */}
         <span
           className="pointer-events-none absolute inset-[9px] rounded-[2px]"
-          style={{ border: "1.5px solid rgba(232,201,122,0.55)" }}
+          style={{ border: "1.5px solid rgba(254,247,215,0.55)" }}
           aria-hidden
         />
         {/* spine shadow */}
@@ -377,19 +331,19 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
           style={{ background: "linear-gradient(90deg, rgba(0,0,0,.32), transparent)", borderRadius: "3px 0 0 3px" }}
           aria-hidden
         />
-        <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-[rgba(232,201,122,0.8)]">
+        <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-[rgba(254,247,215,0.8)]">
           Kniha vzpomínek
         </span>
         <span
-          className="font-[family-name:var(--font-display)] text-[26px] leading-none text-[#e8c97a]"
+          className="font-[family-name:var(--font-display)] text-[26px] leading-none text-[#FEF7D7]"
           style={{ textShadow: "0 1px 0 rgba(0,0,0,.45)" }}
         >
           Vzpomínkář
         </span>
         {seniorName ? (
-          <span className="max-w-full truncate text-[11px] text-[rgba(232,201,122,0.85)]">{seniorName}</span>
+          <span className="max-w-full truncate text-[11px] text-[rgba(254,247,215,0.85)]">{seniorName}</span>
         ) : null}
-        <span className="mt-0.5 text-[9px] uppercase tracking-[0.38em] text-[rgba(232,201,122,0.7)]">
+        <span className="mt-0.5 text-[9px] uppercase tracking-[0.38em] text-[rgba(254,247,215,0.7)]">
           Díl 1 · 2026
         </span>
       </div>

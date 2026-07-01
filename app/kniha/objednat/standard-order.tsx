@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { GoldWordmark } from "@/components/brand/GoldWordmark";
+import { Logo } from "@/components/brand/Logo";
 import { BOOK_PHASES } from "@/lib/book-shop/phases";
 import { type Gender } from "@/lib/gender";
 import { createGiftOrder, type CreateGiftOrderInput } from "@/lib/shop/order-actions";
@@ -26,7 +26,7 @@ import {
   type CoverText,
 } from "@/lib/book/cover";
 
-/* Standard gift book (599 Kč) — our curated questions, no editing. A familiar
+/* Standard gift book — our curated questions, no editing. A familiar
  * checkout that mirrors the owner login split (navy pitch + vertically-centered
  * form), with an order summary, the standard gold submit button and trust
  * signals by the CTA. The custom book lives in the configurator (/kniha/sestavit). */
@@ -91,6 +91,10 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
   const giftwrapSurcharge = giftwrap ? GIFTWRAP_CZK : 0;
   const totalCzk = basePriceCzk + coverSurcharge + giftwrapSurcharge;
   const hasSurcharge = coverSurcharge > 0 || giftwrapSurcharge > 0;
+  // Free testing version: env base price unset → 0. While that's the case we
+  // hide every Kč figure and show a "V testovací verzi zdarma" state instead.
+  // Once the price env is configured the real amounts flow through unchanged.
+  const isTestFree = basePriceCzk === 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -131,9 +135,8 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
       {/* Left — NARROW STATIC navy rail (desktop): brand pitch + a live order
           summary + trust, pinned in view while only the right column scrolls. */}
       <aside className="senior-auth-side">
-        <GoldWordmark className="senior-auth-logo" height={28} />
+        <Logo variant="full" tone="offwhite" className="senior-auth-logo" height={28} />
         <div className="senior-auth-pitch">
-          <span className="eyebrow">Kniha vzpomínek</span>
           <h2>
             Příběh, který
             <br />
@@ -157,15 +160,15 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           <div className="co-rail-lines">
             <div className="co-rail-line">
               <span>Kniha s otázkami</span>
-              <span>{formatCzk(basePriceCzk)}</span>
+              <span>{isTestFree ? "zdarma" : formatCzk(basePriceCzk)}</span>
             </div>
-            {coverSurcharge > 0 ? (
+            {!isTestFree && coverSurcharge > 0 ? (
               <div className="co-rail-line">
                 <span>Barevný přebal</span>
                 <span>+{formatCzk(coverSurcharge)}</span>
               </div>
             ) : null}
-            {giftwrapSurcharge > 0 ? (
+            {!isTestFree && giftwrapSurcharge > 0 ? (
               <div className="co-rail-line">
                 <span>Dárkové balení</span>
                 <span>+{formatCzk(giftwrapSurcharge)}</span>
@@ -174,7 +177,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           </div>
           <div className="co-rail-total">
             <span>Celkem</span>
-            <strong>{formatCzk(totalCzk)}</strong>
+            <strong>{isTestFree ? "V testovací verzi zdarma" : formatCzk(totalCzk)}</strong>
           </div>
           <ul className="co-rail-trust">
             {TRUST.map((t) => (
@@ -187,7 +190,6 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
       {/* Right — the ONLY thing that scrolls */}
       <main className="senior-auth-main">
         <form className="co-checkout" onSubmit={handleSubmit}>
-          <span className="auth-eyebrow">Objednávka</span>
           <h1 className="auth-title">Vaše kniha vzpomínek</h1>
           <p className="auth-lede">Vyberte přebal a vyplňte doručení — poštovné zdarma, bez účtu.</p>
 
@@ -201,7 +203,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
                 <strong>Standardní kniha vzpomínek</strong>
                 <span>{STANDARD_QUESTION_COUNT} doporučených otázek · 6 životních období</span>
               </div>
-              <span className="co-summary-price">{formatCzk(basePriceCzk)}</span>
+              <span className="co-summary-price">{isTestFree ? "Zdarma" : formatCzk(basePriceCzk)}</span>
             </div>
           </div>
 
@@ -243,7 +245,13 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
                       onClick={() => chooseCoverBg(o.value)}
                       aria-pressed={coverBg === o.value}
                       aria-label={o.label}
-                      title={isPremiumCover(o.value) ? `${o.label} — +${COVER_PREMIUM_CZK} Kč` : `${o.label} — v ceně`}
+                      title={
+                        isTestFree
+                          ? o.label
+                          : isPremiumCover(o.value)
+                            ? `${o.label} — +${COVER_PREMIUM_CZK} Kč`
+                            : `${o.label} — v ceně`
+                      }
                       className={`co-swatch${coverBg === o.value ? " is-on" : ""}`}
                       style={{ background: o.hex }}
                     />
@@ -268,7 +276,9 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
                   </div>
                 </div>
                 <p className="co-note" style={{ marginLeft: 0 }}>
-                  Hnědá je v ceně · ostatní barvy +{COVER_PREMIUM_CZK} Kč
+                  {isTestFree
+                    ? "V testovací verzi je vše zdarma"
+                    : `Hnědá je v ceně · ostatní barvy +${COVER_PREMIUM_CZK} Kč`}
                 </p>
               </div>
             </details>
@@ -348,7 +358,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
                 <strong>Dárkové balení s raženým věnováním</strong>
                 <span>Zabalíme jako dárek a na desky vyrazíme věnování.</span>
               </span>
-              <span className="co-wrap-price">+{formatCzk(GIFTWRAP_CZK)}</span>
+              <span className="co-wrap-price">{isTestFree ? "zdarma" : `+${formatCzk(GIFTWRAP_CZK)}`}</span>
             </label>
 
             {giftwrap ? (
@@ -400,7 +410,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           {/* Mobile-only total (on desktop the rail carries it). */}
           <div className="co-aside">
             <div className="co-total">
-              {hasSurcharge ? (
+              {!isTestFree && hasSurcharge ? (
                 <div className="co-lines">
                   <div className="co-line">
                     <span>Kniha s doporučenými otázkami</span>
@@ -422,7 +432,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
               ) : null}
               <div className="co-total-row">
                 <span>Celkem</span>
-                <strong>{formatCzk(totalCzk)}</strong>
+                <strong>{isTestFree ? "V testovací verzi zdarma" : formatCzk(totalCzk)}</strong>
               </div>
             </div>
           </div>
@@ -433,7 +443,7 @@ export function StandardOrder({ basePriceCzk }: { basePriceCzk: number }) {
           <button type="submit" className="auth-submit" disabled={submitting}>
             {submitting
               ? "Odesíláme…"
-              : totalCzk > 0
+              : !isTestFree && totalCzk > 0
                 ? `Přejít k platbě · ${formatCzk(totalCzk)}`
                 : "Přejít k platbě"}
             <span className="arrow" aria-hidden>

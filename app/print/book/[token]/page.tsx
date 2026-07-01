@@ -38,7 +38,7 @@ export default async function PrintBookPage({ params }: { params: Promise<Params
       <style
         dangerouslySetInnerHTML={{
           __html:
-            ".cookie-bar{display:none!important}body{margin:0;background:#6b6660}",
+            ".cookie-bar{display:none!important}body{margin:0;background:#1B2E4D}",
         }}
       />
       <BookDocument

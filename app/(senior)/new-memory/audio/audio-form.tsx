@@ -353,7 +353,7 @@ function BigAudioPlayer({ src, duration }: { src: string; duration: number }) {
           onClick={toggle}
           aria-label={playing ? "Pozastavit" : "Přehrát"}
           className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
-          style={{ background: "var(--ink)", color: "var(--gold)" }}
+          style={{ background: "var(--ink)", color: "#FEF7D7" }}
         >
           {playing ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
         </button>

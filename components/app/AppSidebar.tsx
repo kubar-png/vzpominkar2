@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Users, MessageSquare, BookOpen, Settings, LogOut, Archive } from "lucide-react";
 import { signOut } from "@/lib/auth/actions";
+import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -53,10 +54,10 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
     const classes = cn(
       "group relative mx-3 flex items-center gap-4 rounded-[var(--radius-md)] px-4 py-3.5 transition-colors",
       active
-        ? "bg-[#2d2620] text-[var(--color-paper-50)]"
+        ? "bg-[#16263f] text-[var(--color-paper-50)]"
         : disabled
           ? "cursor-default text-[var(--color-paper-300)] opacity-40"
-          : "text-[var(--color-paper-200)] hover:bg-[#2d2620] hover:text-[var(--color-paper-50)]",
+          : "text-[var(--color-paper-200)] hover:bg-[#16263f] hover:text-[var(--color-paper-50)]",
     );
 
     const content = (
@@ -64,7 +65,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
         {active && (
           <span
             aria-hidden
-            className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-gold-400)]"
+            className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[#CF364C]"
           />
         )}
         {/* Roman numeral */}
@@ -72,10 +73,10 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
           className={cn(
             "w-7 shrink-0 font-[family-name:var(--font-display)] text-xs",
             active
-              ? "text-[var(--color-gold-400)]"
+              ? "text-[#CF364C]"
               : disabled
                 ? "text-[var(--color-paper-400)]"
-                : "text-[var(--color-paper-400)] group-hover:text-[var(--color-gold-400)]",
+                : "text-[var(--color-paper-400)] group-hover:text-[#CF364C]",
           )}
         >
           {item.numeral}.
@@ -108,25 +109,15 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#1c1814] md:flex">
-      {/* Logo — gold wordmark via CSS mask, matches homepage */}
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#1B2E4D] md:flex">
+      {/* Logo — off-white brand mark on the navy sidebar */}
       <div className="px-6 pb-6 pt-8">
         <Link
           href="/dashboard"
           aria-label="Vzpomínkář — domovská stránka"
           className="inline-flex"
         >
-          <span
-            aria-hidden
-            className="block"
-            style={{
-              width: 132,
-              aspectRatio: "1892 / 390",
-              backgroundColor: "var(--gold)",
-              WebkitMask: "url('/brand/logo-mask.png') no-repeat left center / contain",
-              mask: "url('/brand/logo-mask.png') no-repeat left center / contain",
-            }}
-          />
+          <Logo variant="full" tone="offwhite" height={28} />
         </Link>
       </div>
 
