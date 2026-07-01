@@ -9,6 +9,8 @@ export type MemoryItem = {
   id: string;
   title: string | null;
   text_content: string | null;
+  /** Improved-or-raw transcript for audio memories (preview on the card). */
+  transcript: string | null;
   audio_path: string | null;
   audioUrl: string | null;
   audio_duration_seconds: number | null;

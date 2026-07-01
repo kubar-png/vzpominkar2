@@ -21,7 +21,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
   const { data: rawMemories } = await supabase
     .from("memories")
     .select(
-      "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, memory_date, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
+      "id, title, text_content, audio_transcript, audio_transcript_polished, audio_path, audio_duration_seconds, status, is_favorite, created_at, memory_date, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
     )
     .eq("family_id", familyId)
     .order("is_favorite", { ascending: false })
@@ -32,6 +32,8 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
         id: string;
         title: string | null;
         text_content: string | null;
+        audio_transcript: string | null;
+        audio_transcript_polished: string | null;
         audio_path: string | null;
         audio_duration_seconds: number | null;
         status: string;
@@ -78,6 +80,7 @@ export async function MemoryFeedAsync({ familyId, seniors, limit }: MemoryFeedAs
     id: m.id,
     title: m.title,
     text_content: m.text_content,
+    transcript: m.audio_transcript_polished ?? m.audio_transcript ?? null,
     audio_path: m.audio_path,
     audioUrl: m.audio_path ? (audioUrls.get(m.audio_path) ?? null) : null,
     audio_duration_seconds: m.audio_duration_seconds,

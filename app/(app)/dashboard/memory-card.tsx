@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
+import { WaveformPlayer } from "@/components/audio/WaveformPlayer";
 import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
 import type { MemoryItem } from "./types";
 import { resolveGender } from "@/lib/gender";
@@ -33,7 +33,10 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
   const visibleImages = images.slice(0, 3);
   const extraImages = images.length - 3;
 
-  const textLong = (m.text_content?.length ?? 0) > 300;
+  // Text memories show their content; audio memories show the (improved)
+  // transcript. Long bodies collapse with a "Číst vše" toggle.
+  const body = (m.text_content ?? m.transcript ?? "").trim();
+  const textLong = body.length > 300;
 
   function onToggleFavorite() {
     const next = !favorite;
@@ -89,15 +92,16 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
 
         {/* Audio player */}
         {m.audioUrl ? (
-          <InlineAudioPlayer
+          <WaveformPlayer
             src={m.audioUrl}
             duration={m.audio_duration_seconds}
-            tone="owner"
+            memoryId={m.id}
+            variant="compact"
           />
         ) : null}
 
-        {/* Text content */}
-        {m.text_content ? (
+        {/* Text / transcript */}
+        {body ? (
           <div>
             <p
               className={[
@@ -107,7 +111,7 @@ export function MemoryCard({ memory: m, familyId }: { memory: MemoryItem; family
                 .filter(Boolean)
                 .join(" ")}
             >
-              {m.text_content}
+              {body}
             </p>
             {textLong ? (
               <button
