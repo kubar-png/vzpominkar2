@@ -159,7 +159,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
             fill={favorite ? "currentColor" : "none"}
             aria-hidden
           />
-          <span className="hidden sm:inline">{favorite ? "Oblíbené" : "Přidat oblíbenou"}</span>
+          <span className="hidden sm:inline">{favorite ? "Oblíbené" : "Přidat do oblíbených"}</span>
         </button>
         {!editing && text ? (
           <button

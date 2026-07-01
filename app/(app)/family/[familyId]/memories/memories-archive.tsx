@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { Archive, Heart, Search, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/input";
 import { EmptyState } from "@/components/app/EmptyState";
 import { FilterPill } from "@/components/app/FilterPill";
 import { WaveformPlayer } from "@/components/audio/WaveformPlayer";
+import { toggleMemoryFavorite } from "@/lib/memories/owner-actions";
 import { resolveGender } from "@/lib/gender";
 
 export type ArchiveSenior = { id: string; displayName: string };
@@ -183,6 +184,8 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
 
 function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
   const [expanded, setExpanded] = useState(false);
+  const [favorite, setFavorite] = useState(m.isFavorite);
+  const [, startFav] = useTransition();
   const date = new Date(m.createdAt).toLocaleDateString("cs-CZ", {
     day: "numeric",
     month: "long",
@@ -197,10 +200,19 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
   const body = (m.text ?? m.transcript ?? "").trim();
   const isLong = body.length > 180 || body.split("\n").length > 3;
 
+  function toggleFavorite() {
+    const next = !favorite;
+    setFavorite(next); // optimistic
+    startFav(async () => {
+      const result = await toggleMemoryFavorite(familyId, m.id, next);
+      if (result.ok === false) setFavorite(!next); // revert on failure
+    });
+  }
+
   return (
     <Card className="transition-shadow duration-200 hover:shadow-[0_8px_24px_-16px_rgba(8,35,61,0.10)]">
       <CardContent className="space-y-5 p-6 md:p-7">
-        {/* Header: date · author, favorite marker */}
+        {/* Header: date · author, clickable favorite heart in the corner */}
         <div className="flex items-start justify-between gap-3">
           <p className="text-sm font-medium text-[var(--color-navy-900)]">
             {date}
@@ -208,9 +220,19 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
               <span className="font-normal text-[var(--color-text-muted)]"> · {m.authorName}</span>
             ) : null}
           </p>
-          {m.isFavorite ? (
-            <Heart size={15} className="mt-0.5 shrink-0 text-[var(--color-red-600)]" fill="currentColor" />
-          ) : null}
+          <button
+            type="button"
+            onClick={toggleFavorite}
+            aria-label={favorite ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
+            aria-pressed={favorite}
+            className="-mr-1.5 -mt-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[var(--color-paper-100)]"
+          >
+            <Heart
+              size={17}
+              className={favorite ? "text-[var(--color-red-600)]" : "text-[var(--color-text-subtle)]"}
+              fill={favorite ? "currentColor" : "none"}
+            />
+          </button>
         </div>
 
         {/* Title + question sit together as the memory's heading block */}

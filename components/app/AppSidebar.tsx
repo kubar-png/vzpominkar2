@@ -109,7 +109,7 @@ export function AppSidebar({ familyId, displayName, email }: AppSidebarProps) {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[280px] flex-col bg-[#1B2E4D] md:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col bg-[#1B2E4D] md:flex">
       {/* Logo — off-white brand mark on the navy sidebar */}
       <div className="px-6 pb-6 pt-8">
         <Link
