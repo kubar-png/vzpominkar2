@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { EmailOtpType } from "@supabase/supabase-js";
+import type { EmailOtpType, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -60,17 +60,29 @@ export async function GET(request: NextRequest) {
   // NOT require a pre-existing PKCE code_verifier cookie. This is what makes
   // the flow work across devices.
   const supabase = await createClient();
-  const { data: verified, error } = await supabase.auth.verifyOtp({
-    token_hash: tokenHash,
-    type,
-  });
-  if (error || !verified.user) {
+
+  // The exact verifyOtp type that accepts an admin-generated magic-link token
+  // varies across Supabase versions, so for the e-mail/confirm family we try
+  // the family in order (requested type first). recovery / invite / email_change
+  // are unambiguous → single attempt.
+  const EMAIL_FAMILY: EmailOtpType[] = ["email", "magiclink", "signup"];
+  const attemptTypes = EMAIL_FAMILY.includes(type)
+    ? [type, ...EMAIL_FAMILY.filter((t) => t !== type)]
+    : [type];
+
+  let user: User | null = null;
+  for (const t of attemptTypes) {
+    const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: t });
+    if (!error && data.user) {
+      user = data.user;
+      break;
+    }
+  }
+  if (!user) {
     return NextResponse.redirect(
       new URL("/login?error=callback_failed", url.origin),
     );
   }
-
-  const user = verified.user;
   const meta = (user.user_metadata ?? {}) as { role?: string };
 
   // Mark the owner's e-mail as verified. Skip senior accounts (provisioned by

@@ -376,6 +376,41 @@ export type Database = {
         }
         Relationships: []
       }
+      test_feedback: {
+        Row: {
+          answers: Json
+          contact_email: string | null
+          created_at: string
+          id: string
+          meta: Json | null
+          profile_id: string | null
+        }
+        Insert: {
+          answers: Json
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          profile_id?: string | null
+        }
+        Update: {
+          answers?: Json
+          contact_email?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_feedback_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       memories: {
         Row: {
           audio_duration_seconds: number | null

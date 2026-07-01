@@ -18,7 +18,7 @@ import { buildSeniorEmail, normalizeUsername } from "@/lib/auth/senior-auth";
 import { requireOwner, currentUser } from "@/lib/auth/permissions";
 import { markGiftPending } from "@/lib/gift/cookie";
 import { sendEmail } from "@/lib/email/send";
-import { welcomeEmail } from "@/lib/email/templates";
+import { welcomeEmail, verifyEmail, passwordResetEmail } from "@/lib/email/templates";
 import {
   checkRateLimit,
   checkSeniorUsernameLimit,
@@ -103,7 +103,7 @@ export async function signUpOwner(
 
     if (isGift) await markGiftPending();
 
-    await sendOwnerVerificationEmail(supabase, parsed.data.email, appUrl);
+    await sendOwnerVerificationEmail(parsed.data.email, appUrl, parsed.data.displayName);
     redirect("/onboarding");
   }
 
@@ -132,17 +132,33 @@ export async function signUpOwner(
  * sets profiles.email_verified = true.
  */
 async function sendOwnerVerificationEmail(
-  supabase: Awaited<ReturnType<typeof createClient>>,
   email: string,
   appUrl: string,
+  displayName?: string,
 ): Promise<void> {
   try {
-    await supabase.auth.signInWithOtp({
+    // Generate the verify link ourselves (admin API) and send it via Resend —
+    // our own transport (verified vzpominkar.com), not Supabase's auth mailer.
+    const admin = createAdminClient();
+    const { data, error } = await admin.auth.admin.generateLink({
+      type: "magiclink",
       email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
-      },
+    });
+    const hashed = data?.properties?.hashed_token;
+    if (error || !hashed) {
+      console.error("[signup] verification link gen failed (non-fatal):", error);
+      return;
+    }
+    // token_hash → our cross-device /auth/confirm route (no PKCE cookie, no
+    // Supabase redirect-allow-list dependency).
+    const verifyUrl = `${appUrl}/auth/confirm?token_hash=${hashed}&type=email&next=/onboarding`;
+    const tpl = verifyEmail({ displayName, verifyUrl });
+    await sendEmail({
+      to: email,
+      subject: tpl.subject,
+      html: tpl.html,
+      text: tpl.text,
+      tag: "verify_email",
     });
   } catch (err) {
     console.error("[signup] verification email failed (non-fatal):", err);
@@ -163,22 +179,28 @@ export async function resendEmailVerification(): Promise<ActionResult> {
   if (!user.email) return { ok: false, error: "U účtu chybí e-mailová adresa." };
 
   const appUrl = SITE_URL;
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
+  const admin = createAdminClient();
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "magiclink",
     email: user.email,
-    options: {
-      shouldCreateUser: false,
-      emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding`,
-    },
   });
-  if (error) {
-    // Supabase throttles OTP requests (~60 s); surface a calm message.
-    if (/rate|second|limit|too many/i.test(error.message)) {
+  const hashed = data?.properties?.hashed_token;
+  if (error || !hashed) {
+    if (error && /rate|second|limit|too many/i.test(error.message)) {
       return { ok: false, error: "Odkaz jsme právě poslali. Zkuste to za chvíli znovu." };
     }
     console.error("[resendEmailVerification]", error);
     return { ok: false, error: "E-mail se nepodařilo odeslat. Zkuste to za chvíli." };
   }
+  const verifyUrl = `${appUrl}/auth/confirm?token_hash=${hashed}&type=email&next=/onboarding`;
+  const tpl = verifyEmail({ verifyUrl });
+  await sendEmail({
+    to: user.email,
+    subject: tpl.subject,
+    html: tpl.html,
+    text: tpl.text,
+    tag: "verify_email",
+  });
   return { ok: true };
 }
 
@@ -257,15 +279,35 @@ export async function requestPasswordReset(
   if (!accountRl.ok) return { ok: false, error: rateLimitMessage(accountRl.retryAfterSec) };
 
   const appUrl = SITE_URL;
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${appUrl}/auth/callback?next=/settings`,
-  });
-  if (error) {
-    console.error("[requestPasswordReset]", error);
-    return { ok: false, error: "E-mail se nepodařilo odeslat. Zkuste to za chvíli." };
+  try {
+    // Generate the recovery link via the admin API and deliver it via Resend
+    // (our transport), not Supabase's auth mailer.
+    const admin = createAdminClient();
+    const { data, error } = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+    });
+    const hashed = data?.properties?.hashed_token;
+    if (!error && hashed) {
+      const resetUrl = `${appUrl}/auth/confirm?token_hash=${hashed}&type=recovery&next=/settings`;
+      const tpl = passwordResetEmail({ resetUrl });
+      await sendEmail({
+        to: email,
+        subject: tpl.subject,
+        html: tpl.html,
+        text: tpl.text,
+        tag: "password_reset",
+      });
+    } else if (error && !/not found|no user|user.*exist/i.test(error.message)) {
+      // Unknown e-mail → generateLink errors "User not found"; swallow it so we
+      // never leak whether the account exists. Log only genuine failures.
+      console.error("[requestPasswordReset] generateLink failed:", error.message);
+    }
+  } catch (err) {
+    console.error("[requestPasswordReset] non-fatal:", err);
   }
 
+  // Always report success — never leak whether the account exists.
   return { ok: true };
 }
 
