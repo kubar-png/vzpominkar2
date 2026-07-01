@@ -73,6 +73,7 @@ export function LibraryPicker({
       </div>
 
       {activeGroup ? (
+        <div className="vzp-scroll-area max-h-[30rem] overflow-y-auto pr-2">
         <ul className="space-y-2">
           {activeGroup.prompts.map((p) => {
             const isAdded = added.has(p.id);
@@ -124,6 +125,7 @@ export function LibraryPicker({
             );
           })}
         </ul>
+        </div>
       ) : null}
     </div>
   );

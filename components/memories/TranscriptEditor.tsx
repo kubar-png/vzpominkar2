@@ -2,8 +2,6 @@
 
 import { useActionState, useEffect, useState, useTransition } from "react";
 import {
-  aiPolishMemoryTranscript,
-  revertTranscript,
   saveEditedTranscript,
   type TranscriptActionState,
 } from "@/lib/memories/transcript-actions";
@@ -17,83 +15,48 @@ interface TranscriptEditorProps {
 /**
  * Editable transcript section on the memory detail page.
  *
- * State machine:
- * - View: shows polished if present, otherwise raw, with three buttons:
- *   "Upravit text" (manual edit), "Odstranit výplně" (AI light), "Vylepšit text" (AI full)
- * - Edit: textarea + Save / Zrušit
- * - Polishing: spinner, both AI buttons disabled
- * - If polishedTranscript exists: also shows "Vrátit původní" link
+ * The transcript is already auto-improved on save (context-corrected + smoothed
+ * into readable prose), so the polished text is what we show by default. No
+ * manual "improve" buttons — just:
+ *  - "Upravit text": manual edit + save
+ *  - "Zobrazit původní přepis": a non-destructive toggle to see the raw
+ *    word-for-word recording, and back.
  */
 export function TranscriptEditor({
   memoryId,
   rawTranscript,
   polishedTranscript,
 }: TranscriptEditorProps) {
-  const initial = polishedTranscript ?? rawTranscript;
+  const improved = polishedTranscript ?? rawTranscript;
+  const hasPolish = polishedTranscript != null && polishedTranscript !== rawTranscript;
+
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(initial);
-  const [view, setView] = useState(initial);
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [current, setCurrent] = useState(improved); // improved/edited text
+  const [draft, setDraft] = useState(improved);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    setDraft(initial);
-    setView(initial);
-  }, [initial]);
+    setCurrent(improved);
+    setDraft(improved);
+  }, [improved]);
 
-  const [polishState, polishAction] = useActionState<TranscriptActionState, FormData>(
-    aiPolishMemoryTranscript,
-    null,
-  );
   const [saveState, saveAction] = useActionState<TranscriptActionState, FormData>(
     saveEditedTranscript,
     null,
   );
-  const [revertState, revertAction] = useActionState<TranscriptActionState, FormData>(
-    revertTranscript,
-    null,
-  );
 
-  // Whenever any action succeeds, sync the visible text
-  useEffect(() => {
-    if (polishState?.ok) {
-      setView(polishState.text);
-      setDraft(polishState.text);
-    }
-  }, [polishState]);
   useEffect(() => {
     if (saveState?.ok) {
-      setView(saveState.text);
+      setCurrent(saveState.text);
       setDraft(saveState.text);
       setEditing(false);
     }
   }, [saveState]);
-  useEffect(() => {
-    if (revertState?.ok) {
-      setView(rawTranscript);
-      setDraft(rawTranscript);
-    }
-  }, [revertState, rawTranscript]);
 
-  const hasPolish = polishedTranscript != null;
-  const lastError =
-    (polishState && !polishState.ok && polishState.error) ||
-    (saveState && !saveState.ok && saveState.error) ||
-    (revertState && !revertState.ok && revertState.error) ||
-    null;
-
-  function runPolish(level: "light" | "full") {
-    const fd = new FormData();
-    fd.set("memoryId", memoryId);
-    fd.set("level", level);
-    startTransition(() => polishAction(fd));
-  }
-
-  function runRevert() {
-    const fd = new FormData();
-    fd.set("memoryId", memoryId);
-    startTransition(() => revertAction(fd));
-  }
+  const lastError = (saveState && !saveState.ok && saveState.error) || null;
+  const display = showOriginal ? rawTranscript : current;
 
   function runSave() {
     const fd = new FormData();
@@ -104,7 +67,6 @@ export function TranscriptEditor({
 
   return (
     <div className="te-card">
-      {/* Expand toggle — small gold circle with rotating + icon */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -113,7 +75,7 @@ export function TranscriptEditor({
       >
         <span className="te-toggle-label">
           {open ? "Skrýt přepis" : "Zobrazit přepis nahrávky"}
-          {hasPolish ? <span className="te-edited">· upraveno</span> : null}
+          {hasPolish && !showOriginal ? <span className="te-edited">· upraveno</span> : null}
         </span>
         <span className={`te-toggle-icon${open ? " is-open" : ""}`} aria-hidden>
           +
@@ -134,7 +96,7 @@ export function TranscriptEditor({
                 <button
                   type="button"
                   onClick={runSave}
-                  disabled={isPending || draft.trim() === view.trim()}
+                  disabled={isPending || draft.trim() === current.trim()}
                   className="te-btn te-btn-gold"
                 >
                   Uložit úpravy <span className="te-btn-circle" aria-hidden>↗</span>
@@ -142,7 +104,7 @@ export function TranscriptEditor({
                 <button
                   type="button"
                   onClick={() => {
-                    setDraft(view);
+                    setDraft(current);
                     setEditing(false);
                   }}
                   disabled={isPending}
@@ -154,42 +116,24 @@ export function TranscriptEditor({
             </>
           ) : (
             <>
-              <p className="te-text">{view}</p>
+              <p className="te-text">{display}</p>
               <div className="te-actions">
-                <button
-                  type="button"
-                  onClick={() => setEditing(true)}
-                  disabled={isPending}
-                  className="te-btn te-btn-outline"
-                >
-                  Upravit text
-                </button>
-                <button
-                  type="button"
-                  onClick={() => runPolish("light")}
-                  disabled={isPending}
-                  className="te-btn te-btn-gold"
-                >
-                  {isPending ? "AI pracuje…" : "Odstranit výplně"}
-                  <span className="te-btn-circle" aria-hidden>✦</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => runPolish("full")}
-                  disabled={isPending}
-                  className="te-btn te-btn-gold"
-                >
-                  {isPending ? "AI pracuje…" : "Vylepšit text"}
-                  <span className="te-btn-circle" aria-hidden>✦</span>
-                </button>
+                {!showOriginal ? (
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    className="te-btn te-btn-outline"
+                  >
+                    Upravit text
+                  </button>
+                ) : null}
                 {hasPolish ? (
                   <button
                     type="button"
-                    onClick={runRevert}
-                    disabled={isPending}
+                    onClick={() => setShowOriginal((v) => !v)}
                     className="te-revert"
                   >
-                    Vrátit původní přepis
+                    {showOriginal ? "Zobrazit vylepšený text" : "Zobrazit původní přepis"}
                   </button>
                 ) : null}
               </div>

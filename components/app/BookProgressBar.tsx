@@ -24,7 +24,7 @@ export function BookProgressBarSkeleton() {
   return (
     <div
       aria-hidden
-      className="fixed bottom-0 left-0 right-0 z-20 md:left-[280px] flex items-center gap-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3"
+      className="vzp-progress-strip flex items-center gap-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3"
       style={{ opacity: 0.55 }}
     >
       <div className="h-3 w-24 shrink-0 rounded bg-[var(--color-paper-200)]" />
@@ -40,7 +40,7 @@ export function BookProgressBar({ count, familyId }: BookProgressBarProps) {
   const remaining = Math.max(0, ORDER_MIN - count);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-20 md:left-[280px] flex items-center gap-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3">
+    <div className="vzp-progress-strip flex items-center gap-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3">
       <span className="shrink-0 text-xs text-[var(--color-text-muted)] tabular-nums">
         {count}&thinsp;/&thinsp;{FULL_BOOK} vzpomínek
       </span>
