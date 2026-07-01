@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Mic, PenLine, Camera } from "lucide-react";
 import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentBookForSenior } from "@/lib/books/server";
@@ -131,7 +132,7 @@ export default async function SeniorHomePage() {
                 aria-label="Vyprávět nahlas"
               >
                 <span className="es-action-icon tone-gold" aria-hidden>
-                  ●
+                  <Mic size={26} strokeWidth={2} />
                 </span>
                 <div className="es-action-body">
                   <div className="es-action-title">Vyprávět nahlas</div>
@@ -146,7 +147,7 @@ export default async function SeniorHomePage() {
                 aria-label="Napsat odpověď"
               >
                 <span className="es-action-icon tone-navy" aria-hidden>
-                  ✎
+                  <PenLine size={25} strokeWidth={2} />
                 </span>
                 <div className="es-action-body">
                   <div className="es-action-title">Napsat</div>
@@ -161,7 +162,7 @@ export default async function SeniorHomePage() {
                 aria-label="Přidat fotku"
               >
                 <span className="es-action-icon tone-paper" aria-hidden>
-                  ◷
+                  <Camera size={25} strokeWidth={2} />
                 </span>
                 <div className="es-action-body">
                   <div className="es-action-title">Přidat fotku</div>

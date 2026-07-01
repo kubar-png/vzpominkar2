@@ -4426,6 +4426,16 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
 .editorial-senior .es-btn-outline .arrow { background: var(--ink); color: var(--bg); }
 .editorial-senior .es-btn-outline:hover .arrow { background: var(--bg); color: var(--ink); }
 
+/* Compact header utility button (Odhlásit) — the tall 68px senior button size is
+ * for the primary answer actions, not a header utility. */
+.editorial-senior .es-header .es-btn {
+  min-height: 0;
+  padding: 9px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 8px;
+}
+
 /* Oxblood — only for "start recording" / urgent actions. White on oxblood =
  * 8.6:1 (AAA). */
 .editorial-senior .es-btn-red {

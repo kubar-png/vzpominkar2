@@ -27,16 +27,20 @@ import { SITE_URL } from "@/lib/site";
 /* Palette                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const CREAM = "#FEF7D7";
-const PAPER = "#FFFDF3";
+const CREAM = "#FEF9E3"; // page canvas — matches the app's off-white-70 bg
+const PAPER = "#FFFDF3"; // card surface
 const INK = "#1B2E4D";
 const INK_SOFT = "#5F6D82";
-const GOLD = "#CF364C";
+const GOLD = "#CF364C"; // raspberry — CTA + brand accent
 const OXBLOOD = "#CF364C";
-const HAIRLINE = "#F1C3C9";
+const HAIRLINE = "#EADFBA"; // subtle warm border, not pink
+const QUOTE_BG = "#FDF0F2"; // soft raspberry tint behind the question
 
-const DISPLAY_FONT = `"Bree Serif", Georgia, "Times New Roman", serif`;
-const BODY_FONT = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
+// Single-quote font names: these are interpolated into double-quoted
+// style="…" attributes, so double quotes here would terminate the attribute
+// early and silently drop every property after font-family.
+const DISPLAY_FONT = `'Bree Serif', Georgia, 'Times New Roman', serif`;
+const BODY_FONT = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`;
 
 /* -------------------------------------------------------------------------- */
 /* Primitives                                                                 */
@@ -84,7 +88,7 @@ function shell(opts: {
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
         <tr>
           <td align="left" style="padding:0 8px 20px 8px;">
-            <div style="font-family:${DISPLAY_FONT};font-size:26px;color:${INK};line-height:1;">Vzpomínkář</div>
+            <div style="font-family:${DISPLAY_FONT};font-size:26px;color:${GOLD};line-height:1;">Vzpomínkář</div>
           </td>
         </tr>
       </table>
@@ -103,7 +107,7 @@ function shell(opts: {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td align="left" style="font-family:${BODY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.04em;">
-                Vzpomínkář &middot; Praha &middot; <a href="mailto:ahoj@vzpominkar.com" style="color:${INK_SOFT};text-decoration:none;">ahoj@vzpominkar.com</a>
+                Vzpomínkář &middot; <a href="mailto:ahoj@vzpominkar.com" style="color:${INK_SOFT};text-decoration:none;">ahoj@vzpominkar.com</a>
               </td>
               <td align="right" style="font-family:${DISPLAY_FONT};font-size:11px;color:${INK_SOFT};letter-spacing:0.08em;">
                 Psáno i vyprávěno
@@ -377,7 +381,7 @@ export function weeklyReminderEmail(input: {
         nebo písmem &mdash; jak je vám pohodlnější.
       </p>
 
-      <blockquote style="margin:24px 0;padding:24px 26px;background:#FEF9E3;border-left:3px solid ${OXBLOOD};border-radius:8px;font-family:${DISPLAY_FONT};font-size:24px;line-height:1.35;color:${INK};">
+      <blockquote style="margin:24px 0;padding:22px 24px;background:${QUOTE_BG};border-left:3px solid ${OXBLOOD};border-radius:8px;font-family:${DISPLAY_FONT};font-size:22px;line-height:1.4;color:${INK};">
         &bdquo;${esc(input.question)}&ldquo;
       </blockquote>
 
