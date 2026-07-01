@@ -174,17 +174,26 @@ export function WaveformPlayer({
     </div>
   );
 
-  const playButton = (size: number) => (
-    <button
-      type="button"
-      onClick={togglePlay}
-      aria-label={playing ? "Pozastavit" : "Přehrát"}
-      className="flex shrink-0 items-center justify-center rounded-full border border-[var(--color-navy-300)] text-[var(--color-navy-700)] transition-colors hover:border-[var(--color-navy-700)] hover:bg-[var(--color-navy-700)] hover:text-[var(--color-paper-50)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-navy-500)] focus-visible:ring-offset-2"
-      style={{ height: size, width: size }}
-    >
-      {playing ? <Pause size={size < 44 ? 16 : 18} /> : <Play size={size < 44 ? 16 : 18} className="translate-x-px" />}
-    </button>
-  );
+  const playButton = (size: number) => {
+    const inner = Math.round(size * 0.64);
+    const icon = size < 44 ? 14 : 16;
+    return (
+      <button
+        type="button"
+        onClick={togglePlay}
+        aria-label={playing ? "Pozastavit" : "Přehrát"}
+        className="group flex shrink-0 items-center justify-center rounded-full bg-[var(--color-navy-700)] transition-colors hover:bg-[var(--color-navy-900)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-navy-500)] focus-visible:ring-offset-2"
+        style={{ height: size, width: size }}
+      >
+        <span
+          className="flex items-center justify-center rounded-full bg-[var(--color-paper-50)] text-[var(--color-navy-800)]"
+          style={{ height: inner, width: inner }}
+        >
+          {playing ? <Pause size={icon} /> : <Play size={icon} className="translate-x-px" />}
+        </span>
+      </button>
+    );
+  };
 
   // ── Compact: single row for list cards ──────────────────────────────────
   if (compact) {
