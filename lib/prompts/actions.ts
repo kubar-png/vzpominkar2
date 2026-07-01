@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOwnerOfFamily } from "@/lib/auth/permissions";
 import { currentBookForSenior } from "@/lib/books/server";
 import { nextMondayUtc, addDays } from "@/lib/prompts/schedule";
+import { dispatchAssignmentsNow } from "@/lib/messaging/dispatch";
 
 export type PromptResult = { ok: true } | { ok: false; error: string };
 
@@ -120,8 +121,15 @@ export async function scheduleToday(
     })),
   );
 
-  const { error } = await supabase.from("prompt_assignments").insert(rows);
+  const { data: inserted, error } = await supabase
+    .from("prompt_assignments")
+    .insert(rows)
+    .select("id");
   if (error) return { ok: false, error: "Nepodařilo se naplánovat." };
+
+  // "Poslat hned" must actually DELIVER now — not just create a same-day
+  // assignment that then waits for the weekly cron.
+  await dispatchAssignmentsNow(supabase, (inserted ?? []).map((r) => r.id));
 
   revalidatePath(`/family/${familyId}/prompts`);
   revalidatePath("/dashboard");
@@ -213,8 +221,16 @@ export async function addCustomPromptAndSchedule(
     );
   }
 
-  const { error: schedErr } = await admin.from("prompt_assignments").insert(rows);
+  const { data: inserted, error: schedErr } = await admin
+    .from("prompt_assignments")
+    .insert(rows)
+    .select("id");
   if (schedErr) return { ok: false, error: "Nepodařilo se naplánovat." };
+
+  // Custom question sent with "Poslat hned" → deliver immediately.
+  if (scheduleType === "now") {
+    await dispatchAssignmentsNow(admin, (inserted ?? []).map((r) => r.id));
+  }
 
   revalidatePath(`/family/${familyId}/prompts`);
   revalidatePath("/dashboard");

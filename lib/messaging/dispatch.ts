@@ -14,6 +14,8 @@ import {
   renderWhatsApp,
   type RenderContext,
 } from "@/lib/messaging/render";
+import { resolveGender } from "@/lib/gender";
+import { SITE_URL } from "@/lib/site";
 
 type Admin = ReturnType<typeof createAdminClient>;
 
@@ -465,4 +467,99 @@ async function dispatchOwnerFallback(
   // Same irreversible-send-safe seam as dispatchPrompt. Email has no
   // segments/price columns to carry, so confirmExtra is empty.
   return sendAndConfirm(admin, logId, ctx.assignmentId, recipient, rendered, () => ({}));
+}
+
+/**
+ * Deliver already-created assignments RIGHT NOW (the "Poslat hned" path), rather
+ * than waiting for the weekly cron. Mirrors the cron's per-row logic: resolve
+ * gender, dispatchPrompt (channel resolution + idempotent send), and stamp
+ * reminded_at on an accepted send. Best-effort + isolated per row; never throws.
+ */
+export async function dispatchAssignmentsNow(
+  admin: Admin,
+  assignmentIds: string[],
+): Promise<{ sent: number; skipped: number; failed: number }> {
+  const out = { sent: 0, skipped: 0, failed: 0 };
+  if (assignmentIds.length === 0) return out;
+
+  const { data: assignments } = await admin
+    .from("prompt_assignments")
+    .select("id, family_id, senior_id, prompt_id, reminded_at")
+    .in("id", assignmentIds);
+  if (!assignments?.length) return out;
+
+  const promptIds = [...new Set(assignments.map((a) => a.prompt_id).filter(Boolean) as string[])];
+  const seniorIds = [...new Set(assignments.map((a) => a.senior_id).filter(Boolean) as string[])];
+  const familyIds = [...new Set(assignments.map((a) => a.family_id))];
+
+  const [{ data: prompts }, { data: seniors }, { data: owners }] = await Promise.all([
+    admin.from("prompts").select("id, question").in("id", promptIds),
+    admin
+      .from("profiles")
+      .select(
+        "id, display_name, gender, email, contact_channel, contact_address, magic_token, phone_e164, sms_attested_at, whatsapp_attested_at, sms_opt_out_at, whatsapp_opt_out_at",
+      )
+      .in("id", seniorIds.length ? seniorIds : ["00000000-0000-0000-0000-000000000000"]),
+    admin
+      .from("profiles")
+      .select("family_id, email, display_name")
+      .in("family_id", familyIds)
+      .eq("role", "owner"),
+  ]);
+
+  const questionById = new Map((prompts ?? []).map((p) => [p.id, p.question as string]));
+  const seniorById = new Map((seniors ?? []).map((s) => [s.id, s]));
+  const ownerByFamily = new Map((owners ?? []).map((o) => [o.family_id, o]));
+
+  for (const a of assignments) {
+    if (a.reminded_at) { out.skipped++; continue; }
+    const rawQ = a.prompt_id ? questionById.get(a.prompt_id) : undefined;
+    if (!rawQ) { out.skipped++; continue; }
+    const senior = a.senior_id ? seniorById.get(a.senior_id) ?? null : null;
+    const owner = ownerByFamily.get(a.family_id) ?? null;
+    const question = resolveGender(rawQ, (senior?.gender as "male" | "female" | null) ?? null);
+
+    let status: "sent" | "skipped" | "failed" = "failed";
+    try {
+      const res = await dispatchPrompt(admin, {
+        assignmentId: a.id,
+        familyId: a.family_id,
+        senior: senior
+          ? {
+              display_name: senior.display_name,
+              email: senior.email,
+              contact_channel: senior.contact_channel,
+              contact_address: senior.contact_address,
+              magic_token: senior.magic_token,
+              phone_e164: senior.phone_e164,
+              sms_attested_at: senior.sms_attested_at,
+              whatsapp_attested_at: senior.whatsapp_attested_at,
+              sms_opt_out_at: senior.sms_opt_out_at,
+              whatsapp_opt_out_at: senior.whatsapp_opt_out_at,
+            }
+          : null,
+        owner: owner ? { email: owner.email, display_name: owner.display_name } : null,
+        question,
+        appUrl: SITE_URL,
+      });
+      status = res.status;
+    } catch (err) {
+      console.error("[dispatchAssignmentsNow] threw for assignment", a.id, err);
+      status = "failed";
+    }
+
+    if (status === "sent") {
+      const { error: stampErr } = await admin
+        .from("prompt_assignments")
+        .update({ reminded_at: new Date().toISOString() })
+        .eq("id", a.id);
+      if (stampErr) console.error("[dispatchAssignmentsNow] reminded_at stamp failed", a.id, stampErr);
+      out.sent++;
+    } else if (status === "skipped") {
+      out.skipped++;
+    } else {
+      out.failed++;
+    }
+  }
+  return out;
 }
