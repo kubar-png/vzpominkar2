@@ -74,7 +74,7 @@ export function StatsSidebar({ stats }: StatsSidebarProps) {
         {hero ? (
           <header className="vzp-stats-hero">
             <p className="vzp-stats-num-hero">
-              {hero.span} <span>let</span>
+              {hero.span} <span>{plural(hero.span, ["rok", "roky", "let"])}</span>
             </p>
             <p className="vzp-stats-hero-sub">jejich života</p>
             {stats.oldestStoryLabel ? (

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kolo 2 — zaoblené sans (náhrada PP Pangaia)</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Kandidáti (display) + Instrument Sans (body — na webu se NEMĚNÍ).
+       css2 servíruje latin-ext unicode-range automaticky; &subset=latin-ext dle konvence vieweru. -->
+  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Hanken+Grotesk:wght@500;600;700&family=Urbanist:wght@500;600;700&family=Onest:wght@500;600;700&family=Albert+Sans:wght@500;600;700&display=swap&subset=latin-ext" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@500;600;700&family=Familjen+Grotesk:wght@500;600;700&family=Gantari:wght@500;600;700&family=Outfit:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap&subset=latin-ext" rel="stylesheet" />
+  <style>
+    /* ── Referenční panel 0 — PP Pangaia z repa (funguje při serveru z kořene repa) ── */
+    @font-face {
+      font-family: "PP Pangaia Local";
+      src: url("../../../public/fonts/PPPangaia-Medium.otf") format("opentype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ── Brand tokeny převzaté z app/globals.css (.editorial scope) ── */
+    :root {
+      --bg:        #f4ebd6;   /* plátno živého webu */
+      --paper:     #fbf5e3;
+      --paper-2:   #f7eed7;
+      --ink:       #0e3b64;
+      --ink-soft:  #335478;
+      --ink-mute:  #5a6e85;
+      --gold:      #d4a017;
+      --gold-soft: #e8b53d;
+      --gold-hover:#d7a31d;
+      --line:      rgba(14, 59, 100, 0.12);
+      /* tmavé chrome review nástroje */
+      --chrome:      #141519;
+      --chrome-2:    #1d1e24;
+      --chrome-line: #2c2d34;
+      --chrome-txt:  #e8e6df;
+      --chrome-mute: #8d8c93;
+      --body-font: "Instrument Sans", system-ui, -apple-system, sans-serif;
+      --h1w: 600; /* klávesa W přepíná 600 ↔ 700 (jen kandidáti, Pangaia drží 500 jako na webu) */
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--chrome);
+      color: var(--chrome-txt);
+      font-family: var(--body-font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sticky lišta s taby ── */
+    .bar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--chrome-2);
+      border-bottom: 1px solid var(--chrome-line);
+      padding: 12px 20px 0;
+    }
+    .bar-row { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+    .bar-title { font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
+    .bar-hint { font-size: 11px; color: var(--chrome-mute); margin-left: auto; white-space: nowrap; }
+    .bar-hint kbd {
+      font-family: inherit; font-size: 10px; border: 1px solid var(--chrome-line);
+      border-radius: 4px; padding: 1px 5px; background: var(--chrome); color: var(--chrome-txt);
+    }
+    .tabs {
+      display: flex; gap: 6px; overflow-x: auto; padding: 10px 0 12px;
+      scrollbar-width: thin;
+    }
+    .tab {
+      flex: 0 0 auto;
+      appearance: none; border: 1px solid var(--chrome-line); background: transparent;
+      color: var(--chrome-mute); border-radius: 999px; padding: 6px 14px;
+      font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: color 120ms, border-color 120ms, background 120ms;
+    }
+    .tab:hover { color: var(--chrome-txt); border-color: var(--chrome-mute); }
+    .tab.active { color: #14161a; background: var(--gold); border-color: var(--gold); }
+
+    /* ── Meta řádek panelu ── */
+    .meta-strip {
+      max-width: 1060px; margin: 0 auto; padding: 18px 20px 0;
+      display: flex; gap: 10px 22px; flex-wrap: wrap; align-items: baseline;
+      font-size: 12px; color: var(--chrome-mute);
+    }
+    .meta-strip .fname { font-size: 15px; font-weight: 600; color: var(--chrome-txt); }
+    .meta-strip .gold { color: var(--gold); }
+
+    /* ── Mini-homepage mock — krémový papír jako živý web ── */
+    .stage { max-width: 1060px; margin: 0 auto; padding: 14px 20px 64px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .mock {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: clamp(36px, 6vw, 72px) clamp(24px, 5vw, 64px) clamp(32px, 4vw, 56px);
+      box-shadow: 0 14px 44px rgba(0,0,0,0.45);
+      color: var(--ink);
+    }
+
+    /* hero — zrcadlí .editorial .hero (globals.css) */
+    .mock .eyebrow {
+      font-family: var(--body-font);
+      font-size: 11px; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--ink-soft);
+      display: inline-block; margin-bottom: 22px;
+    }
+    .mock h1 {
+      font-family: var(--df);
+      font-weight: var(--h1w);
+      font-size: clamp(38px, 5.4vw, 76px);
+      line-height: 1.05; letter-spacing: -0.018em;
+      color: var(--ink); margin: 0 0 22px; max-width: 17ch;
+      text-wrap: balance;
+    }
+    .panel[data-pangaia] .mock h1,
+    .panel[data-pangaia] .mock h2,
+    .panel[data-pangaia] .mock .price { font-weight: 500; } /* na webu běží Pangaia Medium */
+    .mock .lede {
+      font-family: var(--body-font);
+      font-size: clamp(16px, 1.2vw, 19px); line-height: 1.6;
+      color: var(--ink-soft); max-width: 56ch; margin: 0 0 28px;
+    }
+    /* CTA — věrná kopie .editorial .btn-gold: tlačítka na webu používají BODY font
+       (Instrument Sans 500), ne displejový — proto se s kandidátem nemění. */
+    .mock .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 11px 14px 11px 22px; border-radius: 999px;
+      background: var(--gold-soft); border: 1.5px solid var(--gold-soft);
+      color: var(--ink); text-decoration: none;
+      font-family: var(--body-font); font-size: 15px; font-weight: 500;
+      transition: background 0.2s, transform 0.2s; cursor: pointer;
+    }
+    .mock .btn:hover { background: var(--gold-hover); border-color: var(--gold-hover); transform: translateY(-1px); }
+    .mock .btn .arrow {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--ink); color: var(--gold); font-size: 13px; font-weight: 600;
+    }
+    .mock .btn-note { font-size: 11px; color: var(--ink-mute); margin: 10px 0 0; font-family: var(--body-font); }
+    .mock .trust {
+      font-family: var(--body-font); font-size: 13px; letter-spacing: 0.01em;
+      color: var(--ink-soft); margin: 18px 0 0;
+    }
+
+    .mock .divider { height: 1px; background: var(--line); margin: clamp(32px, 4vw, 52px) 0; }
+
+    /* sekce Produkt — zrcadlí .editorial h2 + p */
+    .mock h2 {
+      font-family: var(--df); font-weight: var(--h1w);
+      font-size: clamp(28px, 3.4vw, 48px); line-height: 1.06;
+      letter-spacing: -0.018em; color: var(--ink); margin: 0 0 16px; max-width: 22ch;
+    }
+    .mock .section p {
+      font-family: var(--body-font); font-size: 16px; line-height: 1.65;
+      color: var(--ink-mute); max-width: 58ch; margin: 0;
+    }
+
+    /* cenovka — displejový font (jako ceny na webu) */
+    .mock .price {
+      font-family: var(--df); font-weight: var(--h1w);
+      font-size: clamp(30px, 3vw, 42px); color: var(--ink);
+      margin: clamp(26px, 3vw, 40px) 0 0; letter-spacing: -0.01em;
+    }
+    .mock .price small { font-size: 0.5em; font-weight: 500; color: var(--ink-soft); margin-left: 8px; letter-spacing: 0; }
+
+    /* test diakritiky */
+    .mock .diatest { margin-top: clamp(26px, 3vw, 40px); padding-top: 22px; border-top: 1px dashed var(--line); }
+    .mock .diatest .label {
+      font-family: var(--body-font); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+      display: block; margin-bottom: 10px;
+    }
+    .mock .diatest .sentence {
+      font-family: var(--df); font-weight: 500; font-size: clamp(20px, 2vw, 28px);
+      line-height: 1.3; color: var(--ink); margin: 0;
+    }
+    .mock .diatest .sentence + .sentence { font-weight: 700; margin-top: 4px; }
+
+    /* varování při nenačtené Pangaii */
+    .warn {
+      display: none; margin: 0 0 14px; padding: 10px 14px; border-radius: 8px;
+      background: #4a2c12; color: #f0c987; font-size: 12.5px; line-height: 1.5;
+    }
+    .warn.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <header class="bar">
+    <div class="bar-row">
+      <span class="bar-title">Kolo 2 · Zaoblené sans — náhrada PP Pangaia</span>
+      <span class="bar-hint"><kbd>←</kbd> <kbd>→</kbd> přepíná fonty · <kbd>W</kbd> váha titulků <span id="wlabel">600</span> ↔ 700</span>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Kandidáti"></nav>
+  </header>
+
+  <div class="meta-strip" id="meta"></div>
+
+  <main class="stage" id="stage"></main>
+
+  <script>
+    /* Reálná kopie homepage (app/page.tsx) — žádný vymyšlený obsah. */
+    const COPY = {
+      eyebrow: "Vzpomínkář — kniha rodinné paměti",
+      h1: "Kolik příběhů vašeho blízkého zatím nikdo nezapsal?",
+      lede: "Týden po týdnu položíme vašemu blízkému jednu otázku. On odpoví hlasem — a my z toho za rok vyrobíme vázanou knihu, kterou otevřou i vnoučata.",
+      cta: "Začít sbírat vzpomínky",
+      trust: "2 890 Kč jednorázově · první tištěná kniha v ceně · přístup k nahrávkám napořád",
+      sectionEyebrow: "Produkt",
+      h2: "Vázaná kniha s hlasem na každé stránce.",
+      sectionP: "Z padesáti hodin vyprávění vznikne kniha, kterou udržíte v rukou. A u každé kapitoly hlas, který ji vyprávěl.",
+      price: "499 Kč",
+      diatest: "Příliš žluťoučký kůň úpěl ďábelské ódy",
+    };
+
+    const FONTS = [
+      { id: "pangaia",  tab: "0 · PP Pangaia",      name: "PP Pangaia — současný stav",
+        css: '"PP Pangaia Local", Georgia, serif', weights: "500 (Medium OTF — jediný řez na webu)",
+        note: "referenční panel: měkký serif, který majitel chce nahradit", pangaia: true },
+      { id: "gabarito", tab: "1 · Gabarito",         name: "Gabarito",
+        css: '"Gabarito", sans-serif',              weights: "500 · 600 · 700",
+        note: "geometrická, měkce zakulacené oblouky, přátelská, ale věcná" },
+      { id: "jakarta",  tab: "2 · Plus Jakarta Sans", name: "Plus Jakarta Sans",
+        css: '"Plus Jakarta Sans", sans-serif',     weights: "500 · 600 · 700",
+        note: "moderní grotesk s jemně oblými konci tahů, neutrální a velmi čitelný" },
+      { id: "hanken",   tab: "3 · Hanken Grotesk",   name: "Hanken Grotesk",
+        css: '"Hanken Grotesk", sans-serif',        weights: "500 · 600 · 700",
+        note: "humanistická, otevřené tvary, klidná — nejcivilnější čitelnost" },
+      { id: "urbanist", tab: "4 · Urbanist",         name: "Urbanist",
+        css: '"Urbanist", sans-serif',              weights: "500 · 600 · 700",
+        note: "čistá geometrie, nízký kontrast, vzdušná a elegantní" },
+      { id: "onest",    tab: "5 · Onest",            name: "Onest",
+        css: '"Onest", sans-serif',                 weights: "500 · 600 · 700",
+        note: "kulatější kresba, srdečná, ale pořád seriózní" },
+      { id: "albert",   tab: "6 · Albert Sans",      name: "Albert Sans",
+        css: '"Albert Sans", sans-serif',           weights: "500 · 600 · 700",
+        note: "skandinávská geometrie, měkké rohy, decentní" },
+      { id: "wix",      tab: "7 · Wix Madefor Display", name: "Wix Madefor Display",
+        css: '"Wix Madefor Display", sans-serif',   weights: "500 · 600 · 700",
+        note: "stavěná pro titulky, mírně zaoblená, sebevědomá" },
+      { id: "familjen", tab: "8 · Familjen Grotesk", name: "Familjen Grotesk",
+        css: '"Familjen Grotesk", sans-serif',      weights: "500 · 600 · 700",
+        note: "švédský grotesk, lehce oblá zakončení, osobitý, ale střízlivý" },
+      { id: "gantari",  tab: "9 · Gantari",          name: "Gantari",
+        css: '"Gantari", sans-serif',               weights: "500 · 600 · 700",
+        note: "geometricko-humanistický kříženec, hladké oblouky, univerzální" },
+      { id: "outfit",   tab: "10 · Outfit",          name: "Outfit",
+        css: '"Outfit", sans-serif',                weights: "500 · 600 · 700",
+        note: "geometrická a kulatá; už je v projektu — nulové náklady navíc" },
+    ];
+
+    const tabsEl  = document.getElementById("tabs");
+    const stageEl = document.getElementById("stage");
+    const metaEl  = document.getElementById("meta");
+
+    function panelHTML(f) {
+      const warn = f.pangaia
+        ? '<div class="warn" id="pangaia-warn">PP Pangaia se nepodařilo načíst (relativní cesta <code>../../../public/fonts/PPPangaia-Medium.otf</code> — spusťte statický server z kořene repozitáře nebo z této složky tak, aby cesta seděla). Zatím se zobrazuje záložní Georgia.</div>'
+        : "";
+      return `
+      <section class="panel" id="panel-${f.id}" style="--df:${f.css.replace(/"/g, "&quot;")}" ${f.pangaia ? "data-pangaia" : ""}>
+        ${warn}
+        <div class="mock">
+          <span class="eyebrow">${COPY.eyebrow}</span>
+          <h1>${COPY.h1}</h1>
+          <p class="lede">${COPY.lede}</p>
+          <a class="btn" href="javascript:void(0)">${COPY.cta} <span class="arrow">↗</span></a>
+          <p class="btn-note">Tlačítko je v Instrument Sans — na živém webu používají tlačítka textový font, takže se s kandidátem nemění.</p>
+          <p class="trust">${COPY.trust}</p>
+
+          <div class="divider"></div>
+
+          <div class="section">
+            <span class="eyebrow">${COPY.sectionEyebrow}</span>
+            <h2>${COPY.h2}</h2>
+            <p>${COPY.sectionP}</p>
+            <p class="price">${COPY.price}<small>cenovka v displejovém fontu</small></p>
+          </div>
+
+          <div class="diatest">
+            <span class="label">Test diakritiky · latin-ext (ř ě š č ů ď ť ž ý ú ó)</span>
+            <p class="sentence">${COPY.diatest}</p>
+            <p class="sentence">${COPY.diatest}</p>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    stageEl.innerHTML = FONTS.map(panelHTML).join("");
+    tabsEl.innerHTML = FONTS.map((f, i) =>
+      `<button class="tab" data-i="${i}" style="font-family:${f.css.replace(/"/g, "&quot;")}">${f.tab}</button>`
+    ).join("");
+
+    let active = 0;
+    function show(i) {
+      active = (i + FONTS.length) % FONTS.length;
+      const f = FONTS[active];
+      document.querySelectorAll(".panel").forEach((p, j) => p.classList.toggle("active", j === active));
+      document.querySelectorAll(".tab").forEach((t, j) => t.classList.toggle("active", j === active));
+      metaEl.innerHTML =
+        `<span class="fname">${f.name}</span>` +
+        `<span>Váhy: <span class="gold">${f.weights}</span></span>` +
+        `<span>${f.note}</span>` +
+        (f.pangaia ? "" : `<span>zdroj: Google Fonts (css2, latin-ext)</span>`);
+      const tab = tabsEl.children[active];
+      if (tab && tab.scrollIntoView) tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+      try { history.replaceState(null, "", "#" + f.id); } catch (_) { /* file:// */ }
+    }
+
+    tabsEl.addEventListener("click", (e) => {
+      const b = e.target.closest(".tab");
+      if (b) show(Number(b.dataset.i));
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { show(active + 1); e.preventDefault(); }
+      else if (e.key === "ArrowLeft") { show(active - 1); e.preventDefault(); }
+      else if (e.key.toLowerCase() === "w") {
+        const root = document.documentElement;
+        const next = getComputedStyle(root).getPropertyValue("--h1w").trim() === "700" ? "600" : "700";
+        root.style.setProperty("--h1w", next);
+        document.getElementById("wlabel").textContent = next;
+      }
+    });
+
+    // start: hash (#gabarito apod.) nebo panel 0
+    const fromHash = FONTS.findIndex((f) => "#" + f.id === location.hash);
+    show(fromHash >= 0 ? fromHash : 0);
+
+    // hlídání, jestli se lokální Pangaia opravdu načetla
+    const PROBE = '500 48px "PP Pangaia Local"';
+    function pangaiaFailed() {
+      const w = document.getElementById("pangaia-warn");
+      if (w) w.classList.add("show");
+    }
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load(PROBE).then(() => {
+        if (!document.fonts.check(PROBE)) pangaiaFailed();
+      }).catch(pangaiaFailed);
+    }
+  </script>
+</body>
+</html>

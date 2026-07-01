@@ -20,7 +20,7 @@ export default async function FamilyMemoriesPage({
     supabase
       .from("memories")
       .select(
-        "id, title, text_content, audio_path, audio_duration_seconds, status, is_favorite, created_at, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
+        "id, title, text_content, audio_transcript, audio_transcript_polished, audio_path, audio_duration_seconds, status, is_favorite, created_at, prompts(question), profiles!memories_author_id_fkey(id, display_name, gender)",
       )
       .eq("family_id", familyId)
       .order("created_at", { ascending: false })
@@ -33,6 +33,8 @@ export default async function FamilyMemoriesPage({
           id: string;
           title: string | null;
           text_content: string | null;
+          audio_transcript: string | null;
+          audio_transcript_polished: string | null;
           audio_path: string | null;
           audio_duration_seconds: number | null;
           status: string;
@@ -84,6 +86,7 @@ export default async function FamilyMemoriesPage({
     id: m.id,
     title: m.title,
     text: m.text_content,
+    transcript: m.audio_transcript_polished ?? m.audio_transcript ?? null,
     audioUrl: m.audio_path ? (audioUrls.get(m.audio_path) ?? null) : null,
     audioDurationSeconds: m.audio_duration_seconds,
     status: m.status,

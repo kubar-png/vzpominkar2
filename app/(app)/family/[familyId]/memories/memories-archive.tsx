@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/input";
 import { EmptyState } from "@/components/app/EmptyState";
 import { FilterPill } from "@/components/app/FilterPill";
-import { InlineAudioPlayer } from "@/components/audio/InlineAudioPlayer";
+import { WaveformPlayer } from "@/components/audio/WaveformPlayer";
 import { resolveGender } from "@/lib/gender";
 
 export type ArchiveSenior = { id: string; displayName: string };
@@ -16,6 +16,8 @@ export type ArchiveMemory = {
   id: string;
   title: string | null;
   text: string | null;
+  /** Improved-or-raw transcript for audio memories (3-line preview on the card). */
+  transcript: string | null;
   audioUrl: string | null;
   audioDurationSeconds: number | null;
   status: string;
@@ -180,6 +182,7 @@ export function MemoriesArchive({ memories, seniors, familyId }: Props) {
 }
 
 function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
+  const [expanded, setExpanded] = useState(false);
   const date = new Date(m.createdAt).toLocaleDateString("cs-CZ", {
     day: "numeric",
     month: "long",
@@ -188,42 +191,73 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
   const visibleImages = m.images.slice(0, 3);
   const extra = m.images.length - 3;
 
+  // Text memories show their content; audio memories show the (improved)
+  // transcript. Long bodies collapse to three lines with a "Zobrazit víc"
+  // toggle so the card stays scannable.
+  const body = (m.text ?? m.transcript ?? "").trim();
+  const isLong = body.length > 180 || body.split("\n").length > 3;
+
   return (
     <Card className="transition-shadow duration-200 hover:shadow-[0_8px_24px_-16px_rgba(8,35,61,0.10)]">
-      <CardContent className="space-y-4 p-5 md:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-[var(--color-navy-900)]">
-              {date}
-              {m.authorName ? (
-                <span className="font-normal text-[var(--color-text-muted)]"> · {m.authorName}</span>
-              ) : null}
-            </p>
-            {m.question ? (
-              <p className="text-sm text-[var(--color-text-muted)]">&bdquo;{resolveGender(m.question, m.authorGender)}&ldquo;</p>
+      <CardContent className="space-y-5 p-6 md:p-7">
+        {/* Header: date · author, favorite marker */}
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-sm font-medium text-[var(--color-navy-900)]">
+            {date}
+            {m.authorName ? (
+              <span className="font-normal text-[var(--color-text-muted)]"> · {m.authorName}</span>
             ) : null}
-          </div>
-          <div className="flex items-center gap-2">
-            {m.isFavorite ? (
-              <Heart size={14} className="text-[var(--color-red-600)]" fill="currentColor" />
-            ) : null}
-          </div>
+          </p>
+          {m.isFavorite ? (
+            <Heart size={15} className="mt-0.5 shrink-0 text-[var(--color-red-600)]" fill="currentColor" />
+          ) : null}
         </div>
 
-        {m.title ? (
-          <h3 className="text-[17px] font-semibold tracking-tight text-[var(--color-navy-900)]">
-            {m.title}
-          </h3>
+        {/* Title + question sit together as the memory's heading block */}
+        {(m.title || m.question) ? (
+          <div className="space-y-2">
+            {m.title ? (
+              <h3 className="text-[19px] font-semibold leading-snug tracking-tight text-[var(--color-navy-900)]">
+                {m.title}
+              </h3>
+            ) : null}
+            {m.question ? (
+              <p className="border-l-2 border-[var(--color-border-strong)] pl-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                &bdquo;{resolveGender(m.question, m.authorGender)}&ldquo;
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         {m.audioUrl ? (
-          <InlineAudioPlayer src={m.audioUrl} duration={m.audioDurationSeconds} />
+          <WaveformPlayer
+            src={m.audioUrl}
+            duration={m.audioDurationSeconds}
+            memoryId={m.id}
+            variant="compact"
+          />
         ) : null}
 
-        {m.text ? (
-          <p className="line-clamp-3 whitespace-pre-line leading-relaxed text-[var(--color-text)]">
-            {m.text}
-          </p>
+        {body ? (
+          <div className="space-y-1.5">
+            <p
+              className={[
+                "whitespace-pre-line leading-relaxed text-[var(--color-text)]",
+                expanded ? "" : "line-clamp-3",
+              ].join(" ")}
+            >
+              {body}
+            </p>
+            {isLong ? (
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="text-sm font-medium text-[var(--color-navy-700)] underline-offset-2 hover:underline"
+              >
+                {expanded ? "Zobrazit méně" : "Zobrazit víc"}
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
         {visibleImages.length > 0 ? (
@@ -248,12 +282,14 @@ function ArchiveCard({ m, familyId }: { m: ArchiveMemory; familyId: string }) {
           </div>
         ) : null}
 
-        <Link
-          href={`/family/${familyId}/memories/${m.id}`}
-          className="block text-sm text-[var(--color-navy-700)] underline-offset-2 hover:underline"
-        >
-          Celá vzpomínka →
-        </Link>
+        <div className="border-t border-[var(--color-border)] pt-4">
+          <Link
+            href={`/family/${familyId}/memories/${m.id}`}
+            className="text-sm font-medium text-[var(--color-navy-700)] underline-offset-2 hover:underline"
+          >
+            Celá vzpomínka →
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

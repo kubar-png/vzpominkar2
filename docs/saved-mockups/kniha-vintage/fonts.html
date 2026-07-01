@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vzpomínkář — výběr fontů (22 kombinací)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Alegreya:ital,wght@0,400..900;1,400..500&family=Bitter:ital,wght@0,400..700;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..500&family=Bree+Serif&family=Cardo:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400..700&family=Cormorant+Garamond:ital,wght@0,400..700;1,400..500&family=Crimson+Pro:ital,wght@0,300..700;1,300..500&family=DM+Serif+Display:ital@0;1&family=Domine:wght@400..700&family=EB+Garamond:ital,wght@0,400..700;1,400..500&family=Eczar:wght@400..800&family=Frank+Ruhl+Libre:wght@300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Gilda+Display&family=Libre+Caslon+Display&family=Lora:ital,wght@0,400..700;1,400..500&family=Lustria&family=Marcellus&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Petrona:ital,wght@0,300..700;1,400&family=Playfair+Display:ital,wght@0,400..800;1,400..600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Prata&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=Spectral:ital,wght@0,300..600;1,300..500&family=Vollkorn:ital,wght@0,400..800;1,400..600&family=Yeseva+One&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FEF7D7; --cream-deep:#F4E9BE;
+    --raspberry:#CF364C; --raspberry-fill:#C33D50;
+    --navy:#1B2E4D; --navy-soft:#2C4368; --ink:#14223A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;scroll-padding-top:88px;}
+  body{background:var(--navy);color:var(--cream);-webkit-font-smoothing:antialiased;}
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.05;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .page-head{ text-align:center; padding:60px 24px 26px; }
+  .page-head .kicker{ font-family:"Newsreader",serif; text-transform:uppercase; letter-spacing:.42em; font-size:.7rem; color:var(--raspberry); }
+  .page-head h1{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(2rem,4vw,3rem); margin-top:14px; color:var(--cream); }
+  .page-head p{ font-family:"Newsreader",serif; font-weight:300; color:rgba(254,247,215,.72); max-width:600px; margin:14px auto 0; }
+
+  /* lepivá navigace */
+  .nav{
+    position:sticky; top:0; z-index:40;
+    display:flex; flex-wrap:wrap; gap:7px; justify-content:center;
+    padding:14px 20px; background:rgba(20,34,58,.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(254,247,215,.12);
+  }
+  .nav a{
+    font-family:"Newsreader",serif; font-size:.76rem; letter-spacing:.02em;
+    color:var(--cream); text-decoration:none; border:1px solid rgba(254,247,215,.22);
+    padding:6px 11px; border-radius:2px; transition:.16s; white-space:nowrap;
+  }
+  .nav a:hover{ background:var(--raspberry); border-color:var(--raspberry); }
+
+  .sample{ background:var(--cream); color:var(--navy); border-top:6px solid var(--raspberry); }
+  .sample:nth-child(even){ background:#FBF1CC; }
+  .sample-inner{ max-width:980px; margin:0 auto; padding:52px 40px 58px; display:grid; grid-template-columns:228px 1fr; gap:46px; }
+  @media(max-width:780px){ .sample-inner{ grid-template-columns:1fr; gap:28px; } }
+
+  .id .num{ font-family:"Fraunces",serif; font-weight:600; font-size:3rem; color:var(--raspberry); line-height:1; }
+  .id .label{ font-family:"Newsreader",serif; text-transform:uppercase; letter-spacing:.28em; font-size:.7rem; color:var(--navy); margin-top:10px; }
+  .id .mood{ font-family:"Newsreader",serif; font-weight:300; color:var(--ink); opacity:.72; margin-top:13px; font-size:.92rem; line-height:1.45; }
+  .id .fonts{ margin-top:20px; border-top:1px solid rgba(27,46,77,.2); padding-top:14px; }
+  .id .fonts dt{ font-family:"Newsreader",serif; text-transform:uppercase; letter-spacing:.2em; font-size:.6rem; color:var(--raspberry); }
+  .id .fonts dd{ font-family:"Newsreader",serif; font-size:.95rem; color:var(--navy); margin:3px 0 11px; }
+  .id .logo{ width:140px; margin-top:20px; }
+
+  .demo .eyebrow{ display:block; text-transform:uppercase; letter-spacing:.34em; font-size:.72rem; color:var(--raspberry); }
+  .demo h2{ margin:15px 0 0; line-height:1.05; color:var(--navy); }
+  .demo h2 em{ color:var(--raspberry); font-style:normal; }
+  .demo .lede{ margin-top:17px; color:var(--ink); line-height:1.4; }
+  .demo .body{ margin-top:15px; color:var(--navy); max-width:54ch; line-height:1.6; }
+  .demo .body a{ color:var(--raspberry); }
+  .demo .row{ display:flex; align-items:center; gap:22px; margin-top:25px; flex-wrap:wrap; }
+  .demo .btn{
+    display:inline-block; background:var(--raspberry); color:var(--cream);
+    padding:13px 28px; border-radius:2px; text-decoration:none; letter-spacing:.03em;
+    box-shadow:0 10px 24px -12px var(--raspberry); transition:.18s; cursor:pointer;
+  }
+  .demo .btn:hover{ background:#bb2d42; transform:translateY(-2px); }
+  .demo .price{ display:inline-flex; align-items:baseline; gap:8px; }
+  .demo .price .amt{ color:var(--raspberry); line-height:1; }
+  .demo .price .cur{ color:var(--navy); letter-spacing:.08em; }
+
+  footer{ text-align:center; padding:46px 20px; font-family:"Newsreader",serif; font-weight:300; color:rgba(254,247,215,.6); font-size:.9rem; }
+  .totop{ position:fixed; right:18px; bottom:18px; z-index:45; background:var(--raspberry); color:var(--cream); font-family:"Newsreader",serif; text-decoration:none; padding:10px 14px; border-radius:2px; font-size:.8rem; box-shadow:0 8px 20px -8px rgba(0,0,0,.5); }
+</style>
+</head>
+<body>
+
+  <div class="page-head">
+    <span class="kicker">Vzpomínkář &middot; výběr písma</span>
+    <h1>22 font‑kombinací</h1>
+    <p>Stejný obsah, stejná paleta — mění se jen písmo. Projdi je, řekni mi čísla, která tě baví, klidně i „nadpis z 8, text z 3“ a zkombinuju to.</p>
+  </div>
+
+  <nav class="nav" id="nav"></nav>
+  <main id="list"></main>
+  <footer>Vzpomínkář — výběr písma &middot; paleta #FEF7D7 · #CF364C · #1B2E4D</footer>
+  <a href="#top" class="totop">↑ nahoru</a>
+
+<script>
+const D = (f) => `'${f}',serif`;
+// defaults pro míru; každý pár přepíše jen to podstatné
+const base = { hw:600, hs:'2.7rem', hls:'-.005em', ebw:500, ldw:300, lds:'1.22rem', ldi:false,
+               bdw:400, bds:'1.03rem', btw:500, amw:600, ams:'2.1rem' };
+
+const PAIRS = [
+  { name:'Měkká nostalgie', mood:'Teplé, oblé, lidské. Nejblíž k měkkému rukopisu loga.',
+    disp:'Fraunces', body:'Newsreader' },
+  { name:'Knihtisk', mood:'Vysoký kontrast, elegantní, vážné. Klasická knižní sazba.',
+    disp:'Playfair Display', body:'Spectral', hw:700, ldi:true },
+  { name:'Antikvariát', mood:'Útlé, literární, starobylé. Jako titulní strana staré knihy.',
+    disp:'Cormorant Garamond', body:'EB Garamond', hs:'3.3rem', hw:600, ldi:true, lds:'1.3rem', bds:'1.1rem' },
+  { name:'Plakát', mood:'Tučné, výrazné, retro plakát. Nadpis táhne pozornost.',
+    disp:'Abril Fatface', body:'Lora', hw:400, hs:'2.9rem', hls:'0', ams:'2.2rem', amw:400 },
+  { name:'Retro půvab', mood:'Oblý vintage nadpis s noblesou. Elegantní, ale vřelé.',
+    disp:'Yeseva One', body:'Crimson Pro', hw:400, hs:'2.9rem', hls:'0', ebw:600, ldw:400, bdw:400, bds:'1.08rem', amw:400, ams:'2.2rem' },
+  { name:'Moderní serif', mood:'Ostrý display Didone s civilním, čistým textem.',
+    disp:'DM Serif Display', body:'Source Serif 4', hw:400, hs:'2.9rem', hls:'0' },
+  { name:'Italský elegán', mood:'Štíhlá Didone Prata — móda, parfém, noblesa.',
+    disp:'Prata', body:'Lora', hw:400, hs:'2.5rem', hls:'0', ams:'2rem', amw:400 },
+  { name:'Bodoni móda', mood:'Dramatický kontrast Bodoniho. Magazínová elegance.',
+    disp:'Bodoni Moda', body:'Newsreader', hw:600, hs:'2.7rem' },
+  { name:'Caslonská klasika', mood:'Anglická knižní tradice. Solidní a důvěryhodné.',
+    disp:'Libre Caslon Display', body:'EB Garamond', hw:400, hs:'2.6rem', hls:'0', bds:'1.1rem' },
+  { name:'Učebnice', mood:'Akademické, věcné, nadčasové. Klid staré učebnice.',
+    disp:'Old Standard TT', body:'PT Serif', hw:700, hs:'2.7rem', hls:'0' },
+  { name:'Vřelý román', mood:'Sytý display Eczar s plynulou Alegreyou. Útulné čtení.',
+    disp:'Eczar', body:'Alegreya', hw:700, hs:'2.6rem', hls:'0', ldi:true, amw:700 },
+  { name:'Římský nápis', mood:'Tesané verzálky Cinzel. Slavnostní, monumentální.',
+    disp:'Cinzel', body:'Spectral', hw:600, hs:'2.2rem', hls:'.02em', ldi:true, amw:600, ams:'2rem' },
+  { name:'Inscripce', mood:'Útlé kapitálky Marcellus. Vznešené a vzdušné.',
+    disp:'Marcellus', body:'Lora', hw:400, hs:'2.6rem', hls:'.01em', amw:400 },
+  { name:'Slabová pevnost', mood:'Robustní slab Bitter. Pevné, čitelné, trochu retro.',
+    disp:'Bitter', body:'Source Serif 4', hw:700, hs:'2.5rem', hls:'-.01em', amw:700 },
+  { name:'Domácí kniha', mood:'Pohodový Domine s vřelým Vollkornem. Domácí a milé.',
+    disp:'Domine', body:'Vollkorn', hw:600, hs:'2.5rem', hls:'0', amw:600 },
+  { name:'Galerie', mood:'Útlý Gilda Display. Kurátorské, jemné, výstavní.',
+    disp:'Gilda Display', body:'EB Garamond', hw:400, hs:'2.7rem', hls:'0', bds:'1.1rem', amw:400 },
+  { name:'Klidná lektura', mood:'Vyrovnaná Lustria. Klidný, neokázalý knižní tón.',
+    disp:'Lustria', body:'Lora', hw:400, hs:'2.5rem', hls:'0', amw:400 },
+  { name:'Měkký slab', mood:'Přátelský Bree Serif. Oblé, lehce hravé, vlídné.',
+    disp:'Bree Serif', body:'Lora', hw:400, hs:'2.6rem', hls:'0', amw:400 },
+  { name:'Vřelá Alegreya', mood:'Jeden rod ve dvou řezech. Soudržné a literární.',
+    disp:'Alegreya', body:'Alegreya', hw:800, hs:'2.6rem', hls:'-.01em', ldi:true, amw:800 },
+  { name:'Tradice', mood:'Frank Ruhl Libre — vysoký kontrast, knižní důstojnost.',
+    disp:'Frank Ruhl Libre', body:'Newsreader', hw:700, hs:'2.6rem', hls:'0' },
+  { name:'Cardo klasik', mood:'Renesanční Cardo. Filologická, starosvětská přesnost.',
+    disp:'Cardo', body:'EB Garamond', hw:400, hs:'2.7rem', hls:'0', ldi:true, bds:'1.1rem', amw:400 },
+  { name:'Petrona vážná', mood:'Vážná Petrona s elegantním Crimson Pro. Usedlé a jisté.',
+    disp:'Petrona', body:'Crimson Pro', hw:600, hs:'2.6rem', hls:'0', bds:'1.08rem' },
+];
+
+const nav = document.getElementById('nav');
+const list = document.getElementById('list');
+
+PAIRS.forEach((p, i) => {
+  const o = Object.assign({}, base, p);
+  const n = String(i+1).padStart(2,'0');
+  const hf=D(o.disp), bf=D(o.body);
+  const ldStyle = `font-family:${bf};font-weight:${o.ldw};font-size:${o.lds};`;
+
+  // nav
+  const a = document.createElement('a');
+  a.href = `#p${i+1}`;
+  a.textContent = `${n} · ${o.name}`;
+  nav.appendChild(a);
+
+  // sekce
+  const s = document.createElement('section');
+  s.className = 'sample';
+  s.id = `p${i+1}`;
+  s.innerHTML = `
+    <div class="sample-inner">
+      <div class="id">
+        <div class="num">${n}</div>
+        <div class="label">${o.name}</div>
+        <div class="mood">${o.mood}</div>
+        <dl class="fonts"><dt>Nadpisy</dt><dd>${o.disp}</dd><dt>Text</dt><dd>${o.body}</dd></dl>
+        <img class="logo" src="logo-pink.png" alt="Vzpomínkář" />
+      </div>
+      <div class="demo">
+        <span class="eyebrow" style="font-family:${bf};font-weight:${o.ebw}">Fyzická kniha vzpomínek</span>
+        <h2 style="font-family:${hf};font-weight:${o.hw};font-size:${o.hs};letter-spacing:${o.hls}">Příběh jednoho<br><em>života</em>, sepsaný navždy.</h2>
+        <p class="lede" style="${ldStyle}">300 otázek, které otevřou ty nejdůležitější vzpomínky vašich blízkých.</p>
+        <p class="body" style="font-family:${bf};font-weight:${o.bdw};font-size:${o.bds}">Vzpomínkář promění odpovědi babičky nebo dědy v krásnou tištěnou knihu. Stačí odpovídat — o&nbsp;zbytek se postaráme my. <a href="#">Jak to funguje &rarr;</a></p>
+        <div class="row">
+          <a class="btn" style="font-family:${bf};font-weight:${o.btw}">Objednat knihu</a>
+          <span class="price"><span class="amt" style="font-family:${hf};font-weight:${o.amw};font-size:${o.ams}">589</span><span class="cur" style="font-family:${bf}">Kč</span></span>
+        </div>
+      </div>
+    </div>`;
+  list.appendChild(s);
+});
+</script>
+</body>
+</html>

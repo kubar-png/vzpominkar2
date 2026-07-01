@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náhrada Pangaia — hero nadpis ve 3 velikostech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600;700&family=Hanken+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=Familjen+Grotesk:wght@500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Syne:wght@600;700;800&family=Unbounded:wght@500;600;700&family=Young+Serif&family=Literata:opsz,wght@7..72,500;7..72,600;7..72,700&family=Gloock&family=Zilla+Slab:wght@500;600;700&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @font-face{
+    font-family:"PP Pangaia";
+    src:url("../../../public/fonts/PPPangaia-Medium.otf") format("opentype");
+    font-weight:500;font-style:normal;font-display:swap;
+  }
+  :root{
+    --bg:#14110e; --panel-chrome:#1d1916; --line:#322b25; --ink-chrome:#f3ede4; --mut:#a89c8d;
+    --gold:#d4a017;
+    --paper:#faf8f3; --ink:#1a1714; --ink-soft:#6b645b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:96px}
+  body{background:var(--bg);color:var(--ink-chrome);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;padding-bottom:80px}
+  header{position:sticky;top:0;z-index:10;background:rgba(20,17,14,.94);backdrop-filter:blur(10px);
+         border-bottom:1px solid var(--line);padding:14px 26px}
+  header h1{font-size:16px;font-weight:600}
+  header p{color:var(--mut);font-size:12.5px;margin-top:4px}
+  .jump{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .jump a{font-size:12px;font-weight:600;color:var(--ink-chrome);background:#2a2420;border:1px solid var(--line);
+          border-radius:999px;padding:6px 12px;text-decoration:none}
+  .jump a:hover{background:var(--gold);color:#1a130c;border-color:var(--gold)}
+  .jump a.ref{border-color:#6b5a2a;color:#e0c27a}
+  .jump .glabel{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;
+                align-self:center;margin:0 2px 0 10px}
+  .jump .glabel:first-child{margin-left:0}
+
+  .ghead{max-width:1180px;margin:52px auto 0;padding:0 30px;display:flex;align-items:baseline;gap:14px}
+  .ghead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+  .ghead span{color:var(--mut);font-size:12.5px}
+
+  .block{max-width:1180px;margin:26px auto 0;padding:0 26px}
+  .bar{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:0 4px 10px}
+  .bar .num{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.06em}
+  .bar .nm{font-size:17px;font-weight:700}
+  .bar .note{color:var(--mut);font-size:12.5px}
+  .panel{background:var(--paper);color:var(--ink);border-radius:14px;padding:46px 52px 40px;
+         box-shadow:0 10px 34px rgba(0,0,0,.4)}
+  .panel .h{line-height:1.12;letter-spacing:-.015em;text-wrap:balance}
+  .panel .h.big{font-size:64px;margin-bottom:36px}
+  .panel .h.mid{font-size:40px;margin-bottom:30px}
+  .panel .h.small{font-size:25px;margin-bottom:34px}
+  .panel .dia{font-family:"Instrument Sans",sans-serif;font-size:14px;color:var(--ink-soft);
+              border-top:1px solid #ece5d3;padding-top:14px}
+  .panel .dia b{color:var(--ink);font-weight:600}
+  .sz{display:inline-block;vertical-align:middle;font-family:"Instrument Sans",sans-serif;font-size:11px;
+      font-weight:600;color:#b3a684;letter-spacing:.08em;margin-left:14px}
+  @media(max-width:760px){
+    .panel{padding:30px 26px 26px}
+    .panel .h.big{font-size:42px}
+    .panel .h.mid{font-size:30px}
+    .panel .h.small{font-size:21px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Náhrada PP Pangaia — hero nadpis ve 3 velikostech</h1>
+  <p>Skutečný H1 z homepage, 4 výrazně odlišné směry. Vyber nejdřív <b style="color:#e0c27a">směr</b> (A–D), pak doladíme konkrétní font. Všechny umí plnou českou diakritiku.</p>
+  <div class="jump" id="jump"></div>
+</header>
+
+<div id="blocks"></div>
+
+<script>
+  const H = "Kolik příběhů vašeho blízkého zatím nikdo nezapsal?";
+  const DIA = "Příliš žluťoučký kůň úpěl ďábelské ódy — ř ě š č ž ý á í é ů ú ť ď ň";
+  // [num, name, css stack, note, weight, isRef]
+  const GROUPS = [
+    ["REF","referenční", [
+      ["00","PP Pangaia (současný)","'PP Pangaia',serif","to, co nahrazujeme — špatně čitelné",500,true],
+    ]],
+    ["A","kulaté sans — měkké, přátelské, moderní", [
+      ["A1","Gabarito","'Gabarito',sans-serif","kulatá geometrická, dospělá",600],
+      ["A2","Hanken Grotesk","'Hanken Grotesk',sans-serif","humanistická, nejčitelnější z kulatých",600],
+      ["A3","Plus Jakarta Sans","'Plus Jakarta Sans',sans-serif","geometrická s měkkými detaily",600],
+    ]],
+    ["B","grotesky s charakterem — moderní, ale s vlastní tváří", [
+      ["B1","Space Grotesk","'Space Grotesk',sans-serif","technický šmrnc, výrazné detaily",600],
+      ["B2","Familjen Grotesk","'Familjen Grotesk',sans-serif","lehce kulatý švédský grotesk",600],
+      ["B3","Bricolage Grotesque","'Bricolage Grotesque',sans-serif","teplý, výrazný — znáš z mockup varianty 01/11",600],
+    ]],
+    ["C","výrazné display — odvážné, zapamatovatelné", [
+      ["C1","Syne","'Syne',sans-serif","široká, módní, galerie/fashion",700],
+      ["C2","Unbounded","'Unbounded',sans-serif","hodně kulatá a široká, skoro logo-font",500],
+    ]],
+    ["D","moderní serify — kdyby přece jen serif, ale čitelný", [
+      ["D1","Young Serif","'Young Serif',serif","teplý robustní serif, knižní a hřejivý",400],
+      ["D2","Literata","'Literata',serif","knižní serif Google Books, výborně čitelný",600],
+      ["D3","Gloock","'Gloock',serif","elegantní kontrastní display, luxusní",400],
+      ["D4","Zilla Slab","'Zilla Slab',serif","slab — přátelský, pevný, neokoukaný",600],
+    ]],
+  ];
+  const jump=document.getElementById('jump');
+  const blocks=document.getElementById('blocks');
+  for(const [gkey,gname,fonts] of GROUPS){
+    const gl=document.createElement('span');
+    gl.className='glabel'; gl.textContent=gkey;
+    jump.appendChild(gl);
+    for(const [num,name,,,,ref] of fonts){
+      const a=document.createElement('a');
+      a.href="#f"+num; a.textContent=num+" "+name.replace(" (současný)","");
+      if(ref) a.className="ref";
+      jump.appendChild(a);
+    }
+    const gh=document.createElement('div');
+    gh.className='ghead';
+    gh.innerHTML='<h2>'+(gkey==="REF"?"Referenční":"Směr "+gkey)+'</h2><span>'+gname+'</span>';
+    blocks.appendChild(gh);
+    for(const [num,name,stack,note,weight] of fonts){
+      const d=document.createElement('div');
+      d.className="block"; d.id="f"+num;
+      const st=stack.replace(/"/g,'&quot;');
+      d.innerHTML=
+        '<div class="bar"><span class="num">'+num+'</span><span class="nm">'+name+'</span><span class="note">'+note+' · váha '+weight+'</span></div>'+
+        '<div class="panel" style="font-family:'+st+'">'+
+          '<div class="h big" style="font-weight:'+weight+'">'+H+'<span class="sz">64&nbsp;px</span></div>'+
+          '<div class="h mid" style="font-weight:'+weight+'">'+H+'<span class="sz">40&nbsp;px</span></div>'+
+          '<div class="h small" style="font-weight:'+weight+'">'+H+'<span class="sz">25&nbsp;px</span></div>'+
+          '<div class="dia"><b>Diakritika:</b> <span style="font-family:'+st+'">'+DIA+'</span></div>'+
+        '</div>';
+      blocks.appendChild(d);
+    }
+  }
+</script>
+
+</body>
+</html>

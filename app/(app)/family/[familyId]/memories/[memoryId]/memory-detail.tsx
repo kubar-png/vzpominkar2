@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ArrowLeft, Play, Pause, Download, Heart, Pencil, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Heart, Pencil, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
 import { TranscriptEditor } from "@/components/memories/TranscriptEditor";
+import { WaveformPlayer } from "@/components/audio/WaveformPlayer";
 import type { MemoryDetailData } from "./page";
 import { resolveGender, genderFromSeniorRole } from "@/lib/gender";
 
@@ -25,207 +26,6 @@ function formatDate(dateStr: string) {
   });
 }
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return `${m}:${String(sec).padStart(2, "0")}`;
-}
-
-// Seeded waveform - FNV-1a hash → deterministic bar heights
-function seedRng(seed: string) {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return () => {
-    h ^= h >>> 16;
-    h = Math.imul(h, 0x45d9f3b);
-    h ^= h >>> 16;
-    return ((h >>> 0) / 4294967296);
-  };
-}
-
-function generateWaveform(id: string, count = 90): number[] {
-  const rand = seedRng(id);
-  return Array.from({ length: count }, (_, i) => {
-    const envelope = Math.sin(i * 0.14) * 0.28 + Math.sin(i * 0.055) * 0.22 + 0.48;
-    const noise = (rand() - 0.5) * 0.38;
-    return Math.max(0.06, Math.min(0.97, envelope + noise));
-  });
-}
-
-// ── Waveform Player ───────────────────────────────────────────────────────────
-//
-// Warm-brown surface (a deliberate contrast moment — per DESIGN.md the
-// audio waveform is one of the spots where the editorial system allows a
-// dark feature surface). Plays back as the workhorse for senior voice
-// recordings, so the controls stay big and the gold "played" overlay reads
-// as state, not as decoration.
-
-function WaveformPlayer({
-  src,
-  duration: initialDuration,
-  memoryId,
-  downloadName,
-}: {
-  src: string;
-  duration: number | null;
-  memoryId: string;
-  downloadName: string;
-}) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const rafRef = useRef<number>(0);
-  const [playing, setPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(initialDuration ?? 0);
-  const bars = generateWaveform(memoryId);
-  const count = bars.length;
-
-  const tick = useCallback(() => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-      if (!audioRef.current.paused) {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-    }
-  }, []);
-
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
-
-  function togglePlay() {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) {
-      audio.play();
-      setPlaying(true);
-      rafRef.current = requestAnimationFrame(tick);
-    } else {
-      audio.pause();
-      setPlaying(false);
-    }
-  }
-
-  function handleEnded() {
-    setPlaying(false);
-    setCurrentTime(0);
-  }
-
-  function seek(idx: number) {
-    const audio = audioRef.current;
-    if (!audio || !duration) return;
-    const t = (idx / count) * duration;
-    audio.currentTime = t;
-    setCurrentTime(t);
-  }
-
-  const progress = duration > 0 ? currentTime / duration : 0;
-
-  return (
-    <div className="overflow-hidden rounded-[var(--radius-xl)] bg-[#1c1814]">
-      <audio
-        ref={audioRef}
-        src={src}
-        preload="metadata"
-        onLoadedMetadata={() => {
-          // WebM from MediaRecorder reports duration as Infinity; fall back
-          // to the DB-stored seconds (initialDuration) when that happens.
-          const d = audioRef.current?.duration;
-          setDuration(
-            typeof d === "number" && Number.isFinite(d) && d > 0
-              ? d
-              : initialDuration ?? 0
-          );
-        }}
-        onDurationChange={() => {
-          const d = audioRef.current?.duration;
-          if (typeof d === "number" && Number.isFinite(d) && d > 0) {
-            setDuration(d);
-          }
-        }}
-        onEnded={handleEnded}
-      />
-
-      {/* Header strip */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-paper-400)]">
-          Nahrávka
-        </p>
-        <p className="font-mono text-xs tabular-nums text-[var(--color-paper-300)]">
-          {formatTime(currentTime)}
-          <span className="text-[var(--color-paper-500)]"> / </span>
-          {formatTime(duration)}
-        </p>
-      </div>
-
-      {/* Waveform — neutral bars in back, gold bars clipped to progress in front */}
-      <div
-        className="relative mx-5"
-        style={{ height: 64 }}
-        role="slider"
-        aria-label="Průběh nahrávky"
-        aria-valuenow={Math.round(progress * 100)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
-        {/* Neutral layer */}
-        <div className="flex h-full cursor-pointer items-end gap-[2px]">
-          {bars.map((h, i) => (
-            <div
-              key={i}
-              onClick={() => seek(i)}
-              className="flex-1 rounded-full"
-              style={{
-                height: `${Math.round(h * 100)}%`,
-                minWidth: 2,
-                backgroundColor: "rgba(255,255,255,0.10)",
-              }}
-            />
-          ))}
-        </div>
-        {/* Played overlay — clipped from the right edge to current progress. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-end gap-[2px]"
-          style={{ clipPath: `inset(0 ${(1 - progress) * 100}% 0 0)` }}
-        >
-          {bars.map((h, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-full"
-              style={{
-                height: `${Math.round(h * 100)}%`,
-                minWidth: 2,
-                backgroundColor: "var(--color-gold-400)",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center justify-between px-5 py-4">
-        <button
-          type="button"
-          onClick={togglePlay}
-          aria-label={playing ? "Pozastavit" : "Přehrát"}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(255,255,255,0.18)] text-[var(--color-paper-200)] transition-colors hover:border-[var(--color-gold-400)] hover:text-[var(--color-gold-400)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c1814]"
-        >
-          {playing ? <Pause size={18} /> : <Play size={18} className="translate-x-px" />}
-        </button>
-
-        <a
-          href={src}
-          download={downloadName}
-          className="inline-flex items-center gap-1.5 text-xs text-[var(--color-paper-300)] underline-offset-2 transition-colors hover:text-[var(--color-paper-100)] hover:underline"
-        >
-          <Download size={12} aria-hidden />
-          Uložit nahrávku
-        </a>
-      </div>
-    </div>
-  );
-}
 
 // ── Photo / Video Gallery ─────────────────────────────────────────────────────
 
@@ -400,7 +200,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       {/* Title — Pangaia 32-38px per DESIGN.md page-title */}
       <h1
         className={[
-          "mt-3 font-[family-name:var(--font-display)] font-medium",
+          "mt-2 font-[family-name:var(--font-display)] font-medium",
           "leading-[1.1] tracking-[-0.02em]",
           m.title
             ? "text-[var(--color-navy-900)]"
@@ -412,12 +212,12 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       </h1>
 
       {memoryDate ? (
-        <p className="mt-2 text-[13px] text-[var(--color-text-subtle)]">
+        <p className="mt-1.5 text-[13px] text-[var(--color-text-subtle)]">
           Období: <span className="text-[var(--color-text-muted)]">{memoryDate}</span>
         </p>
       ) : m.extracted_year ? (
         <p
-          className="mt-2 text-[13px] text-[var(--color-text-subtle)]"
+          className="mt-1.5 text-[13px] text-[var(--color-text-subtle)]"
           title={
             m.extracted_year_confidence === "high"
               ? "Období jsme vytáhli z vyprávění."
@@ -434,14 +234,14 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
 
       {/* Question quote — small, calm, not gold */}
       {m.question ? (
-        <blockquote className="mt-6 border-l-2 border-[var(--color-border-strong)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
+        <blockquote className="mt-8 border-l-2 border-[var(--color-border-strong)] pl-4 text-[15px] leading-relaxed text-[var(--color-text-muted)]">
           &bdquo;{m.question ? resolveGender(m.question, authorGender) : ""}&ldquo;
         </blockquote>
       ) : null}
 
       {/* Audio player */}
       {m.audioUrl ? (
-        <div className="mt-8 space-y-3">
+        <div className="mt-10 space-y-3">
           <WaveformPlayer
             src={m.audioUrl}
             duration={m.audio_duration_seconds}
@@ -460,7 +260,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
 
       {/* Public QR share — scan to play this memory anywhere, no login */}
       {m.publicUrl ? (
-        <div className="mt-8 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-paper-50)] p-5">
+        <div className="mt-10 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-paper-50)] p-6">
           <p className="text-sm font-semibold text-[var(--color-navy-900)]">Veřejné přehrání (QR do knihy)</p>
           <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-muted)]">
             Tento QR i odkaz přehrají nahrávku komukoliv, kdo je načte — bez přihlášení. Stejný kód bude v tištěné knize.
@@ -501,7 +301,7 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
       ) : null}
 
       {/* Text content (editable) */}
-      <div className="mt-8">
+      <div className="mt-10">
         {editing ? (
           <div className="space-y-4">
             <textarea
