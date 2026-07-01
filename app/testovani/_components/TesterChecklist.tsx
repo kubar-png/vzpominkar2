@@ -134,7 +134,7 @@ export function TesterChecklist({ progress, qrDataUrl, promptsHref, sendAction }
                     <p style={{ margin: "0 0 16px" }}>
                       Stačí e-mail a heslo. Hned potom vás provedeme krátkým nastavením.
                     </p>
-                    <Link href="/signup" className="btn btn-gold">
+                    <Link href="/signup?test=1" className="btn btn-gold">
                       Založit účet
                       <span className="arrow" aria-hidden>
                         ↗
@@ -146,10 +146,11 @@ export function TesterChecklist({ progress, qrDataUrl, promptsHref, sendAction }
                 {i === 1 ? (
                   <>
                     <p style={{ margin: "0 0 16px" }}>
-                      Přidejte rodiče nebo prarodiče, jehož vzpomínky chcete zachytit. Zadáte jen
-                      jméno — žádný účet ani telefon nepotřebují.
+                      Otevřeme vám aplikaci s krátkým průvodcem a přidáte rodiče nebo prarodiče,
+                      jehož vzpomínky chcete zachytit. Zadáte jen jméno — žádný účet ani telefon
+                      nepotřebují.
                     </p>
-                    <Link href="/onboarding" className="btn btn-gold">
+                    <Link href="/dashboard" className="btn btn-gold">
                       Přidat blízkého
                       <span className="arrow" aria-hidden>
                         ↗

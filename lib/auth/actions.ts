@@ -19,6 +19,7 @@ import { requireOwner, currentUser } from "@/lib/auth/permissions";
 import { markGiftPending } from "@/lib/gift/cookie";
 import { sendEmail } from "@/lib/email/send";
 import { welcomeEmail, verifyEmail, passwordResetEmail } from "@/lib/email/templates";
+import { markBookPaid } from "@/lib/books/server";
 import {
   checkRateLimit,
   checkSeniorUsernameLimit,
@@ -63,6 +64,9 @@ export async function signUpOwner(
   // cookie through onboarding so /onboarding/platba renders the voucher
   // configurator and the buyer can hand over a printable poukaz after paying.
   const isGift = formData.get("gift") === "1";
+  // Tester run (from /testovani → /signup?test=1): skip onboarding + payment,
+  // provision free access, and bounce back to the testing checklist.
+  const isTest = formData.get("test") === "1";
 
   // Deferred email verification: with Supabase "Confirm email" OFF, signUp
   // returns a live session, so the owner is logged in right away and skips the
@@ -104,6 +108,15 @@ export async function signUpOwner(
     if (isGift) await markGiftPending();
 
     await sendOwnerVerificationEmail(parsed.data.email, appUrl, parsed.data.displayName);
+
+    if (isTest) {
+      // Testers don't pay and don't go through onboarding: provision a free,
+      // active family + collecting book so the dashboard + storyteller flow work
+      // immediately, then return them to the testing checklist.
+      await provisionTesterFamily(admin, data.user.id);
+      redirect("/testovani");
+    }
+
     redirect("/onboarding");
   }
 
@@ -162,6 +175,56 @@ async function sendOwnerVerificationEmail(
     });
   } catch (err) {
     console.error("[signup] verification email failed (non-fatal):", err);
+  }
+}
+
+/**
+ * Provision a free, immediately-usable family for a tester (from /testovani):
+ * creates the family + first collecting book and grants lifetime access, so the
+ * owner lands on a working dashboard (with the guide) and can add a storyteller
+ * without going through onboarding or paying. Best-effort — never blocks signup.
+ */
+async function provisionTesterFamily(
+  admin: ReturnType<typeof createAdminClient>,
+  ownerId: string,
+): Promise<void> {
+  // Placeholder until the tester names the real storyteller on the dashboard.
+  const placeholder = "Váš blízký";
+  try {
+    const { data: family, error: famErr } = await admin
+      .from("families")
+      .insert({ name: "Moje vzpomínky", senior_display_name: placeholder, created_by: ownerId })
+      .select("id")
+      .single<{ id: string }>();
+    if (famErr || !family) {
+      console.error("[tester provision] family insert failed:", famErr);
+      return;
+    }
+    await admin.from("profiles").update({ family_id: family.id }).eq("id", ownerId);
+
+    const { data: book } = await admin
+      .from("books")
+      .insert({ family_id: family.id, senior_display_name: placeholder, sequence_no: 1, title: "Díl 1" })
+      .select("id")
+      .single<{ id: string }>();
+
+    if (book) {
+      // Grants free lifetime access AND marks the book collecting so the senior
+      // can answer straight away — no paywall for testers.
+      await markBookPaid(admin, {
+        bookId: book.id,
+        familyId: family.id,
+        actorId: ownerId,
+        amountCzk: 0,
+      });
+    } else {
+      await admin
+        .from("families")
+        .update({ subscription_status: "active", subscription_expires_at: null })
+        .eq("id", family.id);
+    }
+  } catch (err) {
+    console.error("[tester provision] failed:", err);
   }
 }
 

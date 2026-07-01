@@ -7,9 +7,11 @@ import { PasswordInput } from "@/components/ui/PasswordInput";
 export function SignupForm({
   product,
   gift,
+  test,
 }: {
   product?: string;
   gift?: boolean;
+  test?: boolean;
 } = {}) {
   const [state, formAction, pending] = useActionState<ActionResult | null, FormData>(
     signUpOwner,
@@ -63,6 +65,7 @@ export function SignupForm({
     <form action={formAction} className="auth-form">
       {product ? <input type="hidden" name="product" value={product} /> : null}
       {gift ? <input type="hidden" name="gift" value="1" /> : null}
+      {test ? <input type="hidden" name="test" value="1" /> : null}
       <Field
         label="Vaše jméno"
         name="displayName"

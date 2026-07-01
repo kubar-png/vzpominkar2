@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 interface SignupPageProps {
-  searchParams: Promise<{ product?: string; gift?: string }>;
+  searchParams: Promise<{ product?: string; gift?: string; test?: string }>;
 }
 
 const badgeStyle: React.CSSProperties = {
@@ -28,6 +28,9 @@ const badgeStyle: React.CSSProperties = {
 export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
   const isGift = params.gift === "1";
+  // Tester run (from /testovani): skip onboarding + payment, bounce back to the
+  // testing checklist after signup.
+  const isTest = params.test === "1";
   const basePriceCzk = priceForProductCzk("book_base");
 
   return (
@@ -83,7 +86,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
             {isGift ? <p style={badgeStyle}>Registrace pro dárkovou objednávku.</p> : null}
 
-            <SignupForm gift={isGift} />
+            <SignupForm gift={isGift} test={isTest} />
 
             <p className="auth-fineprint">
               {basePriceCzk > 0
