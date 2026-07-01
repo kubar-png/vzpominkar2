@@ -213,9 +213,26 @@ export async function saveTextMemory(
  * anchor. */
 async function extractAndStoreYear(memoryId: string, text: string): Promise<void> {
   try {
-    const result = await extractYear(text);
-    if (!result.year && !result.year_label) return;
     const admin = createAdminClient();
+    // Pull the narrator's birth year so "když mi bylo deset" can resolve to a
+    // concrete year (birth_year + age).
+    let birthYear: number | null = null;
+    const { data: mem } = await admin
+      .from("memories")
+      .select("author_id")
+      .eq("id", memoryId)
+      .maybeSingle<{ author_id: string | null }>();
+    if (mem?.author_id) {
+      const { data: prof } = await admin
+        .from("profiles")
+        .select("birth_year")
+        .eq("id", mem.author_id)
+        .maybeSingle<{ birth_year: number | null }>();
+      birthYear = prof?.birth_year ?? null;
+    }
+
+    const result = await extractYear(text, birthYear);
+    if (!result.year && !result.year_label) return;
     const { data } = await admin
       .from("memories")
       .update({
