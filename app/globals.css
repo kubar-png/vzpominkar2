@@ -460,24 +460,11 @@ html:has(.kc-shell), html:has(.senior-auth) { scrollbar-gutter: auto; }
   .vzp-progress-strip { left: 280px; }
 }
 
-/* Always-visible thin scrollbar for capped-height lists (question library,
- * etc.) so it's obvious the area scrolls. */
-.vzp-scroll-area {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-navy-400) var(--color-paper-200);
-}
-.vzp-scroll-area::-webkit-scrollbar { width: 12px; }
-.vzp-scroll-area::-webkit-scrollbar-track {
-  background: var(--color-paper-200);
-  border-radius: 999px;
-  margin: 6px 0;
-}
-.vzp-scroll-area::-webkit-scrollbar-thumb {
-  background: var(--color-navy-700);
-  border-radius: 999px;
-  border: 3px solid var(--color-paper-200);
-}
-.vzp-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--color-navy-900); }
+/* Hide the native scrollbar on capped-height lists — a custom always-visible
+ * thumb is drawn on top instead (native scrollbars are unreliable in Safari
+ * overlay mode). */
+.vzp-scroll-hidden { scrollbar-width: none; }
+.vzp-scroll-hidden::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 body {
   background-color: var(--color-bg);

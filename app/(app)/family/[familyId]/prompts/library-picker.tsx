@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -73,8 +73,7 @@ export function LibraryPicker({
       </div>
 
       {activeGroup ? (
-        <div className="vzp-scroll-area max-h-[30rem] overflow-y-auto pr-2">
-        <ul className="space-y-2">
+        <ScrollList resetKey={activeTab}>
           {activeGroup.prompts.map((p) => {
             const isAdded = added.has(p.id);
             const isBusy = pending && busyId === p.id;
@@ -124,8 +123,94 @@ export function LibraryPicker({
               </li>
             );
           })}
-        </ul>
-        </div>
+        </ScrollList>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * Capped-height list (~7 rows) with a custom always-visible scrollbar on the
+ * right. Native scrollbars are unreliable across browsers (Safari hides them
+ * in overlay mode), so we hide the native one and draw our own draggable
+ * thumb — it's always visible when the list overflows, making it obvious the
+ * area scrolls.
+ */
+function ScrollList({ children, resetKey }: { children: React.ReactNode; resetKey: string }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [thumb, setThumb] = useState({ height: 0, top: 0, visible: false });
+
+  const measure = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { clientHeight, scrollHeight, scrollTop } = el;
+    const visible = scrollHeight > clientHeight + 2;
+    if (!visible) {
+      setThumb({ height: 0, top: 0, visible: false });
+      return;
+    }
+    const height = Math.max(32, (clientHeight / scrollHeight) * clientHeight);
+    const top = (scrollTop / (scrollHeight - clientHeight)) * (clientHeight - height) || 0;
+    setThumb({ height, top, visible: true });
+  }, []);
+
+  useEffect(() => {
+    // remeasure when the category changes or after layout settles
+    const el = scrollRef.current;
+    if (el) el.scrollTop = 0;
+    measure();
+    const id = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(id);
+  }, [resetKey, measure]);
+
+  useEffect(() => {
+    const onResize = () => measure();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [measure]);
+
+  function onThumbDown(e: React.PointerEvent) {
+    e.preventDefault();
+    const el = scrollRef.current;
+    if (!el) return;
+    const startY = e.clientY;
+    const startScroll = el.scrollTop;
+    const track = el.clientHeight - thumb.height;
+    const scrollable = el.scrollHeight - el.clientHeight;
+    function move(ev: PointerEvent) {
+      const dy = ev.clientY - startY;
+      el!.scrollTop = startScroll + (track > 0 ? (dy / track) * scrollable : 0);
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        onScroll={measure}
+        className="vzp-scroll-hidden max-h-[30rem] overflow-y-auto pr-4"
+      >
+        <ul className="space-y-2">{children}</ul>
+      </div>
+      {thumb.visible ? (
+        <>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute right-0.5 top-1 bottom-1 w-2 rounded-full bg-[var(--color-paper-200)]"
+          />
+          <div
+            aria-hidden
+            onPointerDown={onThumbDown}
+            className="absolute right-0.5 w-2 cursor-grab rounded-full bg-[var(--color-navy-700)] transition-colors hover:bg-[var(--color-navy-900)] active:cursor-grabbing"
+            style={{ height: thumb.height, top: thumb.top }}
+          />
+        </>
       ) : null}
     </div>
   );
