@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, Pencil, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Heart, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { SENIOR_ROLE_OPTIONS } from "@/lib/validations/auth";
 import { toggleMemoryFavorite, updateMemoryText } from "@/lib/memories/owner-actions";
@@ -174,13 +174,6 @@ export function MemoryDetail({ memory: m }: { memory: MemoryDetailData }) {
             <span className="hidden sm:inline">Upravit text</span>
           </button>
         ) : null}
-        <button
-          type="button"
-          aria-label="Další akce"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-paper-100)] hover:text-[var(--color-navy-900)]"
-        >
-          <MoreHorizontal size={16} aria-hidden />
-        </button>
       </div>
 
       {/* Meta row */}
