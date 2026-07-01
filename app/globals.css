@@ -159,6 +159,11 @@ html.lenis { scroll-behavior: auto; }
 .editorial .editorial-footer a:hover::after {
   transform: scaleX(1);
 }
+/* The pill CTA is an <a> too — never give it the footer link underline. */
+.editorial .footer a.btn::after,
+.editorial .editorial-footer a.btn::after {
+  content: none;
+}
 
 /* Honor reduced-motion preference — kill all of the above */
 @media (prefers-reduced-motion: reduce) {
