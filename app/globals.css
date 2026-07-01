@@ -6163,7 +6163,7 @@ html[data-scrolled="true"] [data-sticky-header-bg] {
   z-index: 200;
   background: rgba(246, 238, 219, 0.985);
   backdrop-filter: blur(12px);
-  border-top: 2px solid var(--gold);
+  border-top: 1px solid rgba(27, 46, 77, 0.10);
   padding: 18px clamp(16px, 4vw, 36px) calc(18px + env(safe-area-inset-bottom));
   box-shadow: 0 -16px 50px -18px rgba(28, 24, 20, 0.28);
   animation: cookie-bar-in 0.34s cubic-bezier(0.16, 1, 0.3, 1);

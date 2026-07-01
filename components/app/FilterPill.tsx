@@ -25,7 +25,7 @@ export function FilterPill({ active, onClick, children, icon }: FilterPillProps)
         "inline-flex h-9 items-center rounded-full border px-4 text-sm font-medium transition-colors",
         icon && "gap-1.5",
         active
-          ? "border-[var(--color-navy-900)] bg-[var(--color-navy-900)] text-[var(--color-paper-50)]"
+          ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-on-accent)]"
           : "border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-paper-300)] hover:text-[var(--color-navy-700)]",
       )}
     >

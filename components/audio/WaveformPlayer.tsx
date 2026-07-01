@@ -149,7 +149,7 @@ export function WaveformPlayer({
             style={{
               height: `${Math.round(h * 100)}%`,
               minWidth: 2,
-              backgroundColor: "rgba(255,255,255,0.10)",
+              backgroundColor: "var(--color-navy-200)",
             }}
           />
         ))}
@@ -166,7 +166,7 @@ export function WaveformPlayer({
             style={{
               height: `${Math.round(h * 100)}%`,
               minWidth: 2,
-              backgroundColor: "var(--color-gold-400)",
+              backgroundColor: "var(--color-navy-700)",
             }}
           />
         ))}
@@ -179,7 +179,7 @@ export function WaveformPlayer({
       type="button"
       onClick={togglePlay}
       aria-label={playing ? "Pozastavit" : "Přehrát"}
-      className="flex shrink-0 items-center justify-center rounded-full border border-[rgba(255,255,255,0.18)] text-[var(--color-paper-200)] transition-colors hover:border-[var(--color-gold-400)] hover:text-[var(--color-gold-400)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1c1814]"
+      className="flex shrink-0 items-center justify-center rounded-full border border-[var(--color-navy-300)] text-[var(--color-navy-700)] transition-colors hover:border-[var(--color-navy-700)] hover:bg-[var(--color-navy-700)] hover:text-[var(--color-paper-50)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-navy-500)] focus-visible:ring-offset-2"
       style={{ height: size, width: size }}
     >
       {playing ? <Pause size={size < 44 ? 16 : 18} /> : <Play size={size < 44 ? 16 : 18} className="translate-x-px" />}
@@ -191,16 +191,16 @@ export function WaveformPlayer({
     return (
       <div
         className={[
-          "flex items-center gap-3 rounded-[var(--radius-lg)] bg-[#1c1814] px-3 py-2.5",
+          "flex items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-paper-100)] px-3 py-2.5",
           className ?? "",
         ].join(" ")}
       >
         {audioEl}
         {playButton(40)}
         {waveform(32)}
-        <p className="shrink-0 font-mono text-[11px] tabular-nums text-[var(--color-paper-300)]">
+        <p className="shrink-0 font-mono text-[11px] tabular-nums text-[var(--color-navy-500)]">
           {formatTime(currentTime)}
-          <span className="text-[var(--color-paper-500)]"> / </span>
+          <span className="text-[var(--color-navy-300)]"> / </span>
           {formatTime(duration)}
         </p>
       </div>
@@ -211,19 +211,19 @@ export function WaveformPlayer({
   return (
     <div
       className={[
-        "overflow-hidden rounded-[var(--radius-xl)] bg-[#1c1814]",
+        "overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-paper-100)]",
         className ?? "",
       ].join(" ")}
     >
       {audioEl}
 
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-paper-400)]">
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--color-navy-400)]">
           Nahrávka
         </p>
-        <p className="font-mono text-xs tabular-nums text-[var(--color-paper-300)]">
+        <p className="font-mono text-xs tabular-nums text-[var(--color-navy-500)]">
           {formatTime(currentTime)}
-          <span className="text-[var(--color-paper-500)]"> / </span>
+          <span className="text-[var(--color-navy-300)]"> / </span>
           {formatTime(duration)}
         </p>
       </div>
@@ -236,7 +236,7 @@ export function WaveformPlayer({
           <a
             href={src}
             download={downloadName}
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--color-paper-300)] underline-offset-2 transition-colors hover:text-[var(--color-paper-100)] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs text-[var(--color-navy-400)] underline-offset-2 transition-colors hover:text-[var(--color-navy-700)] hover:underline"
           >
             <Download size={12} aria-hidden />
             Uložit nahrávku
