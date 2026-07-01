@@ -64,7 +64,7 @@ export default async function TestovaniPage() {
           hlasem nebo textem a z odpovědí postupně vzniká vytištěná kniha vzpomínek.
         </p>
         <p style={{ marginTop: 16, maxWidth: 640 }}>
-          Testování je zdarma a zabere zhruba deset minut. Poprosíme vás, ať si založíte účet,
+          Zabere to zhruba deset minut. Poprosíme vás, ať si založíte účet,
           přidáte jednoho blízkého (rodiče nebo prarodiče), pošlete mu dvě otázky, necháte ho
           odpovědět a pak nám řeknete svůj názor. Projdeme to spolu krok za krokem.
         </p>

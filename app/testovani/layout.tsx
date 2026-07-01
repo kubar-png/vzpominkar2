@@ -13,7 +13,7 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Vyzkoušejte Vzpomínkář",
   description:
-    "Krátké provedení testem: založíte účet, přidáte blízkého, pošlete mu dvě otázky a řeknete nám názor. Zabere to zhruba deset minut a je to zdarma.",
+    "Krátké provedení testem: založíte účet, přidáte blízkého, pošlete mu dvě otázky a řeknete nám názor. Zabere to zhruba deset minut.",
 };
 
 export default function TestovaniLayout({ children }: { children: ReactNode }) {
