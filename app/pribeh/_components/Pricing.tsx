@@ -34,7 +34,7 @@ export function Pricing() {
 
               <a
                 className={`pl-btn pl-plan__cta pl-btn--block ${b.featured ? "pl-btn--primary" : "pl-btn--ghost"}`}
-                href="#"
+                href="/signup"
               >
                 {b.cta}
               </a>

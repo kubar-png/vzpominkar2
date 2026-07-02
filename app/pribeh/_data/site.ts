@@ -57,8 +57,8 @@ export const FOOTER_COLS: { title: string; links: { label: string; href: string 
     links: [
       { label: "Sledování objednávky", href: "#" },
       { label: "Vrácení a reklamace", href: "#faq" },
-      { label: "Obchodní podmínky", href: "#" },
-      { label: "Ochrana údajů", href: "#" },
+      { label: "Obchodní podmínky", href: "/podminky" },
+      { label: "Ochrana údajů", href: "/soukromi" },
     ],
   },
 ];

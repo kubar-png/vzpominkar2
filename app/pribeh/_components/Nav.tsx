@@ -28,13 +28,6 @@ export function Nav() {
         </div>
 
         <div className="pl-nav__actions">
-          <button className="pl-iconbtn" type="button" aria-label="Účet">
-            <Icon name="user" size={21} />
-          </button>
-          <button className="pl-iconbtn" type="button" aria-label="Košík (2 položky)">
-            <Icon name="cart" size={21} />
-            <span className="pl-cart-count" aria-hidden="true">2</span>
-          </button>
           <a className="pl-btn pl-btn--primary pl-btn--sm pl-nav__cta" href="#balicky">Koupit knihu</a>
           <button
             className="pl-iconbtn pl-burger"
