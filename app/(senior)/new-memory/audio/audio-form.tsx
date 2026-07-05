@@ -177,7 +177,7 @@ export function AudioMemoryForm({ assignmentId }: { assignmentId: string | null 
           <>
             <p className="text-[19px] text-[var(--ink)] max-w-md">
               Stiskněte tlačítko níže, vyprávějte přirozeně svým tempem,
-              a až budete hotoví, stiskněte <strong>Hotovo</strong>.
+              a až domluvíte, stiskněte <strong>Hotovo</strong>.
             </p>
             {supported === false && (
               <div role="alert" className="es-banner es-banner-error max-w-md">
@@ -346,14 +346,14 @@ function BigAudioPlayer({ src, duration }: { src: string; duration: number }) {
 
       <div
         className="flex items-center gap-4 rounded-xl border-2 p-4"
-        style={{ borderColor: "var(--line-2)", background: "#fff" }}
+        style={{ borderColor: "var(--line-2)", background: "var(--paper)" }}
       >
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? "Pozastavit" : "Přehrát"}
           className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
-          style={{ background: "var(--ink)", color: "#FEF7D7" }}
+          style={{ background: "var(--ink)", color: "var(--color-on-accent)" }}
         >
           {playing ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
         </button>

@@ -27,6 +27,9 @@ export default async function DashboardPage() {
   // next prompt for the status row). The heavy memory feed + signed URLs
   // stream in below via <Suspense> so the shell paints immediately.
   const supabase = createAdminClient();
+  // Today's date (UTC, to match StatusBlock's date math) so the "next question"
+  // status only ever surfaces upcoming prompts, never an overdue one.
+  const todayStr = new Date().toISOString().slice(0, 10);
   const [{ data: rawSeniors }, { data: rawNext }, { count: assignmentCount }, { data: rawStarters }] =
     await Promise.all([
       supabase
@@ -40,6 +43,7 @@ export default async function DashboardPage() {
         .select("scheduled_for, senior_id, prompts(question)")
         .eq("family_id", owner.familyId)
         .is("answered_memory_id", null)
+        .gte("scheduled_for", todayStr)
         .order("scheduled_for", { ascending: true })
         .limit(1)
         .returns<{

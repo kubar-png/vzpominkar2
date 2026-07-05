@@ -53,7 +53,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
               Pár minut a&nbsp;první otázka může vyrazit za vaším blízkým.
               Přepis, sazbu i&nbsp;vazbu do krásné knihy obstaráme my.
             </p>
-            {basePriceCzk > 0 ? (
+            {basePriceCzk > 0 && !isTest ? (
               <p
                 style={{
                   marginTop: "4px",
@@ -85,13 +85,16 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             </p>
 
             {isGift ? <p style={badgeStyle}>Registrace pro dárkovou objednávku.</p> : null}
+            {isTest ? <p style={badgeStyle}>Testovací přístup — zdarma, bez platby.</p> : null}
 
             <SignupForm gift={isGift} test={isTest} />
 
             <p className="auth-fineprint">
-              {basePriceCzk > 0
-                ? `Jednorázově ${basePriceCzk.toLocaleString("cs-CZ")} Kč — přístup napořád, bez předplatného.`
-                : "Přístup napořád, bez předplatného."}
+              {isTest
+                ? "Testovací přístup zdarma — nic neplatíte."
+                : basePriceCzk > 0
+                  ? `Jednorázově ${basePriceCzk.toLocaleString("cs-CZ")} Kč — přístup napořád, bez předplatného.`
+                  : "Přístup napořád, bez předplatného."}
             </p>
 
             <div className="auth-meta">

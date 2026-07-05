@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const NAVY = "#1B2E4D";
-const CREAM = "#FEF7D7";
-const INK_SOFT = "rgba(27,46,77,0.72)";
+const NAVY = "var(--color-navy-700)";
+const CREAM = "var(--color-on-accent)";
+const INK_SOFT = "color-mix(in srgb, var(--color-navy-700) 72%, transparent)";
 const FONT_BODY = "var(--font-body-editorial)";
 const FONT_HEAD = "var(--font-display-editorial)";
 

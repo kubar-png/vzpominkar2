@@ -131,8 +131,18 @@ export default async function ActivationPage({
           {seniorName ? `Kniha ${seniorName} je připravená.` : "Vaše kniha je připravená."}
         </h1>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
-          Zaplatíte jednou a přístup ke knize i&nbsp;online knihovně máte napořád
-          — žádné předplatné. Pak už jen vybíráte otázky a&nbsp;sbíráte vzpomínky.
+          {priceCzk > 0 ? (
+            <>
+              Zaplatíte jednou a přístup ke knize i&nbsp;online knihovně máte
+              napořád — žádné předplatné. Pak už jen vybíráte otázky
+              a&nbsp;sbíráte vzpomínky.
+            </>
+          ) : (
+            <>
+              Přístup ke knize i&nbsp;online knihovně máte napořád — žádné
+              předplatné. Pak už jen vybíráte otázky a&nbsp;sbíráte vzpomínky.
+            </>
+          )}
         </p>
       </div>
 
@@ -232,7 +242,7 @@ export default async function ActivationPage({
                 {[
                   "Píše a pomáhá vám člověk",
                   "Přístup ke knize máte napořád",
-                  "Zabezpečená platba přes Stripe",
+                  ...(priceCzk > 0 ? ["Zabezpečená platba přes Stripe"] : []),
                 ].map((line) => (
                   <li
                     key={line}
@@ -313,7 +323,8 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
       <div
         className="relative flex aspect-[3/4] flex-col items-center justify-center gap-2.5 px-4 py-7 text-center"
         style={{
-          background: "linear-gradient(160deg, #24395c 0%, #1B2E4D 55%, #14243d 100%)",
+          background:
+            "linear-gradient(160deg, var(--card-navy-soft) 0%, var(--card-navy) 55%, #14243d 100%)",
           borderRadius: "3px 8px 8px 3px",
           boxShadow:
             "-3px 0 10px -3px rgba(0,0,0,.4), 0 24px 44px -18px rgba(20,15,10,.7), inset 0 0 0 1px rgba(0,0,0,.3)",
@@ -322,7 +333,7 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
         {/* gold inner frame */}
         <span
           className="pointer-events-none absolute inset-[9px] rounded-[2px]"
-          style={{ border: "1.5px solid rgba(254,247,215,0.55)" }}
+          style={{ border: "1.5px solid color-mix(in srgb, var(--color-on-accent) 55%, transparent)" }}
           aria-hidden
         />
         {/* spine shadow */}
@@ -331,19 +342,19 @@ function BookCover({ seniorName }: { seniorName: string | null }) {
           style={{ background: "linear-gradient(90deg, rgba(0,0,0,.32), transparent)", borderRadius: "3px 0 0 3px" }}
           aria-hidden
         />
-        <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-[rgba(254,247,215,0.8)]">
+        <span className="text-[8px] font-medium uppercase tracking-[0.4em] text-[color-mix(in_srgb,var(--color-on-accent)_80%,transparent)]">
           Kniha vzpomínek
         </span>
         <span
-          className="font-[family-name:var(--font-display)] text-[26px] leading-none text-[#FEF7D7]"
+          className="font-[family-name:var(--font-display)] text-[26px] leading-none text-[var(--color-on-accent)]"
           style={{ textShadow: "0 1px 0 rgba(0,0,0,.45)" }}
         >
           Vzpomínkář
         </span>
         {seniorName ? (
-          <span className="max-w-full truncate text-[11px] text-[rgba(254,247,215,0.85)]">{seniorName}</span>
+          <span className="max-w-full truncate text-[11px] text-[color-mix(in_srgb,var(--color-on-accent)_85%,transparent)]">{seniorName}</span>
         ) : null}
-        <span className="mt-0.5 text-[9px] uppercase tracking-[0.38em] text-[rgba(254,247,215,0.7)]">
+        <span className="mt-0.5 text-[9px] uppercase tracking-[0.38em] text-[color-mix(in_srgb,var(--color-on-accent)_70%,transparent)]">
           Díl 1 · 2026
         </span>
       </div>

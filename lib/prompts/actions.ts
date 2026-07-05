@@ -9,7 +9,16 @@ import { currentBookForSenior } from "@/lib/books/server";
 import { nextMondayUtc, addDays } from "@/lib/prompts/schedule";
 import { dispatchAssignmentsNow } from "@/lib/messaging/dispatch";
 
-export type PromptResult = { ok: true } | { ok: false; error: string };
+export interface DeliverySummary {
+  /** How many of the questions sent now actually reached the senior directly. */
+  reachedSenior: number;
+  /** How many fell back to an owner-notify email (senior has no usable channel yet). */
+  ownerFallback: number;
+}
+
+export type PromptResult =
+  | { ok: true; delivery?: DeliverySummary }
+  | { ok: false; error: string };
 
 const customPromptSchema = z.object({
   familyId: z.string().uuid(),
@@ -129,11 +138,14 @@ export async function scheduleToday(
 
   // "Poslat hned" must actually DELIVER now — not just create a same-day
   // assignment that then waits for the weekly cron.
-  await dispatchAssignmentsNow(supabase, (inserted ?? []).map((r) => r.id));
+  const delivery = await dispatchAssignmentsNow(supabase, (inserted ?? []).map((r) => r.id));
 
   revalidatePath(`/family/${familyId}/prompts`);
   revalidatePath("/dashboard");
-  return { ok: true };
+  return {
+    ok: true,
+    delivery: { reachedSenior: delivery.reachedSenior, ownerFallback: delivery.ownerFallback },
+  };
 }
 
 /** Create a custom prompt and immediately schedule it for each selected senior. */
@@ -228,13 +240,15 @@ export async function addCustomPromptAndSchedule(
   if (schedErr) return { ok: false, error: "Nepodařilo se naplánovat." };
 
   // Custom question sent with "Poslat hned" → deliver immediately.
+  let delivery: DeliverySummary | undefined;
   if (scheduleType === "now") {
-    await dispatchAssignmentsNow(admin, (inserted ?? []).map((r) => r.id));
+    const res = await dispatchAssignmentsNow(admin, (inserted ?? []).map((r) => r.id));
+    delivery = { reachedSenior: res.reachedSenior, ownerFallback: res.ownerFallback };
   }
 
   revalidatePath(`/family/${familyId}/prompts`);
   revalidatePath("/dashboard");
-  return { ok: true };
+  return { ok: true, delivery };
 }
 
 /**

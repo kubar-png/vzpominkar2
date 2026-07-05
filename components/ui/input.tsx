@@ -26,7 +26,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "shadow-[var(--shadow-inset)]",
           "placeholder:text-[var(--color-text-subtle)]",
           "transition-colors duration-[var(--duration-fast)]",
-          "focus-visible:border-[var(--color-navy-500)]",
+          "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
@@ -88,7 +88,7 @@ export const Textarea = React.forwardRef<
         "shadow-[var(--shadow-inset)]",
         "placeholder:text-[var(--color-text-subtle)]",
         "transition-colors duration-[var(--duration-fast)]",
-        "focus-visible:border-[var(--color-navy-500)]",
+        "focus-visible:border-[var(--color-navy-500)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}

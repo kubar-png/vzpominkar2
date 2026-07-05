@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, Pencil, Check } from "lucide-react";
@@ -38,6 +38,7 @@ export function FirstPromptPopup({ familyId, seniorId, seniorName, seniorGender,
   const [customText, setCustomText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Reveal after the tour finishes (or right away if it's already been seen).
   useEffect(() => {
@@ -75,6 +76,42 @@ export function FirstPromptPopup({ familyId, seniorId, seniorName, seniorGender,
     };
   }, []);
 
+  // A11y: move focus into the dialog on open, Escape to dismiss, and a simple
+  // Tab focus trap (mirrors the dashboard tour's Escape handling).
+  useEffect(() => {
+    if (!show) return;
+    const getFocusable = () => {
+      const dialog = dialogRef.current;
+      if (!dialog) return [] as HTMLElement[];
+      return Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button, a[href], textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute("disabled"));
+    };
+    getFocusable()[0]?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShow(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const items = getFocusable();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [show]);
+
   async function submit() {
     if (submitting) return;
     setError(null);
@@ -106,12 +143,20 @@ export function FirstPromptPopup({ familyId, seniorId, seniorName, seniorGender,
   if (!show) return null;
 
   return (
-    <div className="vzp-modal-overlay" role="dialog" aria-modal="true" aria-label="Naplánujte první otázku">
-      <div className="vzp-modal">
+    <div
+      className="vzp-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="vzp-first-prompt-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setShow(false);
+      }}
+    >
+      <div className="vzp-modal" ref={dialogRef}>
         <button type="button" className="vzp-modal-x" onClick={() => setShow(false)} aria-label="Zavřít">
           <X size={16} />
         </button>
-        <h2 className="vzp-modal-title">Co se {seniorName} zeptáme jako první?</h2>
+        <h2 id="vzp-first-prompt-title" className="vzp-modal-title">Co se {seniorName} zeptáme jako první?</h2>
         <p className="vzp-modal-lede">
           Vyberte jednu otázku — odejde {seniorName} v pondělí ráno. Další už pak
           chodí samy, vždy jednu týdně. Měnit a přidávat je můžete kdykoliv.

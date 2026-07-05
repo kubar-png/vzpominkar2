@@ -40,7 +40,17 @@ export function LibraryPicker({
         toast.error(result.error);
       } else {
         setAdded((prev) => new Set([...prev, promptId]));
-        toast.success(type === "now" ? "Otázka odeslána" : "Naplánováno na příští pondělí");
+        if (type !== "now") {
+          toast.success("Naplánováno na příští pondělí");
+        } else if (result.delivery && result.delivery.reachedSenior === 0) {
+          // The question was scheduled, but it didn't actually reach the senior
+          // (no delivery channel set yet) — don't claim it was "odeslána".
+          toast.warning(
+            "Otázka je připravená, ale blízký zatím nemá nastavené doručení. Sdílejte s ním odkaz na odpovídání v sekci Rodina.",
+          );
+        } else {
+          toast.success("Otázka odeslána");
+        }
       }
       setBusyId(null);
       setBusyType(null);
@@ -83,21 +93,16 @@ export function LibraryPicker({
                 className={cn(
                   "flex flex-col gap-3 rounded-[var(--radius-md)] border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between",
                   isAdded
-                    ? "border-emerald-200 bg-emerald-50/50"
+                    ? "border-[var(--color-border)] bg-[var(--color-paper-200)]"
                     : "border-[var(--color-border)] bg-white",
                 )}
               >
-                <span
-                  className={cn(
-                    "text-sm leading-relaxed",
-                    isAdded ? "text-emerald-900" : "text-[var(--color-text)]",
-                  )}
-                >
+                <span className="text-sm leading-relaxed text-[var(--color-text)]">
                   {p.question}
                 </span>
 
                 {isAdded ? (
-                  <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-emerald-700">
+                  <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-[var(--color-navy-700)]">
                     <Check size={14} aria-hidden />
                     Naplánováno
                   </span>

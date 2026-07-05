@@ -64,16 +64,8 @@ export default async function ReferralPage({
   return (
     <div className="space-y-10">
       {/* Post-purchase: the funnel is done (payment was the last step). This
-       * is an optional extra, NOT a counted step — so no step bar / "krok". */}
-      <div className="flex items-center gap-3">
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-gold-100)] text-[var(--color-gold-600)]">
-          <Check size={14} aria-hidden />
-        </span>
-        <span className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-text-muted)]">
-          Hotovo · ještě jedna nepovinná otázka
-        </span>
-      </div>
-
+       * is an optional extra, NOT a counted step — so no step bar / "krok".
+       * The "Hotovo" note sits under the heading, not as an eyebrow above it. */}
       <div className="space-y-5">
         <h1
           className="max-w-[24ch] font-[family-name:var(--font-display)] text-3xl font-normal leading-[1.1] tracking-tight text-[var(--color-ink-900)] sm:text-4xl"
@@ -81,6 +73,12 @@ export default async function ReferralPage({
         >
           Jak jste se o Vzpomínkáři dozvěděli?
         </h1>
+        <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-gold-100)] text-[var(--color-gold-600)]">
+            <Check size={14} aria-hidden />
+          </span>
+          <span className="text-sm">Hotovo · ještě jedna nepovinná otázka.</span>
+        </div>
         <p className="max-w-[52ch] font-[family-name:var(--font-display)] text-lg leading-relaxed text-[var(--color-text-muted)]">
           Díky tomu víme, co funguje, a&nbsp;můžeme se zlepšovat. Vyberte, co
           nejvíc sedí.
@@ -115,7 +113,7 @@ export default async function ReferralPage({
             return (
               <label
                 key={s.value}
-                className="group flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-6 text-center transition-colors hover:border-[var(--color-navy-400)] has-[:checked]:border-[var(--color-navy-700)] has-[:checked]:bg-[var(--color-navy-50)]"
+                className="group flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-6 text-center transition-colors hover:border-[var(--color-navy-400)] has-[:checked]:border-[var(--color-navy-700)] has-[:checked]:bg-[var(--color-navy-50)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-focus-ring)]"
               >
                 <input type="radio" name="source" value={s.value} required className="sr-only" />
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-paper-100)] text-[var(--color-navy-700)] transition-colors group-has-[:checked]:bg-[var(--color-navy-700)] group-has-[:checked]:text-white">

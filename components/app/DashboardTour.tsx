@@ -66,6 +66,9 @@ export function DashboardTour() {
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const popRef = useRef<HTMLDivElement>(null);
+  // Direction of the last navigation (1 = forward, -1 = back). Lets us skip past
+  // steps whose target element isn't present on the current dashboard variant.
+  const dirRef = useRef(1);
 
   // Decide whether to show after mount (avoids SSR/localStorage mismatch).
   useEffect(() => {
@@ -116,15 +119,30 @@ export function DashboardTour() {
     setRect(r);
   }, [index]);
 
-  // On step change: scroll target into view, then measure.
+  // On step change: scroll target into view, then measure. If a targeted step's
+  // element isn't on this dashboard variant (e.g. "add-storyteller" only exists
+  // before a senior is added), skip past it in the current direction so it never
+  // renders as an orphaned, un-anchored card.
   useEffect(() => {
     if (!active) return;
     const step = STEPS[index];
     const el = firstVisible(step?.selector);
+    if (step?.selector && !el) {
+      const dir = dirRef.current;
+      setIndex((i) => {
+        const j = i + dir;
+        if (j > STEPS.length - 1) {
+          finish();
+          return i;
+        }
+        return j < 0 ? i : j;
+      });
+      return;
+    }
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
     const t = window.setTimeout(measure, el ? 320 : 0);
     return () => window.clearTimeout(t);
-  }, [active, index, measure]);
+  }, [active, index, measure, finish]);
 
   // Reposition on resize/scroll.
   useEffect(() => {
@@ -143,8 +161,13 @@ export function DashboardTour() {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") finish();
-      else if (e.key === "ArrowRight" || e.key === "Enter") next();
-      else if (e.key === "ArrowLeft") back();
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "Enter") {
+        // A focused button already fires its own onClick on Enter — don't let the
+        // global handler advance a second time and skip a step.
+        if ((e.target as HTMLElement | null)?.closest("button")) return;
+        next();
+      } else if (e.key === "ArrowLeft") back();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -191,6 +214,7 @@ export function DashboardTour() {
   }, [active, rect, index]);
 
   function next() {
+    dirRef.current = 1;
     setIndex((i) => {
       if (i >= STEPS.length - 1) {
         finish();
@@ -200,6 +224,7 @@ export function DashboardTour() {
     });
   }
   function back() {
+    dirRef.current = -1;
     setIndex((i) => Math.max(0, i - 1));
   }
 

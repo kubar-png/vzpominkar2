@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { currentUser } from "@/lib/auth/permissions";
+import { getTesterProgress } from "@/lib/testing/state";
+import { TesterHub } from "./tester-hub";
 
 /**
  * /testovani — the link we send to testers.
@@ -17,6 +20,12 @@ export default async function TestovaniPage() {
   const user = await currentUser();
   const isOwner = user?.role === "owner";
   const firstName = user?.displayName?.trim().split(" ")[0] ?? "";
+
+  // The Hub is the tester run — real (non-tester) owners don't belong here; send
+  // them to their dashboard so they never see "testovací účet" copy.
+  if (isOwner && !user?.isTester) redirect("/dashboard");
+
+  const progress = isOwner ? await getTesterProgress() : null;
 
   return (
     <div className="editorial">
@@ -38,7 +47,18 @@ export default async function TestovaniPage() {
 
       <section className="section" style={{ paddingTop: "clamp(8px, 2vw, 24px)" }}>
         <div className="container" style={{ maxWidth: 720 }}>
-          {isOwner ? <Hub firstName={firstName} /> : <Intro />}
+          {progress ? (
+            <TesterHub
+              firstName={firstName}
+              seniorName={progress.seniorName}
+              magicLink={progress.magicLink}
+              questionsSent={progress.questionsSent}
+              answersCount={progress.answersCount}
+              nextStep={progress.nextStep}
+            />
+          ) : (
+            <Intro />
+          )}
         </div>
       </section>
 
@@ -84,51 +104,6 @@ function Intro() {
           <span className="arrow" aria-hidden>
             ↗
           </span>
-        </Link>
-      </div>
-    </>
-  );
-}
-
-/* ── Logged-in tester: light hub → hands off to the real app ────────────── */
-function Hub({ firstName }: { firstName: string }) {
-  return (
-    <>
-      <h1 style={{ fontSize: "clamp(34px, 5vw, 56px)", marginBottom: 20 }}>
-        {firstName ? `Díky, ${firstName}!` : "Díky!"} Váš testovací účet je připravený.
-      </h1>
-      <p style={{ fontSize: "clamp(17px, 1.4vw, 20px)", lineHeight: 1.6, maxWidth: 640 }}>
-        Teď je řada na vás — projděte si aplikaci, jako byste ji používali doopravdy. Uvnitř na vás
-        čeká krátký průvodce; jinak vás nebudeme nijak vodit za ruku.
-      </p>
-
-      <ul style={{ margin: "24px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 12, maxWidth: 620 }}>
-        {[
-          "Přidejte blízkého, jehož vzpomínky chcete zachytit.",
-          "Pošlete mu pár otázek a nechte ho odpovědět.",
-          "Zkuste si aplikaci projít podle sebe — my se do toho nebudeme plést.",
-        ].map((t) => (
-          <li key={t} style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
-            <span aria-hidden style={{ color: "var(--gold)", fontWeight: 600 }}>
-              +
-            </span>
-            <span>{t}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
-        <Link href="/dashboard" className="btn btn-gold hero-cta">
-          Otevřít aplikaci
-          <span className="arrow" aria-hidden>
-            ↗
-          </span>
-        </Link>
-        <Link
-          href="/testovani/nazor"
-          style={{ fontSize: 15, color: "var(--ink-soft)", textDecoration: "underline", textUnderlineOffset: 4 }}
-        >
-          Až budete hotoví, řekněte nám názor →
         </Link>
       </div>
     </>

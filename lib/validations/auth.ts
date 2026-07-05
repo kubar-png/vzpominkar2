@@ -102,7 +102,19 @@ export const seniorAccountSchema = z
     channelAttestationText: z.string().max(2000).optional().nullable(),
     promptFrequency: z.union([z.literal(1), z.literal(2)]).default(1),
   })
-  .strict();
+  .strict()
+  // Symmetric to the client guard in add-senior-panel: the e-mail channel needs
+  // an address, otherwise the weekly question silently has nowhere to go. (The
+  // phone is guarded via phoneE164Schema + the client normalizer.)
+  .superRefine((data, ctx) => {
+    if (data.contactChannel === "email" && !data.contactAddress?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["contactAddress"],
+        message: "E-mail vyžaduje adresu.",
+      });
+    }
+  });
 
 /**
  * Channels that require an owner ATTESTATION before the platform may message

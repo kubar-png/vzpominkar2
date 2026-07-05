@@ -1,6 +1,7 @@
 "use server";
 
 import "server-only";
+import { randomBytes } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -203,27 +204,31 @@ async function provisionTesterFamily(
     }
     await admin.from("profiles").update({ family_id: family.id }).eq("id", ownerId);
 
-    const { data: book } = await admin
+    const { data: book, error: bookErr } = await admin
       .from("books")
       .insert({ family_id: family.id, senior_display_name: placeholder, sequence_no: 1, title: "Díl 1" })
       .select("id")
       .single<{ id: string }>();
 
-    if (book) {
-      // Grants free lifetime access AND marks the book collecting so the senior
-      // can answer straight away — no paywall for testers.
-      await markBookPaid(admin, {
-        bookId: book.id,
-        familyId: family.id,
-        actorId: ownerId,
-        amountCzk: 0,
-      });
-    } else {
-      await admin
-        .from("families")
-        .update({ subscription_status: "active", subscription_expires_at: null })
-        .eq("id", family.id);
+    // Never fall through to mark the family active without a collecting book: a
+    // bookless active family bricks every senior answer later (currentBookForSenior
+    // returns null → /home shows no question and saveAudio/TextMemory throw
+    // 'Tato kniha zatím není aktivní'). Throw so the outer best-effort guard logs
+    // it — signup itself still doesn't hard-crash.
+    if (bookErr || !book) {
+      throw new Error(
+        `[tester provision] book insert failed: ${bookErr?.message ?? "no row returned"}`,
+      );
     }
+
+    // Grants free lifetime access AND marks the book collecting so the senior
+    // can answer straight away — no paywall for testers.
+    await markBookPaid(admin, {
+      bookId: book.id,
+      familyId: family.id,
+      actorId: ownerId,
+      amountCzk: 0,
+    });
   } catch (err) {
     console.error("[tester provision] failed:", err);
   }
@@ -532,6 +537,12 @@ export async function createSeniorAccount(
     family_id: familyId,
     display_name: parsed.data.displayName,
     username: parsed.data.username,
+    // Set the no-password /q/{token} magic link token explicitly instead of
+    // relying on the DB column DEFAULT (encode(gen_random_bytes(32),'hex')) —
+    // the column is nullable, so a missing default would silently create a
+    // senior with magic_token=NULL and break the answer link. Same shape as
+    // the default. Mirrors lib/gift/voucher.ts.
+    magic_token: randomBytes(32).toString("hex"),
     senior_role: parsed.data.seniorRole ?? null,
     gender: parsed.data.gender ?? null,
     birth_year: parsed.data.birthYear ?? null,

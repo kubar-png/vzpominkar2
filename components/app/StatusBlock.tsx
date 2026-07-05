@@ -27,6 +27,11 @@ const WEEKDAYS = [
   "v sobotu",
 ];
 
+// A prompt whose date has already passed but is still unanswered isn't
+// upcoming — it's out there waiting. Describe it that way instead of a
+// future-sounding weekday.
+const WAITING_LABEL = "čeká na odpověď";
+
 function isToday(d: Date) {
   const now = new Date();
   return (
@@ -50,10 +55,11 @@ function describeWhen(iso: string): string {
   const d = new Date(iso + "T10:00:00Z");
   if (isToday(d)) return "dnes ráno";
   if (isTomorrow(d)) return "zítra ráno";
-  const within7 =
-    (d.getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 7;
+  const deltaDays = (d.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+  // Past date, still unanswered → waiting, not upcoming.
+  if (deltaDays < 0) return WAITING_LABEL;
   const day = WEEKDAYS[d.getUTCDay()];
-  if (within7) return `${day} ráno`;
+  if (deltaDays < 7) return `${day} ráno`;
   const formatted = d.toLocaleDateString("cs-CZ", {
     day: "numeric",
     month: "long",
@@ -91,9 +97,14 @@ export function StatusBlock({ familyId, next, onlySeniorFirstName }: StatusBlock
 
   const when = describeWhen(next.scheduledFor);
   const recipient = next.seniorName ?? onlySeniorFirstName;
-  const subline = recipient
-    ? `Otázka pro ${recipient} vyrazí ${when}.`
-    : `Otázka vyrazí ${when}.`;
+  const waiting = when === WAITING_LABEL;
+  const subline = waiting
+    ? recipient
+      ? `Otázka pro ${recipient} ${WAITING_LABEL}.`
+      : `Otázka ${WAITING_LABEL}.`
+    : recipient
+      ? `Otázka pro ${recipient} vyrazí ${when}.`
+      : `Otázka vyrazí ${when}.`;
 
   return (
     <section

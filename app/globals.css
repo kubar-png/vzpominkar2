@@ -400,7 +400,7 @@ html.lenis { scroll-behavior: auto; }
   --shadow-lg: 0 12px 28px -8px rgb(14 59 100 / 0.16), 0 4px 8px -4px rgb(14 59 100 / 0.08);
   --shadow-xl: 0 24px 48px -16px rgb(14 59 100 / 0.20), 0 8px 16px -6px rgb(14 59 100 / 0.10);
   --shadow-inset: inset 0 1px 0 rgb(14 59 100 / 0.06);
-  --shadow-focus: 0 0 0 3px rgb(52 112 164 / 0.35);
+  --shadow-focus: 0 0 0 3px rgb(207 54 76 / 0.4); /* raspberry brand focus (--color-focus-ring) */
 
   /* ---------- Motion ---------- */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);

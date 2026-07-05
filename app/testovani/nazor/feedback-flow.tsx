@@ -66,6 +66,9 @@ export function FeedbackFlow() {
   const value = answers[q.id];
 
   const timerRef = useRef<number | undefined>(undefined);
+  // Buffers a leading '1' on the nps scale so '1' + '0' can resolve to 10.
+  const npsTimerRef = useRef<number | undefined>(undefined);
+  const npsPendingRef = useRef<string>("");
   const otherInputRef = useRef<HTMLInputElement | null>(null);
   const clearTimer = useCallback(() => {
     if (timerRef.current) {
@@ -139,7 +142,8 @@ export function FeedbackFlow() {
       // Skipping the last (optional e-mail) question still submits.
       setStatus("submitting");
       setErrorMsg("");
-      const { contact_email, ...rest } = answers;
+      const rest = { ...answers };
+      delete rest.contact_email;
       void (async () => {
         const res = await submitFeedback(rest, undefined);
         if (res.ok) setStatus("done");
@@ -204,9 +208,40 @@ export function FeedbackFlow() {
         !inTextarea &&
         /^[0-9]$/.test(e.key)
       ) {
-        const n = Number(e.key);
         const min = q.min ?? 0;
-        const max = q.max ?? 10;
+        const max = q.max ?? (q.kind === "nps" ? 10 : 5);
+
+        // Two-digit scales (nps 0–10): buffer a leading '1' so '1' + '0' → 10.
+        // Without this a lone '1' would auto-advance before '0' could land and
+        // 10 would be unreachable. A lone '1' commits after a short window.
+        if (max >= 10) {
+          if (npsPendingRef.current) {
+            window.clearTimeout(npsTimerRef.current);
+            npsPendingRef.current = "";
+            e.preventDefault();
+            selectNumber(Math.min(Number("1" + e.key), max));
+            return;
+          }
+          if (e.key === "1") {
+            e.preventDefault();
+            npsPendingRef.current = "1";
+            window.clearTimeout(npsTimerRef.current);
+            npsTimerRef.current = window.setTimeout(() => {
+              npsPendingRef.current = "";
+              selectNumber(1);
+            }, 350);
+            return;
+          }
+          const n = Number(e.key);
+          if (n >= min && n <= max) {
+            e.preventDefault();
+            selectNumber(n);
+          }
+          return;
+        }
+
+        // Single-digit scale (e.g. 1–5).
+        const n = Number(e.key);
         if (n >= min && n <= max) {
           e.preventDefault();
           selectNumber(n);
@@ -215,6 +250,9 @@ export function FeedbackFlow() {
       }
 
       if (e.key === "Enter") {
+        // A focused Back / Skip / pill button handles its own Enter — don't
+        // hijack it, or Enter on "Zpět" would advance instead of go back.
+        if (target?.closest("button")) return;
         // Enter in a textarea inserts a newline unless a modifier is held.
         if (inTextarea && !(e.metaKey || e.ctrlKey)) return;
         e.preventDefault();
@@ -222,11 +260,29 @@ export function FeedbackFlow() {
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.clearTimeout(npsTimerRef.current);
+      npsPendingRef.current = "";
+    };
   }, [q, status, canAdvance, goNext, selectNumber]);
 
   // Clean up any pending auto-advance timer on unmount / question change.
   useEffect(() => () => clearTimer(), [clearTimer]);
+
+  // Explain a disabled Continue on the two questions that block on input:
+  // a required free-text answer, or a malformed contact e-mail.
+  let disabledHint = "";
+  if (q.kind === "text" && !q.optional && !canAdvance) {
+    disabledHint = "Napište prosím krátkou odpověď.";
+  } else if (
+    q.kind === "email" &&
+    typeof value === "string" &&
+    value.trim() !== "" &&
+    !EMAIL_RE.test(value.trim())
+  ) {
+    disabledHint = "Zkontrolujte prosím formát e-mailu.";
+  }
 
   const progress = status === "done" ? 100 : ((index + 1) / total) * 100;
 
@@ -299,7 +355,7 @@ export function FeedbackFlow() {
                   type="button"
                   onClick={goNext}
                   disabled={!canAdvance || status === "submitting"}
-                  className="fb-cta inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-7 py-3 text-[15px] font-medium text-[#FEF7D7] shadow-[0_10px_24px_-12px_rgba(207,54,76,0.5)] transition hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="fb-cta inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-7 py-3 text-[15px] font-medium text-[var(--color-on-accent)] shadow-[0_10px_24px_-12px_rgba(207,54,76,0.5)] transition hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {status === "submitting"
                     ? "Odesílám…"
@@ -307,7 +363,7 @@ export function FeedbackFlow() {
                       ? "Odeslat"
                       : "Pokračovat"}
                   {status !== "submitting" && (
-                    <span aria-hidden="true" className="text-[#FEF7D7]">
+                    <span aria-hidden="true" className="text-[var(--color-on-accent)]">
                       →
                     </span>
                   )}
@@ -330,6 +386,15 @@ export function FeedbackFlow() {
                   </span>
                 )}
               </div>
+
+              {disabledHint && (
+                <p
+                  aria-live="polite"
+                  className="mt-3 text-[13px] text-[var(--color-text-subtle)]"
+                >
+                  {disabledHint}
+                </p>
+              )}
 
               {status === "error" && (
                 <p
@@ -370,10 +435,21 @@ function QuestionScreen({
   onSelectOther: () => void;
   onSetText: (v: string) => void;
 }) {
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  useEffect(() => {
+    // Anchor focus on the new prompt so screen readers announce it and focus
+    // doesn't fall to <body>. The text / e-mail screens autofocus their own
+    // field instead — leave those alone.
+    if (q.kind === "text" || q.kind === "email") return;
+    headingRef.current?.focus();
+  }, [index, q.kind]);
+
   return (
     <div>
       <h1
-        className="text-balance text-[26px] leading-tight text-[var(--color-text-heading)] sm:text-[32px]"
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-balance text-[26px] leading-tight text-[var(--color-text-heading)] focus:outline-none sm:text-[32px]"
         style={DISPLAY}
       >
         {q.prompt}
@@ -440,7 +516,7 @@ function NpsField({
               onClick={() => onSelect(n)}
               className={`h-12 w-12 rounded-xl border text-[16px] font-medium transition sm:h-[52px] sm:w-[52px] ${
                 selected
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[#FEF7D7]"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-on-accent)]"
                   : "border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:-translate-y-0.5"
               }`}
             >
@@ -484,7 +560,7 @@ function ScaleField({
               onClick={() => onSelect(n)}
               className={`h-16 flex-1 rounded-2xl border text-[20px] font-medium transition ${
                 selected
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[#FEF7D7]"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-on-accent)]"
                   : "border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:-translate-y-0.5"
               }`}
             >
@@ -533,18 +609,18 @@ function ChoiceField({
             onClick={() => onSelectChoice(opt.value)}
             className={`flex w-full items-center gap-3 rounded-2xl border px-5 py-4 text-left text-[16px] transition ${
               selected
-                ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[#FEF7D7]"
+                ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-on-accent)]"
                 : "border-[var(--color-border-strong)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-accent)] hover:-translate-y-0.5"
             }`}
           >
             <span
               aria-hidden="true"
               className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${
-                selected ? "border-[#FEF7D7]" : "border-[var(--color-border-strong)]"
+                selected ? "border-[var(--color-on-accent)]" : "border-[var(--color-border-strong)]"
               }`}
             >
               {selected && (
-                <span className="h-2 w-2 rounded-full bg-[#FEF7D7]" />
+                <span className="h-2 w-2 rounded-full bg-[var(--color-on-accent)]" />
               )}
             </span>
             {opt.label}
@@ -652,7 +728,7 @@ function EmailField({
 function ThankYou() {
   return (
     <div className="fb-enter text-center">
-      <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-accent)] text-[28px] text-[#FEF7D7]">
+      <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-accent)] text-[28px] text-[var(--color-on-accent)]">
         ♥
       </div>
       <h1
@@ -667,10 +743,10 @@ function ThankYou() {
       </p>
       <Link
         href="/"
-        className="fb-cta mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-7 py-3 text-[15px] font-medium text-[#FEF7D7] shadow-[0_10px_24px_-12px_rgba(207,54,76,0.5)] transition hover:bg-[var(--color-accent-hover)]"
+        className="fb-cta mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-7 py-3 text-[15px] font-medium text-[var(--color-on-accent)] shadow-[0_10px_24px_-12px_rgba(207,54,76,0.5)] transition hover:bg-[var(--color-accent-hover)]"
       >
         Zpět na Vzpomínkář
-        <span aria-hidden="true" className="text-[#FEF7D7]">
+        <span aria-hidden="true" className="text-[var(--color-on-accent)]">
           →
         </span>
       </Link>

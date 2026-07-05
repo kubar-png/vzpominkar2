@@ -478,8 +478,16 @@ async function dispatchOwnerFallback(
 export async function dispatchAssignmentsNow(
   admin: Admin,
   assignmentIds: string[],
-): Promise<{ sent: number; skipped: number; failed: number }> {
-  const out = { sent: 0, skipped: 0, failed: 0 };
+): Promise<{
+  sent: number;
+  skipped: number;
+  failed: number;
+  /** Of the sent, how many actually reached the SENIOR (real senior channel). */
+  reachedSenior: number;
+  /** Of the sent, how many were an owner-fallback notify (senior had no usable address). */
+  ownerFallback: number;
+}> {
+  const out = { sent: 0, skipped: 0, failed: 0, reachedSenior: 0, ownerFallback: 0 };
   if (assignmentIds.length === 0) return out;
 
   const { data: assignments } = await admin
@@ -519,25 +527,30 @@ export async function dispatchAssignmentsNow(
     const owner = ownerByFamily.get(a.family_id) ?? null;
     const question = resolveGender(rawQ, (senior?.gender as "male" | "female" | null) ?? null);
 
+    const dispatchSenior: DispatchSenior | null = senior
+      ? {
+          display_name: senior.display_name,
+          email: senior.email,
+          contact_channel: senior.contact_channel,
+          contact_address: senior.contact_address,
+          magic_token: senior.magic_token,
+          phone_e164: senior.phone_e164,
+          sms_attested_at: senior.sms_attested_at,
+          whatsapp_attested_at: senior.whatsapp_attested_at,
+          sms_opt_out_at: senior.sms_opt_out_at,
+          whatsapp_opt_out_at: senior.whatsapp_opt_out_at,
+        }
+      : null;
+    // Does this actually reach the SENIOR (a usable senior address), or will it
+    // fall back to an owner-notify email / be skipped? Drives honest "sent" copy.
+    const willReachSenior = resolveDelivery(dispatchSenior).address != null;
+
     let status: "sent" | "skipped" | "failed" = "failed";
     try {
       const res = await dispatchPrompt(admin, {
         assignmentId: a.id,
         familyId: a.family_id,
-        senior: senior
-          ? {
-              display_name: senior.display_name,
-              email: senior.email,
-              contact_channel: senior.contact_channel,
-              contact_address: senior.contact_address,
-              magic_token: senior.magic_token,
-              phone_e164: senior.phone_e164,
-              sms_attested_at: senior.sms_attested_at,
-              whatsapp_attested_at: senior.whatsapp_attested_at,
-              sms_opt_out_at: senior.sms_opt_out_at,
-              whatsapp_opt_out_at: senior.whatsapp_opt_out_at,
-            }
-          : null,
+        senior: dispatchSenior,
         owner: owner ? { email: owner.email, display_name: owner.display_name } : null,
         question,
         appUrl: SITE_URL,
@@ -555,6 +568,8 @@ export async function dispatchAssignmentsNow(
         .eq("id", a.id);
       if (stampErr) console.error("[dispatchAssignmentsNow] reminded_at stamp failed", a.id, stampErr);
       out.sent++;
+      if (willReachSenior) out.reachedSenior++;
+      else out.ownerFallback++;
     } else if (status === "skipped") {
       out.skipped++;
     } else {

@@ -151,7 +151,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
                   alt="Náhled fotky"
                   className="aspect-square w-full rounded-lg object-cover"
                   style={{
-                    background: "#fff",
+                    background: "var(--paper)",
                     border: "1px solid var(--line)",
                     boxShadow: "0 4px 12px -4px rgba(27, 46, 77, 0.18)",
                   }}
@@ -162,7 +162,7 @@ export function PhotoMemoryForm({ assignmentId }: { assignmentId: string | null 
                   aria-label="Odebrat fotku"
                   className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full"
                   style={{
-                    background: "#fff",
+                    background: "var(--paper)",
                     color: "var(--oxblood)",
                     boxShadow: "0 4px 12px rgba(27, 46, 77, 0.2)",
                   }}

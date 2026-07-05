@@ -125,6 +125,10 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
 
     if (contactChannel === "email") {
       contactAddress = String(fd.get("contactAddress") ?? "").trim() || null;
+      if (!contactAddress) {
+        setPhase({ name: "form", error: "E-mail vyžaduje adresu." });
+        return;
+      }
     } else if (contactChannel === "sms" || contactChannel === "whatsapp") {
       phoneE164 = normalizePhoneE164(String(fd.get("phone") ?? ""));
       channelAttestation = fd.get("channelAttestation") != null;
@@ -184,9 +188,6 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
       <div className="space-y-4">
         <Card className="overflow-hidden border-[var(--color-navy-200)] bg-[var(--color-navy-50)]">
           <CardContent className="space-y-4 p-6">
-            <p className="text-sm uppercase tracking-wider text-[var(--color-text-subtle)]">
-              Hotovo - přístup je připraven
-            </p>
             <h3 className="font-[family-name:var(--font-display)] text-xl tracking-tight text-[var(--color-navy-900)]">
               Předejte tento lísteček {phase.credentials.displayName}.
             </h3>
@@ -226,13 +227,13 @@ export function AddSeniorPanel({ familyId, autoOpen = false }: AddSeniorPanelPro
                 <dt className="text-xs uppercase tracking-wider text-[var(--color-text-subtle)]">
                   Uživatelské jméno
                 </dt>
-                <dd className="mt-1 font-mono text-2xl">{phase.credentials.username}</dd>
+                <dd className="mt-1 break-all font-mono text-2xl">{phase.credentials.username}</dd>
               </div>
               <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--color-border-strong)] p-4">
                 <dt className="text-xs uppercase tracking-wider text-[var(--color-text-subtle)]">
                   Heslo
                 </dt>
-                <dd className="mt-1 font-mono text-2xl">{phase.credentials.password}</dd>
+                <dd className="mt-1 break-all font-mono text-2xl">{phase.credentials.password}</dd>
               </div>
             </dl>
           </CardContent>

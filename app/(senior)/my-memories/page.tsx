@@ -4,6 +4,7 @@ import { requireSenior } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { batchSignUrls } from "@/lib/family/server";
 import { MemoryItem } from "./memory-item";
+import { ClearSavedParam } from "./clear-saved-param";
 import { resolveGender } from "@/lib/gender";
 
 export const metadata: Metadata = { title: "Moje vzpomínky" };
@@ -104,6 +105,7 @@ export default async function MyMemoriesPage({
       {params.saved ? (
         <div role="status" className="es-banner es-banner-success mb-8">
           Hotovo. Vaše vzpomínka je uložena.
+          <ClearSavedParam />
         </div>
       ) : null}
 

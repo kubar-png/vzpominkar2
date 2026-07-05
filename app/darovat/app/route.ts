@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { currentUser, hasActiveAccess } from "@/lib/auth/permissions";
 import { markGiftPending } from "@/lib/gift/cookie";
 import { SITE_URL } from "@/lib/site";
@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
  * A logged-OUT visitor shouldn't reach here (middleware only redirects authed
  * users), but if they do we send them to the normal gift signup.
  * ───────────────────────────────────────────────────────────────────────── */
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const user = await currentUser();
   if (!user || user.role !== "owner") {
     return NextResponse.redirect(`${SITE_URL}/signup?gift=1`);

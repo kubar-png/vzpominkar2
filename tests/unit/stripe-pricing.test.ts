@@ -41,6 +41,9 @@ describe("priceForProductCzk", () => {
   });
 
   it("gift book is tiered: standard 599, custom 899; explicit 0 takes the free path", () => {
+    // Env-driven like book_base: the owner sets the real tier prices in prod.
+    process.env.PRICE_SHOP_BOOK_STANDARD_CZK = "599";
+    process.env.PRICE_SHOP_BOOK_CUSTOM_CZK = "899";
     expect(priceForProductCzk("shop_book_standard")).toBe(599);
     expect(priceForProductCzk("shop_book_custom")).toBe(899);
     process.env.PRICE_SHOP_BOOK_CUSTOM_CZK = "0";
