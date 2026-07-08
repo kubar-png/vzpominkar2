@@ -96,6 +96,14 @@ const nextConfig: NextConfig = {
       { source: "/babybook", destination: "/kniha", permanent: true },
     ];
   },
+  async rewrites() {
+    return [
+      // /eshop → static book-shop mockup shipped in public/eshop/. Kept as a
+      // standalone HTML page (own <html>/<head>), so it lives in public/ rather
+      // than the App Router. Assets referenced as /eshop/logo-*.svg (absolute).
+      { source: "/eshop", destination: "/eshop/index.html" },
+    ];
+  },
 };
 
 export default nextConfig;
