@@ -18,12 +18,87 @@ import { ADMIN_COOKIE } from "@/lib/admin/constants";
 
 const AUTH_PATHS = ["/login", "/signup", "/senior-login"];
 
+// Paths that need Supabase session refresh / auth-page redirects. Middleware now
+// runs site-wide for the pre-launch gate (see matcher), but the Supabase client
+// below is only created for these — marketing/static routes must never depend on
+// Supabase env, and /admin is handled by its own guard first.
+const APP_PATHS = [
+  "/login",
+  "/signup",
+  "/senior-login",
+  "/dashboard",
+  "/settings",
+  "/onboarding",
+  "/family",
+  "/home",
+  "/my-memories",
+  "/new-memory",
+];
+
 function startsWithAny(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
+/** Length-checked constant-time string compare (Edge-safe, no Buffer). */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * Pre-launch lockdown gate (HTTP Basic Auth). When SITE_GATE_PASSWORD is set,
+ * every matched page request must carry credentials matching
+ * SITE_GATE_USER (default "vzpominkar") : SITE_GATE_PASSWORD. Returns a 401
+ * challenge otherwise, or null to let the request through.
+ *
+ * The matcher excludes /api, /_next and static assets, so Stripe webhooks and
+ * Vercel crons are never gated. Fail-open by design: with no password configured
+ * the gate is disabled, so a missing/rolled-back env var can't lock the team out.
+ */
+function siteGate(request: NextRequest): NextResponse | null {
+  const password = process.env.SITE_GATE_PASSWORD;
+  if (!password) return null; // gate disabled
+
+  const user = process.env.SITE_GATE_USER || "vzpominkar";
+  const header = request.headers.get("authorization") || "";
+
+  if (header.startsWith("Basic ")) {
+    let decoded = "";
+    try {
+      decoded = atob(header.slice(6));
+    } catch {
+      decoded = "";
+    }
+    const sep = decoded.indexOf(":");
+    if (sep !== -1) {
+      const gotUser = decoded.slice(0, sep);
+      const gotPass = decoded.slice(sep + 1);
+      if (safeEqual(gotUser, user) && safeEqual(gotPass, password)) {
+        return null; // authorized
+      }
+    }
+  }
+
+  return new NextResponse("Authentication required.", {
+    status: 401,
+    headers: {
+      "WWW-Authenticate": 'Basic realm="Vzpominkar", charset="UTF-8"',
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ── Pre-launch site gate ────────────────────────────────────────────────────
+  // Runs before everything: the whole domain is hidden behind HTTP Basic Auth
+  // while SITE_GATE_PASSWORD is set. Excluded routes (/api, /_next, static) never
+  // reach here — see config.matcher.
+  const gated = siteGate(request);
+  if (gated) return gated;
 
   // ── Admin guard ─────────────────────────────────────────────────────────────
   // Handled FIRST, before any Supabase client is created: /admin is a fully
@@ -46,6 +121,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     return NextResponse.next({ request: { headers: adminHeaders } });
+  }
+
+  // Supabase session refresh is only needed on the app surfaces in APP_PATHS.
+  // Every other matched route (marketing, /eshop, token links) just passes
+  // through — the gate above already enforced access. This keeps the front door
+  // independent of Supabase env, as before the site-wide matcher.
+  if (!startsWithAny(pathname, APP_PATHS)) {
+    return NextResponse.next({ request });
   }
 
   let response = NextResponse.next({ request });
@@ -94,22 +177,13 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Only run middleware where session refresh / auth-page redirects are
-     * needed. The homepage and other static marketing routes are excluded
-     * so a bad Supabase env can never 500 the front door. Add more paths
-     * here as the app grows.
+     * Runs middleware site-wide so the pre-launch gate (siteGate) can hide the
+     * whole domain. Excludes routes that must never be gated or that don't need
+     * it: /api (Stripe webhook + Vercel crons + internal APIs), Next internals
+     * (/_next/static, /_next/image), and any request for a static asset file
+     * (matched by extension). Supabase session refresh is scoped in-code to
+     * APP_PATHS, so marketing/static routes stay independent of Supabase env.
      */
-    "/admin",
-    "/admin/:path*",
-    "/login/:path*",
-    "/signup/:path*",
-    "/senior-login/:path*",
-    "/dashboard/:path*",
-    "/settings/:path*",
-    "/onboarding/:path*",
-    "/family/:path*",
-    "/home/:path*",
-    "/my-memories/:path*",
-    "/new-memory/:path*",
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|txt|xml|json|woff|woff2|ttf|otf|eot|css|js|map)).*)",
   ],
 };
